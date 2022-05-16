@@ -23,7 +23,8 @@ function mme(f, userHints, userData)
 
 println("data: $userData")
 println("TYPE: $(f.rhs[5] isa FunctionTerm{typeof(ran)})")
-println("$(typeof.(f.rhs))")
+println("$(typeof(f.rhs[5]))")
+println("$(FunctionTerm{typeof(ran)})")
 	for i in 1:length(f.rhs)
 		if f.rhs[i] isa FunctionTerm{typeof(ran)}
 			println("$i has type ran Type")			
