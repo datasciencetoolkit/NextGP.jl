@@ -1,15 +1,16 @@
 #make design matrix for ran()
 
-function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
-           isa(x1|x2, CategoricalArray) ||
+function make_ran_matrix(x::AbstractVector)
+           isa(x, CategoricalArray) ||
                        throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(x)))"))
-           u = unique(x2)
-           Z = Matrix{Int32}(undef, length(x1), length(u)) #Matrix{Bool}
+           u = unique(x)
+           m = Matrix{Bool}(undef, length(x), length(u))
            for i in eachindex(u)
-               @. Z[:, i] = x1 .== u[i]
+               @. m[:, i] = x .== u[i]
            end
-           return Z
-end
+           return m
+       end
 
-#
-ran(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)],arg2[!,Symbol(arg1)])
+
+ran(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
+
