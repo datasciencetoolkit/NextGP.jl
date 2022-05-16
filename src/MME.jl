@@ -1,6 +1,5 @@
 module MME
 
-using StatsModels
 
 export mme,ran
 
@@ -45,7 +44,7 @@ function mme(f, userHints, userData)
 		elseif f.rhs[i] isa FunctionTerm{typeof(|)} #to avoid schema issues/errors
 			println("$i has type | Type")
 			my_sch = schema(userData, userHints) #work on userData and userHints
-			my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModel)
+			my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
 			println(modelcols(my_ApplySch, userData)) #work on userData and userHints
                	 	push!(RE,modelcols(my_ApplySch, userData))
                	 	push!(namesRE, terms4StatsModels[i])
