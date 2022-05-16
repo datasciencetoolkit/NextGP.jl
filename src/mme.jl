@@ -1,4 +1,4 @@
-module mme
+module MME
 
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
            isa(x1|x2, CategoricalArray) ||
@@ -55,7 +55,4 @@ function mme(f::FormulaTerm, userHints::Dict, userData::DataFrame)
 	end
 	return FE, RE, namesFE, namesRE
 	end
-
-mme.FE,mme.RE,mme.namesFE,mme.namesRE = mme(formula, userHints, userData)
-
 end
