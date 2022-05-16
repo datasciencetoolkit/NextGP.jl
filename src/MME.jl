@@ -20,7 +20,7 @@ function mme(f, userHints, userData)
 	namesRE = []
 
 println("data: $userData")
-println("TYPE: $(f.rhs[i] isa FunctionTerm{typeof(ran)})")
+println("TYPE: $(f.rhs[5] isa FunctionTerm{typeof(ran)})")
 
 	for i in 1:length(f.rhs)
 		if f.rhs[i] isa FunctionTerm{typeof(ran)}
