@@ -19,6 +19,9 @@ function mme(f, userHints, userData)
 	RE = Array{Array{Float64,2},1}(undef,0)
 	namesRE = []
 
+println("data: $userData")
+println("TYPE: $(f.rhs[i] isa FunctionTerm{typeof(ran)})")
+
 	for i in 1:length(f.rhs)
 		if f.rhs[i] isa FunctionTerm{typeof(ran)}
 			println("$i has type ran Type")			
@@ -27,7 +30,7 @@ function mme(f, userHints, userData)
 #                	arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
                         arg2 = userData 
 			println("arg1: $arg1 arg2: $arg2")	
-                	println(ran(arg1, arg2))
+#                	println(ran(arg1, arg2))
 		
                 	push!(RE,ran(arg1, arg2))
                 	push!(namesRE, terms4StatsModels[i])
