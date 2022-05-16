@@ -21,6 +21,7 @@ function mme(f, userHints, userData)
 	namesRE = []
 
 	for i in 1:length(f.rhs)
+                                println("TYPE $(typeof(f.rhs[i]))")
 		if f.rhs[i] isa FunctionTerm{typeof(ran)}
 			arg1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
 			arg2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
