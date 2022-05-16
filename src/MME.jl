@@ -2,6 +2,7 @@ module MME
 
 #include("addTerms.jl")
 
+using StatsModels,CategoricalArrays,MixedModels
 
 export mme
 
