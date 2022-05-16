@@ -8,6 +8,9 @@ export mme
 
 function mme(f, userHints, userData)
 
+println(data)
+println(userData)
+
 	terms4StatsModels = String.(split(repr(f.rhs), ('+')))
 	terms4StatsModels = replace.(terms4StatsModels, ":" => "")
 	terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
@@ -20,23 +23,13 @@ function mme(f, userHints, userData)
 	RE = Array{Array{Float64,2},1}(undef,0)
 	namesRE = []
 
-
-
-                        arg1 = repr((f.rhs[5].args_parsed)[1]) #now it is Symbol
-                        arg2 = repr((f.rhs[5].args_parsed)[2]) #now it is from string
-                        arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
-                        println("arg1: $arg1 arg2: $arg2")
-
-
-
 	for i in 1:length(f.rhs)
-                                println("TYPE $(typeof(f.rhs[i]))")
 		if f.rhs[i] isa FunctionTerm{typeof(ran)}
+			println("$i has type ran Type")			
 			arg1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
 			arg2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
                 	arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
 			println("arg1: $arg1 arg2: $arg2")	
-			println("$i has type ran Type")
                 	println(ran(arg1, arg2))
 		
                 	push!(RE,ran(arg1, arg2))
