@@ -22,7 +22,7 @@ function mme(f, userHints, userData)
 	terms4StatsModels = replace.(terms4StatsModels, ":" => "")
 	terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
 
-#	yVec = StatsModels.modelmatrix(f.lhs, userData)
+	yVec = StatsModels.modelmatrix(f.lhs, userData)
 
 	FE = Array{Array{Float64,2},1}(undef,0)
 	namesFE = []

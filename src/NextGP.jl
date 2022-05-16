@@ -2,7 +2,10 @@ module NextGP
 
 #export runGibbs
 
-using DataFrames,CategoricalArrays,StatsModels,MixedModels
+import DataFrames
+import CategoricalArrays
+import StatsModels
+import MixedModels
 
 include("MME.jl")
 
