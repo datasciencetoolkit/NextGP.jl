@@ -1,5 +1,7 @@
 module NextGP
 
+export MME
+
 using DataFrames,CategoricalArrays,StatsModels,MixedModels
 include("MME.jl")
 
