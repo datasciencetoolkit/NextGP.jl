@@ -12,4 +12,4 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 end
 
 #
-ran(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
+ran(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)],arg2[!,Symbol(arg1)])
