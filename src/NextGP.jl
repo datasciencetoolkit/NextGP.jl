@@ -8,6 +8,7 @@ import StatsModels
 import MixedModels
 
 include("MME.jl")
+include("addTerms.jl")
 
 runGibbs = function(formula, userHints, userData)
 	return MME.mme(formula, userHints, userData)
