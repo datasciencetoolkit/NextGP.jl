@@ -3,10 +3,10 @@ module NextGP
 #exporting ran from MME
 export ran,runGibbs
 
-import DataFrames
-import CategoricalArrays
-import StatsModels
-import MixedModels
+using DataFrames
+using CategoricalArrays
+using StatsModels
+using MixedModels
 
 include("MME.jl")
 include("addTerms.jl")
