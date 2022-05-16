@@ -1,5 +1,7 @@
 module MME
 
+using StatsModels
+
 export mme,ran
 
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
