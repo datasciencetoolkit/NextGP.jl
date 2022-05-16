@@ -1,8 +1,9 @@
 module NextGP
 
-export MME
+#export runGibbs
 
 using DataFrames,CategoricalArrays,StatsModels,MixedModels
+
 include("MME.jl")
 
 runGibbs = function(formula, userHints, userData)
