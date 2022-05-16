@@ -2,7 +2,6 @@ module NextGP
 
 #export runGibbs
 export MME
-export MME.mme
 
 import DataFrames
 import CategoricalArrays
