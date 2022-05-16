@@ -7,10 +7,6 @@ using StatsModels,CategoricalArrays,MixedModels
 export mme
 
 function mme(f, userHints, userData)
-
-println(data)
-println(userData)
-
 	terms4StatsModels = String.(split(repr(f.rhs), ('+')))
 	terms4StatsModels = replace.(terms4StatsModels, ":" => "")
 	terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
@@ -27,8 +23,9 @@ println(userData)
 		if f.rhs[i] isa FunctionTerm{typeof(ran)}
 			println("$i has type ran Type")			
 			arg1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
-			arg2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
-                	arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
+#			arg2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
+#                	arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
+                        arg2 = userData 
 			println("arg1: $arg1 arg2: $arg2")	
                 	println(ran(arg1, arg2))
 		
