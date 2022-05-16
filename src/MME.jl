@@ -2,6 +2,8 @@ module MME
 
 #include("addTerms.jl")
 
+using CategoricalArrays
+
 export mme
 
 function mme(f, userHints, userData)
