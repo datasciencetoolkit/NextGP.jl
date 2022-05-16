@@ -1,5 +1,7 @@
 module MME
 
+export mme,ran
+
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
            isa(x1|x2, CategoricalArray) ||
                        throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(x)))"))
