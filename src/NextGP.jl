@@ -3,7 +3,7 @@ module NextGP
 using DataFrames,CategoricalArrays,StatsModels,MixedModels
 include("MME.jl")
 
-runGibbs = function(formula::FormulaTerm, userHints::Dict, userData::DataFrame)
+runGibbs = function(formula, userHints, userData)
 	return MME.mme(formula, userHints, userData)
 end
 
