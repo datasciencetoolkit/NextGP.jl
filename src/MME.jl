@@ -6,6 +6,8 @@ using StatsModels,CategoricalArrays,MixedModels
 
 export mme
 
+ran(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
+
 function mme(f, userHints, userData)
 	terms4StatsModels = String.(split(repr(f.rhs), ('+')))
 	terms4StatsModels = replace.(terms4StatsModels, ":" => "")
