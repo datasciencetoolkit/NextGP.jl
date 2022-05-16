@@ -1,6 +1,6 @@
 module MME
 
-include("addTerms.jl")
+#include("addTerms.jl")
 
 export mme
 
