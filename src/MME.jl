@@ -3,8 +3,6 @@ module MME
 
 using DataFrames,StatsModels,CategoricalArrays,MixedModels
 
-include("runTime.jl")
-
 export mme
 
 ranMat(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
