@@ -3,6 +3,8 @@ module MME
 using StatsModels, MixedModels
 
 include("runTime.jl")
+include("addTerms.jl")
+
 
 ranMat(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
 
