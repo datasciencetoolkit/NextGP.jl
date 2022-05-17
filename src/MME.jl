@@ -1,6 +1,6 @@
 module MME
 
-using StatsModels
+using StatsModels, MixedModels
 
 include("runTime.jl")
 
