@@ -23,11 +23,12 @@ println("data: $userData")
 println("TYPE: $(f.rhs[5] isa FunctionTerm{typeof(ran)})")
 println("$(typeof(f.rhs[5]))")
 println("$(FunctionTerm{typeof(ran)})")
-
+println("f.rhs[i].forig")
+println((f.rhs[i] isa FunctionTerm) && (f.rhs[i].forig == ran))
 
 	for i in 1:length(f.rhs)
 #		if f.rhs[i] isa FunctionTerm{typeof(ran)}
-		if (f.rhs[i] isa FunctionTerm) && (f.rhs[i].forig == ran)
+		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
 			println("$i has type ran Type")			
 			arg1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
 			arg2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
@@ -39,7 +40,7 @@ println("$(FunctionTerm{typeof(ran)})")
                 	push!(RE,ran(arg1, arg2))
                 	push!(namesRE, terms4StatsModels[i])
 #		elseif f.rhs[i] isa FunctionTerm{typeof(|)} #to avoid schema issues/errors
-		elseif (f.rhs[i] isa FunctionTerm) && (f.rhs[i].forig == |)
+		elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
 			println("$i has type | Type")
 			my_sch = schema(userData, userHints) #work on userData and userHints
 			my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
