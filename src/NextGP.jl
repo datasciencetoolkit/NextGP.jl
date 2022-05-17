@@ -1,7 +1,7 @@
 module NextGP
 
 #exporting ranTime equivalent of functions
-#export ran
+export ran
 export runGibbs
 
 using DataFrames
@@ -11,6 +11,8 @@ using MixedModels
 
 include("MME.jl")
 include("runTime.jl")
+
+using .RUNTIME
 
 export ran
 
