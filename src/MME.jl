@@ -1,9 +1,5 @@
-module MME
 
-
-using DataFrames,StatsModels,CategoricalArrays,MixedModels
-
-export mme
+include("runTime.jl")
 
 ranMat(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
 
@@ -55,4 +51,3 @@ println("$(FunctionTerm{typeof(ran)})")
 	end
 	return FE, RE, namesFE, namesRE
 	end
-end
