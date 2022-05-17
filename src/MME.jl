@@ -23,8 +23,8 @@ println("data: $userData")
 println("TYPE: $(f.rhs[5] isa FunctionTerm{typeof(ran)})")
 println("$(typeof(f.rhs[5]))")
 println("$(FunctionTerm{typeof(ran)})")
-println("f.rhs[i].forig")
-println((f.rhs[i] isa FunctionTerm) && (f.rhs[i].forig == ran))
+println("f.rhs[5].forig")
+println((f.rhs[5] isa FunctionTerm) && (f.rhs[5].forig == ran))
 
 	for i in 1:length(f.rhs)
 #		if f.rhs[i] isa FunctionTerm{typeof(ran)}
