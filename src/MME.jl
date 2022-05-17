@@ -7,7 +7,7 @@ include("addTerms.jl")
 
 export mme
 
-ran(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
+ranMat(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
 
 function mme(f, userHints, userData)
 	terms4StatsModels = String.(split(repr(f.rhs), ('+')))
