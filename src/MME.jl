@@ -24,13 +24,13 @@ println("TYPE: $(f.rhs[5] isa FunctionTerm{typeof(ran)})")
 println("$(typeof(f.rhs[5]))")
 println("$(FunctionTerm{typeof(ran)})")
 	for i in 1:length(f.rhs)
-		if f.rhs[i] isa FunctionTerm{typeof(ran)}
+		if f.rhs[i] isa FunctionTerm{typeof(NextGP.MME.ran)}
 			println("$i has type ran Type")			
 			arg1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
-#			arg2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
-#                	arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
-#                        arg2 = userData 
-#			println("arg1: $arg1 arg2: $arg2")	
+			arg2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
+                	arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
+                        arg2 = userData 
+			println("arg1: $arg1 arg2: $arg2")	
 #                	println(ran(arg1, arg2))
 		
 #                	push!(RE,ran(arg1, arg2))
