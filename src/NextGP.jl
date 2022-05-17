@@ -1,6 +1,6 @@
 module NextGP
 
-#exporting ran from MME
+#exporting ranTime equivalent of functions
 export ran
 export runGibbs
 
@@ -11,7 +11,7 @@ using MixedModels
 
 include("MME.jl")
 #include("addTerms.jl")
-#include("runTime.jl")
+include("runTime.jl")
 
 runGibbs = function(formula, userHints, userData)
 	return MME.mme(formula, userHints, userData)
