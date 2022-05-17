@@ -1,6 +1,7 @@
 module NextGP
 
 #exporting ran from MME
+export ran
 export runGibbs
 
 using DataFrames
