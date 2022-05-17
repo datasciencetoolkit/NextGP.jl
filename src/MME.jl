@@ -4,7 +4,7 @@ include("addTerms.jl")
 
 using StatsModels,CategoricalArrays,MixedModels
 
-export mme
+export mme,ran
 
 function mme(f, userHints, userData)
 	terms4StatsModels = String.(split(repr(f.rhs), ('+')))
