@@ -14,6 +14,3 @@ function make_ran_matrix(x::AbstractVector)
 
 
 
-#ran(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
-
-#ran = make_ran_matrix(ranMat.data[!,Symbol(ranMat.term)])
