@@ -27,7 +27,7 @@ println("$(FunctionTerm{typeof(ran)})")
 			println("$i has type ran Type")			
 			arg1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
 			arg2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
-                	arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
+#                	arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
                         arg2 = userData 
 			println("arg1: $arg1 arg2: $arg2")	
 #                	println(ran(arg1, arg2))
