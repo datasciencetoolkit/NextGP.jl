@@ -1,7 +1,4 @@
-module RUNTIME
 
-using StatsModels: AbstractTerm
-using DataFrames
 
 struct RandTerm <: AbstractTerm
     term::Symbol
@@ -10,4 +7,3 @@ end
 
 ran(s::Symbol, d::DataFrame) = RandTerm(term(s), d)
 
-end
