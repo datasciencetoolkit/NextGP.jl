@@ -1,7 +1,5 @@
 module RUNTIME
 
-export ran
-
 using StatsModels: AbstractTerm
 using DataFrames
 
