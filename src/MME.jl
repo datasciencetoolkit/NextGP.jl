@@ -1,3 +1,4 @@
+module MME
 
 include("runTime.jl")
 
@@ -23,7 +24,8 @@ println("$(FunctionTerm{typeof(ran)})")
 
 
 	for i in 1:length(f.rhs)
-		if f.rhs[i] isa FunctionTerm{typeof(ran)}
+#		if f.rhs[i] isa FunctionTerm{typeof(ran)}
+		if (f.rhs[i] isa FunctionTerm) && (f.rhs[i].forig == ran)
 			println("$i has type ran Type")			
 			arg1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
 			arg2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
@@ -32,9 +34,10 @@ println("$(FunctionTerm{typeof(ran)})")
 			println("arg1: $arg1 arg2: $arg2")	
 #                	println(ran(arg1, arg2))
 		
-#                	push!(RE,ran(arg1, arg2))
-#                	push!(namesRE, terms4StatsModels[i])
-		elseif f.rhs[i] isa FunctionTerm{typeof(|)} #to avoid schema issues/errors
+                	push!(RE,ran(arg1, arg2))
+                	push!(namesRE, terms4StatsModels[i])
+#		elseif f.rhs[i] isa FunctionTerm{typeof(|)} #to avoid schema issues/errors
+		elseif (f.rhs[i] isa FunctionTerm) && (f.rhs[i].forig == |)
 			println("$i has type | Type")
 			my_sch = schema(userData, userHints) #work on userData and userHints
 			my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
@@ -51,3 +54,5 @@ println("$(FunctionTerm{typeof(ran)})")
 	end
 	return FE, RE, namesFE, namesRE
 	end
+
+end

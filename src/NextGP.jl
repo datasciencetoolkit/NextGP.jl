@@ -10,9 +10,10 @@ using StatsModels
 using MixedModels
 
 include("MME.jl")
+include("runTime.jl")
 
 runGibbs = function(formula, userHints, userData)
-	return mme(formula, userHints, userData)
+	return MME.mme(formula, userHints, userData)
 end
 
 end
