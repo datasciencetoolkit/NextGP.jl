@@ -12,5 +12,15 @@ function make_ran_matrix(x::AbstractVector)
        end
 
 
+
+
 ran(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
 
+#struct RandTerm <: AbstractTerm
+#    term
+#    data::DataFrame
+#end
+
+#ranMat = RandTerm(arg1,arg2)
+
+#ran = make_ran_matrix(ranMat.data[!,Symbol(ranMat.term)])
