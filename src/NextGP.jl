@@ -1,7 +1,7 @@
 module NextGP
 
 #exporting ranTime equivalent of functions
-export ran
+export RUNTIME.ran
 export runGibbs
 
 using DataFrames
