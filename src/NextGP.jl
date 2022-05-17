@@ -1,7 +1,7 @@
 module NextGP
 
 #exporting run-time equivalent of functions
-#export ran
+export ran
 export runGibbs
 
 using DataFrames
@@ -10,13 +10,9 @@ using StatsModels
 using MixedModels
 
 include("MME.jl")
-include("runTime.jl")
-
-global ran
-export ran
 
 runGibbs = function(formula, userHints, userData)
-	return MME.mme(formula, userHints, userData)
+	return mme(formula, userHints, userData)
 end
 
 end
