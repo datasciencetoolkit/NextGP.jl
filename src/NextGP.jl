@@ -12,9 +12,9 @@ using MixedModels
 include("MME.jl")
 include("runTime.jl")
 
-using .RUNTIME
+import .RUNTIME: ran
 
-export RUNTIME.run
+export ran
 
 runGibbs = function(formula, userHints, userData)
 	return MME.mme(formula, userHints, userData)
