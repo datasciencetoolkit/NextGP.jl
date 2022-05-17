@@ -23,7 +23,7 @@ function mme(f, userHints, userData)
 println("data: $userData")
 #println("TYPE: $(f.rhs[5] isa FunctionTerm{typeof(NextGP.MME.ran)})")
 println("$(typeof(f.rhs[5]))")
-println("$(FunctionTerm{typeof(RUNTIME.ran)})")
+println("$(FunctionTerm{typeof(ran)})")
 
 
 	for i in 1:length(f.rhs)
