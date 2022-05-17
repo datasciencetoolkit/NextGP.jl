@@ -9,7 +9,7 @@ using StatsModels
 using MixedModels
 
 include("MME.jl")
-include("addTerms.jl")
+#include("addTerms.jl")
 
 runGibbs = function(formula, userHints, userData)
 	return MME.mme(formula, userHints, userData)
