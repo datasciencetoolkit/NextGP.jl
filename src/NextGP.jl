@@ -10,9 +10,9 @@ using StatsModels
 using MixedModels
 
 include("MME.jl")
-include("runTime.jl")
+#include("runTime.jl")
 
-using .RUNTIME
+using .MME
 
 export ran
 
