@@ -14,13 +14,13 @@ function make_ran_matrix(x::AbstractVector)
 
 
 
-ran(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
+#ran(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
 
-#struct RandTerm <: AbstractTerm
-#    term
-#    data::DataFrame
+struct RandTerm <: AbstractTerm
+    term::Symbol
+    data::DataFrame
 #end
 
-#ranMat = RandTerm(arg1,arg2)
+ran(s::Symbol, i::DataFrame) = RandTerm(term(s), i)
 
 #ran = make_ran_matrix(ranMat.data[!,Symbol(ranMat.term)])
