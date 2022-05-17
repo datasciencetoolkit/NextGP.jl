@@ -3,7 +3,7 @@ module MME
 
 using DataFrames,StatsModels,CategoricalArrays,MixedModels
 
-include("addTerms.jl")
+include("runTime.jl")
 
 export mme
 
