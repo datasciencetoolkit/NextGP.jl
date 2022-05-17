@@ -23,6 +23,9 @@ println("data: $userData")
 println("TYPE: $(f.rhs[5] isa FunctionTerm{typeof(ran)})")
 println("$(typeof(f.rhs[5]))")
 println("$(FunctionTerm{typeof(ran)})")
+
+FunctionTerm{typeof(NextGP.MME.ran)} = FunctionTerm{typeof(ran)}
+
 	for i in 1:length(f.rhs)
 		if f.rhs[i] isa FunctionTerm{typeof(ran)}
 			println("$i has type ran Type")			
