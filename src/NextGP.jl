@@ -12,8 +12,6 @@ using MixedModels
 include("MME.jl")
 #include("runTime.jl")
 
-using .RUNTIME
-
 export ran
 
 runGibbs = function(formula, userHints, userData)
