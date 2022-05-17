@@ -1,7 +1,5 @@
 module MME
 
-using DataFrames StatsModels MixedModdels CategoricalArrays
-
 include("runTime.jl")
 
 ranMat(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
