@@ -1,7 +1,7 @@
 module MME
 
 
-using StatsModels,CategoricalArrays,MixedModels
+using DataFrames,StatsModels,CategoricalArrays,MixedModels
 
 include("addTerms.jl")
 
