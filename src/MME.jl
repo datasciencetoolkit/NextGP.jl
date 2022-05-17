@@ -1,8 +1,9 @@
 module MME
 
-include("addTerms.jl")
 
 using StatsModels,CategoricalArrays,MixedModels
+
+include("addTerms.jl")
 
 export mme
 
