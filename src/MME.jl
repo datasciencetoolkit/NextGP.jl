@@ -1,5 +1,7 @@
 module MME
 
+using StatsModels
+
 include("runTime.jl")
 
 ranMat(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
