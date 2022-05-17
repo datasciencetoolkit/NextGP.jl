@@ -1,4 +1,5 @@
-
+using StatsModels: AbstractTerm
+using DataFrames
 
 struct RandTerm <: AbstractTerm
     term::Symbol
