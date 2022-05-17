@@ -19,13 +19,6 @@ function mme(f, userHints, userData)
 	RE = Array{Array{Float64,2},1}(undef,0)
 	namesRE = []
 
-println("data: $userData")
-println("TYPE: $(f.rhs[5] isa FunctionTerm{typeof(ran)})")
-println("$(typeof(f.rhs[5]))")
-println("$(FunctionTerm{typeof(ran)})")
-println("f.rhs[5].forig")
-println((f.rhs[5] isa FunctionTerm) && (f.rhs[5].forig == ran))
-
 	for i in 1:length(f.rhs)
 #		if f.rhs[i] isa FunctionTerm{typeof(ran)}
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
@@ -37,7 +30,7 @@ println((f.rhs[5] isa FunctionTerm) && (f.rhs[5].forig == ran))
 			println("arg1: $arg1 arg2: $arg2")	
 #                	println(ran(arg1, arg2))
 		
-                	push!(RE,ran(arg1, arg2))
+                	push!(RE,ranMat(arg1, arg2))
                 	push!(namesRE, terms4StatsModels[i])
 #		elseif f.rhs[i] isa FunctionTerm{typeof(|)} #to avoid schema issues/errors
 		elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
