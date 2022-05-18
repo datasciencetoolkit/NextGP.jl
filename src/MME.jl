@@ -2,7 +2,7 @@ module MME
 
 using StatsModels, MixedModels
 
-include("addTerms")
+include("addTerms.jl")
 
 function mme(f, userHints, userData, userPedData)
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))
