@@ -15,6 +15,7 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
            else
                 u2 = unique(x1)
                 u1 = unique(x2)
+           end
 	  # u = unique(x2);
           # filter!(x->x≠0,u)
           # Z = Matrix{Bool}(undef, length(x1), length(u))
