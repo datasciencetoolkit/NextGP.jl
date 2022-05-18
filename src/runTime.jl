@@ -1,10 +1,9 @@
 using StatsModels: AbstractTerm
-using DataFrames
 
 struct RandTerm <: AbstractTerm
     var::Char
-    data::DataFrame
+    data::Char
 end
 
-ran(s::Char, d::DataFrame) = RandTerm(s, d)
+ran(s::Char, d::Char) = RandTerm(s, d)
 
