@@ -8,7 +8,7 @@ include("addTerms.jl")
 
 ranMat(arg1,arg2) = make_ran_matrix(arg2[!,Symbol(arg1)])
 
-function mme(f, userHints, userData)
+function mme(f, userHints, userData, userPedData)
 	terms4StatsModels = String.(split(repr(f.rhs), ('+')))
 	terms4StatsModels = replace.(terms4StatsModels, ":" => "")
 	terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
@@ -22,7 +22,6 @@ function mme(f, userHints, userData)
 	namesRE = []
 
 	for i in 1:length(f.rhs)
-#		if f.rhs[i] isa FunctionTerm{typeof(ran)}
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
 			println("$i has type ran Type")			
 			arg1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
@@ -30,11 +29,9 @@ function mme(f, userHints, userData)
 #                	arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
                         arg2 = userData 
 			println("arg1: $arg1 arg2: $arg2")	
-#                	println(ran(arg1, arg2))
 		
                 	push!(RE,ranMat(arg1, arg2))
                 	push!(namesRE, terms4StatsModels[i])
-#		elseif f.rhs[i] isa FunctionTerm{typeof(|)} #to avoid schema issues/errors
 		elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
 			println("$i has type | Type")
 			my_sch = schema(userData, userHints) #work on userData and userHints
