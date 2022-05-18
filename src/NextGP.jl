@@ -12,8 +12,8 @@ using MixedModels
 include("MME.jl")
 include("runTime.jl")
 
-runGibbs = function(formula, userHints, userData)
-	return MME.mme(formula, userHints, userData)
+runGibbs = function(formula, userHints, userData, userPedData)
+	return MME.mme(formula, userHints, userData, userPedData)
 end
 
 end

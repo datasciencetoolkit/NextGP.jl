@@ -2,15 +2,15 @@
 
 using CategoricalArrays
 
-function make_ran_matrix(x::AbstractVector)
-           isa(x, CategoricalArray) ||
+function make_ran_matrix(x1::AbstractVector)
+           isa(x1, CategoricalArray) ||
                        throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(x)))"))
-           u = unique(x)
-           m = Matrix{Bool}(undef, length(x), length(u))
+           u = unique(x1)
+           Z = Matrix{Bool}(undef, length(x1), length(u))
            for i in eachindex(u)
-               @. m[:, i] = x .== u[i]
+               @. Z[:, i] = x1 .== u[i]
            end
-           return m
+           return Z
        end
 
 
