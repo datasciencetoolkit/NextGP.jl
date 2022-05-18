@@ -1,6 +1,7 @@
-#make design matrix for ran()
+#make design matrices
 
 using CategoricalArrays
+
 
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
            isa(x1, CategoricalArray) ||
@@ -12,6 +13,8 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
            end
            return Z
        end
+
+
 
 
 

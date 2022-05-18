@@ -2,7 +2,6 @@ module MME
 
 using StatsModels, MixedModels
 
-include("runTime.jl")
 include("addTerms.jl")
 
 
@@ -27,7 +26,6 @@ function mme(f, userHints, userData, userPedData)
 			sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
 			sym2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
 #                	arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
-#                        sym2 = userData 
 			println("sym1: $sym1 sym2: $sym2")	
 		
                 	push!(RE,ranMat(sym1, sym2, userData, userPedData))
@@ -49,5 +47,4 @@ function mme(f, userHints, userData, userPedData)
 	end
 	return FE, RE, namesFE, namesRE
 	end
-
 end
