@@ -1,5 +1,7 @@
 #make design matrix for ran()
 
+using CategoricalArrays
+
 function make_ran_matrix(x::AbstractVector)
            isa(x, CategoricalArray) ||
                        throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(x)))"))
