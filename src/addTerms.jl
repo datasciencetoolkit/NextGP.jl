@@ -25,7 +25,7 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
           # end
           
 	  for i in eachindex(u2)
-               @. Z[:, i] = x1 .== u2[i]
+               @. Z[:, i] = u1 .== u2[i]
           end
 
 
