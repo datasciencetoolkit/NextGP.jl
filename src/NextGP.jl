@@ -10,7 +10,7 @@ using MixedModels
 
 include("MME.jl")
 include("runTime.jl")
-#include("MCMC.jl")
+include("MCMC.jl")
 
 using .MCMC
 export runGibbs
