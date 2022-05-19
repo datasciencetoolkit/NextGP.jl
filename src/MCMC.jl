@@ -15,8 +15,8 @@ include("samplers.jl")
 
 runGibbs = function(formula, userHints, userData, userPedData)
 	yVec,FE,RE,namesFE,namesRE = MME.mme(formula, userHints, userData, userPedData)
-        varE =350  ##### FIXED for now
-        return  samplers.runSampler(Y,X,Z,varE)
+        varResidual = 350  ##### FIXED for now
+        return  samplers.runSampler(yVec,FE,RE,varResdiual)
 end
 
 end
