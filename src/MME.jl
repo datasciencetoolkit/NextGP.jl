@@ -73,7 +73,7 @@ function mme(f, userHints, userData, userPedData, blocks)
 		push!(mergedOnes, blockThese)
 	end
 
-	deleteat!(outFE, sort(delThese))
+	deleteat!(FE, sort(delThese))
         
         return yVec, FE, RE, namesFE, namesRE
         end
