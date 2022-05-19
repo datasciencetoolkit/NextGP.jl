@@ -1,6 +1,7 @@
 module samplers
 
 using Distributions, LinearAlgebra
+using StatsBase
 
 export runSampler
 
@@ -9,6 +10,7 @@ runSampler = function(Y,X,Z,varE,nChain) ##varE will be fixed for now
         nFix = length(X)
 
         #initial computations and settings
+        ycorr = Y.-mean(Y)
         #make iXpX
         iXpX = similar(X)
         for x in 1:nFix
@@ -31,7 +33,7 @@ runSampler = function(Y,X,Z,varE,nChain) ##varE will be fixed for now
         	sampleX!(X,b,iXpX,nFix,nColEachX,Y,varE)
 
         	#print
-        	println("sampled b: $b")
+        	println("sampled b: $(vcat(b...))")
 	end
 end
 
@@ -42,8 +44,9 @@ sampleX! = function(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 	for x in 1:nFix
 		ycorr    .+= X[x]*b[x]
         	rhs      = X[x]'*ycorr
-        	iLhs   = iXpX[x]
-        	meanMu   = iLhs*rhs
+        #	iLhs     = iXpX[x]
+        #	meanMu   = iLhs*rhs
+                meanMu   = iXpX[x]*rhs
 		if nColEachX[x] == 1
         		b[x] .= rand(Normal(meanMu[],(iLhs*varE)[]))
 		else b[x] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iLhs*varE))))
