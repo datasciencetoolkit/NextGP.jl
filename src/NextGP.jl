@@ -3,6 +3,9 @@ module NextGP
 #exporting run-time equivalent of functions
 export ran
 
+#
+export makeA
+
 using DataFrames
 using CategoricalArrays
 using StatsModels
