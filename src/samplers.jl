@@ -5,7 +5,7 @@ using Distributions, LinearAlgebra
 export runSampler
 
 #main sampler
-runSampler = function(Y,X,Z,varE) ##varE will be fixed for now
+runSampler = function(Y,X,Z,varE,nChain) ##varE will be fixed for now
         nFix = length(X)
 
         #initial computations and settings
@@ -25,12 +25,14 @@ runSampler = function(Y,X,Z,varE) ##varE will be fixed for now
                 nColEachX = push!(nColEachX,nCol)
         end
 
-        #sample fixed effects
-        #always returns corrected Y and new b
-        sampleX!(X,b,iXpX,nFix,nColEachX,Y,varE)
+        for i in 1:nChain
+		#sample fixed effects
+        	#always returns corrected Y and new b
+        	sampleX!(X,b,iXpX,nFix,nColEachX,Y,varE)
 
-        #print
-        println("sampled b: $b")
+        	#print
+        	println("sampled b: $b")
+	end
 end
 
 
@@ -38,15 +40,10 @@ end
 sampleX! = function(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 	#block for each effect 
 	for x in 1:nFix
-                println("sampling $x")
 		ycorr    .+= X[x]*b[x]
-                println("ycorr $ycorr")
         	rhs      = X[x]'*ycorr
-                println("rhs $rhs")
         	iLhs   = iXpX[x]
-                println("iLhs $iLhs")
         	meanMu   = iLhs*rhs
-                println("meanMu $meanMu")
 		if nColEachX[x] == 1
         		b[x] .= rand(Normal(meanMu[],(iLhs*varE)[]))
 		else b[x] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iLhs*varE))))
