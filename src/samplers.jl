@@ -10,8 +10,8 @@ runSampler = function(Y,X,Z,varE,nChain) ##varE will be fixed for now
         nFix = length(X)
 
         #initial computations and settings
-        ycorr = Y.-mean(Y)
-        #make iXpX
+        
+	#make iXpX
         iXpX = similar(X)
         for x in 1:nFix
                 iXpX[x] = inv(X[x]'X[x])
@@ -44,12 +44,10 @@ sampleX! = function(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 	for x in 1:nFix
 		ycorr    .+= X[x]*b[x]
         	rhs      = X[x]'*ycorr
-        #	iLhs     = iXpX[x]
-        #	meanMu   = iLhs*rhs
                 meanMu   = iXpX[x]*rhs
 		if nColEachX[x] == 1
-        		b[x] .= rand(Normal(meanMu[],(iLhs*varE)[]))
-		else b[x] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iLhs*varE))))
+        		b[x] .= rand(Normal(meanMu[],(iXpX[x]*varE)[]))
+		else b[x] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
 		end
         	ycorr    .-= X[x]*b[x]
 	end
