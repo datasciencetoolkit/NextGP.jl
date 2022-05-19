@@ -14,7 +14,7 @@ runSampler = function(Y,X,Z,varE,nChain) ##varE will be fixed for now
 	#make iXpX
         iXpX = similar(X)
         for x in 1:nFix
-                iXpX[x] = inv(X[x]'X[x] + Matrix(0.001I,sum(size.(X,2)),sum(size.(X,2))))
+                iXpX[x] = inv(X[x]'X[x])
         end
         #make b array
         b = Array{Array{Float64, 1},1}(undef,0)
