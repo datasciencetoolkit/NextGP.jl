@@ -49,7 +49,7 @@ sampleX! = function(X,b,iXpX,nFix,nColEachX,ycorr,varE)
                 println("meanMu $meanMu")
 		if nColEachX[x] == 1
         		b[x] .= rand(Normal(meanMu[],(iLhs*varE)[]))
-		else b[x] .= rand(MvNormal(meanMu,convert(Array,Symmetric(iLhs*varE))))
+		else b[x] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iLhs*varE))))
 		end
         	ycorr    .-= X[x]*b[x]
 	end
