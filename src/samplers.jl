@@ -14,7 +14,7 @@ runSampler = function(Y,X,Z,varE,nChain) ##varE will be fixed for now
 	#make iXpX
         iXpX = similar(X)
         for x in 1:nFix
-                iXpX[x] = inv(X[x]'X[x])
+                iXpX[x] = inv(X[x]'X[x] + Matrix(0.001I,sum(size.(outX,2)),sum(size.(X,2))))
         end
         #make b array
         b = Array{Array{Float64, 1},1}(undef,0)
@@ -46,8 +46,10 @@ sampleX! = function(X,b,iXpX,nFix,nColEachX,ycorr,varE)
         	rhs      = X[x]'*ycorr
                 meanMu   = iXpX[x]*rhs
 		if nColEachX[x] == 1
-        		b[x] .= rand(Normal(meanMu[],(iXpX[x]*varE)[]))
+			println("sampling from uni-variate normal")
+        		b[x] .= rand(Normal(meanMu[],sqrt((iXpX[x]*varE))[]))
 		else b[x] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
+		println("sampling from multi-variate normal")
 		end
         	ycorr    .-= X[x]*b[x]
 	end
