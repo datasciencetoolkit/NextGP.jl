@@ -27,7 +27,7 @@ runSampler = function(Y,X,Z,varE) ##varE will be fixed for now
 
         #sample fixed effects
         #always returns corrected Y and new b
-        sampleX!(X,b,iXpX,nFix,Y,varE)
+        sampleX!(X,b,iXpX,nFix,nColEachX,Y,varE)
 
         #print
         println("sampled b: $b")
@@ -35,7 +35,7 @@ end
 
 
 #Sampling fixed effects
-sampleX! = function(X,b,iXpX,nFix,ycorr,varE)
+sampleX! = function(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 	#block for each effect 
 	for x in 1:nFix
                 println("sampling $x")
