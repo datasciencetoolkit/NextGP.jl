@@ -7,6 +7,7 @@ using CategoricalArrays
 using StatsModels
 using MixedModels
 using Distributions,LinearAlgebra #samplers
+using StatsBase
 
 include("MME.jl")
 include("runTime.jl")
