@@ -1,5 +1,7 @@
 # adapted from http://morotalab.org/Mrode2005/relmat/createA.txt
-function makeA(s::Array, d::Array)
+function makeA(s::Any, d::Any)
+    s = convert(Vector{Int64},s)
+    d = convert(Vector{Int64},d)
     n = length(s)
     N = n + 1
     A = zeros(N, N)

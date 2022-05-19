@@ -58,7 +58,7 @@ function mme(f, userHints, userData, userPedData)
                 push!(namesFE, terms4StatsModels[i])
                 end
         end
-        return FE, RE, namesFE, namesRE
+        return yvec, FE, RE, namesFE, namesRE
         end
 
 end
