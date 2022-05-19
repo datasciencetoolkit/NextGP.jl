@@ -1,7 +1,5 @@
-module NextGP
+module MCMC
 
-#exporting run-time equivalent of functions
-export ran
 export runGibbs
 
 using DataFrames
@@ -11,6 +9,9 @@ using MixedModels
 
 include("MME.jl")
 include("runTime.jl")
-include("MCMC.jl")
+
+runGibbs = function(formula, userHints, userData, userPedData)
+	return MME.mme(formula, userHints, userData, userPedData)
+end
 
 end
