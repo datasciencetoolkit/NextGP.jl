@@ -20,7 +20,7 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Symbol(arg2)])
 
 
-function mme(f, userHints, userData, userPedData)
+function mme(f, userHints, userData, userPedData, blocks)
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
@@ -58,6 +58,23 @@ function mme(f, userHints, userData, userPedData)
                 push!(namesFE, terms4StatsModels[i])
                 end
         end
+
+	mergedOnes = []
+	delThese = []
+	newNamesFE = []
+	for i in blocks
+        	println("blocking: $i")
+		blockThese = findall(x->x in i, namesFE)
+        	println("blocking pos: $blockThese")
+		mergeTo = minimum(blockThese)
+        	println("merged old pos: $mergeTo")
+		FE[mergeTo] = hcat(FE[blockThese]...)
+		delThese = vcat(delThese,blockThese[blockThese .!== minimum(blockThese)])
+		push!(mergedOnes, blockThese)
+	end
+
+	deleteat!(outFE, sort(delThese))
+        
         return yVec, FE, RE, namesFE, namesRE
         end
 
