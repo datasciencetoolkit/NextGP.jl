@@ -13,9 +13,12 @@ include("equations.jl")
 include("runTime.jl")
 include("samplers.jl")
 
-structure   <: AbstractTerm
+struct MME
+	Y::Vector{Float64}
 	X::Matrix
-	
+	Z::Matrix
+        namesX
+	namesZ	
 end	
 
 runGibbs = function(formula, userHints, userData, userPedData, chainLength, blockThese)
