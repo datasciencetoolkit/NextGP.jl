@@ -10,6 +10,7 @@ using DataFrames
 using CategoricalArrays
 using StatsModels
 using MixedModels
+using Printf
 
 include("equations.jl")
 include("runTime.jl")
