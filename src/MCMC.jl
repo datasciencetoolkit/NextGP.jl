@@ -25,7 +25,7 @@ runGibbs = function(formula, userHints, userData, userPedData, chainLength, bloc
 	yVec,FE,RE,namesFE,namesRE = equations.mme(formula, userHints, userData, userPedData, blockThese)
         varResidual = 35  ##### FIXED for now
         samplers.runSampler(yVec,FE,RE,varResidual,chainLength)
-        return(yVec,FE,RE,namesFE)
+        return(yVec,FE,RE,namesFE,namesRE)
 end
 
 end
