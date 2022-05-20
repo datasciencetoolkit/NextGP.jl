@@ -75,7 +75,7 @@ function mme(f, userHints, userData, userPedData, blocks)
 
 	deleteat!(FE, sort(delThese))
         
-        return yVec, FE, RE, namesFE, namesRE
+        return vec(yVec), FE, RE, namesFE, namesRE
         end
 
 end
