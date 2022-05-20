@@ -15,8 +15,8 @@ include("samplers.jl")
 
 struct MME
 	Y::Vector{Float64}
-	X::Matrix
-	Z::Matrix
+	X::Vector{Matrix{Float64}}
+	Z::Vector{Matrix{Float64}}
         namesX
 	namesZ	
 end	
