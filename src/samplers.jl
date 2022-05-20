@@ -4,6 +4,8 @@ using Distributions, LinearAlgebra
 using StatsBase
 using Printf
 
+include("outFiles.jl")
+
 export runSampler
 
 #main sampler
