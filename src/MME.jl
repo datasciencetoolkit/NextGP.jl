@@ -1,4 +1,4 @@
-module MME
+module equations
 
 using StatsModels, MixedModels, CategoricalArrays
 
@@ -59,15 +59,15 @@ function mme(f, userHints, userData, userPedData, blocks)
                 end
         end
 
+	#merging on the earliest, and then delete merged ones from the list
+	#do not consider if there is reordering of variables
+	#blocks must enter in the model in order!
 	mergedOnes = []
 	delThese = []
 	newNamesFE = []
 	for i in blocks
-        	println("blocking: $i")
 		blockThese = findall(x->x in i, namesFE)
-        	println("blocking pos: $blockThese")
 		mergeTo = minimum(blockThese)
-        	println("merged old pos: $mergeTo")
 		FE[mergeTo] = hcat(FE[blockThese]...)
 		delThese = vcat(delThese,blockThese[blockThese .!== minimum(blockThese)])
 		push!(mergedOnes, blockThese)

@@ -11,7 +11,7 @@ using CategoricalArrays
 using StatsModels
 using MixedModels
 
-include("MME.jl")
+include("equations.jl")
 include("runTime.jl")
 include("MCMC.jl")
 
