@@ -6,7 +6,12 @@ using StatsBase
 export runSampler
 
 #main sampler
-runSampler = function(Y,X,Z,varE,nChain) ##varE will be fixed for now
+runSampler = function(Y,X,Z,varE,chainLength,burnIn,outputFreq) ##varE will be fixed for now
+	
+	#output settings
+	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
+
+        #This is not really nFix, but the "blocks" of fixed effects
         nFix = length(X)
 
         #initial computations and settings
@@ -27,13 +32,17 @@ runSampler = function(Y,X,Z,varE,nChain) ##varE will be fixed for now
                 nColEachX = push!(nColEachX,nCol)
         end
 
-        for i in 1:nChain
+        for iter in 1:chainLength
 		#sample fixed effects
         	#always returns corrected Y and new b
         	sampleX!(X,b,iXpX,nFix,nColEachX,Y,varE)
 
         	#print
-        	println("sampled b: $(vcat(b...))")
+		if iter in these2Keep
+			if onScreen==true
+            			@printf("iter %s b %.2f \n", iter, vec(b)) #i always vectorize b. maybe better to make it vector initially
+        		end
+		end
 	end
 end
 
