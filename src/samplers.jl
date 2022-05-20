@@ -40,6 +40,7 @@ runSampler = function(Y,X,Z,varE,chainLength,burnIn,outputFreq) ##varE will be f
 
         	#print
 		if iter in these2Keep
+			IO.outMCMC(pwd(),vcat(b...)) ### currently no path is provided!!!!
 	#		if onScreen==true
             			println("b, $(vcat(b...))") #i always vectorize b. maybe better to make it vector initially
         #		end
