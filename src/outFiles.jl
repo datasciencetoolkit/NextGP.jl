@@ -1,5 +1,7 @@
 module IO
 
+export outMCMC
+
 using DelimitedFiles
 
 outMCMC = function(folder::String,b::Array{Float64})
