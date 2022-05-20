@@ -2,6 +2,7 @@ module samplers
 
 using Distributions, LinearAlgebra
 using StatsBase
+using Printf
 
 export runSampler
 

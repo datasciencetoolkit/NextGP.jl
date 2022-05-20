@@ -8,6 +8,7 @@ using StatsModels
 using MixedModels
 using Distributions,LinearAlgebra #samplers
 using StatsBase
+using Printf
 
 include("equations.jl")
 include("runTime.jl")
