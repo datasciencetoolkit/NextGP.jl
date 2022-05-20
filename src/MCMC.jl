@@ -14,7 +14,7 @@ include("runTime.jl")
 include("samplers.jl")
 
 struct MME
-	Y::Vector{Float64}
+	Y
 	X::Vector{Matrix{Float64}}
 	Z::Vector{Matrix{Float64}}
         namesX
