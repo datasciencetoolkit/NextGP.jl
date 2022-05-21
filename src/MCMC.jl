@@ -18,7 +18,8 @@ include("samplers.jl")
 runGibbs = function(formula,userHints,userData,userPedData,nChain,nBurn,nThin,blockThese,iVCV)
 	yVec,FE,RE,namesFE,namesRE = equations.mme(formula,userHints,userData,userPedData,blockThese)
         varResidual = 350  ##### FIXED for now
-        samplers.runSampler(yVec,FE,RE,varResidual,nChain,nBurn,nThin,iVCV)
+	varRandomEffects = 150 ### 150 for a. FIXED for now
+        samplers.runSampler(yVec,FE,RE,varResidual,varRandomEffects,nChain,nBurn,nThin,iVCV)
         return(yVec,FE,RE,namesFE,namesRE)
 end
 
