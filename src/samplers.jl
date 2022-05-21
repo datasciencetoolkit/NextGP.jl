@@ -101,12 +101,12 @@ end
 function sampleZ!(iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
 	#block for each effect
 	for z in 1:nRand
-		λ = varE/varU	
-	        ycorr .+= ZpMat[z]*uVec[z]		
-	        Yi = ZpMat[z]*ycorr #computation of Z'ycorr for rhsU
-		nCol = size(ZpZMat[z],2)
 		uVec = deepcopy(u[z])
 		tempZpZ = ZpZMat[z] ###added
+		λ = varE/varU	
+	        ycorr .+= ZpMat[z]*uVec		
+	        Yi = ZpMat[z]*ycorr #computation of Z'ycorr for ALL  rhsU
+		nCol = size(ZpZMat[z],2)
 	        for i in 1:nCol
         	        uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
               		rhsU = Yi[i] - λ*dot(view(iMat,:,i),uVec)
