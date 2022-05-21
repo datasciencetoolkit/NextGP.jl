@@ -104,16 +104,15 @@ function sampleZ!(iMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
 	for z in 1:nRand
 		uVec = deepcopy(u[z])
 		tempzpz = zpzMat[z] ###added
-		λ = varE/varU	
+		λ = varE/(varU[z])	
 	        ycorr .+= Zmat[z]*uVec		
 	        Yi = ZpMat[z]*ycorr #computation of Z'ycorr for ALL  rhsU
 		nCol = length(zpzMat[z])
 	        for i in 1:nCol
         	        uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
               		rhsU = Yi[i] - λ*dot(view(iMat,:,i),uVec)
-			println("typeof zpzi: $(typeof(tempzpz[i])) $(tempzpz[i])")
-			println("typeof view: $(typeof(view(iMat,i,i)*λ))i $(view(iMat,i,i)*λ)")
-                	lhsU = tempzpz[i] + view(iMat,i,i)*λ
+			println("zpzi: $(tempzpz[i])")
+                	lhsU = tempzpz[i] + view(iMat,i,i)*λ[z]
 			invLhsU = 1.0/lhsU
                 	meanU = invLhsU*rhsU
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
