@@ -4,7 +4,6 @@ export outMCMC
 
 using DelimitedFiles
 
-
 macro name(arg)
     x = string(arg)
     quote
@@ -14,7 +13,7 @@ end
 
 function outMCMC(folder::String,thisVar,output)
 	varName = @name thisVar
-        out0 = open(pwd()*"/$(thisVar)Out", "a")
+        out0 = open(pwd()*"/$(varName)Out", "a")
         writedlm(out0, output)
         close(out0)
 end
