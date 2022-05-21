@@ -111,8 +111,8 @@ function sampleZ!(iMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
 	        for i in 1:nCol
         	        uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
               		rhsU = Yi[i] - λ*dot(view(iMat,:,i),uVec)
-			println("typeof zpzi: $(typeof(tempzpz[i]))")
-			println("typeof view: $(typeof(view(iMat,i,i)*λ))")
+			println("typeof zpzi: $(typeof(tempzpz[i])) $(tempzpz[i])")
+			println("typeof view: $(typeof(view(iMat,i,i)*λ))i $(view(iMat,i,i)*λ)")
                 	lhsU = tempzpz[i] + view(iMat,i,i)*λ
 			invLhsU = 1.0/lhsU
                 	meanU = invLhsU*rhsU
