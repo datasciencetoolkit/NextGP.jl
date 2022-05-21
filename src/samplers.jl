@@ -69,7 +69,7 @@ function runSampler(rowID,Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##va
 	
 		#sample random effects
 		# always returns corrected Y and new u
-		sampleZ!(Ai,Z,Zp,ZpZ,nRand,varE,varU,u,ycorr)
+		sampleZ!(Ai,Z,Zp,zpz,nRand,varE,varU,u,ycorr)
         	#print
 		if iter in these2Keep
 			IO.outMCMC(pwd(),vcat(b...)') ### currently no path is provided!!!!
