@@ -15,6 +15,7 @@ using Printf
 include("equations.jl")
 include("runTime.jl")
 include("MCMC.jl")
+include("misc.jl")
 
 using .MCMC
 export runGibbs
