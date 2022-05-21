@@ -4,7 +4,7 @@ export outMCMC
 
 using DelimitedFiles
 
-outMCMC = function(folder::String,b)
+function outMCMC(folder::String,b)
         out0 = open(pwd()*"/bOut", "a")
         writedlm(out0, b)
         close(out0)
