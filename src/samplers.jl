@@ -14,18 +14,21 @@ function runSampler(Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##varE wil
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
 
-        #This is not really nFix, but the "blocks" of fixed effects
+        #some info
+	##This is not really nFix, but the "blocks" of fixed effects
 	nData = length(Y)
         nFix  = length(X)
 	nRand = length(Z)
 	
         #initial computations and settings
-        
+	ycorr = deepcopy(Y)
+	        
 	#make iXpX, Z', ZpZ
         iXpX = similar(X)
         for x in 1:nFix
                 iXpX[x] = inv(X[x]'X[x])
         end
+
 	Zp  = similar(Z')
 	ZpZ = similar(Z)
 	for z in 1:nRand
@@ -61,8 +64,11 @@ function runSampler(Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##varE wil
         for iter in 1:chainLength
 		#sample fixed effects
         	#always returns corrected Y and new b
-        	sampleX!(X,b,iXpX,nFix,nColEachX,Y,varE)
-		sampleZ!(Ai,Zp,ZpZ,varE,varU,u,Y)
+        	sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
+	
+		#sample random effects
+		# always returns corrected Y and new u
+		sampleZ!(Ai,Zp,ZpZ,nRand,varE,varU,u,ycorr)
         	#print
 		if iter in these2Keep
 			IO.outMCMC(pwd(),vcat(b...)') ### currently no path is provided!!!!
@@ -75,11 +81,11 @@ end
 
 
 #Sampling fixed effects
-function sampleX!(X,b,iXpX,nFix,nColEachX,Y,varE)
+function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 	#block for each effect 
 	for x in 1:nFix
-		Y    .+= X[x]*b[x]
-        	rhs      = X[x]'*Y
+		ycorr    .+= X[x]*b[x]
+        	rhs      = X[x]'*ycorr
                 meanMu   = iXpX[x]*rhs
 		if nColEachX[x] == 1
 			println("sampling from uni-variate normal")
@@ -87,28 +93,30 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,Y,varE)
 		else b[x] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
 		println("sampling from multi-variate normal")
 		end
-        	Y    .-= X[x]*b[x]
+        	ycorr    .-= X[x]*b[x]
 	end
 end
 
 #Sampling random effects
-function sampleZ!(iMat,ZpMat,ZpZMat,varE,varU,u,Y)
+function sampleZ!(iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
 	#block for each effect
 	for z in 1:nRand
 		λ = varE/varU	
-	        Y .+= ZMat[z]*uVec[z]
-	        Yi = ZpMat[z]*Y[i] #computation of Z'ycorr for rhsU
+	        ycorr .+= ZMat[z]*uVec[z]		
+	        Yi = ZpMat[z]*ycorr #computation of Z'ycorr for rhsU
 		nCol = size(ZpZMat[z],2)
 		uVec = deepcopy(u[z])
+		tempZpZ = ZpZMat[z] ###added
 	        for i in 1:nCol
         	        uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
               		rhsU = Yi[i] - λ*dot(view(iMat,:,i),uVec)
-                	lhsU = ZpZMat[i] + view(iMat,i,i)*λ
+                	lhsU = tempZpZ[i] + view(iMat,i,i)*λ
+			invLhsU = 1.0/lhsU
                 	meanU = invLhsU*rhsU
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         	end
 		u[z] = uVec
-        	Y .-= ZMat*uVec
+        	ycorr .-= ZMat[z]*uVec
 	end
 end
 
