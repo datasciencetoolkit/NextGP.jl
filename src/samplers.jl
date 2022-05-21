@@ -105,7 +105,7 @@ function sampleZ!(rowID,iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
 		uVec = deepcopy(u[z])
 		tempZpZ = ZpZMat[z] ###added
 		λ = varE/varU	
-	        ycorr .+= ZpMat[z]*uVec[IDs]		
+	        ycorr .+= ZpMat[z]*uVec[rowID[z]]		
 	        Yi = ZpMat[z]*ycorr #computation of Z'ycorr for ALL  rhsU
 		nCol = size(ZpZMat[z],2)
 	        for i in 1:nCol
@@ -117,7 +117,7 @@ function sampleZ!(rowID,iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         	end
 		u[z] = uVec
-        	ycorr .-= ZpMat[z]*uVec[IDs]
+        	ycorr .-= ZpMat[z]*uVec[rowID[z]]
 	end
 end
 
