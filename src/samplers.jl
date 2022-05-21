@@ -62,7 +62,7 @@ function runSampler(Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##varE wil
 		#sample fixed effects
         	#always returns corrected Y and new b
         	sampleX!(X,b,iXpX,nFix,nColEachX,Y,varE)
-		sampleZ!(Ai,Zp,ZpZ,varE,varU,u,ycorr)
+		sampleZ!(Ai,Zp,ZpZ,varE,varU,u,Y)
         	#print
 		if iter in these2Keep
 			IO.outMCMC(pwd(),vcat(b...)') ### currently no path is provided!!!!
@@ -75,11 +75,11 @@ end
 
 
 #Sampling fixed effects
-function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
+function sampleX!(X,b,iXpX,nFix,nColEachX,Y,varE)
 	#block for each effect 
 	for x in 1:nFix
-		ycorr    .+= X[x]*b[x]
-        	rhs      = X[x]'*ycorr
+		Y    .+= X[x]*b[x]
+        	rhs      = X[x]'*Y
                 meanMu   = iXpX[x]*rhs
 		if nColEachX[x] == 1
 			println("sampling from uni-variate normal")
@@ -87,17 +87,17 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 		else b[x] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
 		println("sampling from multi-variate normal")
 		end
-        	ycorr    .-= X[x]*b[x]
+        	Y    .-= X[x]*b[x]
 	end
 end
 
 #Sampling random effects
-function sampleZ!(iMat,ZpMat,ZpZMat,varE,varU,u,ycorr)
+function sampleZ!(iMat,ZpMat,ZpZMat,varE,varU,u,Y)
 	#block for each effect
 	for z in 1:nRand
 		λ = varE/varU	
-	        ycorr .+= ZMat[z]*uVec[z]
-	        Yi = ZpMat[z]*ycorr
+	        Y .+= ZMat[z]*uVec[z]
+	        Yi = ZpMat[z]*Y[i] #computation of Z'ycorr for rhsU
 		nCol = size(ZpZMat[z],2)
 		uVec = deepcopy(u[z])
 	        for i in 1:nCol
@@ -108,7 +108,7 @@ function sampleZ!(iMat,ZpMat,ZpZMat,varE,varU,u,ycorr)
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         	end
 		u[z] = uVec
-        	ycorr .-= ZMat*uVec
+        	Y .-= ZMat*uVec
 	end
 end
 
