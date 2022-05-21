@@ -11,7 +11,7 @@ export runSampler
 #main sampler
 function runSampler(IDs,Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##varE will be fixed for now
 	
-	println("IDs $(tyepof(IDs))")
+	println("IDs $(typeof(IDs))")
 	print(IDs)		
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
