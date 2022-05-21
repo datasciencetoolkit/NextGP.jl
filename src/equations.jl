@@ -26,7 +26,8 @@ function mme(f, userHints, userData, userPedData, blocks)
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
 
         yVec = StatsModels.modelmatrix(f.lhs, userData)
-
+	idY  = userData.id
+	
         FE = Array{Array{Float64,2},1}(undef,0)
         namesFE = []
 
@@ -75,7 +76,7 @@ function mme(f, userHints, userData, userPedData, blocks)
 
 	deleteat!(FE, sort(delThese))
         
-        return vec(yVec), FE, RE, namesFE, namesRE
+        return idY, vec(yVec), FE, RE, namesFE, namesRE
         end
 
 end

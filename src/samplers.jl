@@ -9,14 +9,15 @@ include("outFiles.jl")
 export runSampler
 
 #main sampler
-function runSampler(Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##varE will be fixed for now
+function runSampler(IDs,Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##varE will be fixed for now
 	
+	println("IDs $(typof(IDs))")
+	print(IDs)		
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
 
         #some info
 	##This is not really nFix, but the "blocks" of fixed effects
-	nData = length(Y)
         nFix  = length(X)
 	nRand = length(Z)
 	
@@ -98,13 +99,13 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 end
 
 #Sampling random effects
-function sampleZ!(iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
+function sampleZ!(IDs,iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
 	#block for each effect
 	for z in 1:nRand
 		uVec = deepcopy(u[z])
 		tempZpZ = ZpZMat[z] ###added
 		λ = varE/varU	
-	        ycorr .+= ZpMat[z]*uVec		
+	        ycorr .+= ZpMat[z]*uVec[IDs]		
 	        Yi = ZpMat[z]*ycorr #computation of Z'ycorr for ALL  rhsU
 		nCol = size(ZpZMat[z],2)
 	        for i in 1:nCol
@@ -116,7 +117,7 @@ function sampleZ!(iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         	end
 		u[z] = uVec
-        	ycorr .-= ZpMat[z]*uVec
+        	ycorr .-= ZpMat[z]*uVec[IDs]
 	end
 end
 
