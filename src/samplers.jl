@@ -69,7 +69,7 @@ function runSampler(rowID,Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##va
 	
 		#sample random effects
 		# always returns corrected Y and new u
-		sampleZ!(rowID,Ai,Zp,ZpZ,nRand,varE,varU,u,ycorr)
+		sampleZ!(Ai,Zp,ZpZ,nRand,varE,varU,u,ycorr)
         	#print
 		if iter in these2Keep
 			IO.outMCMC(pwd(),vcat(b...)') ### currently no path is provided!!!!
@@ -99,13 +99,13 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 end
 
 #Sampling random effects
-function sampleZ!(rowID,iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
+function sampleZ!(iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
 	#block for each effect
 	for z in 1:nRand
 		uVec = deepcopy(u[z])
 		tempZpZ = ZpZMat[z] ###added
 		λ = varE/varU	
-	        ycorr .+= ZpMat[z]*uVec[rowID[z]]		
+	        ycorr .+= ZpMat[z]*uVec		
 	        Yi = ZpMat[z]*ycorr #computation of Z'ycorr for ALL  rhsU
 		nCol = size(ZpZMat[z],2)
 	        for i in 1:nCol
@@ -117,7 +117,7 @@ function sampleZ!(rowID,iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         	end
 		u[z] = uVec
-        	ycorr .-= ZpMat[z]*uVec[rowID[z]]
+        	ycorr .-= ZpMat[z]*uVec
 	end
 end
 
