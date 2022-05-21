@@ -115,7 +115,7 @@ function sampleZ!(iMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
               		rhsU = Yi[i] - λz*dot(view(iMat,:,i),uVec)
 			println("zpzi: $(tempzpz[i])")
 			println("view $(view(iMat,i,i))")
-                	lhsU = tempzpz[i] + view(iMat,i,i)*λz
+                	lhsU = tempzpz[i] + (view(iMat,i,i)*λz)[1]
 			invLhsU = 1.0/lhsU
                 	meanU = invLhsU*rhsU
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
