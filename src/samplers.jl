@@ -24,16 +24,16 @@ function runSampler(rowID,Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##va
         #initial computations and settings
 	ycorr = deepcopy(Y)
 	        
-	#make iXpX, Z', ZpZ
+	#make iXpX, Z', zpz (for uncor)
         iXpX = similar(X)
         for x in 1:nFix
                 iXpX[x] = inv(X[x]'X[x])
         end
 
 	Zp  = similar(Z')
-	ZpZ = similar(Z)
+	zpz = similar(Z)
 	for z in 1:nRand
-                ZpZ[z] = Z[z]'Z[z]
+                zpz[z] = diag(Z[z]'Z[z])
 		Zp[z]  = Z[z]'
         end
 	
@@ -99,19 +99,19 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 end
 
 #Sampling random effects
-function sampleZ!(iMat,Zmat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
+function sampleZ!(iMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
 	#block for each effect
 	for z in 1:nRand
 		uVec = deepcopy(u[z])
-		tempZpZ = ZpZMat[z] ###added
+		tempzpz = zpzMat[z] ###added
 		λ = varE/varU	
 	        ycorr .+= Zmat[z]*uVec		
 	        Yi = ZpMat[z]*ycorr #computation of Z'ycorr for ALL  rhsU
-		nCol = size(ZpZMat[z],2)
+		nCol = length(zpzMat[z])
 	        for i in 1:nCol
         	        uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
               		rhsU = Yi[i] - λ*dot(view(iMat,:,i),uVec)
-                	lhsU = tempZpZ[i] + view(iMat,i,i)*λ
+                	lhsU = tempzpz[i] + view(iMat,i,i)*λ
 			invLhsU = 1.0/lhsU
                 	meanU = invLhsU*rhsU
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
