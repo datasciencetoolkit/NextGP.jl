@@ -31,9 +31,9 @@ function runSampler(rowID,Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##va
         end
 
 	Zp  = similar(Z')
-	zpz = similar(Z)
+	zpz = Array{Array{Float64, 1},1}(undef,0)
 	for z in 1:nRand
-                zpz[z] = diag(Z[z]'Z[z])
+                push!(zpz,diag(Z[z]'Z[z])
 		Zp[z]  = Z[z]'
         end
 	
