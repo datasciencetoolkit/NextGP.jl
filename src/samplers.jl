@@ -9,7 +9,7 @@ include("outFiles.jl")
 export runSampler
 
 #main sampler
-function runSampler(Y,X,Z,varE,chainLength,burnIn,outputFreq) ##varE will be fixed for now
+function runSampler(Y,X,Z,varE,chainLength,burnIn,outputFreq,Ai) ##varE will be fixed for now
 	
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
@@ -59,7 +59,7 @@ function runSampler(Y,X,Z,varE,chainLength,burnIn,outputFreq) ##varE will be fix
 		#sample fixed effects
         	#always returns corrected Y and new b
         	sampleX!(X,b,iXpX,nFix,nColEachX,Y,varE)
-
+		sampleZ!(Ai,Zp,ZpZ,varE,varU,u,ycorr)
         	#print
 		if iter in these2Keep
 			IO.outMCMC(pwd(),vcat(b...)') ### currently no path is provided!!!!
@@ -89,7 +89,7 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 end
 
 #Sampling random effects
-function sampleRan!(iMat,ZpMat,ZpZMat,varE,varU,u,ycorr)
+function sampleZ!(iMat,ZpMat,ZpZMat,varE,varU,u,ycorr)
 	#block for each effect
 	for z in 1:nRand
 		λ = varE/varU	
