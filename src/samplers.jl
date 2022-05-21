@@ -28,6 +28,7 @@ function runSampler(Y,X,Z,varE,chainLength,burnIn,outputFreq) ##varE will be fix
         end
 	Zp  = similar(Z')
 	ZpZ = similar(Z)
+	for z in 1:nRand
                 ZpZ[z] = Z[z]'Z[z]
 		Zp[z]  = Z[z]'
         end
