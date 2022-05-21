@@ -102,7 +102,7 @@ function sampleZ!(iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
 	#block for each effect
 	for z in 1:nRand
 		λ = varE/varU	
-	        ycorr .+= ZMat[z]*uVec[z]		
+	        ycorr .+= ZpMat[z]*uVec[z]		
 	        Yi = ZpMat[z]*ycorr #computation of Z'ycorr for rhsU
 		nCol = size(ZpZMat[z],2)
 		uVec = deepcopy(u[z])
@@ -116,7 +116,7 @@ function sampleZ!(iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         	end
 		u[z] = uVec
-        	ycorr .-= ZMat[z]*uVec
+        	ycorr .-= ZpMat[z]*uVec
 	end
 end
 
