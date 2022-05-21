@@ -9,7 +9,7 @@ include("outFiles.jl")
 export runSampler
 
 #main sampler
-function runSampler(Y,X,Z,varE,chainLength,burnIn,outputFreq,Ai) ##varE will be fixed for now
+function runSampler(Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##varE will be fixed for now
 	
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
@@ -53,6 +53,9 @@ function runSampler(Y,X,Z,varE,chainLength,burnIn,outputFreq,Ai) ##varE will be 
                 push!(u,fill(0.0,nCol))
                 nColEachZ = push!(nColEachZ,nCol)
         end
+
+	#varU is gonna be prior, but fixed now!
+        ##############################################
 
 
         for iter in 1:chainLength
