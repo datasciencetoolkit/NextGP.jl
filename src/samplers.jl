@@ -9,22 +9,30 @@ include("outFiles.jl")
 export runSampler
 
 #main sampler
-runSampler = function(Y,X,Z,varE,chainLength,burnIn,outputFreq) ##varE will be fixed for now
+function runSampler(Y,X,Z,varE,chainLength,burnIn,outputFreq) ##varE will be fixed for now
 	
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
 
         #This is not really nFix, but the "blocks" of fixed effects
-        nFix = length(X)
-
+	nData = length(Y)
+        nFix  = length(X)
+	nRand = length(Z)
+	
         #initial computations and settings
         
-	#make iXpX
+	#make iXpX, Z', ZpZ
         iXpX = similar(X)
         for x in 1:nFix
                 iXpX[x] = inv(X[x]'X[x])
         end
-        #make b array
+	Zp  = similar(Z')
+	ZpZ = similar(Z)
+                ZpZ[z] = Z[z]'Z[z]
+		Zp[z]  = Z[z]'
+        end
+	
+        #make b and u arrays
         b = Array{Array{Float64, 1},1}(undef,0)
         #counts columns per effect
         nColEachX = []
@@ -34,6 +42,17 @@ runSampler = function(Y,X,Z,varE,chainLength,burnIn,outputFreq) ##varE will be f
                 push!(b,fill(0.0,nCol))
                 nColEachX = push!(nColEachX,nCol)
         end
+
+        u = Array{Array{Float64, 1},1}(undef,0)
+        #counts columns per effect
+        nColEachZ = []
+        for z in 1:nRand
+                println(z)
+                nCol = size(Z[z],2)
+                push!(u,fill(0.0,nCol))
+                nColEachZ = push!(nColEachZ,nCol)
+        end
+
 
         for iter in 1:chainLength
 		#sample fixed effects
@@ -52,7 +71,7 @@ end
 
 
 #Sampling fixed effects
-sampleX! = function(X,b,iXpX,nFix,nColEachX,ycorr,varE)
+function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 	#block for each effect 
 	for x in 1:nFix
 		ycorr    .+= X[x]*b[x]
@@ -67,5 +86,27 @@ sampleX! = function(X,b,iXpX,nFix,nColEachX,ycorr,varE)
         	ycorr    .-= X[x]*b[x]
 	end
 end
+
+#Sampling random effects
+function sampleRan!(iMat,ZpMat,ZpZMat,varE,varU,u,ycorr)
+	#block for each effect
+	for z in 1:nRand
+		λ = varE/varU	
+	        ycorr .+= ZMat[z]*uVec[z]
+	        Yi = ZpMat[z]*ycorr
+		nCol = size(ZpZMat[z],2)
+		uVec = deepcopy(u)
+	        for i in 1:nCol
+        	        uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
+              		rhsU = Yi[i] - λ*dot(view(iMat,:,i),uVec)
+                	lhsU = ZpZMat[i] + view(iMat,i,i)*λ
+                	meanU = invLhsU*rhsU
+                	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
+        	end
+		u[z] = uVec
+        	ycorr .-= ZMat*uVec
+	end
+end
+
 
 end
