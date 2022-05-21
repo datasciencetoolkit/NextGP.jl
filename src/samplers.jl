@@ -9,10 +9,10 @@ include("outFiles.jl")
 export runSampler
 
 #main sampler
-function runSampler(IDs,Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##varE will be fixed for now
+function runSampler(rowID,Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##varE will be fixed for now
 	
-	println("IDs $(typeof(IDs))")
-	print(IDs)		
+	println("IDs $(typeof(rowID))")
+	print(rowID)		
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
 
@@ -69,7 +69,7 @@ function runSampler(IDs,Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##varE
 	
 		#sample random effects
 		# always returns corrected Y and new u
-		sampleZ!(Ai,Zp,ZpZ,nRand,varE,varU,u,ycorr)
+		sampleZ!(rowID,Ai,Zp,ZpZ,nRand,varE,varU,u,ycorr)
         	#print
 		if iter in these2Keep
 			IO.outMCMC(pwd(),vcat(b...)') ### currently no path is provided!!!!
@@ -99,7 +99,7 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 end
 
 #Sampling random effects
-function sampleZ!(IDs,iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
+function sampleZ!(rowID,iMat,ZpMat,ZpZMat,nRand,varE,varU,u,ycorr)
 	#block for each effect
 	for z in 1:nRand
 		uVec = deepcopy(u[z])

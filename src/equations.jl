@@ -3,18 +3,19 @@ module equations
 using StatsModels, MixedModels, CategoricalArrays
 
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
-           isa(x1, CategoricalArray) ||
+        isa(x1, CategoricalArray) ||
                        throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
-           isa(x2, CategoricalArray) ||
+        isa(x2, CategoricalArray) ||
                        throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
 
-           u = unique(x2);
-           filter!(x->x≠0,u)
-           Z = Matrix{Bool}(undef, length(x1), length(u))
-           for i in eachindex(u)
-               @. Z[:, i] = x1 .== u[i]
-           end
-           return Z
+        u = unique(x2);
+        filter!(x->x≠0,u)
+        Z = Matrix{Bool}(undef, length(x1), length(u))
+        for i in eachindex(u)
+        	@. Z[:, i] = x1 .== u[i]
+        end
+	println("UUUUUUU $u")
+           return u,Z
        end
 
 ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Symbol(arg2)])
@@ -26,14 +27,17 @@ function mme(f, userHints, userData, userPedData, blocks)
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
 
         yVec = StatsModels.modelmatrix(f.lhs, userData)
-	idY  = userData.id
 	
         FE = Array{Array{Float64,2},1}(undef,0)
         namesFE = []
 
         RE = Array{Array{Float64,2},1}(undef,0)
         namesRE = []
-
+	
+	#column id within pedigree
+	idRE = Array{Array{Float64,2},1}(undef,0)
+        idRE = []
+	
         for i in 1:length(f.rhs)
                 if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
                         println("$i has type ran Type")
@@ -41,14 +45,17 @@ function mme(f, userHints, userData, userPedData, blocks)
                         sym2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
 #                       arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
                         println("sym1: $sym1 sym2: $sym2")
-
-                        push!(RE,ranMat(sym1, sym2, userData, userPedData))
+			
+			IDs,thisZ = ranMat(sym1, sym2, userData, userPedData)
+			push!(idRE,IDs)
+                        push!(RE,thisZ)
                         push!(namesRE, terms4StatsModels[i])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         println("$i has type | Type")
                         my_sch = schema(userData, userHints) #work on userData and userHints
                         my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
                         println(modelcols(my_ApplySch, userData)) #work on userData and userHints
+			#####NO IDs for this effect!!! Will be added later!!!!#####################################################
                         push!(RE,modelcols(my_ApplySch, userData))
                         push!(namesRE, terms4StatsModels[i])
 
@@ -76,7 +83,7 @@ function mme(f, userHints, userData, userPedData, blocks)
 
 	deleteat!(FE, sort(delThese))
         
-        return idY, vec(yVec), FE, RE, namesFE, namesRE
+        return idRE, vec(yVec), FE, RE, namesFE, namesRE
         end
 
 end
