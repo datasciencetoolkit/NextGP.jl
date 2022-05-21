@@ -95,7 +95,7 @@ function sampleRan!(iMat,ZpMat,ZpZMat,varE,varU,u,ycorr)
 	        ycorr .+= ZMat[z]*uVec[z]
 	        Yi = ZpMat[z]*ycorr
 		nCol = size(ZpZMat[z],2)
-		uVec = deepcopy(u)
+		uVec = deepcopy(u[z])
 	        for i in 1:nCol
         	        uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
               		rhsU = Yi[i] - λ*dot(view(iMat,:,i),uVec)
