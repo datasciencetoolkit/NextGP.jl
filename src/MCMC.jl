@@ -15,9 +15,9 @@ include("runTime.jl")
 include("samplers.jl")
 
 
-runGibbs = function(formula,userHints,userData,userPedData,nChain,nBurn,nThin,blockThese,iVCV,priorVCV)
+runGibbs = function(formula,userHints,userData,userPedData,nChain,nBurn,nThin,blockThese,VCV)
 	idY,yVec,FE,RE,namesFE,namesRE = equations.mme(formula,userHints,userData,userPedData,blockThese)
-        samplers.runSampler(idY,yVec,FE,RE,nChain,nBurn,nThin,iVCV,priorVCV)
+        samplers.runSampler(idY,yVec,FE,RE,nChain,nBurn,nThin,VCV)
         return(yVec,FE,RE,namesFE,namesRE)
 end
 
