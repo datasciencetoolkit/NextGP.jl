@@ -114,10 +114,11 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 end
 
 #Sampling random effects
-function sampleZ!(iMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
+function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
 	#block for each effect
 	for z in 1:nRand
 		uVec = deepcopy(u[z])
+		iMat = iStrMat[z]
 		tempzpz = zpzMat[z] ###added
 		λz = varE/(varU[z])
 	        ycorr .+= Zmat[z]*uVec		
@@ -125,9 +126,8 @@ function sampleZ!(iMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
 		nCol = length(zpzMat[z])
 	        for i in 1:nCol
         	        uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
-              		println("iMat: $(view(iMat,:,i)) \n,size uVec: $uVec")
-			rhsU = Yi[i] - λz*dot(view(iMat,:,i),uVec)
-                	lhsU = tempzpz[i] + (view(iMat,i,i)*λz)[1]
+			rhsU = Yi[i] - λz*dot(iMat[:,i],uVec)
+                	lhsU = tempzpz[i] + (iMat[i,i]*λz)[1]
 			invLhsU = 1.0/lhsU
                 	meanU = invLhsU*rhsU
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
