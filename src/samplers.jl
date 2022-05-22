@@ -63,8 +63,8 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 		if isempty(priorVCV[z][1])
 			println("priorVCV $z is empty, an identity matrix will be used")
 			push!(iVarStr,Matrix(1.0I,nCol,nCol))
-			else push!(iVarStr,inv(priorVCV[z][1]))
-			println("USED MAT: priorVCV[z][1]")
+		else 	push!(iVarStr,inv(priorVCV[z][1]))
+			println("USED MAT: $(priorVCV[z][1])")
 		end
 		push!(varU,priorVCV[z][2])
         end
@@ -125,7 +125,8 @@ function sampleZ!(iMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
 		nCol = length(zpzMat[z])
 	        for i in 1:nCol
         	        uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
-              		rhsU = Yi[i] - λz*dot(view(iMat,:,i),uVec)
+              		println("iMat: $(view(iMat,:,i)) \n,size uVec: $uVec")
+			rhsU = Yi[i] - λz*dot(view(iMat,:,i),uVec)
                 	lhsU = tempzpz[i] + (view(iMat,i,i)*λz)[1]
 			invLhsU = 1.0/lhsU
                 	meanU = invLhsU*rhsU
