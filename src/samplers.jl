@@ -82,7 +82,6 @@ end
 
 #Sampling fixed effects
 function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
-	println("$ycorr")
 	#block for each effect 
 	for x in 1:nFix
 		ycorr    .+= X[x]*b[x]
@@ -94,15 +93,12 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 		else b[x] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
 		end
         	ycorr    .-= X[x]*b[x]
-		println("$ycorr")
 	end
 end
 
 #Sampling random effects
 function sampleZ!(iMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
-	println("$ycorr")
 	#block for each effect
-	println("varU: $(varU)")
 	for z in 1:nRand
 		uVec = deepcopy(u[z])
 		tempzpz = zpzMat[z] ###added
@@ -120,7 +116,6 @@ function sampleZ!(iMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
         	end
 		u[z] = uVec
         	ycorr .-= Zmat[z]*uVec
-		println("$ycorr")
 	end
 end
 
