@@ -19,6 +19,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 	##This is not really nFix, but the "blocks" of fixed effects
         nFix  = length(X)
 	nRand = length(Z)
+	nData = length(Y)
 
         #initial computations and settings
 	ycorr = deepcopy(Y)
@@ -63,6 +64,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 			println("priorVCV $z is empty, an identity matrix will be used")
 			push!(iVarStr,Matrix(1.0I,nCol,nCol))
 			else push!(iVarStr,inv(priorVCV[z][1]))
+			println("USED MAT: priorVCV[z][1]")
 		end
 		push!(varU,priorVCV[z][2])
         end
@@ -71,6 +73,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 
 	#variances are gonna be priors, but fixed now!
         ##############################################
+	strE = Matrix(1.0I,nData,nData)
 	varE = last(priorVCV,1)[1][2] #since last returns a tupple
 	println("prior for E: $varE")
 
