@@ -9,7 +9,7 @@ include("outFiles.jl")
 export runSampler
 
 #main sampler
-function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,Ai,priors) ##varE will be fixed for now
+function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE will be fixed for now
 	
 
 	#output settings
@@ -19,13 +19,6 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,Ai,priors) ##varE 
 	##This is not really nFix, but the "blocks" of fixed effects
         nFix  = length(X)
 	nRand = length(Z)
-
-	#allocate priors to effects
-	varEprior = last(priors)
-	varUprior = first(priors,nRand)
-	################################Variances are fixed now	
-	varE = varEprior
-	varU = varUprior
 
         #initial computations and settings
 	ycorr = deepcopy(Y)
@@ -57,12 +50,24 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,Ai,priors) ##varE 
         u = Array{Array{Float64, 1},1}(undef,0)
         #counts columns per effect
         nColEachZ = []
+	#get priors per effect
+	varStructures = [] #inverses will be computed
+	varU = []
         for z in 1:nRand
                 println(z)
                 nCol = size(Z[z],2)
                 push!(u,fill(0.0,nCol))
                 nColEachZ = push!(nColEachZ,nCol)
+		#var structures and priors
+		if isempty(priorVCV[i][1])
+			println("priorVCV $i is empty, an identity matrix will be used")
+			push!(varStructures,Matrix(1.0I,nCol,nCol))
+			else push!(varStructures,inv(priorVCV[i][1]))
+		end
+		push!(varU,priorVar[i][2])
         end
+	println("prior variances $varU")
+	println("prior for E: $(last(priorVCV),2)")
 
 	#varU is gonna be prior, but fixed now!
         ##############################################

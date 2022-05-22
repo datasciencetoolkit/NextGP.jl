@@ -14,7 +14,6 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
         for i in eachindex(u)
         	@. Z[:, i] = x1 .== u[i]
         end
-	println("UUUUUUU $(unique(x1))")
            return unique(x1),Z
        end
 
