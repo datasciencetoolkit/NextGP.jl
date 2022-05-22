@@ -51,7 +51,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
         #counts columns per effect
         nColEachZ = []
 	#get priors per effect
-	varStructures = [] #inverses will be computed
+	iVarStr = [] #inverses will be computed
 	varU = []
         for z in 1:nRand
                 println(z)
@@ -61,17 +61,18 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 		#var structures and priors
 		if isempty(priorVCV[z][1])
 			println("priorVCV $z is empty, an identity matrix will be used")
-			push!(varStructures,Matrix(1.0I,nCol,nCol))
-			else push!(varStructures,inv(priorVCV[z][1]))
+			push!(iVarStr,Matrix(1.0I,nCol,nCol))
+			else push!(iVarStr,inv(priorVCV[z][1]))
 		end
 		push!(varU,priorVCV[z][2])
         end
 	println("prior variances $varU")
-	println("prior for E: $(last(priorVCV,2))")
+	println("prior for E: $(last(priorVCV,1))")
 
-	#varU is gonna be prior, but fixed now!
+	#variances are gonna be priors, but fixed now!
         ##############################################
-
+	varE = last(priorVCV,1)
+	println("prior for E: $varE")
 
         for iter in 1:chainLength
 		#sample fixed effects
@@ -80,7 +81,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 	
 		#sample random effects
 		# always returns corrected Y and new u
-		sampleZ!(Ai,Z,Zp,zpz,nRand,varE,varU,u,ycorr)
+		sampleZ!(iVarStr,Z,Zp,zpz,nRand,varE,varU,u,ycorr)
         	#print
 		if iter in these2Keep
 			IO.outMCMC(pwd(),"b",vcat(b...)') ### currently no path is provided!!!!
