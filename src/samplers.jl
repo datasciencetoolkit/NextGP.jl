@@ -64,7 +64,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 			push!(varStructures,Matrix(1.0I,nCol,nCol))
 			else push!(varStructures,inv(priorVCV[z][1]))
 		end
-		push!(varU,priorVar[i][2])
+		push!(varU,priorVCV[z][2])
         end
 	println("prior variances $varU")
 	println("prior for E: $(last(priorVCV,2))")
