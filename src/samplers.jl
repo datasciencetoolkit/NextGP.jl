@@ -59,10 +59,10 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
                 push!(u,fill(0.0,nCol))
                 nColEachZ = push!(nColEachZ,nCol)
 		#var structures and priors
-		if isempty(priorVCV[i][1])
-			println("priorVCV $i is empty, an identity matrix will be used")
+		if isempty(priorVCV[z][1])
+			println("priorVCV $z is empty, an identity matrix will be used")
 			push!(varStructures,Matrix(1.0I,nCol,nCol))
-			else push!(varStructures,inv(priorVCV[i][1]))
+			else push!(varStructures,inv(priorVCV[z][1]))
 		end
 		push!(varU,priorVar[i][2])
         end
