@@ -67,7 +67,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 		push!(varU,priorVar[i][2])
         end
 	println("prior variances $varU")
-	println("prior for E: $(last(priorVCV),2)")
+	println("prior for E: $(last(priorVCV,2))")
 
 	#varU is gonna be prior, but fixed now!
         ##############################################
