@@ -68,13 +68,15 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 		end
 		push!(varU,priorVCV[z][2])
         end
-	println("prior variances $(varU[1])")
-	println("prior for E: $(last(priorVCV,1)[1][2])")
+	println("prior variances $(varU)")
 
+	#set up for E	
 	#variances are gonna be priors, but fixed now!
         ##############################################
-	strE = Matrix(1.0I,nData,nData)
+	isempty(last(priorVCV,1)[1][1]) ? strE = Matrix(1.0I,nData,nData) : strE = last(priorVCV,1)[1][1]
+#	strE = Matrix(1.0I,nData,nData)
 	varE = last(priorVCV,1)[1][2] #since last returns a tupple
+	println("structure for E: $strE")
 	println("prior for E: $varE")
 
         for iter in 1:chainLength
