@@ -15,11 +15,9 @@ include("runTime.jl")
 include("samplers.jl")
 
 
-runGibbs = function(formula,userHints,userData,userPedData,nChain,nBurn,nThin,blockThese,iVCV)
+runGibbs = function(formula,userHints,userData,userPedData,nChain,nBurn,nThin,blockThese,iVCV,priorVCV)
 	idY,yVec,FE,RE,namesFE,namesRE = equations.mme(formula,userHints,userData,userPedData,blockThese)
-        varResidual = 350  ##### FIXED for now
-	varRandomEffects = 150 ### 150 for a. FIXED for now
-        samplers.runSampler(idY,yVec,FE,RE,varResidual,varRandomEffects,nChain,nBurn,nThin,iVCV)
+        samplers.runSampler(idY,yVec,FE,RE,nChain,nBurn,nThin,iVCV,priorVCV)
         return(yVec,FE,RE,namesFE,namesRE)
 end
 

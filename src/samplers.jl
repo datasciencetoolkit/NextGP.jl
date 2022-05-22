@@ -9,8 +9,9 @@ include("outFiles.jl")
 export runSampler
 
 #main sampler
-function runSampler(rowID,Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##varE will be fixed for now
+function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,Ai,priors) ##varE will be fixed for now
 	
+
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
 
@@ -18,7 +19,14 @@ function runSampler(rowID,Y,X,Z,varE,varU,chainLength,burnIn,outputFreq,Ai) ##va
 	##This is not really nFix, but the "blocks" of fixed effects
         nFix  = length(X)
 	nRand = length(Z)
-	
+
+	#allocate priors to effects
+	varEprior = last(priors)
+	varUprior = first(priors,nRand)
+	################################Variances are fixed now	
+	varE = varEprior
+	varU = varUprior
+
         #initial computations and settings
 	ycorr = deepcopy(Y)
 	        
