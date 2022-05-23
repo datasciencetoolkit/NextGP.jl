@@ -4,6 +4,6 @@
 - As the name suggests, NextGP will focus on next generation of methods, though some traditional genomic preedictions methods as well as conventional mixed model type of analysis will be a part of the package for completeness.
 - I will implement Bayesian approach in parameter estimations. In most cases, a Gibbs sampling procedure will be used.
 - NextGP has two main focus:
-   - Models for multi-breed analysis
+   - Models for multi-breed (population,line etc..) analysis
    - Gene regulatory network estimation
 -  NextGP will rely on a set of Julia packages, some of which could be easily avoided, or will be avoided in the later releases.
