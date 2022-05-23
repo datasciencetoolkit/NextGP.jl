@@ -5,4 +5,4 @@
 - NextGP has two main focus:
    - Models for multi-breed analysis
    - Gene regulatory network estimation
--  NextGP will rely on a set of packages, which could be easily avoided. For example, some features in StatsModels package will be used, such as @formula macro and its subroutines to create fixed effect design matrices. The reasons to do so will be explained later. 
+-  NextGP will rely on a set of packages, some of which could be easily avoided, or will be avoided in the later releases.
