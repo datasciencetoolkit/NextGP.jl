@@ -5,4 +5,4 @@
 - NextGP has two main focus:
    - Models for multi-breed analysis
    - Gene regulatory network estimation
--  NextGP will rely on a set of packages, some of which could be easily avoided, or will be avoided in the later releases.
+-  NextGP will rely on a set of Julia packages, some of which could be easily avoided, or will be avoided in the later releases.
