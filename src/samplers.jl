@@ -20,11 +20,12 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
         nFix  = length(X)
 	nRand = length(Z)
 	nData = length(Y)
+	
 
         #initial computations and settings
 	ycorr = deepcopy(Y)
 	        
-	#make iXpX, Z', zpz (for uncor)
+	##make iXpX, Z', zpz (for uncor)
         iXpX = similar(X)
         for x in 1:nFix
                 iXpX[x] = inv(X[x]'X[x])
@@ -37,9 +38,9 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 		Zp[z]  = Z[z]'
         end
 	
-        #make b and u arrays
+        ##make b and u arrays
         b = Array{Array{Float64, 1},1}(undef,0)
-        #counts columns per effect
+        ##counts columns per effect
         nColEachX = []
         for x in 1:nFix
                 println(x)
@@ -49,9 +50,9 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
         end
 
         u = Array{Array{Float64, 1},1}(undef,0)
-        #counts columns per effect
+        ##counts columns per effect
         nColEachZ = []
-	#get priors per effect
+	##get priors per effect
 	iVarStr = [] #inverses will be computed
 	varU = []
         for z in 1:nRand
@@ -71,13 +72,29 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 	println("prior variances $(varU)")
 
 	#set up for E	
-	#variances are gonna be priors, but fixed now!
+	##variances are gonna be priors, but fixed now!
         ##############################################
 	isempty(last(priorVCV,1)[1][1]) ? strE = Matrix(1.0I,nData,nData) : strE = last(priorVCV,1)[1][1]
-#	strE = Matrix(1.0I,nData,nData)
-	varE = last(priorVCV,1)[1][2] #since last returns a tupple
+	varE_prior = last(priorVCV,1)[1][2] #since last returns a tupple
 	println("structure for E: $strE")
-	println("prior for E: $varE")
+	println("prior for E: $(varE_prior)")
+
+
+	#parameters for priors
+        dfE = 4
+        
+	if varE_prior==0.0
+		varE_prior  = 0.0005
+       		scaleE     = 0.0005
+        else
+       		scaleE    = varE_prior*(dfE-2.0)/dfE    
+   	end
+
+	#pre-computations using priors
+   	νS_e = scaleE*dfE
+   	df_e = dfE	
+
+	varE = varE_prior
 
         for iter in 1:chainLength
 		#sample fixed effects
