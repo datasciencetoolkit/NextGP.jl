@@ -91,12 +91,14 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
    	end
 
 	#pre-computations using priors
-   	νS_e = scaleE*dfE
-   	df_e = dfE	
+   	νS_E = scaleE*dfE
 
-	varE = varE_prior
 
         for iter in 1:chainLength
+		#sample residual variance
+	       	varE = sampleVarE(νS_E,ycorr,dfE,nData)
+		println("varE estimated: $varE")
+		
 		#sample fixed effects
         	#always returns corrected Y and new b
         	sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
@@ -156,5 +158,9 @@ function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
 	end
 end
 
+#Sample residual variance
+function sampleVarE(νS_e,yCorVec,df_e,nRecords)
+    return((νS_e + dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords)))
+end
 
 end
