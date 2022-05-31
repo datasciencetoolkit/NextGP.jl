@@ -126,6 +126,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 			IO.outMCMC(pwd(),"b",vcat(b...)') ### currently no path is provided!!!!
 			IO.outMCMC(pwd(),"u",vcat(u...)')
 			IO.outMCMC(pwd(),"varE",varE)
+			IO.outMCMC(pwd(),"varU",varU')
 	#		if onScreen==true
             			println("b, $(vcat(b...))") #i always vectorize b. maybe better to make it vector initially
         #		end
