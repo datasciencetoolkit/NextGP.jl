@@ -54,7 +54,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
         nColEachZ = []
 	##get priors per effect
 	iVarStr = [] #inverses will be computed
-	varU = []
+	varU_prior = []
         for z in 1:nRand
                 println(z)
                 nCol = size(Z[z],2)
@@ -67,32 +67,42 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 		else 	push!(iVarStr,inv(priorVCV[z][1]))
 			println("USED MAT: $(priorVCV[z][1])")
 		end
-		push!(varU,priorVCV[z][2])
+		push!(varU_prior,priorVCV[z][2])
         end
-	println("prior variances $(varU)")
+	println("prior variances $(varU_prior)")
 
 	#set up for E	
-	##variances are gonna be priors, but fixed now!
-        ##############################################
 	isempty(last(priorVCV,1)[1][1]) ? strE = Matrix(1.0I,nData,nData) : strE = last(priorVCV,1)[1][1]
 	varE_prior = last(priorVCV,1)[1][2] #since last returns a tupple
-	println("structure for E: $strE")
-	println("prior for E: $(varE_prior)")
-
 
 	#parameters for priors
         dfE = 4
-        
+	dfDefault = 4 
+	       
 	if varE_prior==0.0
 		varE_prior  = 0.0005
        		scaleE     = 0.0005
         else
        		scaleE    = varE_prior*(dfE-2.0)/dfE    
    	end
+	
+	##no 0.0005 prior adapted here yet
+	scaleU = zeros(nRand)
+	for z in 1:nRand
+		scaleU[z] = varU_prior[z]*(dfDefault-2.0)/dfDefault
+	end	
+
 
 	#pre-computations using priors
    	νS_E = scaleE*dfE
+	νS_U = zeros(nRand)
+	for z in 1:nRand
+                νS_U[z] = scaleU[z]*dfDefault
+        end 
 
+
+	#FIXED RANDOM EFFECTS' VARIANCES
+	varU = varU_prior #for storage
 
         for iter in 1:chainLength
 		#sample residual variance
@@ -106,6 +116,10 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 		#sample random effects
 		# always returns corrected Y and new u
 		sampleZ!(iVarStr,Z,Zp,zpz,nRand,varE,varU,u,ycorr)
+
+		#sample variances
+		sampleRanVar!(varU,νS_U,u,dfDefault,iVarStr)
+
         	#print
 		if iter in these2Keep
 			IO.outMCMC(pwd(),"b",vcat(b...)') ### currently no path is provided!!!!
@@ -159,9 +173,19 @@ function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
 	end
 end
 
+#sample random effects' variances
+function sampleRanVar!(varU,νS_ranVar,effVec,df_ranVar,iStrMat)
+	for z in 1:nRand
+		n = size(iStrMat[z],2)
+		varU[z] = (νS_ranVar[z] + effVec[z]'*iStrMat[z]*effVec[z])/rand(Chisq(df_ranVar + n))
+	end
+end
+
 #Sample residual variance
 function sampleVarE(νS_e,yCorVec,df_e,nRecords)
     return((νS_e + dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords)))
 end
+
+
 
 end
