@@ -118,7 +118,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 		sampleZ!(iVarStr,Z,Zp,zpz,nRand,varE,varU,u,ycorr)
 
 		#sample variances
-		sampleRanVar!(varU,νS_U,u,dfDefault,iVarStr)
+		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
 
         	#print
 		if iter in these2Keep
@@ -174,7 +174,7 @@ function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
 end
 
 #sample random effects' variances
-function sampleRanVar!(varU,νS_ranVar,effVec,df_ranVar,iStrMat)
+function sampleRanVar!(varU,nRand,νS_ranVar,effVec,df_ranVar,iStrMat)
 	for z in 1:nRand
 		n = size(iStrMat[z],2)
 		varU[z] = (νS_ranVar[z] + effVec[z]'*iStrMat[z]*effVec[z])/rand(Chisq(df_ranVar + n))
