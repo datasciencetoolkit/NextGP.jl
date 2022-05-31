@@ -117,6 +117,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 		# always returns corrected Y and new u
 		sampleZ!(iVarStr,Z,Zp,zpz,nRand,varE,varU,u,ycorr)
 
+
 		#sample variances
 		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
 
@@ -175,6 +176,7 @@ end
 
 #sample random effects' variances
 function sampleRanVar!(varU,nRand,νS_ranVar,effVec,df_ranVar,iStrMat)
+	println("varU: $varU")
 	for z in 1:nRand
 		n = size(iStrMat[z],2)
 		varU[z] = (νS_ranVar[z] + effVec[z]'*iStrMat[z]*effVec[z])/rand(Chisq(df_ranVar + n))
