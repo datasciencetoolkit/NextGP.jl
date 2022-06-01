@@ -16,8 +16,7 @@ include("samplers.jl")
 
 
 runGibbs = function(formula,userHints,userData,userPedData,nChain,nBurn,nThin,blockThese,VCV;genotypes...)
-	genoPaths = genotypes
-	idY,yVec,FE,RE,namesFE,namesRE = equations.mme(formula,userHints,userData,userPedData,blockThese;genoPaths)
+	idY,yVec,FE,RE,namesFE,namesRE = equations.mme(formula,userHints,userData,userPedData,blockThese;paths2geno=genotypes)
         samplers.runSampler(idY,yVec,FE,RE,nChain,nBurn,nThin,VCV)
         return(yVec,FE,RE,namesFE,namesRE)
 end
