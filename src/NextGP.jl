@@ -2,6 +2,7 @@ module NextGP
 
 #exporting run-time equivalent of functions
 export ran
+export PR
 
 #
 export makeA
