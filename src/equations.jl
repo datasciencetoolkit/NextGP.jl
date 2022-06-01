@@ -46,9 +46,10 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 			println("terms4StatsModels[i]: $(terms4StatsModels[i])")
 			arg1 = repr((f.rhs[i].args_parsed)[1])
 			path = paths2geno[Symbol(arg1)]
-			myData = CSV.read(path,CSV.Tables.matrix)
-			println("size of $arg1: $(size(myData))")
-			#push!(GE,thisG)
+			thisG = CSV.read(path,CSV.Tables.matrix)
+			println("size of $arg1: $(size(thisG))")
+			push!(GE,thisG)
+			push!(namesGE, terms4StatsModels[i])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
                         println("$i has type ran Type")
                         sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
@@ -91,7 +92,7 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 
 	deleteat!(FE, sort(delThese))
         
-        return idRE, vec(yVec), FE, RE, namesFE, namesRE
+        return idRE, vec(yVec), FE, RE, GE, namesFE, namesRE, namesGE
         end
 
 end
