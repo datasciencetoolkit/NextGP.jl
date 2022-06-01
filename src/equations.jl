@@ -32,6 +32,9 @@ function mme(f, userHints, userData, userPedData, blocks)
 
         RE = Array{Array{Float64,2},1}(undef,0)
         namesRE = []
+
+	GE = Array{Array{Float64,2},1}(undef,0)
+	namesGE = []
 	
 	#column id within pedigree
 	idRE = Array{Array{Float64,2},1}(undef,0)
@@ -40,6 +43,8 @@ function mme(f, userHints, userData, userPedData, blocks)
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
 			println("$i has type BayesPR Type")
+			
+			#push!(GE,thisG)
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
                         println("$i has type ran Type")
                         sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
