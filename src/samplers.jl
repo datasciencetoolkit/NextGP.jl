@@ -65,7 +65,6 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
 			println("priorVCV $z is empty, an identity matrix will be used")
 			push!(iVarStr,Matrix(1.0I,nCol,nCol))
 		else 	push!(iVarStr,inv(priorVCV[z][1]))
-			println("USED MAT: $(priorVCV[z][1])")
 		end
 		push!(varU_prior,priorVCV[z][2])
         end
@@ -107,7 +106,6 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV) ##varE w
         for iter in 1:chainLength
 		#sample residual variance
 	       	varE = sampleVarE(νS_E,ycorr,dfE,nData)
-		println("varE estimated: $varE")
 		
 		#sample fixed effects
         	#always returns corrected Y and new b
@@ -143,7 +141,6 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
         	rhs      = X[x]'*ycorr
                 meanMu   = iXpX[x]*rhs
 		if nColEachX[x] == 1
-			println("sampling from uni-variate normal")
         		b[x] .= rand(Normal(meanMu[],sqrt((iXpX[x]*varE))[]))
 		else b[x] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
 		end
@@ -177,10 +174,10 @@ end
 
 #sample random effects' variances
 function sampleRanVar!(varU,nRand,νS_ranVar,effVec,df_ranVar,iStrMat)
-	println("varU: $varU")
 	for z in 1:nRand
 		n = size(iStrMat[z],2)
 		varU[z] = (νS_ranVar[z] + effVec[z]'*iStrMat[z]*effVec[z])/rand(Chisq(df_ranVar + n))
+println("varU: $varU")
 	end
 end
 
