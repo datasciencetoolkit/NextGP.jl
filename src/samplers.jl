@@ -177,7 +177,6 @@ function sampleRanVar!(varU,nRand,νS_ranVar,effVec,df_ranVar,iStrMat)
 	for z in 1:nRand
 		n = size(iStrMat[z],2)
 		varU[z] = (νS_ranVar[z] + effVec[z]'*iStrMat[z]*effVec[z])/rand(Chisq(df_ranVar + n))
-println("varU: $varU")
 	end
 end
 
