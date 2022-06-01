@@ -55,14 +55,12 @@ function mme(f, userHints, userData, userPedData, blocks)
                         println("$i has type | Type")
                         my_sch = schema(userData, userHints) #work on userData and userHints
                         my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
-                        println(modelcols(my_ApplySch, userData)) #work on userData and userHints
 			#####NO IDs for this effect!!! Will be added later!!!!#####################################################
                         push!(RE,modelcols(my_ApplySch, userData))
                         push!(namesRE, terms4StatsModels[i])
 
                 else
                 println("$i has type $(typeof(f.rhs[i]))")
-                println(StatsModels.modelmatrix(f.rhs[i], userData,hints= userHints)) #work on userData and userHints
                 push!(FE,StatsModels.modelmatrix(f.rhs[i], userData,hints= userHints))
                 push!(namesFE, terms4StatsModels[i])
                 end
