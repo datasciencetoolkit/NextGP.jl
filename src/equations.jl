@@ -46,7 +46,7 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 			println("terms4StatsModels[i]: $(terms4StatsModels[i])")
 			arg1 = repr((f.rhs[i].args_parsed)[1])
 			path = paths2geno[Symbol(arg1)]
-			myData = CSV.read(path,Tables.matrix)
+			myData = CSV.read(path,CSV.Tables.matrix)
 			println("size of $arg1: $(size(myData))")
 			#push!(GE,thisG)
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
