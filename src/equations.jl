@@ -38,7 +38,9 @@ function mme(f, userHints, userData, userPedData, blocks)
         idRE = []
 	
         for i in 1:length(f.rhs)
-                if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
+		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
+			println("$i has type BayesPR Type")
+                elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
                         println("$i has type ran Type")
                         sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
                         sym2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
