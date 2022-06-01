@@ -10,6 +10,11 @@ using Distributions,LinearAlgebra #samplers
 using StatsBase
 using Printf
 
+####REMOVE
+using InteractiveUtils
+####
+
+
 include("equations.jl")
 include("runTime.jl")
 include("samplers.jl")
