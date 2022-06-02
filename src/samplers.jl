@@ -9,7 +9,7 @@ include("outFiles.jl")
 export runSampler
 
 #main sampler
-function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,rS) ##varE will be fixed for now
+function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS) ##varE will be fixed for now
 	
 
 	#output settings
@@ -20,7 +20,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,rS) ##v
         nFix  = length(X)
 	nRand = length(Z)
 	nData = length(Y)
-	
+	nMarkerSets = length(M)
 
         #initial computations and settings
 	ycorr = deepcopy(Y)
@@ -102,6 +102,12 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,rS) ##v
 
 	#FIXED RANDOM EFFECTS' VARIANCES
 	varU = varU_prior #for storage
+
+
+	#ADD MARKERS
+		# read map file and make regions
+		
+	
 
         for iter in 1:chainLength
 		#sample residual variance
