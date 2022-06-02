@@ -28,18 +28,18 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
         yVec = StatsModels.modelmatrix(f.lhs, userData)
 	
         FE = Array{Array{Float64,2},1}(undef,0)
-        namesFE = []
+        namesFE = Array{String,1}(undef,0)
 
         RE = Array{Array{Float64,2},1}(undef,0)
-        namesRE = []
+        namesRE = Array{String,1}(undef,0)
 
 	ME = Array{Array{Float64,2},1}(undef,0)
-	namesME = []
-	regionSizes = []
+	namesME = Array{String,1}(undef,0)
+	regionSizes = Array{Int32,1}(undef,0)
 		
 	#column id within pedigree
 	idRE = Array{Array{Float64,2},1}(undef,0)
-        idRE = []
+        idRE = Array{Int32,1}(undef,0)
 	
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
