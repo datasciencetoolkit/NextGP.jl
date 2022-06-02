@@ -46,7 +46,7 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 			println("$i has type BayesPR Type")
 			println("terms4StatsModels[i]: $(terms4StatsModels[i])")
 			arg1 = repr((f.rhs[i].args_parsed)[1])
-			arg2 = repr((f.rhs[i].args_parsed)[2])
+			arg2 = f.rhs[i].args_parsed[2]
 			path = paths2geno[Symbol(arg1)]
 			thisM = CSV.read(path,CSV.Tables.matrix)
 			println("size of $arg1 data: $(size(thisM))")
