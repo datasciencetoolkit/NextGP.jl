@@ -35,7 +35,8 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 
 	ME = Array{Array{Float64,2},1}(undef,0)
 	namesME = []
-	
+	regionSizes = []
+		
 	#column id within pedigree
 	idRE = Array{Array{Float64,2},1}(undef,0)
         idRE = []
@@ -45,11 +46,14 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 			println("$i has type BayesPR Type")
 			println("terms4StatsModels[i]: $(terms4StatsModels[i])")
 			arg1 = repr((f.rhs[i].args_parsed)[1])
+			arg2 = repr((f.rhs[i].args_parsed)[2])
 			path = paths2geno[Symbol(arg1)]
 			thisM = CSV.read(path,CSV.Tables.matrix)
-			println("size of $arg1: $(size(thisM))")
+			println("size of $arg1 data: $(size(thisM))")
+			println("region size for $arg1: $arg2")
 			push!(ME,thisM)
 			push!(namesME, terms4StatsModels[i])
+			push!(regionSizes, arg2)
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
                         println("$i has type ran Type")
                         sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
@@ -92,7 +96,7 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 
 	deleteat!(FE, sort(delThese))
         
-        return idRE, vec(yVec), FE, RE, ME, namesFE, namesRE, namesME
+        return idRE, vec(yVec), FE, RE, ME, regionSizes ,namesFE, namesRE, namesME
         end
 
 end

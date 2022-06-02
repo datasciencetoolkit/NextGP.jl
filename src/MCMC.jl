@@ -21,11 +21,11 @@ include("samplers.jl")
 
 
 runGibbs = function(formula,userHints,userData,userPedData,nChain,nBurn,nThin,blockThese,VCV;genotypes...)
-	idY,yVec,FE,RE,GE,namesFE,namesRE,namesGE = equations.mme(formula,userHints,userData,userPedData,blockThese;paths2geno=genotypes)
+	idY,yVec,FE,RE,ME,regionSizes,namesFE,namesRE,namesME = equations.mme(formula,userHints,userData,userPedData,blockThese;paths2geno=genotypes)
 	print(InteractiveUtils.varinfo())
         samplers.runSampler(idY,yVec,FE,RE,nChain,nBurn,nThin,VCV)
 	print(InteractiveUtils.varinfo())
-        return(yVec,FE,RE,GE,namesFE,namesRE,namesGE)
+        return(yVec,FE,RE,ME,namesFE,namesRE,namesME)
 end
 
 end
