@@ -22,9 +22,8 @@ include("samplers.jl")
 
 runGibbs = function(formula,userHints,userData,userPedData,nChain,nBurn,nThin,blockThese,VCV;genotypes...)
 	idY,yVec,FE,RE,ME,regionSizes,namesFE,namesRE,namesME = equations.mme(formula,userHints,userData,userPedData,blockThese;paths2geno=genotypes)
-	print(InteractiveUtils.varinfo())
-        samplers.runSampler(idY,yVec,FE,RE,nChain,nBurn,nThin,VCV)
-	print(InteractiveUtils.varinfo())
+        samplers.runSampler(idY,yVec,FE,RE,nChain,nBurn,nThin,VCV,ME,regionSizes)
+	println("region sizes: $regionSizes")
         return(yVec,FE,RE,ME,namesFE,namesRE,namesME)
 end
 
