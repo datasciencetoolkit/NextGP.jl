@@ -35,11 +35,11 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 
 	ME = Array{Array{Float64,2},1}(undef,0)
 	namesME = Array{String,1}(undef,0)
-	regionSizes = Array{Int32,1}(undef,0)
+	regionSizes = Array{Int64,1}(undef,0)
 		
 	#column id within pedigree
 	idRE = Array{Array{Float64,2},1}(undef,0)
-        idRE = Array{Int32,1}(undef,0)
+        idRE = Array{Int64,1}(undef,0)
 	
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
