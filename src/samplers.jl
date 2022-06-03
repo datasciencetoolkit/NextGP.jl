@@ -125,7 +125,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 		Mp  = similar(M')
        		mpm = Array{Array{Float64, 1},1}(undef,0)
        		for m in 1:nMarkerSets
-               		push!(mpm,diag(Z[m]'Z[m])) #will not work for large matrices!!!!
+               		push!(mpm,diag(M[m]'M[m])) #will not work for large matrices!!!!
                 	Mp[m]  = M[m]'
         	end
 
