@@ -5,6 +5,7 @@ using StatsBase
 using Printf
 
 include("outFiles.jl")
+include("misc.jl")
 
 export runSampler
 
@@ -106,7 +107,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 
 	#ADD MARKERS
 		# read map file and make regions
-		
+	prep2RegionData(map,rS)				
 	
 
         for iter in 1:chainLength
