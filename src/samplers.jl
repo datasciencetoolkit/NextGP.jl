@@ -161,7 +161,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
 		
 		#sample marker effects
-		sampleM!(M,Mp,beta,mpmMat,nMarkerSets,regionArray,ycorr,varE,varBeta)
+		sampleM!(M,Mp,beta,mpm,nMarkerSets,regionArray,ycorr,varE,varBeta)
 
         	#print
 		if iter in these2Keep
