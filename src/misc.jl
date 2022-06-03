@@ -19,11 +19,11 @@ return(A[1:n, 1:n])
 end
 
 #make regions
-function prep2RegionData(snpInfo,fixedRegSize)
+function prep2RegionData(mapFile,fixedRegSize)
     accRegion = 0
     accRegionVec = [0]
     SNPgroups = []
-    mapData = readtable("$snpInfo", header=true, separator=' ')
+    mapData = CSV.read(mapFile,header=true,DataFrame)
 
     if fixedRegSize==99
         println("fixedRedSize $fixedRegSize")
