@@ -119,7 +119,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 	println("size regionArray: $(length(regionArray))")
 	println("size regionArray: $(length.(regionArray))")
 	
-	nRegions  = length.(regionArray)) #per component
+	nRegions  = length.(regionArray) #per component
 
 		#storage
 
