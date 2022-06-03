@@ -109,9 +109,16 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 
 	#ADD MARKERS
 		# read map file and make regions
-	prep2RegionData(map,rS[1]) ###first data				
-	
+	regionArray =  Array{Array{Float64,1},1}(undef,0)
+	for m in 1:nMarkerSets
+		theseRegions = prep2RegionData(map[m],rS[m]) ###first data				
+		push!(regionArray,theseRegions)
+	end
+	println("size regionArray: $(size(RegionArray))")
+	println("size regionArray: $(size.(RegionArray))")
 
+
+	#Start McMC
         for iter in 1:chainLength
 		#sample residual variance
 	       	varE = sampleVarE(νS_E,ycorr,dfE,nData)
