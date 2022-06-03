@@ -217,7 +217,7 @@ function sampleM!(M,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
 			theseLoci = regionsMat[mSet][r]
 			regionSize = length(theseLoci)
 #			println("mSet: $mSet $regionSize $theseLoci")
-			lambda = diag(varE./(varM[mSet][r]))
+			lambda = varE/(varM[mSet][r])
 			println("mSet: $mSet reg size: $regionSize lambda: $lambda")
 		end	
 #		BLAS.axpy!(beta[mSet,locus],view(M1,:,locus),ycorr)
