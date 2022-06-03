@@ -12,7 +12,7 @@ include("misc.jl")
 export runSampler
 
 #main sampler
-function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS) ##varE will be fixed for now
+function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS) ##varE will be fixed for now
 	
 
 	#output settings
@@ -36,7 +36,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
                 iXpX[x] = inv(X[x]'X[x])
         end
 
-	Zp  = similar(Z')
+	Zp  = similar(Z) #similar(Z')
 	zpz = Array{Array{Float64, 1},1}(undef,0)
 	for z in 1:nRand
                 push!(zpz,diag(Z[z]'Z[z]))
@@ -113,7 +113,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 		# read map file and make regions
 	regionArray =  Array{Array{UnitRange{Int64},1},1}(undef,0)
 	for m in 1:nMarkerSets
-		theseRegions = prep2RegionData(map[m],rS[m]) ###first data
+		theseRegions = prep2RegionData(paths2maps[m],rS[m]) ###first data
 		push!(regionArray,theseRegions)
 	end
 	println("size regionArray: $(length(regionArray))")
@@ -122,11 +122,11 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 	nRegions  = length.(regionArray) #per component
 
 		#make mpm
-		Mp  = similar(M')
+#		Mp  = similar(M) #not needed coz I use BLAS.dot
        		mpm = Array{Array{Float64, 1},1}(undef,0)
        		for m in 1:nMarkerSets
                		push!(mpm,diag(M[m]'M[m])) #will not work for large matrices!!!!
-                	Mp[m]  = M[m]'
+#                	Mp[m]  = M[m]'
         	end
 
 		#storage
@@ -229,7 +229,7 @@ function sampleM!(MMat,MpMat,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
 			println("mSet: $mSet reg size: $regionSize lambda: $lambda")
 			for locus in theseLoci
 				BLAS.axpy!(beta[mSet,locus],MMat[mSet][:,locus],ycorr)
-				rhs = BLAS.dot(MpMat[mSet][:,locus],ycorr)
+				rhs = BLAS.dot(MMat[mSet][:,locus],ycorr)
 				lhs = mpmMat[mSet][locus] + lambda
 				beta[mSet,locus] = sampleBeta(meanBeta, lhs, varE)
 				BLAS.axpy!(-1.0*beta[mSet,locus],MMat[mSet][:,locus],ycorr)
