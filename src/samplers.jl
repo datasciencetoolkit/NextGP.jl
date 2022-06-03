@@ -161,7 +161,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2m
 		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
 		
 		#sample marker effects
-		sampleM!(M,Mp,beta,mpm,nMarkerSets,regionArray,ycorr,varE,varBeta)
+		sampleM!(M,beta,mpm,nMarkerSets,regionArray,ycorr,varE,varBeta)
 
         	#print
 		if iter in these2Keep
@@ -218,7 +218,7 @@ end
 
 
 #Sampling marker effects
-function sampleM!(MMat,MpMat,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
+function sampleM!(MMat,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
         #for each marker set
         for mSet in 1:nMSet
 		for r in 1:length(regionsMat[mSet]) #dont have to compute 1000000 times, take it out
