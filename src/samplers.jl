@@ -3,6 +3,7 @@ module samplers
 using Distributions, LinearAlgebra
 using StatsBase
 using Printf
+using CSV
 
 include("outFiles.jl")
 include("misc.jl")
