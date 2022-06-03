@@ -4,6 +4,7 @@ using Distributions, LinearAlgebra
 using StatsBase
 using Printf
 using CSV
+using DataFrames
 
 include("outFiles.jl")
 include("misc.jl")
