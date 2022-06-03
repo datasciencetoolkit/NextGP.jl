@@ -203,7 +203,7 @@ function sampleM!(M,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
         #for each marker set
         for mSet in 1:nMSet
 		for r in 1:length(regionsMat[mSet]) #dont have to compute 1000000 times, take it out
-			theseLoci = regionsMat[r]
+			theseLoci = regionsMat[mSet][r]
 			regionSize = length(theseLoci)
 			println("mSet: $mSet $regionSize $theseLoci")
 		end	
