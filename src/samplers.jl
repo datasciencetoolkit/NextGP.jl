@@ -121,6 +121,14 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 	
 	nRegions  = length.(regionArray) #per component
 
+		#make mpm
+		Mp  = similar(M')
+       		mpm = Array{Array{Float64, 1},1}(undef,0)
+       		for m in 1:nMarkerSets
+               		push!(mpm,diag(Z[m]'Z[m])) #will not work for large matrices!!!!
+                	Mp[m]  = M[m]'
+        	end
+
 		#storage
 
 	###FIXED FOR NOW
@@ -153,7 +161,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
 		
 		#sample marker effects
-		sampleM!(M,beta,mpmMat,nMarkerSets,regionArray,ycorr,varE,varBeta)
+		sampleM!(M,Mp,beta,mpmMat,nMarkerSets,regionArray,ycorr,varE,varBeta)
 
         	#print
 		if iter in these2Keep
@@ -210,7 +218,7 @@ end
 
 
 #Sampling marker effects
-function sampleM!(M,Mp,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
+function sampleM!(MMat,MpMat,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
         #for each marker set
         for mSet in 1:nMSet
 		for r in 1:length(regionsMat[mSet]) #dont have to compute 1000000 times, take it out
@@ -220,11 +228,11 @@ function sampleM!(M,Mp,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
 			lambda = varE/(varM[mSet][r])
 			println("mSet: $mSet reg size: $regionSize lambda: $lambda")
 			for locus in 1:theseLoci
-				BLAS.axpy!(beta[mSet,locus],M[mSet][:,locus],ycorr)
-				rhs = BLAS.dot(Mp[mSet][locus],ycorr)
+				BLAS.axpy!(beta[mSet,locus],MMat[mSet][:,locus],ycorr)
+				rhs = BLAS.dot(MpMat[mSet][locus],ycorr)
 				lhs = mpmMat[mSet][locus] + lambda
 				beta[mSet,locus] = sampleBeta(meanBeta, lhs, varE)
-				BLAS.axpy!(-1.0*beta[mSet,locus],M[mSet][:,locus],ycorr)
+				BLAS.axpy!(-1.0*beta[mSet,locus],MMat[mSet][:,locus],ycorr)
 			end
 		end	
 #		BLAS.axpy!(beta[mSet,locus],view(M1,:,locus),ycorr)
