@@ -114,8 +114,8 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 		theseRegions = prep2RegionData(map[m],rS[m]) ###first data				
 		push!(regionArray,theseRegions)
 	end
-	println("size regionArray: $(size(RegionArray))")
-	println("size regionArray: $(size.(RegionArray))")
+	println("size regionArray: $(size(regionArray))")
+	println("size regionArray: $(size.(regionArray))")
 
 
 	#Start McMC
