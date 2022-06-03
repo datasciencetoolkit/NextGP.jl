@@ -109,7 +109,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 
 	#ADD MARKERS
 		# read map file and make regions
-	prep2RegionData(map,rS)				
+	prep2RegionData(map,rS[1]) ###first data				
 	
 
         for iter in 1:chainLength
