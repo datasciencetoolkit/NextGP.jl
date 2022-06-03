@@ -24,6 +24,8 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 	nRand = length(Z)
 	nData = length(Y)
 	nMarkerSets = length(M)
+	nMarkers    = [size(M[m],2) for m in 1:nMarkerSets]	
+	println("nMarkers: $nMarkers")
 
         #initial computations and settings
 	ycorr = deepcopy(Y)
@@ -111,12 +113,14 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 		# read map file and make regions
 	regionArray =  Array{Array{UnitRange{Int64},1},1}(undef,0)
 	for m in 1:nMarkerSets
-		theseRegions = prep2RegionData(map[m],rS[m]) ###first data				
+		theseRegions = prep2RegionData(map[m],rS[m]) ###first data
 		push!(regionArray,theseRegions)
 	end
-	println("size regionArray: $(size(regionArray))")
-	println("size regionArray: $(size.(regionArray))")
+	println("size regionArray: $(length(regionArray))")
+	println("size regionArray: $(length.(regionArray))")
 
+		#storage
+	beta = zeros(Float64,nMarkerSets,maximum(nMarkers)) #can allow unequal length! Remove tail zeros for printing....
 
 	#Start McMC
         for iter in 1:chainLength
@@ -134,6 +138,11 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 
 		#sample variances
 		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
+		
+		#sample marker effects
+		mpmMat = 0
+		varM = 0
+		sampleM!(M,beta,mpmMat,nMarkerSets,regionArray,ycorr,varE,varM)
 
         	#print
 		if iter in these2Keep
@@ -186,6 +195,27 @@ function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
 		u[z] = uVec
         	ycorr .-= Zmat[z]*uVec
 	end
+end
+
+
+#Sampling marker effects
+function sampleM!(M,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
+        #for each marker set
+        for mSet in 1:nMSet
+		for r in 1:length(regionsMat[mSet]) #dont have to compute 1000000 times, take it out
+			theseLoci = regionsMat[r]
+			regionSize = length(theseLoci)
+			println("mSet: $mSet $regionSize $theseLoci")
+		end	
+#		BLAS.axpy!(beta[mSet,locus],view(M1,:,locus),ycorr)
+#                rhs      = X[x]'*ycorr
+#                meanMu   = iXpX[x]*rhs
+#                if nColEachX[x] == 1
+#                        b[x] .= rand(Normal(meanMu[],sqrt((iXpX[x]*varE))[]))
+#                else b[x] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
+#                end
+#                ycorr    .-= X[x]*b[x]
+        end
 end
 
 #sample random effects' variances
