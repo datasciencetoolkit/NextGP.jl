@@ -231,6 +231,7 @@ function sampleM!(MMat,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
 				BLAS.axpy!(beta[mSet,locus],MMat[mSet][:,locus],ycorr)
 				rhs = BLAS.dot(MMat[mSet][:,locus],ycorr)
 				lhs = mpmMat[mSet][locus] + lambda
+				meanBeta = lhs\rhs
 				beta[mSet,locus] = sampleBeta(meanBeta, lhs, varE)
 				BLAS.axpy!(-1.0*beta[mSet,locus],MMat[mSet][:,locus],ycorr)
 			end
