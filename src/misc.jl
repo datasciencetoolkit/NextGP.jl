@@ -39,7 +39,7 @@ function prep2RegionData(mapFile,fixedRegSize)
 	snpInfoTemp = DataFrame(snpID=Vector{Any}(missing, 0),
                           groupID=Vector{Any}(missing, 0), copycols=false)
 		
-       	for c in 1:unique(mapData[!,:chrID])
+       	for c in unique(mapData[!,:chrID])
 	    mapData = mapData[!,[:snpID,:snpOrder,:chrID]]	
             thisChr = mapData[mapData[!,:chrID] .== c,:]
             totLociChr = size(thisChr,1)
