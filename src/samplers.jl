@@ -210,7 +210,7 @@ end
 
 
 #Sampling marker effects
-function sampleM!(M,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
+function sampleM!(M,Mp,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
         #for each marker set
         for mSet in 1:nMSet
 		for r in 1:length(regionsMat[mSet]) #dont have to compute 1000000 times, take it out
@@ -219,6 +219,13 @@ function sampleM!(M,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
 #			println("mSet: $mSet $regionSize $theseLoci")
 			lambda = varE/(varM[mSet][r])
 			println("mSet: $mSet reg size: $regionSize lambda: $lambda")
+			for locus in 1:theseLoci
+				BLAS.axpy!(beta[mSet,locus],M[mSet][:,locus],ycorr)
+				rhs = BLAS.dot(Mp[mSet][locus],ycorr)
+				lhs = mpmMat[mSet][locus] + lambda
+				beta[mSet,locus] = sampleBeta(meanBeta, lhs, varE)
+				BLAS.axpy!(-1.0*beta[mSet,locus],M[mSet][:,locus],ycorr)
+			end
 		end	
 #		BLAS.axpy!(beta[mSet,locus],view(M1,:,locus),ycorr)
 #                rhs      = X[x]'*ycorr
@@ -229,6 +236,11 @@ function sampleM!(M,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
 #                end
 #                ycorr    .-= X[x]*b[x]
         end
+end
+
+#sample marker effects
+function sampleBeta(meanBeta, lhs, varE)
+    return rand(Normal(meanBeta,sqrt(lhs\varE)))
 end
 
 #sample random effects' variances
