@@ -227,7 +227,7 @@ function sampleM!(MMat,MpMat,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
 #			println("mSet: $mSet $regionSize $theseLoci")
 			lambda = varE/(varM[mSet][r])
 			println("mSet: $mSet reg size: $regionSize lambda: $lambda")
-			for locus in 1:theseLoci
+			for locus in theseLoci
 				BLAS.axpy!(beta[mSet,locus],MMat[mSet][:,locus],ycorr)
 				rhs = BLAS.dot(MpMat[mSet][locus],ycorr)
 				lhs = mpmMat[mSet][locus] + lambda
