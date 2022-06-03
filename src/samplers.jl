@@ -24,7 +24,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 	nRand = length(Z)
 	nData = length(Y)
 	nMarkerSets = length(M)
-	nMarkers    = [size(M[m],2) for m in 1:nMarkerSets]	
+	nMarkers    = [size(M[m],2) for m in 1:nMarkerSets]
 	println("nMarkers: $nMarkers")
 
         #initial computations and settings
@@ -118,9 +118,22 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 	end
 	println("size regionArray: $(length(regionArray))")
 	println("size regionArray: $(length.(regionArray))")
+	
+	nRegions  = length.(regionArray)) #per component
 
 		#storage
+
+	###FIXED FOR NOW
+	varM = 0.001
+	mpmMat = 0
+
 	beta = zeros(Float64,nMarkerSets,maximum(nMarkers)) #can allow unequal length! Remove tail zeros for printing....
+#	vcovBeta = fill(Matrix(Diagonal(varM)),maximum(nRegions)) #can allow unequal length! Remove tail zeros for printing....
+
+	varBeta = Array{Array{Float64},1}(undef,0)
+        for m in 1:nMarkerSets
+                push!(varBeta,fill(varM,nRegions[m]))
+        end
 
 	#Start McMC
         for iter in 1:chainLength
@@ -140,9 +153,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
 		
 		#sample marker effects
-		mpmMat = 0
-		varM = 0
-		sampleM!(M,beta,mpmMat,nMarkerSets,regionArray,ycorr,varE,varM)
+		sampleM!(M,beta,mpmMat,nMarkerSets,regionArray,ycorr,varE,varBeta)
 
         	#print
 		if iter in these2Keep
@@ -205,7 +216,9 @@ function sampleM!(M,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
 		for r in 1:length(regionsMat[mSet]) #dont have to compute 1000000 times, take it out
 			theseLoci = regionsMat[mSet][r]
 			regionSize = length(theseLoci)
-			println("mSet: $mSet $regionSize $theseLoci")
+#			println("mSet: $mSet $regionSize $theseLoci")
+			lambda = diag(varE./(varM[mSet][r]))
+			println("mSet: $mSet reg size: $regionSize lambda: $lambda")
 		end	
 #		BLAS.axpy!(beta[mSet,locus],view(M1,:,locus),ycorr)
 #                rhs      = X[x]'*ycorr
