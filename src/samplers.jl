@@ -109,7 +109,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,map,rS)
 
 	#ADD MARKERS
 		# read map file and make regions
-	regionArray =  Array{Array{Float64,1},1}(undef,0)
+	regionArray =  Array{Array{UnitRange{Int64},1},1}(undef,0)
 	for m in 1:nMarkerSets
 		theseRegions = prep2RegionData(map[m],rS[m]) ###first data				
 		push!(regionArray,theseRegions)
