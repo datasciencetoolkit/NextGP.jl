@@ -175,7 +175,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		sampleM!(M,beta,mpm,nMarkerSets,regionArray,ycorr,varE,varBeta)
 
 		#sample marker variances
-		
+		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionsArray,scaleM,dfM)		
 
         	#print
 		if iter in these2Keep
@@ -232,15 +232,13 @@ end
 
 
 #Sampling marker effects
-function sampleM!(MMat,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
+function sampleM!(MMat,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varBeta)
         #for each marker set
         for mSet in 1:nMSet
 		for r in 1:length(regionsMat[mSet]) #dont have to compute 1000000 times, take it out
 			theseLoci = regionsMat[mSet][r]
 			regionSize = length(theseLoci)
-#			println("mSet: $mSet $regionSize $theseLoci")
-			lambda = varE/(varM[mSet][r])
-			println("mSet: $mSet reg size: $regionSize lambda: $lambda")
+			lambda = varE/(varBeta[mSet][r])
 			for locus in theseLoci
 				BLAS.axpy!(beta[mSet,locus],MMat[mSet][:,locus],ycorr)
 				rhs = BLAS.dot(MMat[mSet][:,locus],ycorr)
@@ -264,6 +262,24 @@ function sampleRanVar!(varU,nRand,νS_ranVar,effVec,df_ranVar,iStrMat)
 		n = size(iStrMat[z],2)
 		varU[z] = (νS_ranVar[z] + effVec[z]'*iStrMat[z]*effVec[z])/rand(Chisq(df_ranVar + n))
 	end
+end
+
+#Sampling marker effects' variances
+function sampleMarkerVar!(beta,varBeta,nMSet,regionsMat,scaleM,dfM)
+        #for each marker set
+        for mSet in 1:nMSet
+                for r in 1:length(regionsMat[mSet]) #dont have to compute 1000000 times, take it out
+                        theseLoci = regionsMat[mSet][r]
+                        regionSize = length(theseLoci)
+#                       println("mSet: $mSet $regionSize $theseLoci")
+			varBeta = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[mSet,theseLoci],regionSize)
+                end
+        end
+end
+
+#sample marker variances
+function sampleVarBeta(scalem,dfm,whichLoci,regionSize)
+	return (scalem*dfm + dot(whichLoci,whichLoci)) / rand(Chisq(scalem + regionSize))
 end
 
 #Sample residual variance
