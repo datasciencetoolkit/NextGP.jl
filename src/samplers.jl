@@ -12,7 +12,7 @@ include("misc.jl")
 export runSampler
 
 #main sampler
-function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,priorVarM,M,paths2maps,rS) ##varE will be fixed for now
+function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prior,M,paths2maps,rS) ##varE will be fixed for now
 	
 
 	#output settings
