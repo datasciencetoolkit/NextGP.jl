@@ -183,8 +183,12 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 			IO.outMCMC(pwd(),"u",vcat(u...)')
 			IO.outMCMC(pwd(),"varE",varE)
 			IO.outMCMC(pwd(),"varU",varU')
+			for markers in nMarkerSets
+				IO.outMCMC(pwd(),"varM$(markers)",varBeta[markers]')
+			end
 	#		if onScreen==true
             			println("b, $(vcat(b...))") #i always vectorize b. maybe better to make it vector initially
+				println("b, $(var(M[1]*beta[1,:]))")
         #		end
 		end
 	end
