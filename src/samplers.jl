@@ -183,7 +183,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 			IO.outMCMC(pwd(),"u",vcat(u...)')
 			IO.outMCMC(pwd(),"varE",varE)
 			IO.outMCMC(pwd(),"varU",varU')
-			for markers in nMarkerSets
+			for markers in 1:nMarkerSets
 				IO.outMCMC(pwd(),"varM$(markers)",varBeta[markers]')
 			end
 	#		if onScreen==true
