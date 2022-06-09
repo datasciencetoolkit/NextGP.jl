@@ -175,7 +175,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		sampleM!(M,beta,mpm,nMarkerSets,regionArray,ycorr,varE,varBeta)
 
 		#sample marker variances
-		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionsArray,scaleM,dfM)		
+		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionArray,scaleM,dfM)		
 
         	#print
 		if iter in these2Keep
