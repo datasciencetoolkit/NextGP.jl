@@ -48,6 +48,8 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 			arg2 = parse(Int64,repr((f.rhs[i].args_parsed)[2]))
 			path = paths2geno[Symbol(arg1)]
 			thisM = CSV.read(path,CSV.Tables.matrix)
+			#centering
+			thisM .-= mean(thisM,dims=1) 
 			println("size of $arg1 data: $(size(thisM))")
 			println("region size for $arg1: $arg2")
 			push!(ME,thisM)
