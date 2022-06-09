@@ -104,7 +104,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		scaleU[z] = varU_prior[z]*(dfDefault-2.0)/dfDefault
 	end	
 
-	scaleM = Array{Any,1}(undef,0)
+	scaleM = Array{Any,1}(undef,nMarkerSets)
 	for m in 1:nMarkerSets
 		nMComp = size(varM_prior[m],1)
                 nMComp > 1 ? scaleM[m] = varM_prior[m].*(dfM[m]-nMComp-1.0)  : scaleM[m] = varM_prior[m]*(dfM[m]-2.0)/dfM[m] #I make float and array of float
