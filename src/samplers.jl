@@ -85,7 +85,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
  
 	dfM = Array{Float64}(undef,0)
         for m in 1:nMarkerSets
-		size(varM_prior[m],1)>1 ? println("multivariate prior for marker set $m df=$(3+size(varM_prior[m],1))"): println("univariate prior for marker set $m df=$(3+size(varM_prior[m],1))")
+		size(varM_prior[m],1)>1 ? println("multivariate prior for marker set $m df=$(3+size(varM_prior[m],1))") : println("univariate prior for marker set $m df=$(3+size(varM_prior[m],1))")
                 push!(dfM,3.0+size(varM_prior[m],1))
         end
 
