@@ -1,6 +1,6 @@
 module equations
 
-using StatsModels, MixedModels, CategoricalArrays, CSV
+using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase
 
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
         isa(x1, CategoricalArray) ||
