@@ -188,7 +188,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 			end
 	#		if onScreen==true
             			println("b, $(vcat(b...))") #i always vectorize b. maybe better to make it vector initially
-				println("b, $(var(M[1]*beta[1,:]))")
+				println("vG, $(var(M[1]*beta[1,:]))")
         #		end
 		end
 	end
@@ -283,7 +283,7 @@ end
 
 #sample marker variances
 function sampleVarBeta(scalem,dfm,whichLoci,regionSize)
-	return (scalem*dfm + dot(whichLoci,whichLoci)) / rand(Chisq(scalem + regionSize))
+	return (scalem*dfm + dot(whichLoci,whichLoci)) / rand(Chisq(dfm + regionSize))
 end
 
 #Sample residual variance
