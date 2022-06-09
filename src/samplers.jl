@@ -14,7 +14,7 @@ export runSampler
 #main sampler
 function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prior,M,paths2maps,rS) ##varE will be fixed for now
 	
-
+	println("varM_prior $(varM_prior)")
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
 
