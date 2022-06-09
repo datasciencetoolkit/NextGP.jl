@@ -105,7 +105,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	scaleM = Array{Array{Float64},1}(undef,0) 
 	for m in 1:nMarkerSets
 		nMComp = size(varM_prior[m],1)
-                nMComp > 1 ? varM_prior[m].*(dfM[m]-nMComp[m]-1)  : scaleM[m] = varM_prior[m]*(dfM[m]-2.0)/dfM[m]
+                nMComp > 1 ? varM_prior[m].*(dfM[m]-nMComp[m]-1.0)  : scaleM[m] = [varM_prior[m]*(dfM[m]-2.0)/dfM[m]] #I make float and array of float
         end
 
 
