@@ -150,7 +150,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	beta = zeros(Float64,nMarkerSets,maximum(nMarkers)) #can allow unequal length! Remove tail zeros for printing....
 #	vcovBeta = fill(Matrix(Diagonal(varM)),maximum(nRegions)) #can allow unequal length! Remove tail zeros for printing....
 
-	varBeta = Array{Array{Float64},1}(undef,0)
+	varBeta = Array{Any,1}(undef,0)
         for m in 1:nMarkerSets
                 push!(varBeta,fill(varM_prior[m],nRegions[m]))
         end
