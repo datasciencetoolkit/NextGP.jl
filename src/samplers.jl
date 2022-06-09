@@ -276,7 +276,7 @@ function sampleMarkerVar!(beta,varBeta,nMSet,regionsMat,scaleM,dfM)
                         theseLoci = regionsMat[mSet][r]
                         regionSize = length(theseLoci)
 #                       println("mSet: $mSet $regionSize $theseLoci")
-			varBeta = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[mSet,theseLoci],regionSize)
+			varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[mSet,theseLoci],regionSize)
                 end
         end
 end
