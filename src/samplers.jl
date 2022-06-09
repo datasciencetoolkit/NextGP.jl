@@ -12,7 +12,7 @@ include("misc.jl")
 export runSampler
 
 #main sampler
-function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS) ##varE will be fixed for now
+function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,priorVarM,M,paths2maps,rS) ##varE will be fixed for now
 	
 
 	#output settings
@@ -80,9 +80,15 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2m
 	varE_prior = last(priorVCV,1)[1][2] #since last returns a tupple
 
 	#parameters for priors
-        dfE = 4
-	dfDefault = 4 
-	       
+        dfE = 4.0
+	dfDefault = 4.0
+ 
+	dfM = Array{Array{Float64},1}(undef,0)
+        for m in 1:nMarkerSets
+		println("size(varM_prior[m],1)>1 ? multivariate prior for marker set $m df=$(3+size(varM_prior[m],1)): univariate prior for marker set $m df=$(3+size(varM_prior[m],1))")
+                push!(dfM,3+size(varM_prior[m],1))
+        end
+		       
 	if varE_prior==0.0
 		varE_prior  = 0.0005
        		scaleE     = 0.0005
@@ -90,23 +96,26 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2m
        		scaleE    = varE_prior*(dfE-2.0)/dfE    
    	end
 	
-	##no 0.0005 prior adapted here yet
+	##no 0.0005 prior adapted here yet, also no correlated random effects
 	scaleU = zeros(nRand)
 	for z in 1:nRand
 		scaleU[z] = varU_prior[z]*(dfDefault-2.0)/dfDefault
 	end	
 
+	scaleM = Array{Array{Float64},1}(undef,0) 
+	for m in 1:nMarkerSets
+		nMComp = size(varM_prior[m],1)
+                nMComp > 1 ? varM_prior[m].*(dfM[m]-nMComp[m]-1)  : scaleM[m] = varM_prior[m]*(dfM[m]-2.0)/dfM[m]
+        end
 
-	#pre-computations using priors
+
+	#pre-computations using priors, not relevant for correlated random effects
    	νS_E = scaleE*dfE
 	νS_U = zeros(nRand)
 	for z in 1:nRand
                 νS_U[z] = scaleU[z]*dfDefault
-        end 
+        end
 
-
-	#FIXED RANDOM EFFECTS' VARIANCES
-	varU = varU_prior #for storage
 
 
 	#ADD MARKERS
@@ -131,8 +140,9 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2m
 
 		#storage
 
+	varU = varU_prior #for storage
+
 	###FIXED FOR NOW
-	varM = 0.001
 	mpmMat = 0
 
 	beta = zeros(Float64,nMarkerSets,maximum(nMarkers)) #can allow unequal length! Remove tail zeros for printing....
@@ -140,7 +150,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2m
 
 	varBeta = Array{Array{Float64},1}(undef,0)
         for m in 1:nMarkerSets
-                push!(varBeta,fill(varM,nRegions[m]))
+                push!(varBeta,fill(varM_prior[m],nRegions[m]))
         end
 
 	#Start McMC
@@ -156,12 +166,14 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2m
 		# always returns corrected Y and new u
 		sampleZ!(iVarStr,Z,Zp,zpz,nRand,varE,varU,u,ycorr)
 
-
 		#sample variances
 		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
 		
 		#sample marker effects
 		sampleM!(M,beta,mpm,nMarkerSets,regionArray,ycorr,varE,varBeta)
+
+		#sample marker variances
+		
 
         	#print
 		if iter in these2Keep
@@ -236,14 +248,6 @@ function sampleM!(MMat,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varM)
 				BLAS.axpy!(-1.0*beta[mSet,locus],MMat[mSet][:,locus],ycorr)
 			end
 		end	
-#		BLAS.axpy!(beta[mSet,locus],view(M1,:,locus),ycorr)
-#                rhs      = X[x]'*ycorr
-#                meanMu   = iXpX[x]*rhs
-#                if nColEachX[x] == 1
-#                        b[x] .= rand(Normal(meanMu[],sqrt((iXpX[x]*varE))[]))
-#                else b[x] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
-#                end
-#                ycorr    .-= X[x]*b[x]
         end
 end
 
