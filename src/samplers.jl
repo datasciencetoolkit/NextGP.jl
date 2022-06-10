@@ -24,22 +24,23 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	nRand = length(Z)
 	nData = length(Y)
 	nMarkerSets = length(M)
-	nMarkers    = [size(M[m],2) for m in 1:nMarkerSets]
+	nMarkers    = [size(M[m],2) for m in keys(M)]
 	println("nMarkers: $nMarkers")
 
         #initial computations and settings
 	ycorr = deepcopy(Y)
 	        
 	##make iXpX, Z', zpz (for uncor)
-        iXpX = similar(X)
-        for x in 1:nFix
+        iXpX = deepcopy(X)
+        for x in keys(X)
                 iXpX[x] = inv(X[x]'X[x])
         end
 
-	Zp  = similar(Z) #similar(Z')
-	zpz = Array{Array{Float64, 1},1}(undef,0)
-	for z in 1:nRand
-                push!(zpz,diag(Z[z]'Z[z]))
+	Zp  = deepcopy(Z) #similar(Z')
+#	zpz = Array{Array{Float64, 1},1}(undef,0)
+	zpz = Dict(Any,Any)()
+	for z in keys(Z)
+                zpz[z] = diag(Z[z]'Z[z]))
 		Zp[z]  = Z[z]'
         end
 	
@@ -47,7 +48,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
         b = Array{Array{Float64, 1},1}(undef,0)
         ##counts columns per effect
         nColEachX = []
-        for x in 1:nFix
+        for x in keys(X)
                 println(x)
                 nCol = size(X[x],2)
                 push!(b,fill(0.0,nCol))
@@ -60,7 +61,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	##get priors per effect
 	iVarStr = [] #inverses will be computed
 	varU_prior = []
-        for z in 1:nRand
+        for z in keys(Z)
                 println(z)
                 nCol = size(Z[z],2)
                 push!(u,fill(0.0,nCol))
@@ -133,10 +134,10 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	nRegions  = length.(regionArray) #per component
 
 		#make mpm
-#		Mp  = similar(M) #not needed coz I use BLAS.dot
-       		mpm = Array{Array{Float64, 1},1}(undef,0)
-       		for m in 1:nMarkerSets
-               		push!(mpm,diag(M[m]'M[m])) #will not work for large matrices!!!!
+#		Mp  = deepcopy(M) #not needed coz I use BLAS.dot
+       		mpm = Dict{Any,Any}()
+       		for m in keys(M)
+               		mpm[m] = diag(M[m]'M[m])) #will not work for large matrices!!!!
 #                	Mp[m]  = M[m]'
         	end
 
@@ -198,26 +199,28 @@ end
 #Sampling fixed effects
 function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 	#block for each effect 
-	for x in 1:nFix
+	for x in keys(X)
 		ycorr    .+= X[x]*b[x]
         	rhs      = X[x]'*ycorr
                 meanMu   = iXpX[x]*rhs
-		if nColEachX[x] == 1
-        		b[x] .= rand(Normal(meanMu[],sqrt((iXpX[x]*varE))[]))
-		else b[x] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
+		pos = findall(x.==collect(keys(X))) #position of key
+		if nColEachX[pos] == 1
+        		b[pos] .= rand(Normal(meanMu[],sqrt((iXpX[x]*varE))[]))
+		else b[pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
 		end
-        	ycorr    .-= X[x]*b[x]
+        	ycorr    .-= X[x]*b[pos]
 	end
 end
 
 #Sampling random effects
 function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
 	#block for each effect
-	for z in 1:nRand
-		uVec = deepcopy(u[z])
+	for z in keys(Z)
+		pos = findall(z.==collect(keys(Z))) 
+		uVec = deepcopy(u[pos])
 		iMat = iStrMat[z]
 		tempzpz = zpzMat[z] ###added
-		λz = varE/(varU[z])
+		λz = varE/(varU[pos])
 	        ycorr .+= Zmat[z]*uVec		
 	        Yi = ZpMat[z]*ycorr #computation of Z'ycorr for ALL  rhsU
 		nCol = length(zpzMat[z])
@@ -229,7 +232,7 @@ function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
                 	meanU = invLhsU*rhsU
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         	end
-		u[z] = uVec
+		u[pos] = uVec
         	ycorr .-= Zmat[z]*uVec
 	end
 end
@@ -238,18 +241,19 @@ end
 #Sampling marker effects
 function sampleM!(MMat,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varBeta)
         #for each marker set
-        for mSet in 1:nMSet
-		for r in 1:length(regionsMat[mSet]) #dont have to compute 1000000 times, take it out
-			theseLoci = regionsMat[mSet][r]
+        for mSet in keys(M)
+		pos = findall(mSet.==collect(keys(M))) 
+		for r in 1:length(regionsMat[pos]) #dont have to compute 1000000 times, take it out
+			theseLoci = regionsMat[pos][r]
 			regionSize = length(theseLoci)
-			lambda = varE/(varBeta[mSet][r])
+			lambda = varE/(varBeta[pos][r])
 			for locus in theseLoci
-				BLAS.axpy!(beta[mSet,locus],MMat[mSet][:,locus],ycorr)
+				BLAS.axpy!(beta[pos,locus],MMat[mSet][:,locus],ycorr)
 				rhs = BLAS.dot(MMat[mSet][:,locus],ycorr)
 				lhs = mpmMat[mSet][locus] + lambda
 				meanBeta = lhs\rhs
-				beta[mSet,locus] = sampleBeta(meanBeta, lhs, varE)
-				BLAS.axpy!(-1.0*beta[mSet,locus],MMat[mSet][:,locus],ycorr)
+				beta[pos,locus] = sampleBeta(meanBeta, lhs, varE)
+				BLAS.axpy!(-1.0*beta[pos,locus],MMat[mSet][:,locus],ycorr)
 			end
 		end	
         end

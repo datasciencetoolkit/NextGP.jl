@@ -27,14 +27,11 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 
         yVec = StatsModels.modelmatrix(f.lhs, userData)
 	
-        FE = Array{Array{Float64,2},1}(undef,0)
-        namesFE = Array{String,1}(undef,0)
+        FE = Dict{Any,Any}()
 
-        RE = Array{Array{Float64,2},1}(undef,0)
-        namesRE = Array{String,1}(undef,0)
+        RE = Dict{Any,Any}()
 
-	ME = Array{Array{Float64,2},1}(undef,0)
-	namesME = Array{String,1}(undef,0)
+	ME = Dict{Any,Any}()
 	regionSizes = Array{Int64,1}(undef,0)
 		
 	#column id within pedigree
@@ -52,8 +49,8 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 			thisM .-= mean(thisM,dims=1) 
 			println("size of $arg1 data: $(size(thisM))")
 			println("region size for $arg1: $arg2")
-			push!(ME,thisM)
-			push!(namesME, terms4StatsModels[i])
+			ME[arg1] = thisM
+                        thisM = 0 #I can directly merge to dict above
 			push!(regionSizes, arg2)
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
                         println("$i has type ran Type")
@@ -63,21 +60,24 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
                         println("sym1: $sym1 sym2: $sym2")
 			
 			IDs,thisZ = ranMat(sym1, sym2, userData, userPedData)
+			RE[sym1] = thisZ
+			thisZ = 0
 			push!(idRE,IDs)
-                        push!(RE,thisZ)
-                        push!(namesRE, terms4StatsModels[i])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         println("$i has type | Type")
                         my_sch = schema(userData, userHints) #work on userData and userHints
                         my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
 			#####NO IDs for this effect!!! Will be added later!!!!#####################################################
-                        push!(RE,modelcols(my_ApplySch, userData))
-                        push!(namesRE, terms4StatsModels[i])
+                       	thisZ = modelcols(my_ApplySch, userData)
+			RE[terms4StatsModels[i]] = thisZ
+			thisZ = 0
+			push!(RE,modelcols(my_ApplySch, userData))
 
                 else
                 println("$i has type $(typeof(f.rhs[i]))")
-                push!(FE,StatsModels.modelmatrix(f.rhs[i], userData,hints= userHints))
-                push!(namesFE, terms4StatsModels[i])
+		thisX = StatsModels.modelmatrix(f.rhs[i], userData,hints= userHints)
+		FE[terms4StatsModels[i]] = thisX
+		thisX = 0
                 end
         end
 
@@ -97,7 +97,7 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 
 	deleteat!(FE, sort(delThese))
         
-        return idRE, vec(yVec), FE, RE, ME, regionSizes ,namesFE, namesRE, namesME
+        return idRE, vec(yVec), FE, RE, ME, regionSizes
         end
 
 end
