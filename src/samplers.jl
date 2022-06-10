@@ -200,10 +200,10 @@ end
 function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 	#block for each effect 
 	for x in keys(X)
-		ycorr    .+= X[x]*b[x]
+		pos = findall(x.==collect(keys(X))) #position of key
+		ycorr    .+= X[x]*b[pos]
         	rhs      = X[x]'*ycorr
                 meanMu   = iXpX[x]*rhs
-		pos = findall(x.==collect(keys(X))) #position of key
 		if nColEachX[pos] == 1
         		b[pos] .= rand(Normal(meanMu[],sqrt((iXpX[x]*varE))[]))
 		else b[pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
