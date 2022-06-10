@@ -200,7 +200,7 @@ end
 function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 	#block for each effect 
 	for x in keys(X)
-		pos = findall(x.==collect(keys(X))) #position of key
+		pos = findall(x.==collect(keys(X)))[] #position of key
 		ycorr    .+= X[x]*b[pos]
         	rhs      = X[x]'*ycorr
                 meanMu   = iXpX[x]*rhs
