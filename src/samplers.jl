@@ -215,8 +215,8 @@ end
 #Sampling random effects
 function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
 	#block for each effect
-	for z in keys(ZMat)
-		pos = findall(z.==collect(keys(ZMat)))[] 
+	for z in keys(Zmat)
+		pos = findall(z.==collect(keys(Zmat)))[] 
 		uVec = deepcopy(u[pos])
 		iMat = iStrMat[z]
 		tempzpz = zpzMat[z] ###added
