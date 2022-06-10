@@ -38,7 +38,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 	Zp  = deepcopy(Z) #similar(Z')
 #	zpz = Array{Array{Float64, 1},1}(undef,0)
-	zpz = Dict(Any,Any)()
+	zpz = Dict{Any,Any}()
 	for z in keys(Z)
                 zpz[z] = diag(Z[z]'Z[z])
 		Zp[z]  = Z[z]'
