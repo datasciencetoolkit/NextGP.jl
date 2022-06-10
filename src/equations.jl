@@ -95,7 +95,7 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 		push!(mergedOnes, blockThese)
 	end
 
-	deleteat!(FE, sort(delThese))
+	delete!(FE, sort(delThese))
         
         return idRE, vec(yVec), FE, RE, ME, regionSizes
         end
