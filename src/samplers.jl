@@ -215,8 +215,8 @@ end
 #Sampling random effects
 function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
 	#block for each effect
-	for z in keys(Z)
-		pos = findall(z.==collect(keys(Z))) 
+	for z in keys(ZMat)
+		pos = findall(z.==collect(keys(ZMat)))[] 
 		uVec = deepcopy(u[pos])
 		iMat = iStrMat[z]
 		tempzpz = zpzMat[z] ###added
@@ -241,8 +241,8 @@ end
 #Sampling marker effects
 function sampleM!(MMat,beta,mpmMat,nMSet,regionsMat,ycorr,varE,varBeta)
         #for each marker set
-        for mSet in keys(M)
-		pos = findall(mSet.==collect(keys(M))) 
+        for mSet in keys(MMat)
+		pos = findall(mSet.==collect(keys(MMat)))[] 
 		for r in 1:length(regionsMat[pos]) #dont have to compute 1000000 times, take it out
 			theseLoci = regionsMat[pos][r]
 			regionSize = length(theseLoci)
