@@ -40,7 +40,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 #	zpz = Array{Array{Float64, 1},1}(undef,0)
 	zpz = Dict(Any,Any)()
 	for z in keys(Z)
-                zpz[z] = diag(Z[z]'Z[z]))
+                zpz[z] = diag(Z[z]'Z[z])
 		Zp[z]  = Z[z]'
         end
 	
@@ -137,7 +137,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 #		Mp  = deepcopy(M) #not needed coz I use BLAS.dot
        		mpm = Dict{Any,Any}()
        		for m in keys(M)
-               		mpm[m] = diag(M[m]'M[m])) #will not work for large matrices!!!!
+               		mpm[m] = diag(M[m]'M[m]) #will not work for large matrices!!!!
 #                	Mp[m]  = M[m]'
         	end
 
