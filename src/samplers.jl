@@ -189,7 +189,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 			end
 	#		if onScreen==true
             			println("b, $(vcat(b...))") #i always vectorize b. maybe better to make it vector initially
-				println("vG, $(var(M[1]*beta[1,:]))")
+#				println("vG, $(var(M[1]*beta[1,:]))")
         #		end
 		end
 	end
