@@ -180,7 +180,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		
 		#sample marker effects
 @time		sampleM!(M,beta,mpm,nMarkerSets,regionArray,ycorr,varE,varBeta)
-@time           sampleM2!(M,beta,mpm,nMarkerSets,regionArray,ycorr,varE,varBeta)
+@time           sampleM2!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,ycorr,varE,varBeta)
 
 		#sample marker variances
 		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionArray,scaleM,dfM)		
