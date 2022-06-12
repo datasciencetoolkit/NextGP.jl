@@ -185,21 +185,21 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		
 		#sample fixed effects
         	#always returns corrected Y and new b
-@time           sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
+	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
 	
 		#sample random effects
 		# always returns corrected Y and new u
-@time		sampleZ!(iVarStr,Z,Zp,zpz,nRand,varE,varU,u,ycorr)
+		sampleZ!(iVarStr,Z,Zp,zpz,nRand,varE,varU,u,ycorr)
 
 		#sample variances
-@time		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
+		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
 		
 		#sample marker effects
 @time	        sampleM!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta)
 
 		#sample marker variances
-@time		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionArray,scaleM,dfM)		
-@time           sampleMarkerVar2!(beta,varBeta2,nMarkerSets,MKeyPos,nRegions,regionArray,scaleM,dfM)
+		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionArray,scaleM,dfM)		
+           sampleMarkerVar2!(beta,varBeta2,nMarkerSets,MKeyPos,nRegions,regionArray,scaleM,dfM)
 
         	#print
 		if iter in these2Keep
@@ -302,8 +302,7 @@ function sampleMarkerVar!(beta,varBeta,nMSet,regionsMat,scaleM,dfM)
                 for r in 1:length(regionsMat[mSet]) #dont have to compute 1000000 times, take it out
                         theseLoci = regionsMat[mSet][r]
                         regionSize = length(theseLoci)
-#                       println("mSet: $mSet $regionSize $theseLoci")
-			varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[mSet,theseLoci],regionSize)
+@time			varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[mSet,theseLoci],regionSize)
                 end
         end
 end
@@ -314,8 +313,7 @@ function sampleMarkerVar2!(beta,varBeta2,nMSet,keyM,regions,regionsMat,scaleM,df
                 for r in 1:regions[keyM[mSet]] #dont have to compute 1000000 times, take it out
                         theseLoci = regionsMat[keyM[mSet]][r]
                         regionSize = length(theseLoci)
-#                       println("mSet: $mSet $regionSize $theseLoci")
-                        varBeta2[mSet][r] = sampleVarBeta(scaleM[keyM[mSet]],dfM[keyM[mSet]],beta[keyM[mSet],theseLoci],regionSize)
+@time                        varBeta2[mSet][r] = sampleVarBeta(scaleM[keyM[mSet]],dfM[keyM[mSet]],beta[keyM[mSet],theseLoci],regionSize)
                 end
         end
 end
