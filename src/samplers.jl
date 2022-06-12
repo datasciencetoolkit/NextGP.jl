@@ -310,10 +310,11 @@ end
 function sampleMarkerVar2!(beta,varBeta2,nMSet,keyM,regions,regionsMat,scaleM,dfM)
         #for each marker set
         for mSet in keys(varBeta2)
-                for r in 1:regions[keyM[mSet]] #dont have to compute 1000000 times, take it out
-                        theseLoci = regionsMat[keyM[mSet]][r]
+		pos = keyM[mSet]
+                for r in 1:regions[pos] #dont have to compute 1000000 times, take it out
+                        theseLoci = regionsMat[pos][r]
                         regionSize = length(theseLoci)
-                        varBeta2[mSet][r] = sampleVarBeta(scaleM[keyM[mSet]],dfM[keyM[mSet]],beta[keyM[mSet],theseLoci],regionSize)
+                        varBeta2[mSet][r] = sampleVarBeta(scaleM[pos],dfM[pos],beta[pos,theseLoci],regionSize)
                 end
         end
 end
