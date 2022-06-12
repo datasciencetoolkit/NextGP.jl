@@ -195,11 +195,11 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
 		
 		#sample marker effects
-@time	        sampleM!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta)
+	        sampleM!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta)
 
 		#sample marker variances
-		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionArray,scaleM,dfM)		
-           sampleMarkerVar2!(beta,varBeta2,nMarkerSets,MKeyPos,nRegions,regionArray,scaleM,dfM)
+@time		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionArray,scaleM,dfM)		
+@time           sampleMarkerVar2!(beta,varBeta2,nMarkerSets,MKeyPos,nRegions,regionArray,scaleM,dfM)
 
         	#print
 		if iter in these2Keep
@@ -302,7 +302,7 @@ function sampleMarkerVar!(beta,varBeta,nMSet,regionsMat,scaleM,dfM)
                 for r in 1:length(regionsMat[mSet]) #dont have to compute 1000000 times, take it out
                         theseLoci = regionsMat[mSet][r]
                         regionSize = length(theseLoci)
-@time			varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[mSet,theseLoci],regionSize)
+			varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[mSet,theseLoci],regionSize)
                 end
         end
 end
@@ -326,7 +326,7 @@ function sampleMarkerVar2!(beta,varBeta2,nMSet,keyM,regions,regionsMat,scaleM,df
 			print(r)
 			theseLoci = collect(r)
                         regionSize = length(theseLoci)
-@time                        varBeta2[mSet][r] .= sampleVarBeta(scaleM[keyM[mSet]],dfM[keyM[mSet]],beta[keyM[mSet],theseLoci],regionSize)
+                        varBeta2[mSet][r] .= sampleVarBeta(scaleM[keyM[mSet]],dfM[keyM[mSet]],beta[keyM[mSet],theseLoci],regionSize)
                 end
         end
 end
