@@ -203,11 +203,11 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
         	#print
 		if iter in these2Keep
-@time			IO.outMCMC(pwd(),"b",vcat(b...)') ### currently no path is provided!!!!
-@time			IO.outMCMC(pwd(),"u",vcat(u...)')
-@time			IO.outMCMC(pwd(),"varE",varE)
-@time			IO.outMCMC(pwd(),"varU",varU')
-@time			for markers in 1:nMarkerSets
+			IO.outMCMC(pwd(),"b",vcat(b...)') ### currently no path is provided!!!!
+			IO.outMCMC(pwd(),"u",vcat(u...)')
+			IO.outMCMC(pwd(),"varE",varE)
+			IO.outMCMC(pwd(),"varU",varU')
+			for markers in 1:nMarkerSets
 				IO.outMCMC(pwd(),"varM$(markers)",varBeta[markers]')
 			end
 	#		if onScreen==true
