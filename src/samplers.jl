@@ -266,9 +266,7 @@ function sampleM!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varB
         #for each marker set
         for mSet in keys(MMat)
                 for r in 1:regions[keyM[mSet]]
-			println("r $r")
                         theseLoci = regionsMat[keyM[mSet]][r]
-			println("theseLoci $(theseLoci)")
                         regionSize = length(theseLoci)
                         lambda = varE/(varBeta[keyM[mSet]][r])
                         for locus in theseLoci
