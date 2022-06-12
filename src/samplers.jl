@@ -176,7 +176,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	for mSet in keys(M)
 		varBeta2[mSet] = fill(varM_prior[MKeyPos[mSet]],nRegions[MKeyPos[mSet]]) #later, direct reference to key when varM_prior is a dictionary
 	end
-
+	println("keys of varBeta2: $(keys(varBeta2))")
 
 	#Start McMC
         for iter in 1:chainLength
@@ -265,7 +265,7 @@ end
 function sampleM!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta)
         #for each marker set
         for mSet in keys(MMat)
-                for r in 1:regions[keyM[mSet]]
+                for r in regions[keyM[mSet]]
                         theseLoci = regionsMat[keyM[mSet]][r]
                         regionSize = length(theseLoci)
                         lambda = varE/(varBeta[keyM[mSet]][r])
@@ -308,10 +308,10 @@ function sampleMarkerVar!(beta,varBeta,nMSet,regionsMat,scaleM,dfM)
         end
 end
 
-function sampleMarkerVar2!(beta,varBeta2,nMSet,keyM,regionsMat,scaleM,dfM)
+function sampleMarkerVar2!(beta,varBeta2,nMSet,keyM,regions,regionsMat,scaleM,dfM)
         #for each marker set
         for mSet in keys(varBeta2)
-                for r in 1:length(regionsMat[keyM[mSet]]) #dont have to compute 1000000 times, take it out
+                for r in regions[keyM[mSet]] #dont have to compute 1000000 times, take it out
                         theseLoci = regionsMat[keyM[mSet]][r]
                         regionSize = length(theseLoci)
 #                       println("mSet: $mSet $regionSize $theseLoci")
