@@ -279,7 +279,7 @@ function sampleM2!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,ycorr,varE,varBeta)
                                 rhs = BLAS.dot(MMat[mSet][:,locus],ycorr)
                                 lhs = mpmMat[mSet][locus] + lambda
                                 meanBeta = lhs\rhs
-                                beta[pos,locus] = sampleBeta(meanBeta, lhs, varE)
+                                beta[keyM[mSet],locus] = sampleBeta(meanBeta, lhs, varE)
                                 BLAS.axpy!(-1.0*beta[keyM[mSet],locus],MMat[mSet][:,locus],ycorr)
                         end
                 end    
