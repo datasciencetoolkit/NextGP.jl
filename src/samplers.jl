@@ -199,7 +199,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 		#sample marker variances
 @time		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionArray,scaleM,dfM)		
-@time           sampleMarkerVar2!(beta,varBeta,nMarkerSets,MKeyPos,nRegions,regionArray,scaleM,dfM)
+@time           sampleMarkerVar2!(beta,varBeta2,nMarkerSets,MKeyPos,nRegions,regionArray,scaleM,dfM)
 
         	#print
 		if iter in these2Keep
