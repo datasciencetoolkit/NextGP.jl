@@ -174,7 +174,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 	varBeta2 = Dict{Any,Any}()
 	for mSet in keys(M)
-		varBeta2[mSet] = fill(varM_prior[MKeyPos[mSet]],nRegions[MKeyPos[mSet]]) #later, direct reference to key when varM_prior is a dictionary
+		varBeta2[mSet] = fill(varM_prior[MKeyPos[mSet]],nMarkers[MKeyPos[mSet]]) #later, direct reference to key when varM_prior is a dictionary
 	end
 	println("keys of varBeta2: $(keys(varBeta2))")
 
@@ -326,7 +326,7 @@ function sampleMarkerVar2!(beta,varBeta2,nMSet,keyM,regions,regionsMat,scaleM,df
 			print(r)
 			theseLoci = collect(r)
                         regionSize = length(theseLoci)
-@time                        varBeta2[mSet][r] = sampleVarBeta(scaleM[keyM[mSet]],dfM[keyM[mSet]],beta[keyM[mSet],theseLoci],regionSize)
+@time                        varBeta2[mSet][r] .= sampleVarBeta(scaleM[keyM[mSet]],dfM[keyM[mSet]],beta[keyM[mSet],theseLoci],regionSize)
                 end
         end
 end
