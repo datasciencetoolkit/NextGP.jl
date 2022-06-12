@@ -174,7 +174,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 	varBeta2 = Dict{Any,Any}()
 	for mSet in keys(M)
-		varBeta2[mSet] = fill(varM_prior[MKeyPos[mSet]],nMarkers[MKeyPos[mSet]]) #later, direct reference to key when varM_prior is a dictionary
+		varBeta2[mSet] = fill(varM_prior[MKeyPos[mSet]],nRegions[MKeyPos[mSet]]) #later, direct reference to key when varM_prior is a dictionary
 	end
 	println("keys of varBeta2: $(keys(varBeta2))")
 
@@ -307,27 +307,17 @@ function sampleMarkerVar!(beta,varBeta,nMSet,regionsMat,scaleM,dfM)
         end
 end
 
-#function sampleMarkerVar2!(beta,varBeta2,nMSet,keyM,regions,regionsMat,scaleM,dfM)
-#        #for each marker set
-#        for mSet in keys(varBeta2)
-#                for r in 1:regions[keyM[mSet]] #dont have to compute 1000000 times, take it out
-#                        theseLoci = regionsMat[keyM[mSet]][r]
-#                        regionSize = length(theseLoci)
-#@time                        varBeta2[mSet][r] = sampleVarBeta(scaleM[keyM[mSet]],dfM[keyM[mSet]],beta[keyM[mSet],theseLoci],regionSize)
-#                end
-#        end
-#end
-
 function sampleMarkerVar2!(beta,varBeta2,nMSet,keyM,regions,regionsMat,scaleM,dfM)
         #for each marker set
         for mSet in keys(varBeta2)
-                for r in regionsMat[keyM[mSet]] #dont have to compute 1000000 times, take it out
-			theseLoci = collect(r)
+                for r in 1:regions[keyM[mSet]] #dont have to compute 1000000 times, take it out
+                        theseLoci = regionsMat[keyM[mSet]][r]
                         regionSize = length(theseLoci)
-                        varBeta2[mSet][r] .= sampleVarBeta(scaleM[keyM[mSet]],dfM[keyM[mSet]],beta[keyM[mSet],theseLoci],regionSize)
+                        varBeta2[mSet][r] = sampleVarBeta(scaleM[keyM[mSet]],dfM[keyM[mSet]],beta[keyM[mSet],theseLoci],regionSize)
                 end
         end
 end
+
 
 #sample marker variances
 function sampleVarBeta(scalem,dfm,whichLoci,regionSize)
