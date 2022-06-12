@@ -199,7 +199,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 		#sample marker variances
 @time		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionArray,scaleM,dfM)		
-@time           sampleMarkerVar2!(beta,varBeta,nMarkerSets,MKeyPos,regions,regionArray,scaleM,dfM)
+@time           sampleMarkerVar2!(beta,varBeta,nMarkerSets,MKeyPos,nRegions,regionArray,scaleM,dfM)
 
         	#print
 		if iter in these2Keep
@@ -265,7 +265,7 @@ end
 function sampleM!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta)
         #for each marker set
         for mSet in keys(MMat)
-                for r in regions[keyM[mSet]]
+                for r in 1:regions[keyM[mSet]]
 			println("r $r")
                         theseLoci = regionsMat[keyM[mSet]][r]
 			println("theseLoci $(theseLoci)")
@@ -313,7 +313,7 @@ end
 function sampleMarkerVar2!(beta,varBeta2,nMSet,keyM,regions,regionsMat,scaleM,dfM)
         #for each marker set
         for mSet in keys(varBeta2)
-                for r in regions[keyM[mSet]] #dont have to compute 1000000 times, take it out
+                for r in 1:regions[keyM[mSet]] #dont have to compute 1000000 times, take it out
                         theseLoci = regionsMat[keyM[mSet]][r]
                         regionSize = length(theseLoci)
 #                       println("mSet: $mSet $regionSize $theseLoci")
