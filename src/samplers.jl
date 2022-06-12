@@ -172,6 +172,12 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
                 push!(varBeta,fill(varM_prior[m],nRegions[m]))
         end
 
+	varBeta2 = Dict{Any,Any}()
+	for mSet in keys(M)
+		varBeta2[mSet] = fill(varM_prior[MKeyPos[mSet]],nRegions[MKeyPos[mSet]]) #later, direct reference to key when varM_prior is a dictionary
+	end
+
+
 	#Start McMC
         for iter in 1:chainLength
 		#sample residual variance
@@ -179,8 +185,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		
 		#sample fixed effects
         	#always returns corrected Y and new b
-@time        	sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
-@time           sampleX2!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
+@time           sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
 	
 		#sample random effects
 		# always returns corrected Y and new u
@@ -194,6 +199,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 		#sample marker variances
 @time		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionArray,scaleM,dfM)		
+@time           sampleMarkerVar2!(beta,varBeta,nMarkerSets,MKeyPos,regionArray,scaleM,dfM)
 
         	#print
 		if iter in these2Keep
@@ -214,23 +220,8 @@ end
 
 
 #Sampling fixed effects
-function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
-	#block for each effect 
-	for x in keys(X)
-		pos = findall(x.==collect(keys(X)))[] #position of key
-		ycorr    .+= X[x]*b[pos]
-        	rhs      = X[x]'*ycorr
-                meanMu   = iXpX[x]*rhs
-		if nColEachX[pos] == 1
-        		b[pos] .= rand(Normal(meanMu[],sqrt((iXpX[x]*varE))[]))
-		else b[pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
-		end
-        	ycorr    .-= X[x]*b[pos]
-	end
-end
 
-
-function sampleX2!(X,b,iXpX,nFix,nColEachX,keyX,ycorr,varE)
+function sampleX!(X,b,iXpX,nFix,nColEachX,keyX,ycorr,varE)
         #block for each effect
         for x in keys(X)
                 ycorr    .+= X[x]*b[keyX[x]]
@@ -317,10 +308,24 @@ function sampleMarkerVar!(beta,varBeta,nMSet,regionsMat,scaleM,dfM)
         end
 end
 
+function sampleMarkerVar2!(beta,varBeta2,nMSet,keyM,regionsMat,scaleM,dfM)
+        #for each marker set
+        for mSet in keys(varBeta2)
+                for r in 1:length(regionsMat[keyM[mSet]]) #dont have to compute 1000000 times, take it out
+                        theseLoci = regionsMat[keyM[mSet]][r]
+                        regionSize = length(theseLoci)
+#                       println("mSet: $mSet $regionSize $theseLoci")
+                        varBeta2[mSet][r] = sampleVarBeta(scaleM[keyM[mSet]],dfM[keyM[mSet]],beta[keyM[mSet],theseLoci],regionSize)
+                end
+        end
+end
+
+
 #sample marker variances
 function sampleVarBeta(scalem,dfm,whichLoci,regionSize)
 	return (scalem*dfm + dot(whichLoci,whichLoci)) / rand(Chisq(dfm + regionSize))
 end
+
 
 #Sample residual variance
 function sampleVarE(νS_e,yCorVec,df_e,nRecords)
