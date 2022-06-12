@@ -322,8 +322,6 @@ function sampleMarkerVar2!(beta,varBeta2,nMSet,keyM,regions,regionsMat,scaleM,df
         #for each marker set
         for mSet in keys(varBeta2)
                 for r in regionsMat[keyM[mSet]] #dont have to compute 1000000 times, take it out
-                       	println("r : $r")
-			print(r)
 			theseLoci = collect(r)
                         regionSize = length(theseLoci)
                         varBeta2[mSet][r] .= sampleVarBeta(scaleM[keyM[mSet]],dfM[keyM[mSet]],beta[keyM[mSet],theseLoci],regionSize)
