@@ -140,7 +140,13 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
                		mpm[m] = diag(M[m]'M[m]) #will not work for large matrices!!!!
 #                	Mp[m]  = M[m]'
         	end
-
+		#key positions for speed
+		MKeyPos = Dict{Any,Any}()
+		for mSet in keys(M)
+			pos = findall(mSet.==collect(keys(M)))[]
+			MKeyPos[mSet] = pos
+		end
+		println("MKeyPos: $MKeyPos")	
 		#storage
 
 	varU = varU_prior #for storage
