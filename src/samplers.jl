@@ -43,6 +43,16 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
                 zpz[z] = diag(Z[z]'Z[z])
 		Zp[z]  = Z[z]'
         end
+
+        #key positions for speed
+        XKeyPos = Dict{Any,Any}()
+        for xSet in keys(X)
+              pos = findall(xSet.==collect(keys(X)))[]
+              XKeyPos[xSet] = pos
+        end
+        println("XKeyPos: $XKeyPos")
+
+
 	
         ##make b and u arrays
         b = Array{Array{Float64, 1},1}(undef,0)
@@ -170,6 +180,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		#sample fixed effects
         	#always returns corrected Y and new b
 @time        	sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
+@time           sampleX2!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
 	
 		#sample random effects
 		# always returns corrected Y and new u
@@ -216,6 +227,21 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 		end
         	ycorr    .-= X[x]*b[pos]
 	end
+end
+
+
+function sampleX2!(X,b,iXpX,nFix,nColEachX,keyX,ycorr,varE)
+        #block for each effect
+        for x in keys(X)
+                ycorr    .+= X[x]*b[keyX[x]]
+                rhs      = X[x]'*ycorr
+                meanMu   = iXpX[x]*rhs
+                if nColEachX[keyX[x]] == 1
+                        b[keyX[x]] .= rand(Normal(meanMu[],sqrt((iXpX[x]*varE))[]))
+                else b[keyX[x]] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
+                end
+                ycorr    .-= X[x]*b[keyX[x]]
+        end
 end
 
 #Sampling random effects
