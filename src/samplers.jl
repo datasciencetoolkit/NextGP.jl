@@ -169,28 +169,28 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		
 		#sample fixed effects
         	#always returns corrected Y and new b
-        	sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
+@time        	sampleX!(X,b,iXpX,nFix,nColEachX,ycorr,varE)
 	
 		#sample random effects
 		# always returns corrected Y and new u
-		sampleZ!(iVarStr,Z,Zp,zpz,nRand,varE,varU,u,ycorr)
+@time		sampleZ!(iVarStr,Z,Zp,zpz,nRand,varE,varU,u,ycorr)
 
 		#sample variances
-		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
+@time		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
 		
 		#sample marker effects
 @time	        sampleM!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta)
 
 		#sample marker variances
-		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionArray,scaleM,dfM)		
+@time		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionArray,scaleM,dfM)		
 
         	#print
 		if iter in these2Keep
-			IO.outMCMC(pwd(),"b",vcat(b...)') ### currently no path is provided!!!!
-			IO.outMCMC(pwd(),"u",vcat(u...)')
-			IO.outMCMC(pwd(),"varE",varE)
-			IO.outMCMC(pwd(),"varU",varU')
-			for markers in 1:nMarkerSets
+@time			IO.outMCMC(pwd(),"b",vcat(b...)') ### currently no path is provided!!!!
+@time			IO.outMCMC(pwd(),"u",vcat(u...)')
+@time			IO.outMCMC(pwd(),"varE",varE)
+@time			IO.outMCMC(pwd(),"varU",varU')
+@time			for markers in 1:nMarkerSets
 				IO.outMCMC(pwd(),"varM$(markers)",varBeta[markers]')
 			end
 	#		if onScreen==true
@@ -252,7 +252,7 @@ function sampleM!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varB
                         theseLoci = regionsMat[keyM[mSet]][r]
                         regionSize = length(theseLoci)
                         lambda = varE/(varBeta[keyM[mSet]][r])
-                        for locus in theseLoci::UnitRange{Int64}
+                        for locus in theseLoci
                                 BLAS.axpy!(beta[keyM[mSet],locus],MMat[mSet][:,locus],ycorr)
                                 rhs = BLAS.dot(MMat[mSet][:,locus],ycorr)
                                 lhs = mpmMat[mSet][locus] + lambda
