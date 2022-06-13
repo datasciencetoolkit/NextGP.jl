@@ -322,13 +322,13 @@ end
 
 #sample marker variances
 function sampleVarBeta(scalem,dfm,whichLoci,regionSize)
-	return (scalem*dfm + dot(whichLoci,whichLoci)) / rand(Chisq(dfm + regionSize))
+	return (scalem*dfm + BLAS.dot(whichLoci,whichLoci)) / rand(Chisq(dfm + regionSize))
 end
 
 
 #Sample residual variance
 function sampleVarE(νS_e,yCorVec,df_e,nRecords)
-    return((νS_e + dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords)))
+    return((νS_e + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords)))
 end
 
 
