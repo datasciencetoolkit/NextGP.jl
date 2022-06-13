@@ -167,16 +167,12 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	beta = zeros(Float64,nMarkerSets,maximum(nMarkers)) #can allow unequal length! Remove tail zeros for printing....
 #	vcovBeta = fill(Matrix(Diagonal(varM)),maximum(nRegions)) #can allow unequal length! Remove tail zeros for printing....
 
-	varBeta = Array{Any,1}(undef,0)
-        for m in 1:nMarkerSets
-                push!(varBeta,fill(varM_prior[m],nRegions[m]))
-        end
 
-	varBeta2 = Dict{Any,Any}()
+	varBeta = Dict{Any,Any}()
 	for mSet in keys(M)
-		varBeta2[mSet] = fill(varM_prior[MKeyPos[mSet]],nRegions[MKeyPos[mSet]]) #later, direct reference to key when varM_prior is a dictionary
+		varBeta[mSet] = fill(varM_prior[MKeyPos[mSet]],nRegions[MKeyPos[mSet]]) #later, direct reference to key when varM_prior is a dictionary
 	end
-	println("keys of varBeta2: $(keys(varBeta2))")
+	println("keys of varBeta: $(keys(varBeta))")
 
 	#Start McMC
         for iter in 1:chainLength
@@ -195,14 +191,12 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
 		
 		#sample marker effects
-@time	        sampleM!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta)
-
+#	        sampleM!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta)
 		#sample marker variances
-@time                sampleMarkerVar!(beta,varBeta2,nMarkerSets,MKeyPos,nRegions,regionArray,scaleM,dfM)
+#               sampleMarkerVar!(beta,varBeta2,nMarkerSets,MKeyPos,nRegions,regionArray,scaleM,dfM)
 
-
-		#
-@time		sampleM2!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta2,scaleM,dfM)
+		#sample marker effects and variances
+		sampleMandMVar!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta2,scaleM,dfM)
 		
         	#print
 		if iter in these2Keep
@@ -284,14 +278,14 @@ function sampleM!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varB
         end
 end
 
-function sampleM2!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta2,scaleM,dfM)
+function sampleMandMVar!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
         #for each marker set
         for mSet in keys(MMat)
 		pos = keyM[mSet]
-                for r in 1:regions[keyM[mSet]]
+                for r in 1:regions[pos]
                         theseLoci = regionsMat[pos][r]
                         regionSize = length(theseLoci)
-                        lambda = varE/(varBeta2[mSet][r])
+                        lambda = varE/(varBeta[mSet][r])
                         for locus in theseLoci
                                 BLAS.axpy!(beta[pos,locus],MMat[mSet][:,locus],ycorr)
                                 rhs = BLAS.dot(MMat[mSet][:,locus],ycorr)
@@ -300,7 +294,7 @@ function sampleM2!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,var
                                 beta[pos,locus] = sampleBeta(meanBeta, lhs, varE)
                                 BLAS.axpy!(-1.0*beta[pos,locus],MMat[mSet][:,locus],ycorr)
                         end
-			varBeta2[mSet][r] = sampleVarBeta(scaleM[pos],dfM[pos],beta[pos,theseLoci],regionSize)
+			varBeta[mSet][r] = sampleVarBeta(scaleM[pos],dfM[pos],beta[pos,theseLoci],regionSize)
                 end
         end
 end
@@ -319,14 +313,14 @@ function sampleRanVar!(varU,nRand,νS_ranVar,effVec,df_ranVar,iStrMat)
 end
 
 
-function sampleMarkerVar!(beta,varBeta2,nMSet,keyM,regions,regionsMat,scaleM,dfM)
+function sampleMarkerVar!(beta,varBeta,nMSet,keyM,regions,regionsMat,scaleM,dfM)
         #for each marker set
-        for mSet in keys(varBeta2)
+        for mSet in keys(varBeta)
 		pos = keyM[mSet]
                 for r in 1:regions[pos] #dont have to compute 1000000 times, take it out
                         theseLoci = regionsMat[pos][r]
                         regionSize = length(theseLoci)
-                        varBeta2[mSet][r] = sampleVarBeta(scaleM[pos],dfM[pos],beta[pos,theseLoci],regionSize)
+                        varBeta[mSet][r] = sampleVarBeta(scaleM[pos],dfM[pos],beta[pos,theseLoci],regionSize)
                 end
         end
 end
