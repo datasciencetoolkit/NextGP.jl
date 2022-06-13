@@ -5,6 +5,7 @@ using StatsBase
 using Printf
 using CSV
 using DataFrames
+using DataStructures
 
 include("outFiles.jl")
 include("misc.jl")
