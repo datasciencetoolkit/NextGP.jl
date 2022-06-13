@@ -45,8 +45,6 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		Zp[z]  = Z[z]'
         end
 	
-	println("keysX: $(keys(X))")
-	println("keysX collected: $(collect(keys(X)))")	
 		
         #key positions for speed
         XKeyPos = OrderedDict{Any,Int64}()
@@ -144,13 +142,28 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	
 	nRegions  = length.(regionArray) #per component
 
+######
+	regionArray2 = OrderedDict{Any,Array{UnitRange{Int64},1}}()
+        for mSet in keys(M)
+                theseRegions = prep2RegionData(paths2maps[mSet],rS[mSet]) ###first data
+                regionArray2[mSet] = theseRegions
+        end
+        println("size regionArray2: $(length(regionArray2))")
+        println("size regionArray2: $([length(regionArray2[mSet] for mSet in keys(regionArray2)])")
+
+       # nRegions  = length.(regionArray) #per component
+
+
+
+
+
+######
 		#make mpm
-#		Mp  = deepcopy(M) #not needed coz I use BLAS.dot
        		mpm = OrderedDict{Any,Any}()
        		for m in keys(M)
                		mpm[m] = diag(M[m]'M[m]) #will not work for large matrices!!!!
-#                	Mp[m]  = M[m]'
         	end
+
 		#key positions for speed
 		MKeyPos = OrderedDict{String,Int64}()
 		for mSet in keys(M)
@@ -171,7 +184,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 	varBeta = OrderedDict{String,Any}()
 	for mSet in keys(M)
-		varBeta[mSet] = hcat(fill(varM_prior[MKeyPos[mSet]],nRegions[MKeyPos[mSet]])...) #later, direct reference to key when varM_prior is a dictionary
+		varBeta[mSet] = hcat(fill(varM_prior[mSet],nRegions[MKeyPos[mSet]])...) #later, direct reference to key when varM_prior is a dictionary
 	end
 	println("keys of varBeta: $(keys(varBeta))")
 
