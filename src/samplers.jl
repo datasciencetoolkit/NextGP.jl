@@ -45,7 +45,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
         end
 
         #key positions for speed
-        XKeyPos = Dict{Any,Any}()
+        XKeyPos = Dict{String,Int64}()
         for xSet in keys(X)
               pos = findall(xSet.==collect(keys(X)))[]
               XKeyPos[xSet] = pos
@@ -151,7 +151,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 #                	Mp[m]  = M[m]'
         	end
 		#key positions for speed
-		MKeyPos = Dict{Any,Any}()
+		MKeyPos = Dict{String,Int64}()
 		for mSet in keys(M)
 			pos = findall(mSet.==collect(keys(M)))[]
 			MKeyPos[mSet] = pos
@@ -168,7 +168,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 #	vcovBeta = fill(Matrix(Diagonal(varM)),maximum(nRegions)) #can allow unequal length! Remove tail zeros for printing....
 
 
-	varBeta = Dict{Any,Any}()
+	varBeta = Dict{String,Any}()
 	for mSet in keys(M)
 		varBeta[mSet] = fill(varM_prior[MKeyPos[mSet]],nRegions[MKeyPos[mSet]]) #later, direct reference to key when varM_prior is a dictionary
 	end
