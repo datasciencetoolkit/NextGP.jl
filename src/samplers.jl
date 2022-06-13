@@ -291,7 +291,7 @@ function sampleM2!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,var
                 for r in 1:regions[keyM[mSet]]
                         theseLoci = regionsMat[pos][r]
                         regionSize = length(theseLoci)
-                        lambda = varE/(varBeta[pos][r])
+                        lambda = varE/(varBeta2[mSet][r])
                         for locus in theseLoci
                                 BLAS.axpy!(beta[pos,locus],MMat[mSet][:,locus],ycorr)
                                 rhs = BLAS.dot(MMat[mSet][:,locus],ycorr)
