@@ -43,7 +43,10 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
                 zpz[z] = diag(Z[z]'Z[z])
 		Zp[z]  = Z[z]'
         end
-
+	
+	println("keysX: $(keys(X))")
+	println("keysX collected: $(collect(keys(X))")	
+		
         #key positions for speed
         XKeyPos = Dict{String,Int64}()
         for xSet in keys(X)
