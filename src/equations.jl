@@ -81,21 +81,16 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
                 end
         end
 
-	#merging on the earliest, and then delete merged ones from the list
-	#do not consider if there is reordering of variables
-	#blocks must enter in the model in order!
-	mergedOnes = []
-	delThese = []
-	newNamesFE = []
-	for i in blocks
-		blockThese = findall(x->x in i, namesFE)
-		mergeTo = minimum(blockThese)
-		FE[mergeTo] = hcat(FE[blockThese]...)
-		delThese = vcat(delThese,blockThese[blockThese .!== minimum(blockThese)])
-		push!(mergedOnes, blockThese)
+	#BLOCK FIXED EFFECTS
+	for b in blocks
+	getThese = intersect(collect(keys(FE)), b)
+	FE[Tuple(getThese)] = hcat(getindex.(Ref(FE), getThese)...)
+	for d in getThese
+		delete!(FE,d)
 	end
+end
 
-	delete!(FE, sort(delThese))
+
         
         return idRE, vec(yVec), FE, RE, ME, regionSizes
         end
