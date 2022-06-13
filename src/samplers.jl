@@ -47,6 +47,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
         #key positions for speed
         XKeyPos = Dict{String,Int64}()
         for xSet in keys(X)
+		println("index: $(getindex(X, xSet))")
 	      XKeyPos[xSet] = getindex(X, xSet)	
              # pos = findall(xSet.==collect(keys(X)))[]
              # XKeyPos[xSet] = pos
