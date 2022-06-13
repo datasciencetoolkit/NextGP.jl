@@ -38,7 +38,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 	Zp  = deepcopy(Z) #similar(Z')
 #	zpz = Array{Array{Float64, 1},1}(undef,0)
-	zpz = Dict{Any,Any}()
+	zpz = OrderedDict{Any,Any}()
 	for z in keys(Z)
                 zpz[z] = diag(Z[z]'Z[z])
 		Zp[z]  = Z[z]'
@@ -48,7 +48,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	println("keysX collected: $(collect(keys(X)))")	
 		
         #key positions for speed
-        XKeyPos = Dict{Any,Int64}()
+        XKeyPos = OrderedDict{Any,Int64}()
         [XKeyPos[collect(keys(X))[i]]=i for i in 1:length(keys(X))]
 	println("XKeyPos: $XKeyPos")
 
@@ -145,13 +145,13 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 		#make mpm
 #		Mp  = deepcopy(M) #not needed coz I use BLAS.dot
-       		mpm = Dict{Any,Any}()
+       		mpm = OrderedDict{Any,Any}()
        		for m in keys(M)
                		mpm[m] = diag(M[m]'M[m]) #will not work for large matrices!!!!
 #                	Mp[m]  = M[m]'
         	end
 		#key positions for speed
-		MKeyPos = Dict{String,Int64}()
+		MKeyPos = OrderedDict{String,Int64}()
 		for mSet in keys(M)
 			pos = findall(mSet.==collect(keys(M)))[]
 			MKeyPos[mSet] = pos
@@ -168,7 +168,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 #	vcovBeta = fill(Matrix(Diagonal(varM)),maximum(nRegions)) #can allow unequal length! Remove tail zeros for printing....
 
 
-	varBeta = Dict{String,Any}()
+	varBeta = OrderedDict{String,Any}()
 	for mSet in keys(M)
 		varBeta[mSet] = hcat(fill(varM_prior[MKeyPos[mSet]],nRegions[MKeyPos[mSet]])...) #later, direct reference to key when varM_prior is a dictionary
 	end

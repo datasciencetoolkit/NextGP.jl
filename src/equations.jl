@@ -32,7 +32,7 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
         RE = OrderedDict{String,Any}()
 
 	ME = OrderedDict{String,Array{Float64, 2}}()
-	regionSizes = Dict{String,Int64}()
+	regionSizes = OrderedDict{String,Int64}()
 		
 	#column id within pedigree
 	idRE = []
