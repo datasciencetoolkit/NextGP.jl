@@ -32,7 +32,7 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
         RE = Dict{String,Any}()
 
 	ME = Dict{String,Array{Float64, 2}}()
-	regionSizes = Array{Int64,1}(undef,0)
+	regionSizes = Dict{String,Int64}()
 		
 	#column id within pedigree
 	idRE = []
@@ -51,7 +51,7 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 			println("region size for $arg1: $arg2")
 			ME[arg1] = thisM
                         thisM = 0 #I can directly merge to dict above
-			push!(regionSizes, arg2)
+			regionSizes[arg1] = arg2
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
                         println("$i has type ran Type")
                         sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
