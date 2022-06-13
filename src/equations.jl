@@ -27,7 +27,7 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 
         yVec = StatsModels.modelmatrix(f.lhs, userData)
 	
-        FE = Dict{String,Any}()
+        FE = Dict{Any,Any}() #any to block work
 
         RE = Dict{String,Any}()
 
