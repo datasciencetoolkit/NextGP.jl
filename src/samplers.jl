@@ -93,10 +93,10 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
         dfE = 4.0
 	dfDefault = 4.0
  
-	dfM = Array{Float64}(undef,0)
+	dfM = Dict{String,Any}()
         for mSet in keys(M) 
 		size(varM_prior[mSet],1)>1 ? println("multivariate prior for marker set $mSet df=$(3+size(varM_prior[mSet],1))") : println("univariate prior for marker set $mSet df=$(3+size(varM_prior[mSet],1))")
-                push!(dfM,3.0+size(varM_prior[mSet],1))
+                dfM[mSet] = 3.0+size(varM_prior[mSet],1))
         end
 
 	println("dfM $dfM")	
@@ -114,10 +114,10 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		scaleU[z] = varU_prior[z]*(dfDefault-2.0)/dfDefault
 	end	
 
-	scaleM = Array{Any,1}(undef,nMarkerSets)
-	for m in 1:nMarkerSets
-		nMComp = size(varM_prior[m],1)
-                nMComp > 1 ? scaleM[m] = varM_prior[m].*(dfM[m]-nMComp-1.0)  : scaleM[m] = varM_prior[m]*(dfM[m]-2.0)/dfM[m] #I make float and array of float
+	scaleM = Dict{String,Any}()
+	for mSet in keys(M)
+		nMComp = size(varM_prior[mSet],1)
+                nMComp > 1 ? scaleM[mSet] = varM_prior[mSet].*(dfM[mSet]-nMComp-1.0)  : scaleM[mSet] = varM_prior[mSet]*(dfM[mSet]-2.0)/dfM[mSet] #I make float and array of float
         end
 
 
