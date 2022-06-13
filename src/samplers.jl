@@ -170,7 +170,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 	varBeta = Dict{String,Any}()
 	for mSet in keys(M)
-		varBeta[mSet] = fill(varM_prior[MKeyPos[mSet]],nRegions[MKeyPos[mSet]]) #later, direct reference to key when varM_prior is a dictionary
+		varBeta[mSet] = hcat(fill(varM_prior[MKeyPos[mSet]],nRegions[MKeyPos[mSet]])...) #later, direct reference to key when varM_prior is a dictionary
 	end
 	println("keys of varBeta: $(keys(varBeta))")
 
