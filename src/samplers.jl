@@ -47,8 +47,9 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
         #key positions for speed
         XKeyPos = Dict{String,Int64}()
         for xSet in keys(X)
-              pos = findall(xSet.==collect(keys(X)))[]
-              XKeyPos[xSet] = pos
+	      XKeyPos[xSet] = getindex(X, xSet)	
+             # pos = findall(xSet.==collect(keys(X)))[]
+             # XKeyPos[xSet] = pos
         end
         println("XKeyPos: $XKeyPos")
 
@@ -153,8 +154,9 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		#key positions for speed
 		MKeyPos = Dict{String,Int64}()
 		for mSet in keys(M)
-			pos = findall(mSet.==collect(keys(M)))[]
-			MKeyPos[mSet] = pos
+			MKeyPos[mSet] = getindex(M,mSet)
+			#pos = findall(mSet.==collect(keys(M)))[]
+			#MKeyPos[mSet] = pos
 		end
 		println("MKeyPos: $MKeyPos")	
 		#storage
@@ -196,8 +198,9 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 #               sampleMarkerVar!(beta,varBeta2,nMarkerSets,MKeyPos,nRegions,regionArray,scaleM,dfM)
 
 		#sample marker effects and variances
-		sampleMandMVar!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
-		
+@time		sampleMandMVar!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
+@time           sampleMandMVar2!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
+               		
         	#print
 		if iter in these2Keep
 			IO.outMCMC(pwd(),"b",vcat(b...)') ### currently no path is provided!!!!
@@ -298,6 +301,29 @@ function sampleMandMVar!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,va
                 end
         end
 end
+
+function sampleMandMVar2!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
+        #for each marker set
+        for mSet in keys(MMat)
+		nowM = MMat[mSet]
+                pos = keyM[mSet]
+                for r in 1:regions[pos]
+                        theseLoci = regionsMat[pos][r]
+                        regionSize = length(theseLoci)
+                        lambda = varE/(varBeta[mSet][r])
+                        for locus in theseLoci
+                                BLAS.axpy!(beta[pos,locus],nowM[:,locus],ycorr)
+                                rhs = BLAS.dot(nowM[:,locus],ycorr)
+                                lhs = mpmMat[mSet][locus] + lambda
+                                meanBeta = lhs\rhs
+                                beta[pos,locus] = sampleBeta(meanBeta, lhs, varE)
+                                BLAS.axpy!(-1.0*beta[pos,locus],nowM[:,locus],ycorr)
+                        end
+                        varBeta[mSet][r] = sampleVarBeta(scaleM[pos],dfM[pos],beta[pos,theseLoci],regionSize)
+                end
+        end
+end
+
 
 #sample marker effects
 function sampleBeta(meanBeta, lhs, varE)
