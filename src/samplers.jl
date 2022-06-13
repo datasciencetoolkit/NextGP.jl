@@ -149,7 +149,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
                 regionArray2[mSet] = theseRegions
         end
         println("size regionArray2: $(length(regionArray2))")
-        println("size regionArray2: $([length(regionArray2[mSet] for mSet in keys(regionArray2)])")
+        println("size regionArray2: $([length(regionArray2[mSet]) for mSet in keys(regionArray2)])")
 
        # nRegions  = length.(regionArray) #per component
 
