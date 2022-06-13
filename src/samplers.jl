@@ -310,9 +310,9 @@ function sampleMandMVar_view!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,yco
                         lambda = varE/(varBeta[mSet][r])
                         for locus in theseLoci
                                 BLAS.axpy!(beta[pos,locus],view(nowM,:,locus),ycorr)
-                                rhs = BLAS.dot(view(nowM,:,locus),ycorr)
-                                lhs = mpmMat[mSet][locus] + lambda
-                                meanBeta = lhs\rhs
+                                rhs::Float64 = BLAS.dot(view(nowM,:,locus),ycorr)
+                                lhs::Float64 = mpmMat[mSet][locus] + lambda
+                                meanBeta::Float64 = lhs\rhs
                                 beta[pos,locus] = sampleBeta(meanBeta, lhs, varE)
                                 BLAS.axpy!(-1.0*beta[pos,locus],view(nowM,:,locus),ycorr)
                         end
