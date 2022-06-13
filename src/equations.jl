@@ -27,11 +27,11 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 
         yVec = StatsModels.modelmatrix(f.lhs, userData)
 	
-        FE = Dict{Any,Any}()
+        FE = Dict{String,Any}()
 
-        RE = Dict{Any,Any}()
+        RE = Dict{String,Any}()
 
-	ME = Dict{Any,Any}()
+	ME = Dict{String,Array{Float64, 2}}()
 	regionSizes = Array{Int64,1}(undef,0)
 		
 	#column id within pedigree
