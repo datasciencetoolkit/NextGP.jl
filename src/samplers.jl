@@ -96,7 +96,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	dfM = Dict{String,Any}()
         for mSet in keys(M) 
 		size(varM_prior[mSet],1)>1 ? println("multivariate prior for marker set $mSet df=$(3+size(varM_prior[mSet],1))") : println("univariate prior for marker set $mSet df=$(3+size(varM_prior[mSet],1))")
-                dfM[mSet] = 3.0+size(varM_prior[mSet],1))
+                dfM[mSet] = 3.0+size(varM_prior[mSet],1)
         end
 
 	println("dfM $dfM")	
