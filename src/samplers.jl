@@ -198,8 +198,8 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	        sampleM!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta)
 
 		#sample marker variances
-@time		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionArray,scaleM,dfM)		
-@time           sampleMarkerVar2!(beta,varBeta2,nMarkerSets,MKeyPos,nRegions,regionArray,scaleM,dfM)
+		sampleMarkerVar!(beta,varBeta,nMarkerSets,regionArray,scaleM,dfM)		
+           sampleMarkerVar2!(beta,varBeta2,nMarkerSets,MKeyPos,nRegions,regionArray,scaleM,dfM)
 
         	#print
 		if iter in these2Keep
@@ -302,7 +302,7 @@ function sampleMarkerVar!(beta,varBeta,nMSet,regionsMat,scaleM,dfM)
                 for r in 1:length(regionsMat[mSet]) #dont have to compute 1000000 times, take it out
                         theseLoci = regionsMat[mSet][r]
                         regionSize = length(theseLoci)
-			varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[mSet,theseLoci],regionSize)
+@time			varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[mSet,theseLoci],regionSize)
                 end
         end
 end
@@ -314,7 +314,7 @@ function sampleMarkerVar2!(beta,varBeta2,nMSet,keyM,regions,regionsMat,scaleM,df
                 for r in 1:regions[pos] #dont have to compute 1000000 times, take it out
                         theseLoci = regionsMat[pos][r]
                         regionSize = length(theseLoci)
-                        varBeta2[mSet][r] = sampleVarBeta(scaleM[pos],dfM[pos],beta[pos,theseLoci],regionSize)
+@time                        varBeta2[mSet][r] = sampleVarBeta(scaleM[pos],dfM[pos],beta[pos,theseLoci],regionSize)
                 end
         end
 end
