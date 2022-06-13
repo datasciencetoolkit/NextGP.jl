@@ -330,7 +330,7 @@ function sampleMandMVar_view!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,yco
                                 beta[pos,locus] = sampleBeta(meanBeta, lhs, varE)
                                 BLAS.axpy!(-1.0*beta[pos,locus],view(nowM,:,locus),ycorr)
                         end
-                        varBeta[mSet][r] = sampleVarBeta(scaleM[pos],dfM[pos],beta[pos,theseLoci],regionSize)
+                        varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[pos,theseLoci],regionSize)
                 end
         end
 end
