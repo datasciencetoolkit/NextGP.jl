@@ -202,7 +202,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 
 		#
-@time		sampleM2!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
+@time		sampleM2!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta2,scaleM,dfM)
 		
         	#print
 		if iter in these2Keep
@@ -284,7 +284,7 @@ function sampleM!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varB
         end
 end
 
-function sampleM2!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
+function sampleM2!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta2,scaleM,dfM)
         #for each marker set
         for mSet in keys(MMat)
 		pos = keyM[mSet]
