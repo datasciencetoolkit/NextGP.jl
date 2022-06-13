@@ -48,12 +48,9 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	println("keysX collected: $(collect(keys(X)))")	
 		
         #key positions for speed
-        XKeyPos = Dict{String,Int64}()
-        for xSet in keys(X)
-             pos = findall(xSet.==collect(keys(X)))[]
-             XKeyPos[xSet] = pos
-        end
-        println("XKeyPos: $XKeyPos")
+        XKeyPos = Dict{Any,Int64}()
+        [XKeyPos[collect(keys(X))[i]]=i for i in 1:length(keys(X))]
+	println("XKeyPos: $XKeyPos")
 
 
 	
