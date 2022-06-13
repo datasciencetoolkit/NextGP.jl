@@ -45,7 +45,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
         end
 	
 	println("keysX: $(keys(X))")
-	println("keysX collected: $(collect(keys(X))")	
+	println("keysX collected: $(collect(keys(X)))")	
 		
         #key positions for speed
         XKeyPos = Dict{String,Int64}()
