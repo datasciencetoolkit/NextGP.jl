@@ -134,8 +134,8 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	#ADD MARKERS
 		# read map file and make regions
 	regionArray =  Array{Array{UnitRange{Int64},1},1}(undef,0)
-	for m in 1:nMarkerSets
-		theseRegions = prep2RegionData(paths2maps[m],rS[m]) ###first data
+	for mSet in keys(M)
+		theseRegions = prep2RegionData(paths2maps[mSet],rS[mSet]) ###first data
 		push!(regionArray,theseRegions)
 	end
 	println("size regionArray: $(length(regionArray))")
