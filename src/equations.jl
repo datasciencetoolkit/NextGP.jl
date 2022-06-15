@@ -75,7 +75,7 @@ function mme(f, userHints, userData, blocks;path2ped,paths2geno)
                         sym2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
                         println("sym1: $sym1 sym2: $sym2")
 			
-			IDs,thisZ = ranMat(sym1, sym2, userData, userPedData)
+			IDs,thisZ = ranMat(sym1, sym2, userData, pedigree)
 			RE[(sym1,sym2)] = thisZ
 			thisZ = 0
 			push!(idRE,IDs)
