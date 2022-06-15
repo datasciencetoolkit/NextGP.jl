@@ -73,8 +73,8 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
         ##counts columns per effect
         nColEachZ = []
 	##get priors per effect
-	iVarStr = [] #inverses will be computed
-	varU_prior = []
+	iVarStr = Dict{Any,Array{Float64,2}} #inverses will be computed
+	varU_prior = Dict{Any,Any}()
         for z in keys(Z)
                 println(z)
                 nCol = size(Z[z],2)
@@ -85,13 +85,13 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		if haskey(priorVCV,z)	
 			if isempty(priorVCV[z][1])
 				println("priorVCV $z is empty, an identity matrix will be used")
-				push!(iVarStr,Matrix(1.0I,nCol,nCol))
-			else 	push!(iVarStr,inv(priorVCV[z][1]))
+				iVarStr[z] = Matrix(1.0I,nCol,nCol)
+			else 	iVarStr[z] = inv(priorVCV[z][1])
 			end
-			push!(varU_prior,priorVCV[z][2])
+			varU_prior[z] = priorVCV[z][2]
 		else	println("priorVCV $z is empty, an identity matrix will be used with an arbitrary variance of 100")
-			push!(iVarStr,Matrix(1.0I,nCol,nCol))
-			push!(varU_prior,100)	
+			iVarStr[z] = Matrix(1.0I,nCol,nCol)
+			varU_prior[z] = 100	
 		end
         end
 	println("prior variances $(varU_prior)")
