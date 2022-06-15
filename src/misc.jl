@@ -1,3 +1,7 @@
+using Printf
+using DataFrames
+using CSV
+
 # adapted from http://morotalab.org/Mrode2005/relmat/createA.txt
 function makeA(s::Any, d::Any)
     s = convert(Vector{Int64},s)
