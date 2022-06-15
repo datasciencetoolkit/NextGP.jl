@@ -198,7 +198,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		sampleZ!(iVarStr,Z,Zp,zpz,nRand,ZKeyPos,varE,varU,u,ycorr)
 
 		#sample variances
-		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
+		sampleRanVar!(varU,nRand,scaleU,dfDefault,u,iVarStr)
 		
 		#sample marker effects
 #	        sampleM!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta)
@@ -341,10 +341,11 @@ function sampleBeta(meanBeta, lhs, varE)
 end
 
 #sample random effects' variances
-function sampleRanVar!(varU,nRand,νS_ranVar,effVec,df_ranVar,iStrMat)
-	for z in 1:nRand
+function sampleRanVar!(varU,nRand,scale_ranVar,df_ranVar,effVec,keyZ,iStrMat)
+	for z in keys(scale_ranVar)
+		pos = keyZ[z]
 		n = size(iStrMat[z],2)
-		varU[z] = (νS_ranVar[z] + effVec[z]'*iStrMat[z]*effVec[z])/rand(Chisq(df_ranVar + n))
+		varU[z] = (scaleU[z]*df_ranVar + effVec[pos]'*iStrMat[z]*effVec[pos])/rand(Chisq(df_ranVar + n))
 	end
 end
 
