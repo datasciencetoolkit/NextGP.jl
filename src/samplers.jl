@@ -52,14 +52,23 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	println("XKeyPos: $XKeyPos")
 
 
+	#key positions for speed
+        ZKeyPos = OrderedDict{String,Int64}()
+	for zSet in keys(Z)
+        	pos = findall(zSet.==collect(keys(Z)))[]
+                ZKeyPos[ZSet] = pos
+        end
+        println("ZKeyPos: $ZKeyPos")
+
+
 	
         ##make b and u arrays
         b = Array{Array{Float64, 1},1}(undef,0)
         ##counts columns per effect
         nColEachX = []
-        for x in keys(X)
-                println(x)
-                nCol = size(X[x],2)
+        for xSet in keys(X)
+                println(xSet)
+                nCol = size(X[xSet],2)
                 push!(b,fill(0.0,nCol))
                 nColEachX = push!(nColEachX,nCol)
         end
@@ -132,32 +141,19 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 	#ADD MARKERS
 		# read map file and make regions
-	regionArray =  Array{Array{UnitRange{Int64},1},1}(undef,0)
-	for mSet in keys(M)
-		theseRegions = prep2RegionData(paths2maps[mSet],rS[mSet]) ###first data
-		push!(regionArray,theseRegions)
-	end
-	println("size regionArray: $(length(regionArray))")
-	println("size regionArray: $(length.(regionArray))")
-	
-	nRegions  = length.(regionArray) #per component
-
-######
-	regionArray2 = OrderedDict{Any,Array{UnitRange{Int64},1}}()
+	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()
         for mSet in keys(M)
                 theseRegions = prep2RegionData(paths2maps[mSet],rS[mSet]) ###first data
-                regionArray2[mSet] = theseRegions
+                regionArray[mSet] = theseRegions
         end
-        println("size regionArray2: $(length(regionArray2))")
-        println("size regionArray2: $([length(regionArray2[mSet]) for mSet in keys(regionArray2)])")
-
-       # nRegions  = length.(regionArray) #per component
+        println("size regionArray: $(length(regionArray))")
+        println("size regionArray: $([length(regionArray[mSet]) for mSet in keys(regionArray)])")
 
 
+	#####MAKE DICT
+        nRegions  = [length(regionArray[mSet]) for mSet in keys(regionArray)] #per component
 
 
-
-######
 		#make mpm
        		mpm = OrderedDict{Any,Any}()
        		for m in keys(M)
@@ -175,8 +171,6 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 	varU = varU_prior #for storage
 
-	###FIXED FOR NOW
-	mpmMat = 0
 
 	beta = zeros(Float64,nMarkerSets,maximum(nMarkers)) #can allow unequal length! Remove tail zeros for printing....
 #	vcovBeta = fill(Matrix(Diagonal(varM)),maximum(nRegions)) #can allow unequal length! Remove tail zeros for printing....
@@ -199,7 +193,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	
 		#sample random effects
 		# always returns corrected Y and new u
-		sampleZ!(iVarStr,Z,Zp,zpz,nRand,varE,varU,u,ycorr)
+		sampleZ!(iVarStr,Z,Zp,zpz,nRand,ZKeyPos,varE,varU,u,ycorr)
 
 		#sample variances
 		sampleRanVar!(varU,nRand,νS_U,u,dfDefault,iVarStr)
@@ -234,30 +228,31 @@ end
 
 function sampleX!(X,b,iXpX,nFix,nColEachX,keyX,ycorr,varE)
         #block for each effect
-        for x in keys(X)
-                ycorr    .+= X[x]*b[keyX[x]]
-                rhs      = X[x]'*ycorr
-                meanMu   = iXpX[x]*rhs
-                if nColEachX[keyX[x]] == 1
-                        b[keyX[x]] .= rand(Normal(meanMu[],sqrt((iXpX[x]*varE))[]))
-                else b[keyX[x]] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[x]*varE))))
+        for xSet in keys(X)
+		pos = keyX[xSet]
+                ycorr    .+= X[xSet]*b[pos]
+                rhs      = X[xSet]'*ycorr
+                meanMu   = iXpX[xSet]*rhs
+                if nColEachX[pos] == 1
+                        b[pos] .= rand(Normal(meanMu[],sqrt((iXpX[xSet]*varE))[]))
+                else b[pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[xSet]*varE))))
                 end
-                ycorr    .-= X[x]*b[keyX[x]]
+                ycorr    .-= X[xSet]*b[pos]
         end
 end
 
 #Sampling random effects
-function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
+function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,ZKeyPos,varE,varU,u,ycorr)
 	#block for each effect
-	for z in keys(Zmat)
-		pos = findall(z.==collect(keys(Zmat)))[] 
+	for zSet in keys(Zmat)
+		pos = ZKeyPos[zSet] 
 		uVec = deepcopy(u[pos])
-		iMat = iStrMat[z]
-		tempzpz = zpzMat[z] ###added
+		iMat = iStrMat[zSet]
+		tempzpz = zpzMat[zSet] ###added
 		λz = varE/(varU[pos])
-	        ycorr .+= Zmat[z]*uVec		
-	        Yi = ZpMat[z]*ycorr #computation of Z'ycorr for ALL  rhsU
-		nCol = length(zpzMat[z])
+	        ycorr .+= Zmat[zSet]*uVec		
+	        Yi = ZpMat[zSet]*ycorr #computation of Z'ycorr for ALL  rhsU
+		nCol = length(zpzMat[zSet])
 	        for i in 1:nCol
         	        uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
 			rhsU = Yi[i] - λz*dot(iMat[:,i],uVec)
@@ -266,8 +261,10 @@ function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,varE,varU,u,ycorr)
                 	meanU = invLhsU*rhsU
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         	end
+		println("uPos enter: u[pos]")
 		u[pos] = uVec
-        	ycorr .-= Zmat[z]*uVec
+		println("uPos exit: u[pos]")
+        	ycorr .-= Zmat[zSet]*uVec
 	end
 end
 
