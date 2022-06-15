@@ -174,7 +174,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 
 	varBeta = OrderedDict{Any,Any}()
 	for mSet in keys(M)
-		varBeta[mSet] = hcat(fill(varM_prior[mSet],nRegions[MKeyPos[mSet]])...) #later, direct reference to key when varM_prior is a dictionary
+		varBeta[mSet] = hcat(fill(priorVCV[mSet],nRegions[MKeyPos[mSet]])...) #later, direct reference to key when varM_prior is a dictionary
 	end
 	println("keys of varBeta: $(keys(varBeta))")
 
