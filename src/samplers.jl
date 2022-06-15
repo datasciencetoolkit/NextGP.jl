@@ -13,7 +13,7 @@ include("misc.jl")
 export runSampler
 
 #main sampler
-function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prior,M,paths2maps,rS)
+function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS)
 	
 	println("varM_prior $(varM_prior)")
 	#output settings
@@ -109,8 +109,8 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_pr
  
 	dfM = Dict{String,Any}()
         for mSet in keys(M) 
-		size(varM_prior[mSet],1)>1 ? println("multivariate prior for marker set $mSet df=$(3+size(varM_prior[mSet],1))") : println("univariate prior for marker set $mSet df=$(3+size(varM_prior[mSet],1))")
-                dfM[mSet] = 3.0+size(varM_prior[mSet],1)
+		size(priorVCV[mSet],1)>1 ? println("multivariate prior for marker set $mSet df=$(3+size(priorVCV[mSet],1))") : println("univariate prior for marker set $mSet df=$(3+size(priorVCV[mSet],1))")
+                dfM[mSet] = 3.0+size(priorVCV[mSet],1)
         end
 
 	println("dfM $dfM")	
@@ -130,8 +130,8 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_pr
 
 	scaleM = Dict{Any,Any}()
 	for mSet in keys(M)
-		nMComp = size(varM_prior[mSet],1)
-                nMComp > 1 ? scaleM[mSet] = varM_prior[mSet].*(dfM[mSet]-nMComp-1.0)  : scaleM[mSet] = varM_prior[mSet]*(dfM[mSet]-2.0)/dfM[mSet] #I make float and array of float
+		nMComp = size(priorVCV[mSet],1)
+                nMComp > 1 ? scaleM[mSet] = priorVCV[mSet].*(dfM[mSet]-nMComp-1.0)  : scaleM[mSet] = priorVCV[mSet]*(dfM[mSet]-2.0)/dfM[mSet] #I make float and array of float
         end
 
 
@@ -199,11 +199,6 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_pr
 		#sample variances
 		sampleRanVar!(varU,nRand,scaleU,dfDefault,u,ZKeyPos,iVarStr)
 		
-		#sample marker effects
-#	        sampleM!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta)
-		#sample marker variances
-#               sampleMarkerVar!(beta,varBeta2,nMarkerSets,MKeyPos,nRegions,regionArray,scaleM,dfM)
-
 		#sample marker effects and variances
 	        sampleMandMVar_view!(M,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
                		

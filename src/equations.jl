@@ -22,7 +22,7 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Symbol(arg2)])
 
 
-function mme(f, userHints, userData, blocks;path2ped,paths2geno)
+function mme(f, userHints, userData; blocks,path2ped,paths2geno)
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
