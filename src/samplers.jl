@@ -80,7 +80,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
                 nCol = size(Z[z],2)
                 push!(u,fill(0.0,nCol))
                 nColEachZ = push!(nColEachZ,nCol)
-		
+		println("nCol $z: $nCol")		
 		#var structures and priors
 		if haskey(priorVCV,z)	
 			if isempty(priorVCV[z][1])
