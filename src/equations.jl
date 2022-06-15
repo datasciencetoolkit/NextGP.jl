@@ -56,7 +56,6 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
                         println("$i has type ran Type")
                         sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
                         sym2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
-#                       arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
                         println("sym1: $sym1 sym2: $sym2")
 			
 			IDs,thisZ = ranMat(sym1, sym2, userData, userPedData)
