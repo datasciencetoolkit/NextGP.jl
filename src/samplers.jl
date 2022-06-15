@@ -83,12 +83,15 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_pr
 		#var structures and priors
 		if haskey(priorVCV,zSet)	
 			if isempty(priorVCV[zSet][1])
-				println("priorVCV $zSet is empty, an identity matrix will be used")
+				println("priorVCV structure for $zSet is empty, an identity matrix will be used")
 				iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
+			elseif priorVCV[zSet][1]=="A"
+				iVarStr[zSet] = inv(A)
+				println("priorVCV structure for $zSet is A, computed A matrix will be used")
 			else 	iVarStr[zSet] = inv(priorVCV[zSet][1])
 			end
 			varU_prior[zSet] = priorVCV[zSet][2]
-		else	println("priorVCV $zSet is empty, an identity matrix will be used with an arbitrary variance of 100")
+		else	println("priorVCV structure for $zSet is empty, an identity matrix will be used with an arbitrary variance of 100")
 			iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
 			varU_prior[zSet] = 100	
 		end
