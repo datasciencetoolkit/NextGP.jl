@@ -120,12 +120,12 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
    	end
 	
 	##no 0.0005 prior adapted here yet, also no correlated random effects
-	scaleU = zeros(nRand)
-	for z in 1:nRand
-		scaleU[z] = varU_prior[z]*(dfDefault-2.0)/dfDefault
+	scaleU = Dict{Any,Any}()
+	for zSet in keys(Z)
+		scaleU[zSet] = varU_prior[zSet]*(dfDefault-2.0)/dfDefault
 	end	
 
-	scaleM = Dict{String,Any}()
+	scaleM = Dict{Any,Any}()
 	for mSet in keys(M)
 		nMComp = size(varM_prior[mSet],1)
                 nMComp > 1 ? scaleM[mSet] = varM_prior[mSet].*(dfM[mSet]-nMComp-1.0)  : scaleM[mSet] = varM_prior[mSet]*(dfM[mSet]-2.0)/dfM[mSet] #I make float and array of float
