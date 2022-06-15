@@ -209,7 +209,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 			IO.outMCMC(pwd(),"b",vcat(b...)') ### currently no path is provided!!!!
 			IO.outMCMC(pwd(),"u",vcat(u...)')
 			IO.outMCMC(pwd(),"varE",varE)
-			IO.outMCMC(pwd(),"varU",hcat([a[k] for k in keys(varU)]...))
+			IO.outMCMC(pwd(),"varU",hcat([varU[k] for k in keys(varU)]...))
 			for markers in keys(M)
 				IO.outMCMC(pwd(),"var"*markers,varBeta[markers])
 			end
