@@ -90,6 +90,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 			end
 			varU_prior[z] = priorVCV[z][2]
 		else	println("priorVCV $z is empty, an identity matrix will be used with an arbitrary variance of 100")
+			println("nCol $z: $nCol")
 			iVarStr[z] = Matrix(1.0I,nCol,nCol)
 			varU_prior[z] = 100	
 		end
