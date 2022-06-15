@@ -80,13 +80,19 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
                 nCol = size(Z[z],2)
                 push!(u,fill(0.0,nCol))
                 nColEachZ = push!(nColEachZ,nCol)
+		
 		#var structures and priors
-		if isempty(priorVCV[z][1])
-			println("priorVCV $z is empty, an identity matrix will be used")
+		if haskey(priorVCV,z)	
+			if isempty(priorVCV[z][1])
+				println("priorVCV $z is empty, an identity matrix will be used")
+				push!(iVarStr,Matrix(1.0I,nCol,nCol))
+			else 	push!(iVarStr,inv(priorVCV[z][1]))
+			end
+			push!(varU_prior,priorVCV[z][2])
+		else	println("priorVCV $z is empty, an identity matrix will be used with an arbitrary variance of 100")
 			push!(iVarStr,Matrix(1.0I,nCol,nCol))
-		else 	push!(iVarStr,inv(priorVCV[z][1]))
+			push!(varU_prior,100)	
 		end
-		push!(varU_prior,priorVCV[z][2])
         end
 	println("prior variances $(varU_prior)")
 
