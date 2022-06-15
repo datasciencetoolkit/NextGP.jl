@@ -2,6 +2,8 @@ module equations
 
 using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames
 
+include("misc.jl")
+
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
         isa(x1, CategoricalArray) ||
                        throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
