@@ -15,7 +15,7 @@ export runSampler
 #main sampler
 function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS)
 	
-	println("varM_prior $(varM_prior)")
+	println("priorVCV $(priorVCV)")
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
 
