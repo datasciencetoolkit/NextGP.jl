@@ -74,25 +74,23 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
         nColEachZ = []
 	##get priors per effect
 	iVarStr = Dict{Any,Array{Float64,2}}() #inverses will be computed
-	varU_prior = Dict{Any,Any}()
-        for z in keys(Z)
-                println(z)
-                nCol = size(Z[z],2)
+	varU_prior = OrderedDict{Any,Any}()
+        for zSet in keys(Z)
+                println(zSet)
+                nCol = size(Z[zSet],2)
                 push!(u,fill(0.0,nCol))
                 nColEachZ = push!(nColEachZ,nCol)
-		println("nCol $z: $nCol")		
 		#var structures and priors
-		if haskey(priorVCV,z)	
-			if isempty(priorVCV[z][1])
-				println("priorVCV $z is empty, an identity matrix will be used")
-				iVarStr[z] = Matrix(1.0I,nCol,nCol)
-			else 	iVarStr[z] = inv(priorVCV[z][1])
+		if haskey(priorVCV,zSet)	
+			if isempty(priorVCV[zSet][1])
+				println("priorVCV $zSet is empty, an identity matrix will be used")
+				iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
+			else 	iVarStr[zSet] = inv(priorVCV[zSet][1])
 			end
-			varU_prior[z] = priorVCV[z][2]
-		else	println("priorVCV $z is empty, an identity matrix will be used with an arbitrary variance of 100")
-			println("nCol $z: $nCol")
-			iVarStr[z] = Matrix(1.0I,nCol,nCol)
-			varU_prior[z] = 100	
+			varU_prior[zSet] = priorVCV[zSet][2]
+		else	println("priorVCV $zSet is empty, an identity matrix will be used with an arbitrary variance of 100")
+			iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
+			varU_prior[zSet] = 100	
 		end
         end
 	println("prior variances $(varU_prior)")
@@ -176,7 +174,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 #	vcovBeta = fill(Matrix(Diagonal(varM)),maximum(nRegions)) #can allow unequal length! Remove tail zeros for printing....
 
 
-	varBeta = OrderedDict{String,Any}()
+	varBeta = OrderedDict{Any,Any}()
 	for mSet in keys(M)
 		varBeta[mSet] = hcat(fill(varM_prior[mSet],nRegions[MKeyPos[mSet]])...) #later, direct reference to key when varM_prior is a dictionary
 	end
@@ -211,7 +209,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 			IO.outMCMC(pwd(),"b",vcat(b...)') ### currently no path is provided!!!!
 			IO.outMCMC(pwd(),"u",vcat(u...)')
 			IO.outMCMC(pwd(),"varE",varE)
-			IO.outMCMC(pwd(),"varU",varU')
+			IO.outMCMC(pwd(),"varU",hcat([a[k] for k in keys(varU)]...))
 			for markers in keys(M)
 				IO.outMCMC(pwd(),"var"*markers,varBeta[markers])
 			end
