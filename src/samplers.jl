@@ -56,7 +56,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
         ZKeyPos = OrderedDict{String,Int64}()
 	for zSet in keys(Z)
         	pos = findall(zSet.==collect(keys(Z)))[]
-                ZKeyPos[ZSet] = pos
+                ZKeyPos[zSet] = pos
         end
         println("ZKeyPos: $ZKeyPos")
 
