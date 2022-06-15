@@ -73,7 +73,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
         ##counts columns per effect
         nColEachZ = []
 	##get priors per effect
-	iVarStr = Dict{Any,Array{Float64,2}} #inverses will be computed
+	iVarStr = Dict{Any,Array{Float64,2}}() #inverses will be computed
 	varU_prior = Dict{Any,Any}()
         for z in keys(Z)
                 println(z)
