@@ -215,7 +215,12 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 			end
 	#		if onScreen==true
             			println("b, $(vcat(b...))") #i always vectorize b. maybe better to make it vector initially
-				println("vG, $(var(M["M1"]*beta[1,:]))")
+
+				for mSet in keys(M)
+        	                	println("vG, $(var(M[mSet]*beta[MKeyPos[mSet],:]))")
+				end
+
+
         #		end
 		end
 	end
