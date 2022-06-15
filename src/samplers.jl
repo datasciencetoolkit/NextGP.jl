@@ -76,7 +76,6 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 	iVarStr = Dict{Any,Array{Float64,2}}() #inverses will be computed
 	varU_prior = OrderedDict{Any,Any}()
         for zSet in keys(Z)
-                println(zSet)
                 nCol = size(Z[zSet],2)
                 push!(u,fill(0.0,nCol))
                 nColEachZ = push!(nColEachZ,nCol)
@@ -96,8 +95,6 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 			varU_prior[zSet] = 100	
 		end
         end
-	println("prior variances $(varU_prior)")
-	println("length $(length.(u))")
 
 	#set up for E	
 	isempty(priorVCV["e"][1]) ? strE = Matrix(1.0I,nData,nData) : strE = priorVCV["e"][1]
@@ -147,8 +144,6 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
                 theseRegions = prep2RegionData(paths2maps[mSet],rS[mSet]) ###first data
                 regionArray[mSet] = theseRegions
         end
-        println("size regionArray: $(length(regionArray))")
-        println("size regionArray: $([length(regionArray[mSet]) for mSet in keys(regionArray)])")
 
 
 	#####MAKE DICT
@@ -247,8 +242,6 @@ function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,ZKeyPos,varE,varU,u,ycorr)
 	#block for each effect
 	for zSet in keys(Zmat)
 		pos = ZKeyPos[zSet]
-		println("$zSet pos: $pos")
-		println("$length u: $(length(u[pos]))") 
 		uVec = deepcopy(u[pos])
 		iMat = iStrMat[zSet]
 		tempzpz = zpzMat[zSet] ###added
@@ -264,9 +257,7 @@ function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,ZKeyPos,varE,varU,u,ycorr)
                 	meanU = invLhsU*rhsU
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         	end
-		println("uPos enter: $(u[pos])")
 		u[pos] = uVec
-		println("uPos exit: $(u[pos])")
         	ycorr .-= Zmat[zSet]*uVec
 	end
 end
