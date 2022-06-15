@@ -134,10 +134,6 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 
 	#pre-computations using priors, not relevant for correlated random effects
    	νS_E = scaleE*dfE
-	νS_U = zeros(nRand)
-	for z in 1:nRand
-                νS_U[z] = scaleU[z]*dfDefault
-        end
 
 
 
@@ -345,7 +341,7 @@ function sampleRanVar!(varU,nRand,scale_ranVar,df_ranVar,effVec,keyZ,iStrMat)
 	for z in keys(scale_ranVar)
 		pos = keyZ[z]
 		n = size(iStrMat[z],2)
-		varU[z] = (scaleU[z]*df_ranVar + effVec[pos]'*iStrMat[z]*effVec[pos])/rand(Chisq(df_ranVar + n))
+		varU[z] = (scale_ranVar[z]*df_ranVar + effVec[pos]'*iStrMat[z]*effVec[pos])/rand(Chisq(df_ranVar + n))
 	end
 end
 
