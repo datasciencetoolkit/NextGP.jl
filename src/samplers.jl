@@ -95,6 +95,7 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 		end
         end
 	println("prior variances $(varU_prior)")
+	println("length $(length.(u))")
 
 	#set up for E	
 	isempty(priorVCV["e"][1]) ? strE = Matrix(1.0I,nData,nData) : strE = priorVCV["e"][1]
@@ -243,7 +244,9 @@ end
 function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,ZKeyPos,varE,varU,u,ycorr)
 	#block for each effect
 	for zSet in keys(Zmat)
-		pos = ZKeyPos[zSet] 
+		pos = ZKeyPos[zSet]
+		println("$zSet pos: $pos")
+		println("$length u: $(length(u[pos]))") 
 		uVec = deepcopy(u[pos])
 		iMat = iStrMat[zSet]
 		tempzpz = zpzMat[zSet] ###added
