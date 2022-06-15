@@ -97,8 +97,8 @@ function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prio
 	println("prior variances $(varU_prior)")
 
 	#set up for E	
-	isempty(last(priorVCV,1)[1][1]) ? strE = Matrix(1.0I,nData,nData) : strE = last(priorVCV,1)[1][1]
-	varE_prior = last(priorVCV,1)[1][2] #since last returns a tupple
+	isempty(priorVCV["e"][1]) ? strE = Matrix(1.0I,nData,nData) : strE = priorVCV["e"][1]
+	varE_prior = priorVCV["e"][2]
 
 	#parameters for priors
         dfE = 4.0
