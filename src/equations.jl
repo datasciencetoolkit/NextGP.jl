@@ -29,7 +29,7 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 	
         FE = OrderedDict{Any,Any}() #any to block work
 
-        RE = OrderedDict{String,Any}()
+        RE = OrderedDict{Any,Any}()
 
 	ME = OrderedDict{String,Array{Float64, 2}}()
 	regionSizes = OrderedDict{String,Int64}()
@@ -60,7 +60,7 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
                         println("sym1: $sym1 sym2: $sym2")
 			
 			IDs,thisZ = ranMat(sym1, sym2, userData, userPedData)
-			RE[sym1] = thisZ
+			RE[(sym1,sym2)] = thisZ
 			thisZ = 0
 			push!(idRE,IDs)
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
