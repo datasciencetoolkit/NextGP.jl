@@ -247,7 +247,7 @@ function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,ZKeyPos,varE,varU,u,ycorr)
 		uVec = deepcopy(u[pos])
 		iMat = iStrMat[zSet]
 		tempzpz = zpzMat[zSet] ###added
-		λz = varE/(varU[pos])
+		λz = varE/(varU[zSet])
 	        ycorr .+= Zmat[zSet]*uVec		
 	        Yi = ZpMat[zSet]*ycorr #computation of Z'ycorr for ALL  rhsU
 		nCol = length(zpzMat[zSet])
