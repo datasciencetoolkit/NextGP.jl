@@ -310,7 +310,7 @@ function sampleMandMVar_view!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,yco
 		nowM = MMat[mSet]
                 pos = keyM[mSet]
                 for r in 1:regions[pos]
-                        theseLoci = regionsMat[pos][r]
+                        theseLoci = regionsMat[mSet][r]
                         regionSize = length(theseLoci)
                         lambda = varE/(varBeta[mSet][r])
                         for locus in theseLoci
