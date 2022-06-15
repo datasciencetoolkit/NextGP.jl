@@ -13,7 +13,7 @@ include("misc.jl")
 export runSampler
 
 #main sampler
-function runSampler(rowID,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prior,M,paths2maps,rS) ##varE will be fixed for now
+function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,varM_prior,M,paths2maps,rS)
 	
 	println("varM_prior $(varM_prior)")
 	#output settings
@@ -266,9 +266,9 @@ function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,ZKeyPos,varE,varU,u,ycorr)
                 	meanU = invLhsU*rhsU
                 	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         	end
-		println("uPos enter: u[pos]")
+		println("uPos enter: $(u[pos])")
 		u[pos] = uVec
-		println("uPos exit: u[pos]")
+		println("uPos exit: $(u[pos])")
         	ycorr .-= Zmat[zSet]*uVec
 	end
 end

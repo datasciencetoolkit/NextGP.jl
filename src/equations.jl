@@ -20,7 +20,7 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Symbol(arg2)])
 
 
-function mme(f, userHints, userData, userPedData, blocks; paths2geno)
+function mme(f, userHints, userData, blocks;path2ped,paths2geno)
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
@@ -33,10 +33,25 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 
 	ME = OrderedDict{String,Array{Float64, 2}}()
 	regionSizes = OrderedDict{String,Int64}()
-		
+
+
+        #read pedigree
+	if isempty(path2ped)
+		A = []
+	else
+		pedigree = CSV.read(path2ped,DataFrame)
+
+		pedigree.ID  = CategoricalArray(pedigree.ID)
+		pedigree.Dam = CategoricalArray(pedigree.Dam)
+		pedigree.Sire = CategoricalArray(pedigree.Sire)
+
+		A = makeA(pedigree[!,:Sire],pedigree[!,:Dam])
+	end	
+
 	#column id within pedigree
 	idRE = []
-	
+
+
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
 			println("$i has type BayesPR Type")
@@ -91,7 +106,7 @@ end
 
 
         
-        return idRE, vec(yVec), FE, RE, ME, regionSizes
+        return idRE, A, vec(yVec), FE, RE, ME, regionSizes
         end
 
 end
