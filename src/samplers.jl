@@ -119,7 +119,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
        		scaleE    = varE_prior*(dfE-2.0)/dfE    
    	end
 	
-	##no 0.0005 prior adapted here yet, also no correlated random effects
+	##no correlated random effects
 	scaleU = Dict{Any,Any}()
 	for zSet in keys(Z)
 		scaleU[zSet] = varU_prior[zSet]*(dfDefault-2.0)/dfDefault
@@ -138,7 +138,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 
 
 	#ADD MARKERS
-		# read map file and make regions
+	# read map file and make regions
 	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()
         for mSet in keys(M)
                 theseRegions = prep2RegionData(paths2maps[mSet],rS[mSet]) ###first data
@@ -146,24 +146,38 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
         end
 
 
-	#####MAKE DICT
         nRegions  = [length(regionArray[mSet]) for mSet in keys(regionArray)] #per component
 
 
-		#make mpm
-       		mpm = OrderedDict{Any,Any}()
-       		for m in keys(M)
-               		mpm[m] = diag(M[m]'M[m]) #will not work for large matrices!!!!
-        	end
+	#make mpm
+       	mpm = OrderedDict{Any,Any}()
+       @time	for mSet in keys(M)
+		tempmpm = []
+		nowM = M[mSet]
+			for c in eachcol(nowM)
+				push!(tempmpm,BLAS.dot(c,c))
+			end
+		mpm[mSet] = tempmpm
+        end
 
-		#key positions for speed
-		MKeyPos = OrderedDict{String,Int64}()
-		for mSet in keys(M)
-			pos = findall(mSet.==collect(keys(M)))[]
-			MKeyPos[mSet] = pos
-		end
-		println("MKeyPos: $MKeyPos")	
-		#storage
+	println("mpm1: $(mpm["M1"][1:5]) $(mpm["M2"][1:5]) $(mpm[M3][1:5])")
+	
+	mpm = OrderedDict{Any,Any}()
+        @time for mSet in keys(M)
+                mpm[mSet] = diag(M[mSet]'M[mSet]) #will not work for large matrices!!!!
+        end
+
+	println("mpm1: $(mpm["M1"][1:5]) $(mpm["M2"][1:5]) $(mpm[M3][1:5])")
+
+	#key positions for speed
+	MKeyPos = OrderedDict{String,Int64}()
+	for mSet in keys(M)
+		pos = findall(mSet.==collect(keys(M)))[]
+		MKeyPos[mSet] = pos
+	end
+	println("MKeyPos: $MKeyPos")	
+	
+	#storage
 
 	varU = varU_prior #for storage
 
