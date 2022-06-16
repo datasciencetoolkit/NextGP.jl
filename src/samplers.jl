@@ -160,14 +160,14 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 		mpm[mSet] = tempmpm
         end
 
-	println("mpm1: $(mpm["M1"][1:5]) $(mpm["M2"][1:5]) $(mpm[M3][1:5])")
+	println("mpm1: $(mpm["M1"][1:5]) $(mpm["M2"][1:5]) $(mpm["M3"][1:5])")
 	
 	mpm = OrderedDict{Any,Any}()
         @time for mSet in keys(M)
                 mpm[mSet] = diag(M[mSet]'M[mSet]) #will not work for large matrices!!!!
         end
 
-	println("mpm1: $(mpm["M1"][1:5]) $(mpm["M2"][1:5]) $(mpm[M3][1:5])")
+	println("mpm2: $(mpm["M1"][1:5]) $(mpm["M2"][1:5]) $(mpm["M3"][1:5])")
 
 	#key positions for speed
 	MKeyPos = OrderedDict{String,Int64}()
