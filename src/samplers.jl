@@ -217,6 +217,13 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 	println("keys of varBeta: $(keys(varBeta))")
 	println("keys of varBeta: $(varBeta)")
 
+        varBeta = OrderedDict{Any,Any}()
+        for mSet in keys(mpm)
+                varBeta[mSet] = [priorVCV[mSet] for i in 1:length(regionArray[mSet])] #later, direct reference to key when varM_prior is a dictionary
+        end
+        println("keys of varBeta: $(keys(varBeta))")
+        println("keys of varBeta: $(varBeta)")
+
 
 	#Start McMC
         for iter in 1:chainLength
