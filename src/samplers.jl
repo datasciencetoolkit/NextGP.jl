@@ -344,7 +344,7 @@ end
 function sampleMandMVar_view!(MMat,corM,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
         #for each marker set
         for mSet in keys(MMat)
-		if mSet in corM
+		if mSet in keys(corM)
 			println("$mSet in corM")	
 		else
 			nowM = MMat[mSet]
