@@ -157,7 +157,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 			for pSet in correlate
 				println(pSet)
 				push!(corEffects,pSet)
-				push!(corPositions,findall(pSet.==keys(M))
+				push!(corPositions,findall(pSet.==keys(M)))
 			end
 			if issubset(corEffects,collect(keys(M)))
 				corMPos[pSet] = corPositions
