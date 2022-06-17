@@ -127,32 +127,13 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 
 	#ADD MARKERS
 	# read map file and make regions
-	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()
-        for mSet in keys(M)
-                theseRegions = prep2RegionData(paths2maps[mSet],rS[mSet]) ###first data
-                regionArray[mSet] = theseRegions
-        end
-
-
-        nRegions  = [length(regionArray[mSet]) for mSet in keys(regionArray)] #per component
-
 
 	#make mpm
+
        	mpm = OrderedDict{Any,Any}()
-#        for mSet in keys(M)
-#		tempmpm = []
-#		nowM = M[mSet]
-#			for c in eachcol(nowM)
-#				push!(tempmpm,BLAS.dot(c,c))
-#			end
-#		mpm[mSet] = tempmpm
-#        end
-
-#	println("mpm1: $(mpm["M1"][1:5]) $(mpm["M2"][1:5]) $(mpm["M3"][1:5])")
-
-	##########
-	
+		
 	corM = []
+	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()	
 
 	for pSet ∈ keys(priorVCV)
 		corEffects = []
@@ -166,6 +147,8 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 					push!(tempmpm,BLAS.dot(c,c))
 				end
 				mpm[pSet] = tempmpm
+				theseRegions = prep2RegionData(paths2maps[pSet],rS[pSet])
+		                regionArray[pSet] = theseRegions
 			end
 		else println("$pSet will be correlated")
 			correlate = collect(pSet)
@@ -176,9 +159,15 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 			if issubset(corEffects,collect(keys(M)))
 				push!(corM,pSet)
 				mpm[pSet] = MatByMat.(hcat.(eachcol.(getindex.(Ref(M), (pSet)))...))
+				nowMap = first(pSet)					 #should throw out error if sets have different lengths! implement it here!
+				theseRegions = prep2RegionData(paths2maps[nowMap],rS[nowMap]) ###first data
+                		regionArray[pSet] = theseRegions
 			end
 		end
 	end  	
+
+	nRegions  = [length(regionArray[mSet]) for mSet in keys(regionArray)] #per marker set
+	println("nRegions: $(nRegions)")
 
 	println("corM: $corM")
 
@@ -197,7 +186,6 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 	
 	println("scaleM $scaleM")
 	
-	#########	
 
 	#key positions for each effect, for speed. Order of matrices in M are preserved here.
 	MKeyPos = OrderedDict{String,Int64}()
@@ -217,8 +205,8 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 
 
 	varBeta = OrderedDict{Any,Any}()
-	for mSet in keys(M)
-		varBeta[mSet] = hcat(fill(priorVCV[mSet],nRegions[MKeyPos[mSet]])...) #later, direct reference to key when varM_prior is a dictionary
+	for mSet in keys(mpm)
+		varBeta[mSet] = hcat(fill(priorVCV[mSet],length(regionArray[mSet]))...) #later, direct reference to key when varM_prior is a dictionary
 	end
 	println("keys of varBeta: $(keys(varBeta))")
 
