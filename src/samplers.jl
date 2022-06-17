@@ -132,7 +132,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 
        	mpm = OrderedDict{Any,Any}()
 		
-	corM = []
+	corM = OrderedDict{Any,Any}()
 	corMPos = OrderedDict{Any,Any}()
 	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()	
 
@@ -161,7 +161,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 			end
 			if issubset(corEffects,collect(keys(M)))
 				corMPos[pSet] = corPositions
-				push!(corM,pSet)
+				corM[pSet] = corEffects
 				mpm[pSet] = MatByMat.(hcat.(eachcol.(getindex.(Ref(M), (pSet)))...))
 				nowMap = first(pSet)					 #should throw out error if sets have different lengths! implement it here!
 				theseRegions = prep2RegionData(paths2maps[nowMap],rS[nowMap]) ###first data
@@ -344,23 +344,27 @@ end
 function sampleMandMVar_view!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
         #for each marker set
         for mSet in keys(MMat)
-		nowM = MMat[mSet]
-                pos = keyM[mSet]
-                for r in 1:regions[pos]
-                        theseLoci = regionsMat[mSet][r]
-                        regionSize = length(theseLoci)
-                        lambda = varE/(varBeta[mSet][r])
-                        for locus in theseLoci
-                                BLAS.axpy!(beta[pos,locus],view(nowM,:,locus),ycorr)
-                                rhs::Float64 = BLAS.dot(view(nowM,:,locus),ycorr)
-                                lhs::Float64 = mpmMat[mSet][locus] + lambda
-                                meanBeta::Float64 = lhs\rhs
-                                beta[pos,locus] = sampleBeta(meanBeta, lhs, varE)
-                                BLAS.axpy!(-1.0*beta[pos,locus],view(nowM,:,locus),ycorr)
-                        end
-                        varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[pos,theseLoci],regionSize)
-                end
-        end
+		if mSet in corM
+			println("$mSet in corM")	
+		else
+			nowM = MMat[mSet]
+                	pos = keyM[mSet]
+                	for r in 1:regions[pos]
+                        	theseLoci = regionsMat[mSet][r]
+                        	regionSize = length(theseLoci)
+                        	lambda = varE/(varBeta[mSet][r])
+                        	for locus in theseLoci
+                                	BLAS.axpy!(beta[pos,locus],view(nowM,:,locus),ycorr)
+                                	rhs::Float64 = BLAS.dot(view(nowM,:,locus),ycorr)
+                               		lhs::Float64 = mpmMat[mSet][locus] + lambda
+                                	meanBeta::Float64 = lhs\rhs
+                                	beta[pos,locus] = sampleBeta(meanBeta, lhs, varE)
+                                	BLAS.axpy!(-1.0*beta[pos,locus],view(nowM,:,locus),ycorr)
+                       		end
+                        	varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[pos,theseLoci],regionSize)
+                	end
+       		end
+	 end
 end
 
 
