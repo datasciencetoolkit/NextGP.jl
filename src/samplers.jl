@@ -133,10 +133,12 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
        	mpm = OrderedDict{Any,Any}()
 		
 	corM = []
+	corMPos = OrderedDict{Any,Any}()
 	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()	
 
 	for pSet ∈ keys(priorVCV)
 		corEffects = []
+		corPositions = []
 		if typeof(pSet)==String
 			println("$pSet is univariate")
 			if pSet ∈ keys(M)
@@ -155,8 +157,10 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 			for pSet in correlate
 				println(pSet)
 				push!(corEffects,pSet)
+				push!(corPositions,findall(pSet.==keys(M))
 			end
 			if issubset(corEffects,collect(keys(M)))
+				corMPos[pSet] = corPositions
 				push!(corM,pSet)
 				mpm[pSet] = MatByMat.(hcat.(eachcol.(getindex.(Ref(M), (pSet)))...))
 				nowMap = first(pSet)					 #should throw out error if sets have different lengths! implement it here!
@@ -170,6 +174,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 	println("nRegions: $(nRegions)")
 
 	println("corM: $corM")
+	println("corMPos: $corMPos")
 
 	dfM = Dict{Any,Any}()	
 	for mSet ∈ keys(mpm)
