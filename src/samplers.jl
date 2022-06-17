@@ -215,6 +215,8 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 		varBeta[mSet] = hcat(fill(priorVCV[mSet],length(regionArray[mSet]))...) #later, direct reference to key when varM_prior is a dictionary
 	end
 	println("keys of varBeta: $(keys(varBeta))")
+	println("keys of varBeta: $(varBeta)")
+
 
 	#Start McMC
         for iter in 1:chainLength
@@ -360,7 +362,7 @@ function sampleMandMVar_view!(MMat,correlatedM,keyCorM,beta,mpmMat,nMSet,keyM,re
 					RHS = [BLAS.dot(MMat[m][:,locus],ycorr)/varE for m in correlatedM[mSet]]
 					invLHS = inv((mpmMat[mSet][locus]./varE) .+ invB)
 					meanBeta = invLHS*RHS
-					beta[pos,locus] = rand(MvNormal(meanBeta,convert(Array,Symmetric(invLhs))))
+					beta[pos,locus] = rand(MvNormal(meanBeta,convert(Array,Symmetric(invLHS))))
 					for m in correlatedM[mSet]
                                                 BLAS.axpy!(-1.0*beta[keyM[m],locus],MMat[m][:,locus],ycorr)
                                         end	
