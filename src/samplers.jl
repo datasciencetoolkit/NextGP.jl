@@ -180,6 +180,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 		end
 	end  	
 
+	println("corM: $corM")
 
 	dfM = Dict{String,Any}()	
 	for mSet ∈ keys(mpm)
@@ -198,7 +199,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 	
 	#########	
 
-	#key positions for speed
+	#key positions for each effect, for speed. Order of matrices in M are preserved here.
 	MKeyPos = OrderedDict{String,Int64}()
 	for mSet in keys(M)
 		pos = findall(mSet.==collect(keys(M)))[]

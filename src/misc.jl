@@ -76,3 +76,7 @@ function prep2RegionData(mapFile,fixedRegSize)
     GC.gc()
     return SNPgroups
 end
+
+MatByMat = function(mat)
+	mat'*mat
+end
