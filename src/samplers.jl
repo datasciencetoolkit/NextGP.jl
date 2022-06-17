@@ -233,7 +233,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 		sampleRanVar!(varU,nRand,scaleU,dfDefault,u,ZKeyPos,iVarStr)
 		
 		#sample marker effects and variances
-	        sampleMandMVar_view!(M,corM,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
+	        sampleMandMVar_view!(M,corM,corMPos,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
                		
         	#print
 		if iter in these2Keep
@@ -241,7 +241,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 			IO.outMCMC(pwd(),"u",vcat(u...)')
 			IO.outMCMC(pwd(),"varE",varE)
 			IO.outMCMC(pwd(),"varU",hcat([varU[k] for k in keys(varU)]...))
-			for markers in keys(M)
+			for markers in keys(mpm)
 				IO.outMCMC(pwd(),"var"*markers,varBeta[markers])
 			end
 	#		if onScreen==true
@@ -342,11 +342,29 @@ function sampleMandMVar!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,va
         end
 end
 
-function sampleMandMVar_view!(MMat,correlatedM,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
+function sampleMandMVar_view!(MMat,correlatedM,keyCorM,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
         #for each marker set
         for mSet in keys(mpmMat)
 		if mSet in keys(correlatedM)
-			println("$mSet in corM")	
+			println("$mSet in corM")
+			pos = keyCorM[mSet]
+			for r in 1:regions[mSet]
+				theseLoci = regionsMat[mSet][r]
+				regionSize = length(theseLoci)
+				invB = inv(varBeta[mSet][r])
+				for locus in theseLoci
+					for m in correlatedM[mSet] 
+						BLAS.axpy!(beta[pos,locus],MMat[m][:,locus],ycorr)
+					end
+					RHS = [BLAS.dot(MMat[m][:,locus],ycorr)/varE for m in correlatedM[mSet]]
+					invLHS = inv(mpmMat[mSet][locus]./varE + invB)
+					meanBeta = invLHS*RHS
+					beta[pos,locus] = rand(MvNormal(meanBeta,convert(Array,Symmetric(invLhs))))
+					for m in correlatedM[mSet]
+                                                BLAS.axpy!(-1.0*beta[pos,locus],MMat[m][:,locus],ycorr)
+                                        end	
+				end
+			end	
 		else
 			nowM = MMat[mSet]
                 	pos = keyM[mSet]
