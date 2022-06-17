@@ -170,7 +170,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 		end
 	end  	
 
-	nRegions  = [length(regionArray[mSet]) for mSet in keys(regionArray)] #per marker set
+	nRegions  = [mSet => length(regionArray[mSet]) for mSet in keys(regionArray)] #per marker set
 	println("nRegions: $(nRegions)")
 
 	println("corM: $corM")
