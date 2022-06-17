@@ -151,23 +151,44 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 
 	#make mpm
        	mpm = OrderedDict{Any,Any}()
-       @time	for mSet in keys(M)
-		tempmpm = []
-		nowM = M[mSet]
-			for c in eachcol(nowM)
-				push!(tempmpm,BLAS.dot(c,c))
-			end
-		mpm[mSet] = tempmpm
-        end
+#        for mSet in keys(M)
+#		tempmpm = []
+#		nowM = M[mSet]
+#			for c in eachcol(nowM)
+#				push!(tempmpm,BLAS.dot(c,c))
+#			end
+#		mpm[mSet] = tempmpm
+#        end
 
-	println("mpm1: $(mpm["M1"][1:5]) $(mpm["M2"][1:5]) $(mpm["M3"][1:5])")
+#	println("mpm1: $(mpm["M1"][1:5]) $(mpm["M2"][1:5]) $(mpm["M3"][1:5])")
+
+	##########
 	
-	mpm = OrderedDict{Any,Any}()
-        @time for mSet in keys(M)
-                mpm[mSet] = diag(M[mSet]'M[mSet]) #will not work for large matrices!!!!
-        end
+	listOfCorM = []
 
-	println("mpm2: $(mpm["M1"][1:5]) $(mpm["M2"][1:5]) $(mpm["M3"][1:5])")
+	for pSet ∈ keys(priorVCV)
+		if typeof(pSet)==String
+			println("$pSet is univariate")
+			if pSet ∈ keys(M)
+				println("univariate mpm for $pSet")
+				tempmpm = []
+				nowM = M[pSet]
+				for c in eachcol(nowM)
+					push!(tempmpm,BLAS.dot(c,c))
+				end
+				mpm[pSet] = tempmpm
+			end
+		else println("$pSet will be correlated")
+			correlate = collect(pSet)
+			for pSet in correlate
+				println(pSet)
+				push!(listOfCorM,pSet)
+			end
+			mpm[pSet] = MatByMat.(hcat.(eachcol.(getindex.(Ref(outM), (pSet)))...))
+		end
+	end  	
+	
+	#########	
 
 	#key positions for speed
 	MKeyPos = OrderedDict{String,Int64}()

@@ -99,12 +99,12 @@ function mme(f, userHints, userData; blocks,path2ped,paths2geno)
 
 	#BLOCK FIXED EFFECTS
 	for b in blocks
-	getThese = intersect(collect(keys(FE)), b)
-	FE[Tuple(getThese)] = hcat(getindex.(Ref(FE), getThese)...)
-	for d in getThese
-		delete!(FE,d)
+		getThese = intersect(collect(keys(FE)), b)
+		FE[Tuple(getThese)] = hcat(getindex.(Ref(FE), getThese)...)
+		for d in getThese
+			delete!(FE,d)
+		end
 	end
-end
 
 
         
