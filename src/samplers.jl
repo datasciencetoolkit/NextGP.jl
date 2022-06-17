@@ -182,7 +182,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 
 	println("corM: $corM")
 
-	dfM = Dict{String,Any}()	
+	dfM = Dict{Any,Any}()	
 	for mSet ∈ keys(mpm)
 		dfM[mSet] = 3.0+size(priorVCV[mSet],1)
 	end
