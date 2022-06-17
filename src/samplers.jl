@@ -104,13 +104,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
         dfE = 4.0
 	dfDefault = 4.0
  
-	dfM = Dict{String,Any}()
-        for mSet in keys(M) 
-		size(priorVCV[mSet],1)>1 ? println("multivariate prior for marker set $mSet df=$(3+size(priorVCV[mSet],1))") : println("univariate prior for marker set $mSet df=$(3+size(priorVCV[mSet],1))")
-                dfM[mSet] = 3.0+size(priorVCV[mSet],1)
-        end
 
-	println("dfM $dfM")	
 	       
 	if varE_prior==0.0
 		varE_prior  = 0.0005
@@ -124,12 +118,6 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 	for zSet in keys(Z)
 		scaleU[zSet] = varU_prior[zSet]*(dfDefault-2.0)/dfDefault
 	end	
-
-	scaleM = Dict{Any,Any}()
-	for mSet in keys(M)
-		nMComp = size(priorVCV[mSet],1)
-                nMComp > 1 ? scaleM[mSet] = priorVCV[mSet].*(dfM[mSet]-nMComp-1.0)  : scaleM[mSet] = priorVCV[mSet]*(dfM[mSet]-2.0)/dfM[mSet] #I make float and array of float
-        end
 
 
 	#pre-computations using priors, not relevant for correlated random effects
@@ -164,9 +152,10 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 
 	##########
 	
-	listOfCorM = []
+	corM = []
 
 	for pSet ∈ keys(priorVCV)
+		corEffects = []
 		if typeof(pSet)==String
 			println("$pSet is univariate")
 			if pSet ∈ keys(M)
@@ -182,11 +171,30 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 			correlate = collect(pSet)
 			for pSet in correlate
 				println(pSet)
-				push!(listOfCorM,pSet)
+				push!(corEffects,pSet)
 			end
-			mpm[pSet] = MatByMat.(hcat.(eachcol.(getindex.(Ref(outM), (pSet)))...))
+			if issubset(corEffects,collect(keys(M)))
+				push!(corM,pSet)
+				mpm[pSet] = MatByMat.(hcat.(eachcol.(getindex.(Ref(M), (pSet)))...))
+			end
 		end
 	end  	
+
+
+	dfM = Dict{String,Any}()	
+	for mSet ∈ keys(mpm)
+		dfM[mSet] = 3.0+size(priorVCV[mSet],1)
+	end
+
+	println("dfM $dfM")
+
+	scaleM = Dict{Any,Any}()
+        for mSet in keys(mpm)
+                nMComp = size(priorVCV[mSet],1)
+                nMComp > 1 ? scaleM[mSet] = priorVCV[mSet].*(dfM[mSet]-nMComp-1.0)  : scaleM[mSet] = priorVCV[mSet]*(dfM[mSet]-2.0)/dfM[mSet] #I make float and array of float
+        end
+	
+	println("scaleM $scaleM")
 	
 	#########	
 
