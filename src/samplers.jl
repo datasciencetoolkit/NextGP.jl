@@ -210,19 +210,12 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 #	vcovBeta = fill(Matrix(Diagonal(varM)),maximum(nRegions)) #can allow unequal length! Remove tail zeros for printing....
 
 
-	varBeta = OrderedDict{Any,Any}()
-	for mSet in keys(mpm)
-		varBeta[mSet] = hcat(fill(priorVCV[mSet],length(regionArray[mSet]))...) #later, direct reference to key when varM_prior is a dictionary
-	end
-	println("keys of varBeta: $(keys(varBeta))")
-	println("keys of varBeta: $(varBeta)")
-
         varBeta = OrderedDict{Any,Any}()
         for mSet in keys(mpm)
                 varBeta[mSet] = [priorVCV[mSet] for i in 1:length(regionArray[mSet])] #later, direct reference to key when varM_prior is a dictionary
         end
         println("keys of varBeta: $(keys(varBeta))")
-        println("keys of varBeta: $(varBeta)")
+        println("varBeta: $(varBeta)")
 
 
 	#Start McMC
@@ -251,7 +244,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 			IO.outMCMC(pwd(),"varE",varE)
 			IO.outMCMC(pwd(),"varU",hcat([varU[k] for k in keys(varU)]...))
 			for markers in keys(mpm)
-				IO.outMCMC(pwd(),"var"*markers,varBeta[markers])
+				IO.outMCMC(pwd(),"var".*markers,varBeta[markers])
 			end
 	#		if onScreen==true
             			println("b, $(vcat(b...))") #i always vectorize b. maybe better to make it vector initially
