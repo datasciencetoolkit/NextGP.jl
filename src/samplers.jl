@@ -170,8 +170,9 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 		end
 	end  	
 
-	nRegions  = [mSet => length(regionArray[mSet]) for mSet in keys(regionArray)] #per marker set
-	println("nRegions: $(nRegions)")
+#	nRegions  = [mSet => length(regionArray[mSet]) for mSet in keys(regionArray)] #per marker set
+	nRegions  = OrderedDict(mSet => length(regionArray[mSet]) for mSet in keys(regionArray))
+	println("nRegions: $(values(nRegions))")
 
 	println("corM: $corM")
 	println("corMPos: $corMPos")
