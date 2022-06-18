@@ -369,8 +369,8 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
 #				println(typeof(RHS))
 #				@time	mul!(RHS,nowMp[locus],ycorr./varE) ###
 #				println(typeof(RHS))
-#				@time	RHS = [BLAS.dot(MMat[m][:,locus],ycorr)/varE for m in correlatedM[mSet]]
-#				println(typeof(RHS))
+				@time	RHS = [BLAS.dot(MMat[m][:,locus],ycorr)/varE for m in correlatedM[mSet]]
+				println(typeof(RHS))
 					invLHS::Array{Float64,2} = inv((mpmMat[mSet][locus]./varE) .+ invB)
 #					println(typeof(invLHS))
 					meanBeta::Array{Float64,2} = invLHS*RHS
