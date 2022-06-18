@@ -354,17 +354,18 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
 		if mSet in keys(correlatedM)
 			println("$mSet in corM")
 			pos = keyCorM[mSet]
+			nowMp = MpMat[mSet] ###
 			for r in 1:regions[mSet]
 				theseLoci = regionsMat[mSet][r]
 				regionSize = length(theseLoci)
 				invB = inv(varBeta[mSet][r])
 				for locus in theseLoci
-					RHS = zeros(size(invB))
+					RHS = zeros(size(invB))###
 					for m in correlatedM[mSet] 
 						BLAS.axpy!(beta[keyM[m],locus],MMat[m][:,locus],ycorr) #beta pos is different than pos
 					end
-				@time	RHS = (MpMat[locus]*ycorr)./varE
-				@time	mul!(RHS,MpMat[locus],ycorr./varE)
+				@time	RHS = (nowMp[locus]*ycorr)./varE ###
+				@time	mul!(RHS,nowMp[locus],ycorr./varE) ###
 				@time	RHS = [BLAS.dot(MMat[m][:,locus],ycorr)/varE for m in correlatedM[mSet]]
 					invLHS::Array{Float64,2} = inv((mpmMat[mSet][locus]./varE) .+ invB)
 					meanBeta::Array{Float64,2} = invLHS*RHS
