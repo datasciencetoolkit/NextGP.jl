@@ -369,6 +369,7 @@ function sampleMandMVar_view!(MMat,correlatedM,keyCorM,beta,mpmMat,nMSet,keyM,re
                                                 BLAS.axpy!(-1.0*beta[keyM[m],locus],MMat[m][:,locus],ycorr)
                                         end	
 				end
+				varBeta[mSet][r] = sampleVarCovBeta(scaleM[mSet],dfM[mSet],beta[pos,theseLoci],regionSize)
 			end	
 		else
 			nowM = MMat[mSet]
@@ -425,10 +426,14 @@ function sampleVarBeta(scalem,dfm,whichLoci,regionSize)
 	return (scalem*dfm + BLAS.dot(whichLoci,whichLoci)) / rand(Chisq(dfm + regionSize))
 end
 
+function sampleVarCovBeta(scalem,dfm,whichLoci,regionSize)
+	Sb = whichLoci*whichLoci'
+	return rand(InverseWishart(dfm + regionSize, scalem + Sb))
+end
 
 #Sample residual variance
 function sampleVarE(νS_e,yCorVec,df_e,nRecords)
-    return((νS_e + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords)))
+    return (νS_e + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords))
 end
 
 
