@@ -355,7 +355,7 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
         for mSet in keys(mpmMat)
 		if mSet in keys(correlatedM)
 			println("$mSet in corM")
-			pos = keyCorM[mSet]
+			betaPos = keyCorM[mSet]
 			nowMp = MpMat[mSet] ###
 			for r in 1:regions[mSet]
 				theseLoci = regionsMat[mSet][r]
@@ -367,7 +367,7 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
 				#		BLAS.axpy!(beta[keyBeta[m],locus],MMat[m][:,locus],ycorr) #beta pos is different than pos
 				#	end
 					
-					ycorr .+= MMat[mSet][locus]*beta[pos,locus]					
+					ycorr .+= MMat[mSet][locus]*beta[betaPos,locus]					
 
 					RHS = (nowMp[locus]*ycorr)./varE ### FASTEST
 				#	RHS = zeros(size(invB,1)) ### for mul!
@@ -375,30 +375,30 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
 				#	RHS = [BLAS.dot(MMat[m][:,locus],ycorr)/varE for m in correlatedM[mSet]]
 					invLHS::Array{Float64,2} = inv((mpmMat[mSet][locus]./varE) .+ invB)
 					meanBeta::Array{Float64,1} = invLHS*RHS
-					beta[pos,locus] = rand(MvNormal(meanBeta,convert(Array,Symmetric(invLHS))))
+					beta[betaPos,locus] = rand(MvNormal(meanBeta,convert(Array,Symmetric(invLHS))))
 				#	for m in correlatedM[mSet]
                                 #                BLAS.axpy!(-1.0*beta[keyBeta[m],locus],MMat[m][:,locus],ycorr)
                                 #       end
-					ycorr .-= MMat[mSet][locus]*beta[pos,locus]	
+					ycorr .-= MMat[mSet][locus]*beta[betaPos,locus]	
 				end
-				varBeta[mSet][r] = sampleVarCovBeta(scaleM[mSet],dfM[mSet],beta[pos,theseLoci],regionSize)
+				varBeta[mSet][r] = sampleVarCovBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
 			end	
 		else
 			nowM = MMat[mSet]
-                	pos = keyBeta[mSet]
+                	betaPos = keyBeta[mSet]
                 	for r in 1:regions[mSet]
                         	theseLoci = regionsMat[mSet][r]
                         	regionSize = length(theseLoci)
                         	lambda = varE/(varBeta[mSet][r])
                         	for locus in theseLoci
-                                	BLAS.axpy!(beta[pos,locus],view(nowM,:,locus),ycorr)
+                                	BLAS.axpy!(beta[betaPos,locus],view(nowM,:,locus),ycorr)
                                 	rhs::Float64 = BLAS.dot(view(nowM,:,locus),ycorr)
                                		lhs::Float64 = mpmMat[mSet][locus] + lambda
                                 	meanBeta::Float64 = lhs\rhs
-                                	beta[pos,locus] = sampleBeta(meanBeta, lhs, varE)
-                                	BLAS.axpy!(-1.0*beta[pos,locus],view(nowM,:,locus),ycorr)
+                                	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
+                                	BLAS.axpy!(-1.0*beta[betaPos,locus],view(nowM,:,locus),ycorr)
                        		end
-                        	varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[pos,theseLoci],regionSize)
+                        	varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
                 	end
        		end
 	 end
