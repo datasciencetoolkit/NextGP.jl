@@ -174,12 +174,12 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 				corMPos[pSet] = corPositions
 				corM[pSet] = corEffects
 				tempM = hcat.(eachcol.(getindex.(Ref(M), (pSet)))...)
-				M[pSet] = tempM
 				for d in corEffects
                        			delete!(M,d)
                			end
+				M[pSet]   = tempM
 				mpm[pSet] = MatByMat.(tempM)
-				Mp[pSet] = transpose.(tempM)
+				Mp[pSet]  = transpose.(tempM)
 				tempM = 0
 				nowMap = first(pSet)					 #should throw out error if sets have different lengths! implement it here!
 				theseRegions = prep2RegionData(paths2maps[nowMap],rS[nowMap]) ###first data
