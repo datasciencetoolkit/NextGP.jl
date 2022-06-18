@@ -200,6 +200,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 
 	#key positions for each effect, for speed. Order of matrices in M are preserved here.
 	MKeyPos = OrderedDict{String,Int64}()
+	println("keysM: $(keys(M))")
 	for mSet in keys(M)
 		pos = findall(mSet.==collect(keys(M)))[]
 		MKeyPos[mSet] = pos
