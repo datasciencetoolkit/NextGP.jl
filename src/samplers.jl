@@ -128,6 +128,16 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 	#ADD MARKERS
 	# read map file and make regions
 
+	#key positions for each effect in beta, for speed. Order of matrices in M are preserved here.
+        MKeyPos = OrderedDict{String,Int64}()
+        println("keysM: $(keys(M))")
+        for mSet in keys(M)
+                pos = findall(mSet.==collect(keys(M)))[]
+                MKeyPos[mSet] = pos
+        end
+        println("MKeyPos: $MKeyPos")
+
+
 	#make mpm
 
 	Mp = OrderedDict{Any,Any}()
@@ -165,6 +175,9 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 				corM[pSet] = corEffects
 				tempM = hcat.(eachcol.(getindex.(Ref(M), (pSet)))...)
 				M[pSet] = tempM
+			#	for d in corEffects
+                       	#		delete!(M,d)
+               		#	end
 				mpm[pSet] = MatByMat.(tempM)
 				Mp[pSet] = transpose.(tempM)
 				tempM = 0
@@ -198,14 +211,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 	println("scaleM $scaleM")
 	
 
-	#key positions for each effect, for speed. Order of matrices in M are preserved here.
-	MKeyPos = OrderedDict{String,Int64}()
 	println("keysM: $(keys(M))")
-	for mSet in keys(M)
-		pos = findall(mSet.==collect(keys(M)))[]
-		MKeyPos[mSet] = pos
-	end
-	println("MKeyPos: $MKeyPos")	
 	
 	#storage
 
