@@ -367,8 +367,8 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
 						BLAS.axpy!(beta[keyBeta[m],locus],MMat[m][:,locus],ycorr) #beta pos is different than pos
 					end
 					
-				@time	ycorr .+= MMat[mSet][:,locus]*beta[pos,locus] 
-					ycorr .-= MMat[mSet][:,locus]*beta[pos,locus]					
+				@time	ycorr .+= MMat[mSet][locus]*beta[pos,locus] 
+					ycorr .-= MMat[mSet][locus]*beta[pos,locus]					
 
 					RHS = (nowMp[locus]*ycorr)./varE ### FASTEST
 				#	RHS = zeros(size(invB,1)) ### for mul!
