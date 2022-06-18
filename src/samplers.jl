@@ -164,6 +164,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 				corMPos[pSet] = corPositions
 				corM[pSet] = corEffects
 				tempM = hcat.(eachcol.(getindex.(Ref(M), (pSet)))...)
+				M[pSet] = tempM
 				mpm[pSet] = MatByMat.(tempM)
 				Mp[pSet] = transpose.(tempM)
 				tempM = 0
