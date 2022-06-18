@@ -175,9 +175,9 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 				corM[pSet] = corEffects
 				tempM = hcat.(eachcol.(getindex.(Ref(M), (pSet)))...)
 				M[pSet] = tempM
-			#	for d in corEffects
-                       	#		delete!(M,d)
-               		#	end
+				for d in corEffects
+                       			delete!(M,d)
+               			end
 				mpm[pSet] = MatByMat.(tempM)
 				Mp[pSet] = transpose.(tempM)
 				tempM = 0
@@ -356,7 +356,6 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
 		if mSet in keys(correlatedM)
 			println("$mSet in corM")
 			pos = keyCorM[mSet]
-			nowM = MMat[mSet]
 			nowMp = MpMat[mSet] ###
 			for r in 1:regions[mSet]
 				theseLoci = regionsMat[mSet][r]
@@ -364,12 +363,11 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
 				invB = inv(varBeta[mSet][r])
 				for locus in theseLoci
 					RHS = zeros(size(invB,1))###
-				@time	for m in correlatedM[mSet] 
-						BLAS.axpy!(beta[keyBeta[m],locus],MMat[m][:,locus],ycorr) #beta pos is different than pos
-					end
+				#	for m in correlatedM[mSet] 
+				#		BLAS.axpy!(beta[keyBeta[m],locus],MMat[m][:,locus],ycorr) #beta pos is different than pos
+				#	end
 					
-				@time	ycorr .+= view(nowM,:,locus)*beta[pos,locus] 
-					ycorr .-= MMat[mSet][locus]*beta[pos,locus]					
+					ycorr .+= MMat[mSet][locus]*beta[pos,locus]					
 
 					RHS = (nowMp[locus]*ycorr)./varE ### FASTEST
 				#	RHS = zeros(size(invB,1)) ### for mul!
@@ -378,9 +376,10 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
 					invLHS::Array{Float64,2} = inv((mpmMat[mSet][locus]./varE) .+ invB)
 					meanBeta::Array{Float64,1} = invLHS*RHS
 					beta[pos,locus] = rand(MvNormal(meanBeta,convert(Array,Symmetric(invLHS))))
-					for m in correlatedM[mSet]
-                                                BLAS.axpy!(-1.0*beta[keyBeta[m],locus],MMat[m][:,locus],ycorr)
-                                        end	
+				#	for m in correlatedM[mSet]
+                                #                BLAS.axpy!(-1.0*beta[keyBeta[m],locus],MMat[m][:,locus],ycorr)
+                                #       end
+					ycorr .-= MMat[mSet][locus]*beta[pos,locus]	
 				end
 				varBeta[mSet][r] = sampleVarCovBeta(scaleM[mSet],dfM[mSet],beta[pos,theseLoci],regionSize)
 			end	
