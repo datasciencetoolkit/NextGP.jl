@@ -387,7 +387,7 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
 			end	
 		else
 			nowM = MMat[mSet]
-                	pos = keyM[mSet]
+                	pos = keyBeta[mSet]
                 	for r in 1:regions[mSet]
                         	theseLoci = regionsMat[mSet][r]
                         	regionSize = length(theseLoci)
