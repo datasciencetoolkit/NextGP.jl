@@ -260,12 +260,6 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 			end
 	#		if onScreen==true
             			println("b, $(vcat(b...))") #i always vectorize b. maybe better to make it vector initially
-
-				for mSet in keys(M)
-        	                	println("vG, $(var(M[mSet]*beta[MKeyPos[mSet],:]))")
-				end
-
-
         #		end
 		end
 	end
@@ -369,9 +363,13 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
 				invB = inv(varBeta[mSet][r])
 				for locus in theseLoci
 					RHS = zeros(size(invB,1))###
-					for m in correlatedM[mSet] 
+				@time	for m in correlatedM[mSet] 
 						BLAS.axpy!(beta[keyBeta[m],locus],MMat[m][:,locus],ycorr) #beta pos is different than pos
 					end
+					
+				@time	ycorr .+= MMat[mSet][:,locus]*beta[pos,locus] 
+					ycorr .-= MMat[mSet][:,locus]*beta[pos,locus]					
+
 					RHS = (nowMp[locus]*ycorr)./varE ### FASTEST
 				#	RHS = zeros(size(invB,1)) ### for mul!
 				#	mul!(RHS,nowMp[locus],ycorr./varE) ### LESS MEMORY ALLOCATION
