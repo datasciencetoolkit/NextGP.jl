@@ -129,13 +129,13 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 	# read map file and make regions
 
 	#key positions for each effect in beta, for speed. Order of matrices in M are preserved here.
-        MKeyPos = OrderedDict{String,Int64}()
+        BetaKeyPos = OrderedDict{String,Int64}()
         println("keysM: $(keys(M))")
         for mSet in keys(M)
                 pos = findall(mSet.==collect(keys(M)))[]
-                MKeyPos[mSet] = pos
+                BetaKeyPos[mSet] = pos
         end
-        println("MKeyPos: $MKeyPos")
+        println("BetaKeyPos: $BetaKeyPos")
 
 
 	#make mpm
@@ -247,7 +247,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 		sampleRanVar!(varU,nRand,scaleU,dfDefault,u,ZKeyPos,iVarStr)
 		
 		#sample marker effects and variances
-	        sampleMandMVar_view!(M,Mp,corM,corMPos,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
+	        sampleMandMVar_view!(M,Mp,corM,corMPos,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
                		
         	#print
 		if iter in these2Keep
@@ -356,7 +356,7 @@ function sampleMandMVar!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,va
         end
 end
 
-function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
+function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,keyBeta,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
         #for each marker set
         for mSet in keys(mpmMat)
 		if mSet in keys(correlatedM)
@@ -370,7 +370,7 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
 				for locus in theseLoci
 					RHS = zeros(size(invB,1))###
 					for m in correlatedM[mSet] 
-						BLAS.axpy!(beta[keyM[m],locus],MMat[m][:,locus],ycorr) #beta pos is different than pos
+						BLAS.axpy!(beta[keyBeta[m],locus],MMat[m][:,locus],ycorr) #beta pos is different than pos
 					end
 					RHS = (nowMp[locus]*ycorr)./varE ### FASTEST
 				#	RHS = zeros(size(invB,1)) ### for mul!
@@ -380,7 +380,7 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
 					meanBeta::Array{Float64,1} = invLHS*RHS
 					beta[pos,locus] = rand(MvNormal(meanBeta,convert(Array,Symmetric(invLHS))))
 					for m in correlatedM[mSet]
-                                                BLAS.axpy!(-1.0*beta[keyM[m],locus],MMat[m][:,locus],ycorr)
+                                                BLAS.axpy!(-1.0*beta[keyBeta[m],locus],MMat[m][:,locus],ycorr)
                                         end	
 				end
 				varBeta[mSet][r] = sampleVarCovBeta(scaleM[mSet],dfM[mSet],beta[pos,theseLoci],regionSize)
