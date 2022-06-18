@@ -364,8 +364,9 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
 					for m in correlatedM[mSet] 
 						BLAS.axpy!(beta[keyM[m],locus],MMat[m][:,locus],ycorr) #beta pos is different than pos
 					end
-				#	RHS = (nowMp[locus]*ycorr)./varE ### FASTEST
-					mul!(RHS,nowMp[locus],ycorr./varE) ### LESS MEMORY ALLOCATION
+					RHS = (nowMp[locus]*ycorr)./varE ### FASTEST
+				#	RHS = zeros(size(invB,1)) ### for mul!
+				#	mul!(RHS,nowMp[locus],ycorr./varE) ### LESS MEMORY ALLOCATION
 				#	RHS = [BLAS.dot(MMat[m][:,locus],ycorr)/varE for m in correlatedM[mSet]]
 					invLHS::Array{Float64,2} = inv((mpmMat[mSet][locus]./varE) .+ invB)
 					meanBeta::Array{Float64,1} = invLHS*RHS
