@@ -33,7 +33,7 @@ function mme(f, userHints, userData; blocks,path2ped,paths2geno)
 
         RE = OrderedDict{Any,Any}()
 
-	ME = OrderedDict{String,Array{Float64, 2}}()
+	ME = OrderedDict{Any,Array{Float64, 2}}()
 	regionSizes = OrderedDict{String,Int64}()
 
 
