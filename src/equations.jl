@@ -56,8 +56,7 @@ function mme(f, userHints, userData; blocks,path2ped,paths2geno)
 
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
-			println("$i has type BayesPR Type")
-			println("terms4StatsModels[i]: $(terms4StatsModels[i])")
+			println("$(terms4StatsModels[i]) is BayesPR Type")
 			arg1 = repr((f.rhs[i].args_parsed)[1])
 			arg2 = parse(Int64,repr((f.rhs[i].args_parsed)[2]))
 			path = paths2geno[Symbol(arg1)]
@@ -70,7 +69,7 @@ function mme(f, userHints, userData; blocks,path2ped,paths2geno)
                         thisM = 0 #I can directly merge to dict above
 			regionSizes[arg1] = arg2
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
-                        println("$i has type ran Type")
+                        println("$(terms4StatsModels[i]) is ran Type")
                         sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
                         sym2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
                         println("sym1: $sym1 sym2: $sym2")
@@ -80,7 +79,7 @@ function mme(f, userHints, userData; blocks,path2ped,paths2geno)
 			thisZ = 0
 			push!(idRE,IDs)
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
-                        println("$i has type | Type")
+                        println("$(terms4StatsModels[i]) is | Type")
                         my_sch = schema(userData, userHints) #work on userData and userHints
                         my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
 			#####NO IDs for this effect!!! Will be added later!!!!#####################################################
@@ -90,7 +89,7 @@ function mme(f, userHints, userData; blocks,path2ped,paths2geno)
 			push!(RE,modelcols(my_ApplySch, userData))
 
                 else
-                println("$i has type $(typeof(f.rhs[i]))")
+                println("$(terms4StatsModels[i]) is $(typeof(f.rhs[i])) type")
 		thisX = StatsModels.modelmatrix(f.rhs[i], userData,hints= userHints)
 		FE[terms4StatsModels[i]] = thisX
 		thisX = 0

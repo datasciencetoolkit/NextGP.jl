@@ -353,10 +353,7 @@ function sampleMandMVar_view!(MMat,correlatedM,keyCorM,beta,mpmMat,nMSet,keyM,re
 			for r in 1:regions[mSet]
 				theseLoci = regionsMat[mSet][r]
 				regionSize = length(theseLoci)
-				println("varBeta[mSet]: $(varBeta[mSet])")
-				println("varBeta[mSet][r]: $(varBeta[mSet][r])")
 				invB = inv(varBeta[mSet][r])
-				println("invB $invB")
 				for locus in theseLoci
 					for m in correlatedM[mSet] 
 						BLAS.axpy!(beta[keyM[m],locus],MMat[m][:,locus],ycorr) #beta pos is different than pos
