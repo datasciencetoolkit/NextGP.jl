@@ -130,6 +130,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 
 	#make mpm
 
+	Mp = OrderedDict{Any,Any}()
        	mpm = OrderedDict{Any,Any}()
 		
 	corM = OrderedDict{Any,Any}()
@@ -162,7 +163,10 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 			if issubset(corEffects,collect(keys(M)))
 				corMPos[pSet] = corPositions
 				corM[pSet] = corEffects
-				mpm[pSet] = MatByMat.(hcat.(eachcol.(getindex.(Ref(M), (pSet)))...))
+				tempM = hcat.(eachcol.(getindex.(Ref(M), (pSet)))...)
+				mpm[pSet] = MatByMat.tempM
+				Mp[pSet] = transpose.(tempM)
+				tempM = 0
 				nowMap = first(pSet)					 #should throw out error if sets have different lengths! implement it here!
 				theseRegions = prep2RegionData(paths2maps[nowMap],rS[nowMap]) ###first data
                 		regionArray[pSet] = theseRegions
@@ -235,7 +239,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 		sampleRanVar!(varU,nRand,scaleU,dfDefault,u,ZKeyPos,iVarStr)
 		
 		#sample marker effects and variances
-	        sampleMandMVar_view!(M,corM,corMPos,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
+	        sampleMandMVar_view!(M,Mp,corM,corMPos,beta,mpm,nMarkerSets,MKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
                		
         	#print
 		if iter in these2Keep
@@ -344,7 +348,7 @@ function sampleMandMVar!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,va
         end
 end
 
-function sampleMandMVar_view!(MMat,correlatedM,keyCorM,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
+function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
         #for each marker set
         for mSet in keys(mpmMat)
 		if mSet in keys(correlatedM)
@@ -355,12 +359,15 @@ function sampleMandMVar_view!(MMat,correlatedM,keyCorM,beta,mpmMat,nMSet,keyM,re
 				regionSize = length(theseLoci)
 				invB = inv(varBeta[mSet][r])
 				for locus in theseLoci
+					RHS = zeros(size(invB))
 					for m in correlatedM[mSet] 
 						BLAS.axpy!(beta[keyM[m],locus],MMat[m][:,locus],ycorr) #beta pos is different than pos
 					end
-					RHS = [BLAS.dot(MMat[m][:,locus],ycorr)/varE for m in correlatedM[mSet]]
-					invLHS = inv((mpmMat[mSet][locus]./varE) .+ invB)
-					meanBeta = invLHS*RHS
+				@time	RHS = (MpMat[locus]*ycorr)./varE
+				@time	mul!(RHS,MpMat[locus],ycorr./varE)
+				@time	RHS = [BLAS.dot(MMat[m][:,locus],ycorr)/varE for m in correlatedM[mSet]]
+					invLHS::Array{Float64,2} = inv((mpmMat[mSet][locus]./varE) .+ invB)
+					meanBeta::Array{Float64,2} = invLHS*RHS
 					beta[pos,locus] = rand(MvNormal(meanBeta,convert(Array,Symmetric(invLHS))))
 					for m in correlatedM[mSet]
                                                 BLAS.axpy!(-1.0*beta[keyM[m],locus],MMat[m][:,locus],ycorr)
