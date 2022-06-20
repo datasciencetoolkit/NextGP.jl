@@ -256,7 +256,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 			IO.outMCMC(pwd(),"varE",varE)
 			IO.outMCMC(pwd(),"varU",hcat([varU[k] for k in keys(varU)]...))
 			for mSet in keys(BetaKeyPos)
-                                IO.outMCMC(pwd(),"beta".*mSet,beta[mSet])
+                                IO.outMCMC(pwd(),"beta$mSet",beta[BetaKeyPos[mSet]])
                         end
 			for pSet in keys(mpm)
 				IO.outMCMC(pwd(),"var".*pSet,varBeta[pSet])
