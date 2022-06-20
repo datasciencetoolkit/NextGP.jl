@@ -62,7 +62,7 @@ function mme(f, userHints, userData; blocks,path2ped,paths2geno)
 			path = paths2geno[Symbol(arg1)]
 			thisM = CSV.read(path,CSV.Tables.matrix)
 			#centering
-			thisM .-= mean(thisM,dims=1) 
+#			thisM .-= mean(thisM,dims=1) 
 			println("size of $arg1 data: $(size(thisM))")
 			println("region size for $arg1: $arg2")
 			ME[arg1] = thisM
