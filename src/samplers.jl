@@ -255,8 +255,11 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 			IO.outMCMC(pwd(),"u",vcat(u...)')
 			IO.outMCMC(pwd(),"varE",varE)
 			IO.outMCMC(pwd(),"varU",hcat([varU[k] for k in keys(varU)]...))
-			for markers in keys(mpm)
-				IO.outMCMC(pwd(),"var".*markers,varBeta[markers])
+			for mSet in keys(BetaKeyPos)
+                                IO.outMCMC(pwd(),"beta".*mSet,beta[mSet])
+                        end
+			for pSet in keys(mpm)
+				IO.outMCMC(pwd(),"var".*pSet,varBeta[pSet])
 			end
 	#		if onScreen==true
             			println("b, $(vcat(b...))") #i always vectorize b. maybe better to make it vector initially
