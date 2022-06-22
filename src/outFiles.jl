@@ -17,4 +17,13 @@ function outMCMC(folder::String,thisVar,output)
         close(out0)
 end
 
+function getResults(param;summary=false)
+	param = CSV.read(param*"Out",Tables.matrix,header=false)
+		if summary=true
+			chn = Chains(param)
+			param = mean(Matrix(param),dims=1)
+		else param = mean(Matrix(param),dims=1)
+	return param	
+end
+
 end
