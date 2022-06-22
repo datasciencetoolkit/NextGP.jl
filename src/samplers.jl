@@ -6,6 +6,7 @@ using Printf
 using CSV
 using DataFrames
 using DataStructures
+using ProgressMeter
 
 include("outFiles.jl")
 include("misc.jl")
@@ -217,7 +218,9 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 
 
 	#Start McMC
-        for iter in 1:chainLength
+@showprogress 1 "MCMC progress..." for iter in 1:chainLength
+	sleep(0.1)
+	
 		#sample residual variance
 	       	varE = sampleVarE(νS_E,ycorr,dfE,nData)
 		
