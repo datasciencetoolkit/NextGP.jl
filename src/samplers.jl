@@ -15,7 +15,6 @@ export runSampler
 #main sampler
 function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS,outPut)
 	
-	println("priorVCV $(priorVCV)")
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
 
@@ -26,7 +25,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 	nData = length(Y)
 	nMarkerSets = length(M)
 	nMarkers    = [size(M[m],2) for m in keys(M)]
-	println("nMarkers: $nMarkers")
+	println("number of markers: $nMarkers")
 
         #initial computations and settings
 	ycorr = deepcopy(Y)
