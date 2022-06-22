@@ -21,6 +21,7 @@ include("outFiles.jl")
 
 using .MCMC
 export runGibbs
+using .IO
 export summaryMCMC
 
 end
