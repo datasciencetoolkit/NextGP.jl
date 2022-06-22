@@ -27,7 +27,7 @@ function summaryMCMC(param;summary=false)
 		if summary==true
 			chn = Chains(param)
 			display(chn)
-			plot(chn)
+			display(plot(chn))
 			param = mean(Matrix(param),dims=1)
 		else param = mean(Matrix(param),dims=1)
 		end
