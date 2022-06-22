@@ -24,7 +24,7 @@ runGibbs = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}
 
 	if isdir(outMCMC)==true
 		println("Default output folder $outMCMC exists. Removing its content")
-    		run(`rm -rf $outMCMC/*`)
+    		run(`rm -rf $outMCMC/'*'`)
 	else
     		println("$outMCMC has been created to store the MCMC output")
     		run(`mkdir $outMCMC`)
