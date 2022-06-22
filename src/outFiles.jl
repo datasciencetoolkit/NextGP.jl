@@ -28,6 +28,7 @@ function summaryMCMC(param;summary=false)
 			plot(chn)
 			param = mean(Matrix(param),dims=1)
 		else param = mean(Matrix(param),dims=1)
+		end
 	return param	
 end
 
