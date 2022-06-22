@@ -68,7 +68,7 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 			arg1 = repr((f.rhs[i].args_parsed)[1])
 			arg2 = parse(Int64,repr((f.rhs[i].args_parsed)[2]))
 			path = paths2geno[Symbol(arg1)]
-			thisM = CSV.read(path,CSV.Tables.matrix)
+			thisM = CSV.read(path,CSV.Tables.matrix,header=false)
 			#centering
 			thisM .-= mean(thisM,dims=1) 
 			println("size of $arg1 data: $(size(thisM))")
