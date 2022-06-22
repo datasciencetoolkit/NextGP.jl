@@ -1,6 +1,7 @@
 module IO
 
 export outMCMC
+export summaryMCMC
 
 using DelimitedFiles
 using CSV
