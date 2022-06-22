@@ -17,7 +17,7 @@ macro name(arg)
 end
 
 function outMCMC(folder::String,thisVar,output)
-        out0 = open(pwd()*"/$(thisVar)Out", "a")
+        out0 = open(folder*"/$(thisVar)Out", "a")
         writedlm(out0, output)
         close(out0)
 end

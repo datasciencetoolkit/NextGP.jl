@@ -13,7 +13,7 @@ include("misc.jl")
 export runSampler
 
 #main sampler
-function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS)
+function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS,outPut)
 	
 	println("priorVCV $(priorVCV)")
 	#output settings

@@ -17,11 +17,11 @@ include("runTime.jl")
 include("samplers.jl")
 
 
-runGibbs = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}(),blockThese=[],VCV=[],userPedData=[],map=[],genotypes...)
+runGibbs = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}(),blockThese=[],outFolder=pwd(),VCV=[],userPedData=[],map=[],genotypes...)
 	println("Building parts of MME")
 	idY,A,yVec,FE,RE,ME,regionSizes = equations.mme(formula,userData,userHints=myHints,blocks=blockThese,path2ped=userPedData,paths2geno=genotypes)
 	println("Running MCMC")
-        samplers.runSampler(idY,A,yVec,FE,RE,nChain,nBurn,nThin,VCV,ME,map,regionSizes)
+        samplers.runSampler(idY,A,yVec,FE,RE,nChain,nBurn,nThin,VCV,ME,map,regionSizes,outFolder)
 	#return(yVec,FE,RE,ME)
 end
 
