@@ -35,8 +35,6 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 		end
 	end
 
-	println("HHINTS: $userHints")
-
         yVec = StatsModels.modelmatrix(f.lhs, userData)
 	
         FE = OrderedDict{Any,Any}() #any to block work
