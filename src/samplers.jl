@@ -130,12 +130,10 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 
 	#key positions for each effect in beta, for speed. Order of matrices in M are preserved here.
         BetaKeyPos = OrderedDict{String,Int64}()
-        println("keysM: $(keys(M))")
         for mSet in keys(M)
                 pos = findall(mSet.==collect(keys(M)))[]
                 BetaKeyPos[mSet] = pos
         end
-        println("BetaKeyPos: $BetaKeyPos")
 
 
 	#make mpm
@@ -190,17 +188,14 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 
 #	nRegions  = [mSet => length(regionArray[mSet]) for mSet in keys(regionArray)] #per marker set
 	nRegions  = OrderedDict(mSet => length(regionArray[mSet]) for mSet in keys(regionArray))
-	println("nRegions: $(values(nRegions))")
+	println("number of regions: $(values(nRegions))")
 
-	println("corM: $corM")
-	println("corMPos: $corMPos")
 
 	dfM = Dict{Any,Any}()	
 	for mSet ∈ keys(mpm)
 		dfM[mSet] = 3.0+size(priorVCV[mSet],1)
 	end
 
-	println("dfM $dfM")
 
 	scaleM = Dict{Any,Any}()
         for mSet in keys(mpm)
@@ -208,10 +203,6 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
                 nMComp > 1 ? scaleM[mSet] = priorVCV[mSet].*(dfM[mSet]-nMComp-1.0)  : scaleM[mSet] = priorVCV[mSet]*(dfM[mSet]-2.0)/dfM[mSet] #I make float and array of float
         end
 	
-	println("scaleM $scaleM")
-	
-
-	println("keysM: $(keys(M))")
 	
 	#storage
 
@@ -226,8 +217,6 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
         for mSet in keys(mpm)
                 varBeta[mSet] = [priorVCV[mSet] for i in 1:length(regionArray[mSet])] #later, direct reference to key when varM_prior is a dictionary
         end
-        println("keys of varBeta: $(keys(varBeta))")
-        println("varBeta: $(varBeta)")
 
 
 	#Start McMC
@@ -262,7 +251,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 				IO.outMCMC(pwd(),"var".*pSet,varBeta[pSet])
 			end
 	#		if onScreen==true
-            			println("b, $(vcat(b...))") #i always vectorize b. maybe better to make it vector initially
+	#            		println("b, $(vcat(b...))") #i always vectorize b. maybe better to make it vector initially
         #		end
 		end
 	end
