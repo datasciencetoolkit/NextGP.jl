@@ -237,19 +237,16 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
                		
         	#print
 		if iter in these2Keep
-			IO.outMCMC(pwd(),"b",vcat(b...)') ### currently no path is provided!!!!
-			IO.outMCMC(pwd(),"u",vcat(u...)')
-			IO.outMCMC(pwd(),"varE",varE)
-			IO.outMCMC(pwd(),"varU",hcat([varU[k] for k in keys(varU)]...))
+			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
+			IO.outMCMC(outPut,"u",vcat(u...)')
+			IO.outMCMC(outPut,"varE",varE)
+			IO.outMCMC(outPut,"varU",hcat([varU[k] for k in keys(varU)]...))
 			for mSet in keys(BetaKeyPos)
-                                IO.outMCMC(pwd(),"beta$mSet",beta[BetaKeyPos[mSet],:]')
+                                IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos[mSet],:]')
                         end
 			for pSet in keys(mpm)
-				IO.outMCMC(pwd(),"var".*pSet,varBeta[pSet])
+				IO.outMCMC(outPut,"var".*pSet,varBeta[pSet])
 			end
-	#		if onScreen==true
-	#            		println("b, $(vcat(b...))") #i always vectorize b. maybe better to make it vector initially
-        #		end
 		end
 	end
 end
