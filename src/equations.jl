@@ -27,6 +27,15 @@ function mme(f, userHints, userData; blocks,path2ped,paths2geno)
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
 
+	for n in Symbol.(names(userData))
+		if typeof(userData[!,n]).==Array{String, 1}
+    			if !haskey(userHints,n)
+				userHints[n] = StatsModels.DummyCoding()
+			end
+		end
+	end
+
+
         yVec = StatsModels.modelmatrix(f.lhs, userData)
 	
         FE = OrderedDict{Any,Any}() #any to block work
