@@ -155,7 +155,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 					push!(tempmpm,BLAS.dot(c,c))
 				end
 				mpm[pSet] = tempmpm
-				theseRegions = prep2RegionData(paths2maps[pSet],rS[pSet])
+				theseRegions = prep2RegionData(pSet,paths2maps[pSet],rS[pSet])
 		                regionArray[pSet] = theseRegions
 			end
 		else println("$pSet will be correlated")
