@@ -7,6 +7,7 @@ using DelimitedFiles
 using CSV
 using StatsBase
 using MCMCChains
+using StatsPlots
 
 macro name(arg)
     x = string(arg)
