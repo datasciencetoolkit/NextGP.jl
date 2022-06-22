@@ -155,7 +155,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 					push!(tempmpm,BLAS.dot(c,c))
 				end
 				mpm[pSet] = tempmpm
-				theseRegions = prep2RegionData(pSet,paths2maps[pSet],rS[pSet])
+				theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],rS[pSet])
 		                regionArray[pSet] = theseRegions
 			end
 		else println("$pSet will be correlated")
@@ -177,7 +177,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 				Mp[pSet]  = transpose.(tempM)
 				tempM = 0
 				nowMap = first(pSet)					 #should throw out error if sets have different lengths! implement it here!
-				theseRegions = prep2RegionData(pSet,paths2maps[nowMap],rS[nowMap]) ###first data
+				theseRegions = prep2RegionData(outPut,pSet,paths2maps[nowMap],rS[nowMap]) ###first data
                 		regionArray[pSet] = theseRegions
 			end
 		end
