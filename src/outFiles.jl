@@ -22,7 +22,7 @@ function outMCMC(folder::String,thisVar,output)
 end
 
 function summaryMCMC(param;summary=false)
-	param = CSV.read(param*"Out",Tables.matrix,header=false)
+	param = CSV.read(param*"Out",CSV.Tables.matrix,header=false)
 		if summary==true
 			chn = Chains(param)
 			display(chn)
