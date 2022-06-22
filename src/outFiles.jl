@@ -22,16 +22,16 @@ function outMCMC(folder::String,thisVar,output)
         close(out0)
 end
 
-function summaryMCMC(param;summary=false)
-	param = CSV.read("$(param)Out",CSV.Tables.matrix,header=false)
-		if summary==true
-			chn = Chains(param)
-			display(chn)
-			display(plot(chn))
-			param = mean(Matrix(param),dims=1)
-		else param = mean(Matrix(param),dims=1)
-		end
-	return param	
+function summaryMCMC(param;summary=false,outFolder=pwd()*"/outMCMC")
+        param = CSV.read("$outFolder/$(param)Out",CSV.Tables.matrix,header=false)
+                if summary==true
+                        chn = Chains(param)
+                        display(chn)
+                        display(plot(chn))
+                        param = mean(Matrix(param),dims=1)
+                else param = mean(Matrix(param),dims=1)
+                end
+        return param
 end
 
 end
