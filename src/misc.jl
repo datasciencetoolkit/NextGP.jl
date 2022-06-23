@@ -80,3 +80,19 @@ end
 MatByMat = function(mat)
 	mat'*mat
 end
+
+folderHandler = function(outFolder)
+	if isdir(outFolder)==true
+                println("Output folder $outFolder exists. Removing it")
+                run(`rm -rf $outFolder/`)
+        else
+                println("$outFolder has been created to store the MCMC output")
+                run(`mkdir $outFolder`)
+	end
+end
+
+
+
+
+
+
