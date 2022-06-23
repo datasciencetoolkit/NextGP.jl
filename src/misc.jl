@@ -84,7 +84,8 @@ end
 folderHandler = function(outFolder)
 	if isdir(outFolder)==true
                 println("Output folder $outFolder exists. Removing it")
-                run(`rm -rf $outFolder/`)
+#                run(`rm -rf $outFolder/`)
+		rm(outFolder,force=true,recursive=true)
         else
                 println("$outFolder has been created to store the MCMC output")
                 run(`mkdir $outFolder`)
