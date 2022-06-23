@@ -340,7 +340,7 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
         #for each marker set
         for mSet in keys(mpmMat)
 		if mSet in keys(correlatedM)
-			println("$mSet in corM")
+#			println("$mSet in corM")
 			betaPos = keyCorM[mSet]
 			nowMp = MpMat[mSet] ###
 			for r in 1:regions[mSet]
