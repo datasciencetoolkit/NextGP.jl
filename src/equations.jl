@@ -1,6 +1,8 @@
 module equations
 
-using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures
+using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames
+
+include("misc.jl")
 
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
         isa(x1, CategoricalArray) ||
@@ -20,31 +22,53 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Symbol(arg2)])
 
 
-function mme(f, userHints, userData, userPedData, blocks; paths2geno)
+function mme(f, userData;userHints,blocks,path2ped,paths2geno)
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
+
+	for n in Symbol.(names(userData))
+		if typeof(userData[!,n]).==Array{String, 1}
+    			if !haskey(userHints,n)
+				userHints[n] = StatsModels.DummyCoding()
+			end
+		end
+	end
 
         yVec = StatsModels.modelmatrix(f.lhs, userData)
 	
         FE = OrderedDict{Any,Any}() #any to block work
 
-        RE = OrderedDict{String,Any}()
+        RE = OrderedDict{Any,Any}()
 
-	ME = OrderedDict{String,Array{Float64, 2}}()
+	ME = OrderedDict{Any,Any}()
 	regionSizes = OrderedDict{String,Int64}()
-		
+
+
+        #read pedigree
+	if isempty(path2ped)
+		A = []
+	else
+		pedigree = CSV.read(path2ped,DataFrame)
+
+		pedigree.ID  = CategoricalArray(pedigree.ID)
+		pedigree.Dam = CategoricalArray(pedigree.Dam)
+		pedigree.Sire = CategoricalArray(pedigree.Sire)
+
+		A = makeA(pedigree[!,:Sire],pedigree[!,:Dam])
+	end	
+
 	#column id within pedigree
 	idRE = []
-	
+
+
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
-			println("$i has type BayesPR Type")
-			println("terms4StatsModels[i]: $(terms4StatsModels[i])")
+			println("$(terms4StatsModels[i]) is BayesPR Type")
 			arg1 = repr((f.rhs[i].args_parsed)[1])
 			arg2 = parse(Int64,repr((f.rhs[i].args_parsed)[2]))
 			path = paths2geno[Symbol(arg1)]
-			thisM = CSV.read(path,CSV.Tables.matrix)
+			thisM = CSV.read(path,CSV.Tables.matrix,header=false)
 			#centering
 			thisM .-= mean(thisM,dims=1) 
 			println("size of $arg1 data: $(size(thisM))")
@@ -53,18 +77,17 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
                         thisM = 0 #I can directly merge to dict above
 			regionSizes[arg1] = arg2
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
-                        println("$i has type ran Type")
+                        println("$(terms4StatsModels[i]) is ran Type")
                         sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
                         sym2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
-#                       arg2 = eval(Meta.parse(arg2)) #now it is from string to data. Later will be path
                         println("sym1: $sym1 sym2: $sym2")
 			
-			IDs,thisZ = ranMat(sym1, sym2, userData, userPedData)
-			RE[sym1] = thisZ
+			IDs,thisZ = ranMat(sym1, sym2, userData, pedigree)
+			RE[(sym1,sym2)] = thisZ
 			thisZ = 0
 			push!(idRE,IDs)
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
-                        println("$i has type | Type")
+                        println("$(terms4StatsModels[i]) is | Type")
                         my_sch = schema(userData, userHints) #work on userData and userHints
                         my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
 			#####NO IDs for this effect!!! Will be added later!!!!#####################################################
@@ -74,7 +97,7 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 			push!(RE,modelcols(my_ApplySch, userData))
 
                 else
-                println("$i has type $(typeof(f.rhs[i]))")
+                println("$(terms4StatsModels[i]) is $(typeof(f.rhs[i])) type")
 		thisX = StatsModels.modelmatrix(f.rhs[i], userData,hints= userHints)
 		FE[terms4StatsModels[i]] = thisX
 		thisX = 0
@@ -83,16 +106,16 @@ function mme(f, userHints, userData, userPedData, blocks; paths2geno)
 
 	#BLOCK FIXED EFFECTS
 	for b in blocks
-	getThese = intersect(collect(keys(FE)), b)
-	FE[Tuple(getThese)] = hcat(getindex.(Ref(FE), getThese)...)
-	for d in getThese
-		delete!(FE,d)
+		getThese = intersect(collect(keys(FE)), b)
+		FE[Tuple(getThese)] = hcat(getindex.(Ref(FE), getThese)...)
+		for d in getThese
+			delete!(FE,d)
+		end
 	end
-end
 
 
         
-        return idRE, vec(yVec), FE, RE, ME, regionSizes
+        return idRE, A, vec(yVec), FE, RE, ME, regionSizes
         end
 
 end

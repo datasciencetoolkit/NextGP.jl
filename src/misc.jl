@@ -1,3 +1,7 @@
+using Printf
+using DataFrames
+using CSV
+
 # adapted from http://morotalab.org/Mrode2005/relmat/createA.txt
 function makeA(s::Any, d::Any)
     s = convert(Vector{Int64},s)
@@ -19,7 +23,7 @@ return(A[1:n, 1:n])
 end
 
 #make regions
-function prep2RegionData(mapFile,fixedRegSize)
+function prep2RegionData(outPutFolder,markerSet,mapFile,fixedRegSize)
     accRegion = 0
     accRegionVec = [0]
     SNPgroups = []
@@ -65,10 +69,14 @@ function prep2RegionData(mapFile,fixedRegSize)
 	snpInfoFinal.groupID = 	snpInfoTemp[!,:groupID]
 	
         end  #ends if control flow
-	CSV.write("groupInfo.txt",snpInfoFinal,delim='\t',header=true)
+	CSV.write(outPutFolder*"/groupInfo_$(markerSet).txt",snpInfoFinal,delim='\t',header=true)
     for g in 1:accRegion
         push!(SNPgroups,searchsorted(snpInfoFinal[!,:groupID], g))
     end
     GC.gc()
     return SNPgroups
+end
+
+MatByMat = function(mat)
+	mat'*mat
 end

@@ -17,8 +17,12 @@ include("equations.jl")
 include("runTime.jl")
 include("MCMC.jl")
 include("misc.jl")
+include("outFiles.jl")
 
 using .MCMC
 export runGibbs
+using .IO
+export summaryMCMC
+
 
 end

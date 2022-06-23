@@ -17,10 +17,24 @@ include("runTime.jl")
 include("samplers.jl")
 
 
-runGibbs = function(formula,userHints,userData,userPedData,nChain,nBurn,nThin,blockThese,VCV,VCVM;map,genotypes...)
-	idY,yVec,FE,RE,ME,regionSizes = equations.mme(formula,userHints,userData,userPedData,blockThese;paths2geno=genotypes)
-        samplers.runSampler(idY,yVec,FE,RE,nChain,nBurn,nThin,VCV,VCVM,ME,map,regionSizes)
-        return(yVec,FE,RE,ME)
+runGibbs = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}(),blockThese=[],outFolder="outMCMC",VCV=[],userPedData=[],map=[],genotypes...)
+	println("Building parts of MME")
+
+	idY,A,yVec,FE,RE,ME,regionSizes = equations.mme(formula,userData,userHints=myHints,blocks=blockThese,path2ped=userPedData,paths2geno=genotypes)
+
+	println("Running MCMC")
+
+	if isdir(outFolder)==true
+		println("Output folder $outFolder exists. Removing it")
+    		run(`rm -rf $outFolder/`)
+	else
+    		println("$outFolder has been created to store the MCMC output")
+    		run(`mkdir $outFolder`)
+	end
+
+        samplers.runSampler(idY,A,yVec,FE,RE,nChain,nBurn,nThin,VCV,ME,map,regionSizes,outFolder)
+
+	#return(yVec,FE,RE,ME)
 end
 
 end
