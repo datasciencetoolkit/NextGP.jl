@@ -4,6 +4,17 @@ using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructure
 
 include("misc.jl")
 
+"""
+        make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
+
+Generates random effects matrix
+Initially works with onnly categorical vectors, to allow users add random effects as defined in StatsModels.jl
+So, the same varible can be used in two different function.
+For example, ran("dam","dam") can be similarly defined as (1|dam) for StatsModels.jl to create design matrices.
+
+"""
+
+
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
         isa(x1, CategoricalArray) ||
                        throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
