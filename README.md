@@ -1,3 +1,6 @@
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://dataScienceToolKit.github.io/NextGP.jl/stable)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://dataScienceToolKit.github.io/NextGP.jl/dev)
+
 # NextGP: Next generation genomic prediction tools
 
 - NextGP project aims at providing necessary analysis tools to quantitative/statistical geneticists for genomic predictions.
