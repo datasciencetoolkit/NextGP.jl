@@ -1,3 +1,5 @@
 # NextGP.jl
 
-Documentation for NextGP.jl
+## NextGP
+
+### NextGP
