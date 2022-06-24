@@ -4,6 +4,17 @@ using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructure
 
 include("misc.jl")
 
+"""
+        make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
+
+Generates random effects matrix
+Initially works with onnly categorical vectors, to allow users add random effects as defined in StatsModels.jl
+So, the same varible can be used in two different function.
+For example, ran("dam","dam") can be similarly defined as (1|dam) for StatsModels.jl to create design matrices.
+
+"""
+
+
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
         isa(x1, CategoricalArray) ||
                        throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
@@ -21,6 +32,17 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 
 ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Symbol(arg2)])
 
+"""
+	function mme(f, userData;userHints,blocks,path2ped,paths2geno)
+
+Makes design matrices for fixed effects through StatsModels.jl
+Makes design matrices for random effects using either ranMat(arg1,arg2,data1,data2)
+or using StatsModels.jl depending on how user defined the Term in the model.
+Reads in marker data.
+
+Finally returns matrices and some other data.
+
+"""
 
 function mme(f, userData;userHints,blocks,path2ped,paths2geno)
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))

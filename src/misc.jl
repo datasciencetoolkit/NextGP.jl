@@ -2,6 +2,13 @@ using Printf
 using DataFrames
 using CSV
 
+"""
+	makeA(s::Any, d::Any)
+Makes pedigree-based relationship matrix.
+adapted from http://morotalab.org/Mrode2005/relmat/createA.txt
+
+"""
+
 # adapted from http://morotalab.org/Mrode2005/relmat/createA.txt
 function makeA(s::Any, d::Any)
     s = convert(Vector{Int64},s)
@@ -80,3 +87,20 @@ end
 MatByMat = function(mat)
 	mat'*mat
 end
+
+folderHandler = function(outFolder)
+	if isdir(outFolder)==true
+                println("Output folder $outFolder exists. Removing it")
+#                run(`rm -rf $outFolder/`)
+		rm(outFolder,force=true,recursive=true)
+        else
+                println("$outFolder has been created to store the MCMC output")
+                run(`mkdir $outFolder`)
+	end
+end
+
+
+
+
+
+

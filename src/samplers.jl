@@ -53,8 +53,6 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 	
 	ZKeyPos = OrderedDict{Any,Int64}()
 	[ZKeyPos[collect(keys(Z))[i]]=i for i in 1:length(keys(Z))]
-
-
 	
         ##make b and u arrays
         b = Array{Array{Float64, 1},1}(undef,0)
@@ -102,7 +100,6 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
         dfE = 4.0
 	dfDefault = 4.0
  
-
 	       
 	if varE_prior==0.0
 		varE_prior  = 0.0005
@@ -343,7 +340,7 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
         #for each marker set
         for mSet in keys(mpmMat)
 		if mSet in keys(correlatedM)
-			println("$mSet in corM")
+#			println("$mSet in corM")
 			betaPos = keyCorM[mSet]
 			nowMp = MpMat[mSet] ###
 			for r in 1:regions[mSet]
