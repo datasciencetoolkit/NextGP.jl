@@ -5,7 +5,7 @@ push!(LOAD_PATH,"../src/")
 
 makedocs(
     sitename = "NextGP",
-    format = Documenter.HTML(prettyurls = false),
+    format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true"),
     modules = [NextGP]
 )
 
