@@ -156,12 +156,13 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 				theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],rS[pSet])
 		                regionArray[pSet] = theseRegions
 			end
-		else println("$pSet will be correlated")
+		elseif  issubset(pSet,keys(M))
+			println("$pSet will be correlated")
 			correlate = collect(pSet)
-			for pSet in correlate
-				println(pSet)
-				push!(corEffects,pSet)
-				push!(corPositions,findall(pSet.==keys(M))[])
+			for pSubSet in correlate
+				println(pSubSet)
+				push!(corEffects,pSubSet)
+				push!(corPositions,findall(pSubSet.==keys(M))[])
 			end
 			if issubset(corEffects,collect(keys(M)))
 				corMPos[pSet] = corPositions
