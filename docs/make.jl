@@ -11,7 +11,7 @@ makedocs(sitename="NextGP.jl Documentation",
 )
 # Documenter can also automatically deploy documentation to gh-pages.
 # See "Hosting Documentation" and deploydocs() in the Documenter manual
-# for more information.
+# for more information..
 deploydocs(
     repo = "github.com/dataScienceToolKit/NextGP.jl.git",
     branch = "gh-pages"
