@@ -52,9 +52,7 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 
 	for n in Symbol.(names(userData))
                 if typeof(userData[!,n]).==Array{Int, 1}
-                        if !haskey(userHints,n)    #### can be removed
-                        	userData[!,n] = CategoricalArray(userData[!,n])
-                	end
+                	userData[!,n] = CategoricalArray(userData[!,n])
         	end
         end
 
