@@ -49,6 +49,16 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
 
+
+	for n in Symbol.(names(userData))
+                if typeof(userData[!,n]).==Array{Int, 1}
+                        if !haskey(userHints,n)    #### can be removed
+                        	userData[!,n] = CategoricalArray(userData[!,n])
+                	end
+        	end
+        end
+
+
 	for n in Symbol.(names(userData))
 		if typeof(userData[!,n]).==Array{String, 1}
     			if !haskey(userHints,n)
