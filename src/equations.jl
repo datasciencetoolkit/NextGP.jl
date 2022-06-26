@@ -65,6 +65,16 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 		end
 	end
 
+
+	#center cont. covariates	
+	for n in Symbol.(names(userData))
+        	if typeof(userData[!,n]).==Array{Float, 1}
+                	userData[!,n] .-= mean(userData[!,n],dims=1)
+                end
+        end
+
+
+
         yVec = StatsModels.modelmatrix(f.lhs, userData)
 	
         FE = OrderedDict{Any,Any}() #any to block work
