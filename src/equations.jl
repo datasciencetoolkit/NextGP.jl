@@ -68,7 +68,7 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 
 	#center cont. covariates	
 	for n in Symbol.(names(userData))
-        	if typeof(userData[!,n]).==Array{Float, 1}
+        	if typeof(userData[!,n]).==Array{Float64, 1} || typeof(userData[!,n]).==Array{Float32, 1}
                 	userData[!,n] .-= mean(userData[!,n],dims=1)
                 end
         end
