@@ -34,7 +34,11 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 	##make iXpX, Z', zpz (for uncor)
         iXpX = deepcopy(X)
         for x in keys(X)
-                iXpX[x] = inv(X[x]'X[x])
+		XpX = X[x]'X[x]
+		if !isposdef(XpX)
+			XpX += Matrix(I*0.001,size(XpX))
+		end
+               	iXpX[x] = inv(XpX)
         end
 
 	Zp  = deepcopy(Z) #similar(Z')
