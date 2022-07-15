@@ -105,14 +105,20 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 		pedigree,Ainv = makePed(path2ped,userData.ID)
 		
 		#sort data by pedigree. Needs to be carefully checked
-		userData.order = [findfirst(userData.ID .== x) for x in intersect(pedigree.origID,userData.ID)]
+		userData.origID = userData.ID
+		userData.origSire = userData.Sire
+		userData.origDam = userData.Dam
+		userData.order = [findfirst(userData.origID .== x) for x in intersect(pedigree.origID,userData.origID)]
 		sort!(userData, :order)
 		select!(userData, Not(:order))
 		
+		#picking up new IDs (row/column number) from pedigree, and put into sire and dam in the phenotypic data 
+		userData[!,[:ID,:Sire,:Dam]] .= pedigree[[findall(pedigree.origID.==x)[] for x in userData.origID],[:ID,:Sire,:Dam]]
+		
 	end	
 
-	#column id within pedigree
-	idRE = []
+	#original id within pedigree
+	idRE = OrderedDict{Any,Any}()
 
 
         for i in 1:length(f.rhs)
@@ -138,7 +144,7 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 			IDs,thisZ = ranMat(sym1, sym2, userData, pedigree)
 			RE[(sym1,sym2)] = thisZ
 			thisZ = 0
-			push!(idRE,IDs)
+			idRE[(sym1,sym2)] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in id]
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         println("$(terms4StatsModels[i]) is | Type")
                         my_sch = schema(userData, userHints) #work on userData and userHints
@@ -167,7 +173,8 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 	end
 
 
-        
+	println("random effect IDs: $idRE")       
+ 
         return idRE, Ainv, vec(yVec), FE, RE, ME, regionSizes
         end
 
