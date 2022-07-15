@@ -16,10 +16,10 @@ For example, ran("dam","dam") can be similarly defined as (1|dam) for StatsModel
 
 
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
-        isa(x1, CategoricalArray) ||
-                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
-        isa(x2, CategoricalArray) ||
-                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
+#        isa(x1, CategoricalArray) ||
+#                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
+#        isa(x2, CategoricalArray) ||
+#                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
 
         u = unique(x2);
         filter!(x->x≠0,u)
@@ -42,6 +42,10 @@ Reads in marker data.
 
 Finally returns matrices and some other data.
 
+by default:
+	All Int variables are made Categorical
+	All String variables (also those made Categorical) are dummy coded, except those defined by the user in "userHints"
+	All Float variables are centered
 """
 
 function mme(f, userData;userHints,blocks,path2ped,paths2geno)
