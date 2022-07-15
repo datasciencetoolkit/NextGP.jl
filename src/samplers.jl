@@ -36,7 +36,7 @@ function runSampler(rowID,iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,path
         for x in keys(X)
 		XpX = X[x]'X[x]
 #		if !isposdef(XpX)
-			XpX += Matrix(I*0.01,size(XpX))
+			XpX += Matrix(I*mean(diag(XpX)./size(X[x],1)),size(XpX))
 #		end
                	iXpX[x] = inv(XpX)
         end
