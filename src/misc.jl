@@ -45,11 +45,15 @@ function makePed(inputFile::String,userDataIDs)
 
 	perm,invp = find_ped_order(pedlist)
 	permute_ped!(invp,pedlist,idtable)
-	f = get_inb(pedlist)
-#	A = get_nrm(pedlist)
-	Ainv = get_nrminv(pedlist, f)
 	idtable = sort(idtable; byvalue=true)
 	origIDs = [k for (k,v) in idtable if v in invp]
+
+	issubset(userDataIDs,origIDs) || throw(ErrorException("ErrorException: phenotyed individuals are not a subset of pedigree"))
+
+	f = get_inb(pedlist)
+#       A = get_nrm(pedlist)
+        Ainv = get_nrminv(pedlist, f)
+
 	pedlist = DataFrame([origIDs invp pedlist'],:auto) #overwriting existing for memory
 	rename!(pedlist,[:origID,:ID,:Sire,:Dam])
 	return(pedlist,Ainv)
