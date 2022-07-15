@@ -32,13 +32,13 @@ end
 
 """
 
-	makePed!(inputFile::String,userData::Vector)
+	makePed!(inputFile::String,userData)
 Makes pedigree using PedigreeBase package
 
 """
 
 # using PedigreeBase package
-function makePed(inputFile::String,userDataIDs::Vector)
+function makePed(inputFile::String,userDataIDs)
 	pedlist,idtable = read_ped(inputFile)
 	
 	issubset(userDataIDs,pedlist) || throw(ErrorException("ErrorException: phenotyed individuals are not a subset of pedigree")) 
