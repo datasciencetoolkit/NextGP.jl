@@ -35,9 +35,9 @@ function runSampler(rowID,iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,path
         iXpX = deepcopy(X)
         for x in keys(X)
 		XpX = X[x]'X[x]
-		if !isposdef(XpX)
-			XpX += Matrix(I*0.000,size(XpX))
-		end
+#		if !isposdef(XpX)
+			XpX += Matrix(I*0.01,size(XpX))
+#		end
                	iXpX[x] = inv(XpX)
         end
 
