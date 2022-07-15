@@ -14,7 +14,7 @@ include("misc.jl")
 export runSampler
 
 #main sampler
-function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS,outPut)
+function runSampler(rowID,iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS,outPut)
 	
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
@@ -85,7 +85,7 @@ function runSampler(rowID,A,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths
 				println("priorVCV structure for $zSet is empty, an identity matrix will be used")
 				iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
 			elseif priorVCV[zSet][1]=="A"
-				iVarStr[zSet] = inv(A)
+				iVarStr[zSet] = iA
 				println("priorVCV structure for $zSet is A, computed A matrix will be used")
 			else 	iVarStr[zSet] = inv(priorVCV[zSet][1])
 			end

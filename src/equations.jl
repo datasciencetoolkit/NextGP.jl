@@ -91,13 +91,15 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 	if isempty(path2ped)
 		A = []
 	else
-		pedigree = CSV.read(path2ped,DataFrame)
 
-		pedigree.ID  = CategoricalArray(pedigree.ID)
-		pedigree.Dam = CategoricalArray(pedigree.Dam)
-		pedigree.Sire = CategoricalArray(pedigree.Sire)
+#		pedigree = CSV.read(path2ped,DataFrame)
+#		pedigree.ID  = CategoricalArray(pedigree.ID)
+#		pedigree.Dam = CategoricalArray(pedigree.Dam)
+#		pedigree.Sire = CategoricalArray(pedigree.Sire)
+#		A = makeA(pedigree[!,:Sire],pedigree[!,:Dam])
 
-		A = makeA(pedigree[!,:Sire],pedigree[!,:Dam])
+		pedigree,Ainv = makePed(path2ped)
+		rename!(pedigree,[:origID,:id,:sire,:dam]) 
 	end	
 
 	#column id within pedigree

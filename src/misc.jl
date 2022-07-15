@@ -1,6 +1,7 @@
 using Printf
 using DataFrames
 using CSV
+using PedigreeBase
 
 """
 	makeA(s::Any, d::Any)
@@ -28,6 +29,21 @@ for i in 1:n
     end
 return(A[1:n, 1:n])
 end
+
+# using PedigreeBase package
+function makePed(inputFile::String)
+	pedlist,idtable = read_ped(inputFile)
+	perm,invp = find_ped_order(pedlist)
+	permute_ped!(invp,pedlist,idtable)
+	f = get_inb(pedlist)
+#	A = get_nrm(pedlist)
+	Ainv = get_nrminv(pedlist, f)
+	idtable = sort(idtable; byvalue=true)
+	origIDs = [k for (k,v) in idtable if v in invp]
+	pedlist = DataFrame([origIDs invp pedlist'],:auto) #overwriting existing for memory
+	return(pedlist,Ainv)
+end
+
 
 #make regions
 function prep2RegionData(outPutFolder,markerSet,mapFile,fixedRegSize)
