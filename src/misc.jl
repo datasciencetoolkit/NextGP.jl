@@ -41,6 +41,7 @@ function makePed(inputFile::String)
 	idtable = sort(idtable; byvalue=true)
 	origIDs = [k for (k,v) in idtable if v in invp]
 	pedlist = DataFrame([origIDs invp pedlist'],:auto) #overwriting existing for memory
+	rename!(pedlist,[:origID,:ID,:Sire,:Dam])
 	return(pedlist,Ainv)
 end
 

@@ -99,7 +99,6 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 #		A = makeA(pedigree[!,:Sire],pedigree[!,:Dam])
 
 		pedigree,Ainv = makePed(path2ped)
-		rename!(pedigree,[:origID,:id,:sire,:dam]) 
 	end	
 
 	#column id within pedigree
