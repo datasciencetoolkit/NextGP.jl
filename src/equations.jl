@@ -162,7 +162,7 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 
 
         
-        return idRE, A, vec(yVec), FE, RE, ME, regionSizes
+        return idRE, Ainv, vec(yVec), FE, RE, ME, regionSizes
         end
 
 end
