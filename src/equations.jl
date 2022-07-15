@@ -105,9 +105,9 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 		pedigree,Ainv = makePed(path2ped,userData.ID)
 		
 		#sort data by pedigree. Needs to be carefully checked
-		data.order = [findfirst(data.ID .== x) for x in intersect(pedigree.origID,data.ID)]
-		sort!(data, :order)
-		select!(data, Not(:order))
+		userData.order = [findfirst(userData.ID .== x) for x in intersect(pedigree.origID,userData.ID)]
+		sort!(userData, :order)
+		select!(userData, Not(:order))
 		
 	end	
 
