@@ -41,8 +41,6 @@ Makes pedigree using PedigreeBase package
 function makePed(inputFile::String,userDataIDs)
 	pedlist,idtable = read_ped(inputFile)
 	
-	issubset(userDataIDs,pedlist) || throw(ErrorException("ErrorException: phenotyed individuals are not a subset of pedigree")) 
-
 	perm,invp = find_ped_order(pedlist)
 	permute_ped!(invp,pedlist,idtable)
 	idtable = sort(idtable; byvalue=true)
