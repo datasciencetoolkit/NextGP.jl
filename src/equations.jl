@@ -95,7 +95,7 @@ function mme(f, inputData;userHints,blocks,path2ped,paths2geno)
 
         #read pedigree
 	if isempty(path2ped)
-		A = []
+		Ainv = []
 	else
 
 #		pedigree = CSV.read(path2ped,DataFrame)
