@@ -101,8 +101,14 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 #		pedigree.Dam = CategoricalArray(pedigree.Dam)
 #		pedigree.Sire = CategoricalArray(pedigree.Sire)
 #		A = makeA(pedigree[!,:Sire],pedigree[!,:Dam])
-
-		pedigree,Ainv = makePed(path2ped)
+		
+		pedigree,Ainv = makePed(path2ped,userData.ID)
+		
+		#sort data by pedigree. Needs to be carefully checked
+		data.order = [findfirst(data.ID .== x) for x in intersect(pedigree.origID,data.ID)]
+		sort!(data, :order)
+		select!(data, Not(:order))
+		
 	end	
 
 	#column id within pedigree

@@ -30,9 +30,19 @@ for i in 1:n
 return(A[1:n, 1:n])
 end
 
+"""
+
+	makePed!(inputFile::String,userData::Vector)
+Makes pedigree using PedigreeBase package
+
+"""
+
 # using PedigreeBase package
-function makePed(inputFile::String)
+function makePed(inputFile::String,userDataIDs::Vector)
 	pedlist,idtable = read_ped(inputFile)
+	
+	issubset(userDataIDs,pedlist) || throw(ErrorException("ErrorException: phenotyed individuals are not a subset of pedigree")) 
+
 	perm,invp = find_ped_order(pedlist)
 	permute_ped!(invp,pedlist,idtable)
 	f = get_inb(pedlist)
