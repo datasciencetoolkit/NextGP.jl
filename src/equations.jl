@@ -33,7 +33,7 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Symbol(arg2)])
 
 """
-	function mme(f, userData;userHints,blocks,path2ped,paths2geno)
+	function mme(f, inputData;userHints,blocks,path2ped,paths2geno)
 
 Makes design matrices for fixed effects through StatsModels.jl
 Makes design matrices for random effects using either ranMat(arg1,arg2,data1,data2)
@@ -48,11 +48,13 @@ by default:
 	All Float variables are centered
 """
 
-function mme(f, userData;userHints,blocks,path2ped,paths2geno)
+function mme(f, inputData;userHints,blocks,path2ped,paths2geno)
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
 
+	#otherwise it changes original input data globally?????
+	userData = deepcopy(inputData)
 
 	for n in Symbol.(names(userData))
                 if typeof(userData[!,n]).==Array{Int, 1}
