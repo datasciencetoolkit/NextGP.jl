@@ -144,7 +144,7 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 			IDs,thisZ = ranMat(sym1, sym2, userData, pedigree)
 			RE[(sym1,sym2)] = thisZ
 			thisZ = 0
-			idRE[(sym1,sym2)] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in id]
+			idRE[(sym1,sym2)] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         println("$(terms4StatsModels[i]) is | Type")
                         my_sch = schema(userData, userHints) #work on userData and userHints
