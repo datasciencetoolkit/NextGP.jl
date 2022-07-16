@@ -1,5 +1,5 @@
-[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://dataScienceToolKit.github.io/NextGP.jl/stable)
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://dataScienceToolKit.github.io/NextGP.jl/dev)
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://datasciencetoolkit.github.io/NextGP.jl/stable)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://datasciencetoolkit.github.io/NextGP.jl/dev)
 
 # NextGP: Next generation genomic prediction tools
 
