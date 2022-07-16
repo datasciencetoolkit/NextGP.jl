@@ -7,15 +7,15 @@ makedocs(
          doctest  = false,
          clean    = true,
          sitename = "NextGP.jl",
-         authors  = "Emre Karaman"
-         pages = Any[
+         authors  = "Emre Karaman",
+         pages = [
             "Index" => "index.md",
             "Equations" => "equations.md",
-            
-         "Examples => Any[   
-            "Simple example1" => "example1/example1.md"
+           
+	    "Examples" => [   
+            "Example1" => "example1/example1.md",
             ],
-            
+
          ],
          format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true")
 )
@@ -24,5 +24,5 @@ makedocs(
 # for more information..
 deploydocs(
     repo = "github.com/dataScienceToolKit/NextGP.jl.git",
-    target = "build"
+    target = "build",
 )
