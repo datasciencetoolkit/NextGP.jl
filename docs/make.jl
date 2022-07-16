@@ -2,10 +2,21 @@ using Documenter
 using NextGP
 
 push!(LOAD_PATH,"../src/")
-makedocs(sitename="NextGP.jl Documentation",
-         pages = [
+makedocs(
+         modules  = [NextGP,NextGP.data,NextGP.MCMC],
+         doctest  = false,
+         clean    = true,
+         sitename = "NextGP.jl",
+         authors  = "Emre Karaman"
+         pages = Any[
             "Index" => "index.md",
             "Equations" => "equations.md",
+            
+         "Examples => Any[   
+            "Simple example1" => "example1/example1.md",
+            "Simple example2" => "example1/example1.md"
+            ],
+            
          ],
          format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true")
 )
