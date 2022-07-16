@@ -1,5 +1,5 @@
 
-Original source for the example data and code: https://juliastats.org/StatsModels.jl/latest/formula/#Fitting-a-model-from-a-formula
+Original source for the example data and code from StatsPlots: https://juliastats.org/StatsModels.jl/latest/formula/#Fitting-a-model-from-a-formula
 
 ```julia
 using Pkg
@@ -177,7 +177,7 @@ runGibbs(f,data,1000,100,10;VCV=priorVar)
 
 
 ```julia
-summaryMCMC("b";summary=true)
+postmean_b = summaryMCMC("b";summary=true)
 ```
 
 
@@ -189,32 +189,18 @@ summaryMCMC("b";summary=true)
     parameters        = param_1, param_2, param_3, param_4, param_5
     
     Summary Statistics
-     [1m parameters [0m [1m    mean [0m [1m     std [0m [1m naive_se [0m [1m    mcse [0m [1m     ess [0m [1m    rhat [0m
-     [90m     Symbol [0m [90m Float64 [0m [90m Float64 [0m [90m  Float64 [0m [90m Float64 [0m [90m Float64 [0m [90m Float64 [0m
-    
+                     mean      std      naive_se    mcse      ess       rhat
          param_1    2.1758    0.1633     0.0172    0.0282   58.4130    1.0054
          param_2    6.8008    0.2824     0.0298    0.0265   66.1012    1.0148
          param_3    6.0294    0.2549     0.0269    0.0334   86.3682    0.9965
          param_4    7.6209    0.2117     0.0223    0.0342   57.0216    1.0141
          param_5    8.8120    0.2593     0.0273    0.0341   73.2393    1.0010
     
-    Quantiles
-     [1m parameters [0m [1m    2.5% [0m [1m   25.0% [0m [1m   50.0% [0m [1m   75.0% [0m [1m   97.5% [0m
-     [90m     Symbol [0m [90m Float64 [0m [90m Float64 [0m [90m Float64 [0m [90m Float64 [0m [90m Float64 [0m
-    
-         param_1    1.8585    2.0742    2.1751    2.2712    2.4870
-         param_2    6.3304    6.5983    6.7899    7.0280    7.3069
-         param_3    5.5002    5.8868    6.0226    6.1855    6.4630
-         param_4    7.2406    7.4687    7.6312    7.7557    8.0070
-         param_5    8.2950    8.6109    8.8299    8.9826    9.2194
+ .........
 
 
 
 
 ![svg](output_17_1.svg)
-
-
-    1×5 Matrix{Float64}:
-     2.17577  6.80076  6.02939  7.62089  8.81195
 
 
