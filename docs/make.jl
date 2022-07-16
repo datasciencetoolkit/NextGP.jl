@@ -17,5 +17,5 @@ makedocs(
 # for more information..
 deploydocs(
     repo = "github.com/datasciencetoolkit/NextGP.jl.git",
-    branch = "gh-pages",
+    branch = "main",
 )
