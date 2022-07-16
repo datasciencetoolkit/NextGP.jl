@@ -1,5 +1,7 @@
 
-NextGP
+#About
+
+## What is available
 
 * Currently, only univariate analysis are implemented
 * Rely on StatsModels.jl package for model formulation and fixed effects definitions
@@ -10,12 +12,16 @@ NextGP
 * Correlated marker effects for multi-breed analysis
 * Unknown (co)variance components (e.g., marker,additive genetic,residual...)
 
-## How to?
-
-### Examples
-```@contents
-Pages = [
-  "example1/example1.md"
-]
-Depth = 2
+## Pkg Registry
+```@repl
+using Pkg
+Pkg.add("NextGP")
 ```
+## Unstable
+```@example
+pkg> Pkg.add(url = "https://github.com/dataScienceToolKit/NextGP.jl", rev="dev")
+```
+```@autodocs
+Modules = [NextGP]
+```
+

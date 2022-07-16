@@ -10,12 +10,6 @@ makedocs(
          authors  = "Emre Karaman",
          pages = [
             "Index" => "index.md",
-            "Equations" => "equations.md",
-           
-	    "Examples" => [   
-            "Example1" => "example1/example1.md",
-            ],
-
          ],
          format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true")
 )
