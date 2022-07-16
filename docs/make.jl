@@ -3,7 +3,7 @@ using NextGP
 
 push!(LOAD_PATH,"../src/")
 makedocs(
-         modules  = [NextGP,NextGP.data,NextGP.MCMC],
+         modules  = [NextGP],
          doctest  = false,
          clean    = true,
          sitename = "NextGP.jl",
