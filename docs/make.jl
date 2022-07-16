@@ -13,8 +13,7 @@ makedocs(
             "Equations" => "equations.md",
             
          "Examples => Any[   
-            "Simple example1" => "example1/example1.md",
-            "Simple example2" => "example1/example1.md"
+            "Simple example1" => "example1/example1.md"
             ],
             
          ],
