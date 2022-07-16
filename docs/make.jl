@@ -2,7 +2,8 @@ using Documenter
 using NextGP
 
 makedocs(
-	root     = "../docs/",
+         root     = "./",
+	 source   = "src",
          modules  = [NextGP],
          doctest  = false,
          clean    = true,
