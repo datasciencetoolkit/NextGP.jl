@@ -3,7 +3,6 @@ using NextGP
 
 #push!(LOAD_PATH,"../src/")
 makedocs(
-	 root = "docs/",
          modules  = [NextGP],
          doctest  = false,
          clean    = true,
