@@ -18,5 +18,5 @@ makedocs(
 # for more information..
 deploydocs(
     repo = "github.com/dataScienceToolKit/NextGP.jl.git",
-    target = "build",
+    target = "main",
 )
