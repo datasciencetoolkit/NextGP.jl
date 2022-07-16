@@ -16,10 +16,10 @@ For example, ran("dam","dam") can be similarly defined as (1|dam) for StatsModel
 
 
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
-        isa(x1, CategoricalArray) ||
-                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
-        isa(x2, CategoricalArray) ||
-                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
+#        isa(x1, CategoricalArray) ||
+#                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
+#        isa(x2, CategoricalArray) ||
+#                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
 
         u = unique(x2);
         filter!(x->x≠0,u)
@@ -33,7 +33,7 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Symbol(arg2)])
 
 """
-	function mme(f, userData;userHints,blocks,path2ped,paths2geno)
+	function mme(f, inputData;userHints,blocks,path2ped,paths2geno)
 
 Makes design matrices for fixed effects through StatsModels.jl
 Makes design matrices for random effects using either ranMat(arg1,arg2,data1,data2)
@@ -42,13 +42,19 @@ Reads in marker data.
 
 Finally returns matrices and some other data.
 
+by default:
+	All Int variables are made Categorical
+	All String variables (also those made Categorical) are dummy coded, except those defined by the user in "userHints"
+	All Float variables are centered
 """
 
-function mme(f, userData;userHints,blocks,path2ped,paths2geno)
+function mme(f, inputData;userHints,blocks,path2ped,paths2geno)
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
 
+	#otherwise it changes original input data globally?????
+	userData = deepcopy(inputData)
 
 	for n in Symbol.(names(userData))
                 if typeof(userData[!,n]).==Array{Int, 1}
@@ -89,19 +95,32 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 
         #read pedigree
 	if isempty(path2ped)
-		A = []
+		Ainv = []
 	else
-		pedigree = CSV.read(path2ped,DataFrame)
 
-		pedigree.ID  = CategoricalArray(pedigree.ID)
-		pedigree.Dam = CategoricalArray(pedigree.Dam)
-		pedigree.Sire = CategoricalArray(pedigree.Sire)
-
-		A = makeA(pedigree[!,:Sire],pedigree[!,:Dam])
+#		pedigree = CSV.read(path2ped,DataFrame)
+#		pedigree.ID  = CategoricalArray(pedigree.ID)
+#		pedigree.Dam = CategoricalArray(pedigree.Dam)
+#		pedigree.Sire = CategoricalArray(pedigree.Sire)
+#		A = makeA(pedigree[!,:Sire],pedigree[!,:Dam])
+		
+		pedigree,Ainv = makePed(path2ped,userData.ID)
+		
+		#sort data by pedigree. Needs to be carefully checked
+		userData.origID = userData.ID
+		userData.origSire = userData.Sire
+		userData.origDam = userData.Dam
+		userData.order = [findfirst(userData.origID .== x) for x in intersect(pedigree.origID,userData.origID)]
+		sort!(userData, :order)
+		select!(userData, Not(:order))
+		
+		#picking up new IDs (row/column number) from pedigree, and put into sire and dam in the phenotypic data 
+		userData[!,[:ID,:Sire,:Dam]] .= pedigree[[findall(pedigree.origID.==x)[] for x in userData.origID],[:ID,:Sire,:Dam]]
+		
 	end	
 
-	#column id within pedigree
-	idRE = []
+	#original id within pedigree
+	idRE = OrderedDict{Any,Any}()
 
 
         for i in 1:length(f.rhs)
@@ -127,7 +146,7 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 			IDs,thisZ = ranMat(sym1, sym2, userData, pedigree)
 			RE[(sym1,sym2)] = thisZ
 			thisZ = 0
-			push!(idRE,IDs)
+			idRE[(sym1,sym2)] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         println("$(terms4StatsModels[i]) is | Type")
                         my_sch = schema(userData, userHints) #work on userData and userHints
@@ -156,8 +175,9 @@ function mme(f, userData;userHints,blocks,path2ped,paths2geno)
 	end
 
 
-        
-        return idRE, A, vec(yVec), FE, RE, ME, regionSizes
+	println("random effect IDs: $idRE")       
+ 
+        return idRE, Ainv, vec(yVec), FE, RE, ME, regionSizes
         end
 
 end
