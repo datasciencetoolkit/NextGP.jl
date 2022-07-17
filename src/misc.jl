@@ -9,8 +9,6 @@ Makes pedigree-based relationship matrix.
 adapted from http://morotalab.org/Mrode2005/relmat/createA.txt
 
 """
-
-# adapted from http://morotalab.org/Mrode2005/relmat/createA.txt
 function makeA(s::Any, d::Any)
     s = convert(Vector{Int64},s)
     d = convert(Vector{Int64},d)
@@ -32,12 +30,10 @@ end
 
 """
 
-	makePed!(inputFile::String,userData)
+	makePed(inputFile::String,userData)
 Makes pedigree using PedigreeBase package
 
 """
-
-# using PedigreeBase package
 function makePed(inputFile::String,userDataIDs)
 	pedlist,idtable = read_ped(inputFile)
 	

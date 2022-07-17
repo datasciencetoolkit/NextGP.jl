@@ -6,6 +6,7 @@ export PR
 
 #
 export makeA
+export makePed
 
 using DataFrames
 using CategoricalArrays
@@ -23,7 +24,9 @@ using .MCMC
 export runGibbs
 using .IO
 export summaryMCMC
+using .equations
 
+export mme
 
 """
     MyFunction(x,y)
