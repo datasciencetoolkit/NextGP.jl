@@ -4,7 +4,7 @@ using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructure
 
 include("misc.jl")
 
-"""
+doc"""
         make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 
 Generates random effects matrix
@@ -13,8 +13,6 @@ So, the same varible can be used in two different function.
 For example, ran("dam","dam") can be similarly defined as (1|dam) for StatsModels.jl to create design matrices.
 
 """
-
-
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 #        isa(x1, CategoricalArray) ||
 #                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
@@ -32,7 +30,7 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 
 ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Symbol(arg2)])
 
-"""
+doc"""
 	function mme(f, inputData;userHints,blocks,path2ped,paths2geno)
 
 Makes design matrices for fixed effects through StatsModels.jl
@@ -47,7 +45,6 @@ by default:
 	All String variables (also those made Categorical) are dummy coded, except those defined by the user in "userHints"
 	All Float variables are centered
 """
-
 function mme(f, inputData;userHints,blocks,path2ped,paths2geno)
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
