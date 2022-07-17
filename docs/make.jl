@@ -10,6 +10,8 @@ makedocs(
          authors  = "Emre Karaman",
          pages = [
             "Home" => "index.md",
+		"Examples" => ["Example1" => "example1/example1.md",
+			],
          ],
 )
 # Documenter can also automatically deploy documentation to gh-pages.
