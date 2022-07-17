@@ -1,10 +1,11 @@
 using Documenter
 using NextGP
+using NextGP.equations
 
 push!(LOAD_PATH,"../src/")
 makedocs(
-         modules  = [NextGP],
-         doctest  = false,
+         modules  = [NextGP,NextGP.equations],
+         doctest  = true,
          clean    = true,
          sitename = "NextGP.jl",
          authors  = "Emre Karaman",

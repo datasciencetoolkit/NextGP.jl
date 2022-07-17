@@ -21,7 +21,8 @@ Pkg.add("NextGP")
 ```@example
 pkg> Pkg.add(url = "https://github.com/dataScienceToolKit/NextGP.jl", rev="dev")
 ```
+
 ```@autodocs
-Modules = [NextGP]
+Modules = [NextGP,NextGP.equations]
 ```
 
