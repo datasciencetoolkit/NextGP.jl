@@ -22,18 +22,6 @@ Pkg.add("NextGP")
 pkg> Pkg.add(url = "https://github.com/datasciencetoolkit/NextGP.jl", rev="dev")
 ```
 
-```@meta
-CurrentModule = NextGP
-	DocTestSetup = quote
-	using NextGP
-end
-```
-
 ```@docs
 MyFunction
 ```
-
-```@autodocs
-Modules = [NextGP]
-```
-
