@@ -4,7 +4,7 @@ using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructure
 
 include("misc.jl")
 
-doc"""
+"""
         make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 
 Generates random effects matrix
@@ -30,7 +30,7 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 
 ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Symbol(arg2)])
 
-doc"""
+"""
 	function mme(f, inputData;userHints,blocks,path2ped,paths2geno)
 
 Makes design matrices for fixed effects through StatsModels.jl
