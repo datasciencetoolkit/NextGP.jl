@@ -1,5 +1,5 @@
 
-#About
+# About
 
 ## What is available
 
@@ -19,10 +19,21 @@ Pkg.add("NextGP")
 ```
 ## Unstable
 ```@example
-pkg> Pkg.add(url = "https://github.com/dataScienceToolKit/NextGP.jl", rev="dev")
+pkg> Pkg.add(url = "https://github.com/datasciencetoolkit/NextGP.jl", rev="dev")
+```
+
+```@meta
+CurrentModule = NextGP
+	DocTestSetup = quote
+	using NextGP
+end
+```
+
+```@docs
+MyFunction
 ```
 
 ```@autodocs
-Modules = [NextGP,NextGP.equations]
+Modules = [NextGP]
 ```
 
