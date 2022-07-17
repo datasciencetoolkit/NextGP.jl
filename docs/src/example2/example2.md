@@ -8,24 +8,44 @@ using CSV, StatsModels, DataFrames, NextGP
 data = CSV.read("YOURPATH/phenotypes.csv",DataFrame)
 ```
 
-
-
-
-<div class="data-frame"><p>10 rows × 6 columns</p><table class="data-frame"><thead><tr><th></th><th>ID</th><th>Sire</th><th>Dam</th><th>Herds</th><th>Pen</th><th>BW</th></tr><tr><th></th><th title="String7">String7</th><th title="String7">String7</th><th title="String7">String7</th><th title="Int64">Int64</th><th title="Int64">Int64</th><th title="Float64">Float64</th></tr></thead><tbody><tr><th>1</th><td>QGG5</td><td>QGG1</td><td>QGG2</td><td>1</td><td>1</td><td>35.0</td></tr><tr><th>2</th><td>QGG6</td><td>QGG3</td><td>QGG2</td><td>1</td><td>2</td><td>20.0</td></tr><tr><th>3</th><td>QGG7</td><td>QGG4</td><td>QGG6</td><td>1</td><td>2</td><td>25.0</td></tr><tr><th>4</th><td>QGG8</td><td>QGG3</td><td>QGG5</td><td>1</td><td>1</td><td>40.0</td></tr><tr><th>5</th><td>QGG9</td><td>QGG1</td><td>QGG6</td><td>2</td><td>1</td><td>42.0</td></tr><tr><th>6</th><td>QGG10</td><td>QGG3</td><td>QGG2</td><td>2</td><td>2</td><td>22.0</td></tr><tr><th>7</th><td>QGG11</td><td>QGG3</td><td>QGG7</td><td>2</td><td>2</td><td>35.0</td></tr><tr><th>8</th><td>QGG12</td><td>QGG8</td><td>QGG7</td><td>3</td><td>2</td><td>34.0</td></tr><tr><th>9</th><td>QGG13</td><td>QGG9</td><td>QGG2</td><td>3</td><td>1</td><td>20.0</td></tr><tr><th>10</th><td>QGG14</td><td>QGG3</td><td>QGG6</td><td>3</td><td>2</td><td>40.0</td></tr></tbody></table></div>
-
-
+```text
+ID     Sire  Dam   Herds Pen BW
+QGG5   QGG1  QGG2  1     1   35.0
+QGG6   QGG3  QGG2  1     2   20.0
+QGG7   QGG4  QGG6  1     2   25.0
+QGG8   QGG3  QGG5  1     1   40.0
+QGG9   QGG1  QGG6  2     1   42.0
+QGG10  QGG3  QGG2  2     2   22.0
+QGG11  QGG3  QGG7  2     2   35.0
+QGG12  QGG8  QGG7  3     2   34.0
+QGG13  QGG9  QGG2  3     1   20.0
+QGG14  QGG3  QGG6  3     2   40.0
+```
 
 
 ```julia
 pedigree = "YOURPATH/pedigreeBase.txt"
 ```
 
-
-
-
     "YOURPATH/pedigreeBase.txt"
 
-
+```text
+#Pedigree for the above example
+QGG1 0 0
+QGG2 0 0
+QGG3 0 0
+QGG4 0 0
+QGG5 QGG1 QGG2
+QGG6 QGG3 QGG2
+QGG7 QGG4 QGG6
+QGG8 QGG3 QGG5
+QGG9 QGG1 QGG6
+QGG10 QGG3 QGG2
+QGG11 QGG3 QGG7
+QGG12 QGG8 QGG7
+QGG13 QGG9 QGG2
+QGG14 QGG3 QGG6
+```
 
 
 ```julia
