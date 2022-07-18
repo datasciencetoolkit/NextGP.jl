@@ -5,7 +5,7 @@
 * To cite NextGP, please use something like:
 	"Analysis were carried out in Julia (Bezanson et al., 2017) using NextGP package (https://github.com/datasciencetoolkit/NextGP.jl)"
 * A list of relevant papers you may consider to cite, for the methodolgy behind BOA models, is:
-	- A Guillenea, G Su, M Sand, E Karaman. Genomic prediction in Nordic Red dairy cattle considering breed origin of alleles. Journal of Dairy Science, 2022
+	- A Guillenea, G Su, MS Lund, E Karaman. Genomic prediction in Nordic Red dairy cattle considering breed origin of alleles. Journal of Dairy Science, 2022
 	- E Karaman, G Su, I Croue, MS Lund. Genomic prediction using a reference population of multiple pure breeds and admixed individuals. Genetics Selection Evolution, 2021.
 	- E Karaman, MS Lund, G Su. Multi-trait single-step genomic prediction accounting for heterogeneous (co) variances over the genome. Heredity, 2020
 * Other interesting papers

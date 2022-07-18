@@ -1,18 +1,9 @@
 
-# Modules and internal functions
+# Modules
 
-## NextGP module
-
-
-## Equations module
 
 ```@docs
 mme
-```
-
-## Misc module
-
-```@docs
 makeA
 makePed
 ```
