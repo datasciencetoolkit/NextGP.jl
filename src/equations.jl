@@ -35,24 +35,25 @@ ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Sy
 
 
 """
-	function mme(f, inputData;userHints,blocks,path2ped,paths2geno)
+	function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blocks,path2ped,paths2geno)
 
-* Makes design matrices for fixed effects through StatsModels.jl
-* Makes design matrices for random effects using either ranMat(arg1,arg2,data1,data2) or using StatsModels.jl depending on how user defined the Term in the model.
-* Reads in marker data, and mean-centers the columns
-* Finally returns matrices and some other data.
+* NextGP relies on **StatsModels.jl** package for model expression (f), and fixed effect design matrix generation.
+* Details for the model expression (f), and fixed effects coding specifications (e.g., dummy or contrast coding) can be found at [StatsModels.jl](https://juliastats.org/StatsModels.jl/latest/).
+* Design matrices for random effects are generated either own internal functions or using StatsModels.jl "modelcols", depending on how user defined the Term in the model.
+* Reads in marker data, and mean-centers the columns.
+* Finally returns lhs vector and rhs matrices.
 * By default:
-    * All Int variables are made Categorical
-    * All String variables (also those made Categorical) are dummy coded, except those defined by the user in "userHints"
-    * All Float variables are centered
+    * all Int rhs variables are made Categorical,
+    * all String rhs variables (also those made Categorical) are dummy coded, except those defined by the user in "userHints", 
+    * all Float rhs variables are centered.
 """
-function mme(f, inputData;userHints,blocks,path2ped,paths2geno)
+function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blocks,path2ped,paths2geno)
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
 
 	#otherwise it changes original input data globally?????
-	userData = deepcopy(inputData)
+	#userData = deepcopy(inputData)
 
 	for n in Symbol.(names(userData))
                 if typeof(userData[!,n]).==Array{Int, 1}
