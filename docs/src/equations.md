@@ -1,5 +1,0 @@
-# NextGP.jl
-
-## NextGP
-
-### NextGP
