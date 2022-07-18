@@ -1,5 +1,5 @@
 
-Original source for the example data and code from StatsPlots: https://juliastats.org/StatsModels.jl/latest/formula/#Fitting-a-model-from-a-formula
+Original source for the example data and code from [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/formula/#Fitting-a-model-from-a-formula)
 
 ```julia
 using Pkg

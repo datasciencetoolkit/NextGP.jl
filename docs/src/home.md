@@ -13,7 +13,7 @@
 * Unknown (co)variance components (e.g., marker,additive genetic,residual...)
 
 ## Pkg Registry
-```@repl
+```@example
 using Pkg
 Pkg.add("NextGP")
 ```
