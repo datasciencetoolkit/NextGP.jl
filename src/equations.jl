@@ -38,7 +38,7 @@ ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Sy
 	function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blocks,path2ped,paths2geno)
 
 * `NextGP` relies on `StatsModels.jl` package for model expression (`f`), and fixed effect design matrix generation.
-* Details for the model expression (`f`), and fixed effects coding specifications (e.g., dummy or contrast coding) can be found at [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/).
+* Details for the model expression (`f`), and fixed effects coding specifications (e.g., effect or dummy coding) can be found at [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/).
 * Design matrices for random effects are generated either own internal functions or using `StatsModels.jl`s `modelcols`, depending on how user defined the model term in the model.
 * Reads in marker data, and mean-centers the columns.
 * Finally returns lhs vector and rhs matrices.
