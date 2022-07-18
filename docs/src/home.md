@@ -1,7 +1,7 @@
 
-# NextGP
+# About
 
-## Modules and Functions
+## What is available
 
 * Currently, only univariate analysis are implemented
 * Rely on StatsModels.jl package for model formulation and fixed effects definitions
