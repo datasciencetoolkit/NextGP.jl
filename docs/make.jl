@@ -9,8 +9,8 @@ makedocs(
          sitename = "NextGP.jl",
          authors  = "Emre Karaman",
          pages = [
-            "Home" => "home.md",
-	    "Modules" => "home.md",
+            "Home" => "index.md",
+	    "Modules" => "modules.md",
 	    "Examples" => ["Example1" => "example1/example1.md",
 			   "Example2" => "example2/example2.md",
 			],
