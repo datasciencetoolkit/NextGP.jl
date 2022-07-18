@@ -22,8 +22,3 @@ Pkg.add("NextGP")
 pkg> Pkg.add(url = "https://github.com/datasciencetoolkit/NextGP.jl", rev="dev")
 ```
 
-```@docs
-mme
-makeA
-makePed
-```
