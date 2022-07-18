@@ -15,6 +15,8 @@ Public functions of NextGP are documented here
 mme
 makeA
 makePed
+ran
+PR
 ```
 
 ## Internals
