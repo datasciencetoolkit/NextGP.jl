@@ -10,7 +10,7 @@ makedocs(
          authors  = "Emre Karaman",
          pages = [
             "Home" => "index.md",
-	    "Modules" => "modules.md",
+	    "Modules" => "index.md",
 	    "Examples" => ["Example1" => "example1/example1.md",
 			   "Example2" => "example2/example2.md",
 			],
