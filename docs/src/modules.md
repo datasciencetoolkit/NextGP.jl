@@ -3,9 +3,6 @@
 
 ## NextGP module
 
-```@docs
-MyFunction
-```
 
 ## Equations module
 

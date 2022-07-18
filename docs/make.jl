@@ -14,6 +14,7 @@ makedocs(
 	    "Examples" => ["Example1" => "example1/example1.md",
 			   "Example2" => "example2/example2.md",
 			],
+	    "Citation" => "citation.md",
          ],
 )
 # Documenter can also automatically deploy documentation to gh-pages.
