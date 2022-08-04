@@ -4,6 +4,19 @@ using CSV
 using PedigreeBase
 
 """
+	 function(dataLHS::DataFrame)
+Makes LHS of formula expression, when the LHS is a Matrix
+It should be run by the user before @formula
+Then f = @eval @formula($Y ~ 1 + x)
+"""
+getLhs = function(dataLHS::DataFrame)
+	varNames = Symbol.(names(select(dataLHS, Not(:x))))
+	expLHS = Expr(:call, :+, (varNames...))
+	return expLHS
+end
+
+
+"""
 	makeA(s::Any, d::Any)
 Makes pedigree-based relationship matrix.
 adapted from http://morotalab.org/Mrode2005/relmat/createA.txt
