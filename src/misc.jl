@@ -7,7 +7,7 @@ using PedigreeBase
 	 function(dataLHS::DataFrame)
 Makes LHS of formula expression, when the LHS is a Matrix
 It should be run by the user before @formula as `getLhs(myData)`
-Then `f = \@eval @formula(\$Y ~ 1 + x)`
+Then `f = @eval @formula(\$Y ~ 1 + x)`
 """
 function getLhs(dataLHS::DataFrame)
 	varNames = Symbol.(names(select(dataLHS, Not(:x))))
