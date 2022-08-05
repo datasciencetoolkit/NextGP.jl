@@ -6,13 +6,24 @@ using PedigreeBase
 """
 	 function(dataLHS::DataFrame)
 Makes LHS of formula expression, when the LHS is a Matrix
-It should be run by the user before @formula
-Then f = @eval @formula($Y ~ 1 + x)
+It should be run by the user before @formula as `getLhs(myData)`
+Then `f = \@eval @formula(\$Y ~ 1 + x)`
 """
 getLhs = function(dataLHS::DataFrame)
 	varNames = Symbol.(names(select(dataLHS, Not(:x))))
 	expLHS = Expr(:call, :+, (varNames...))
 	return expLHS
+end
+
+"""
+Makes LHS of formula, when the LHS is a Matrix
+It should be run by the user before @formula as `getLhs2(myData)`
+Then `f = Y ~ @formula(0 ~ 1 + x).rhs`
+"""
+getLhs2 = function(dataLHS::DataFrame)
+        dataLHS = select(dataLHS, Not(:x))
+        Y = sum(term.(propertynames(dataLHS)))
+        return Y
 end
 
 
