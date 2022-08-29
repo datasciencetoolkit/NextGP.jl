@@ -119,7 +119,11 @@ function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blo
 	end	
 
 	#original id within pedigree
+	#seemed to be IDs for only phenotyped ones????? from the ranMat()
+		
 	idRE = OrderedDict{Any,Any}()
+
+	idFE = OrderedDict{Any,Any}()	
 
 
         for i in 1:length(f.rhs)
@@ -158,7 +162,12 @@ function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blo
 
                 else
                 println("$(terms4StatsModels[i]) is $(typeof(f.rhs[i])) type")
-		thisX = StatsModels.modelmatrix(f.rhs[i], userData,hints= userHints)
+		my_sch = schema(userData, userHints)
+		my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
+		idFE[terms4StatsModels[i]] = coefnames(my_ApplySch) 	
+		thisX = modelcols(my_ApplySch, userData)
+	
+#		thisX = StatsModels.modelmatrix(f.rhs[i], userData,hints= userHints)
 		FE[terms4StatsModels[i]] = thisX
 		thisX = 0
                 end
@@ -176,7 +185,7 @@ function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blo
 
 	println("random effect IDs: $idRE")       
  
-        return idRE, Ainv, vec(yVec), FE, RE, ME, regionSizes
+        return idRE, idFE, Ainv, vec(yVec), FE, RE, ME, regionSizes
 end
 
 end
