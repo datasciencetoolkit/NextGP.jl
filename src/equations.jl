@@ -154,7 +154,7 @@ function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blo
                        	thisZ = modelcols(my_ApplySch, userData)
 			RE[terms4StatsModels[i]] = thisZ
 			thisZ = 0
-			push!(RE,modelcols(my_ApplySch, userData))
+#			push!(RE,modelcols(my_ApplySch, userData))
 
                 else
                 println("$(terms4StatsModels[i]) is $(typeof(f.rhs[i])) type")
