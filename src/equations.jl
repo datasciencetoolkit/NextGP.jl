@@ -176,8 +176,10 @@ function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blo
 	for b in blocks
 		getThese = intersect(collect(keys(FE)), b)
 		FE[Tuple(getThese)] = hcat(getindex.(Ref(FE), getThese)...)
+		idFE[Tuple(getThese)] = hcat(getindex.(Ref(idFE), getThese)...)
 		for d in getThese
 			delete!(FE,d)
+			delete!(idFE,d)
 		end
 	end
 
