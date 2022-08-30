@@ -35,7 +35,7 @@ ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Sy
 
 
 """
-	function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blocks,path2ped,paths2geno)
+	function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,blocks,path2ped,paths2geno)
 
 * `NextGP` relies on `StatsModels.jl` package for model expression (`f`), and fixed effect design matrix generation.
 * Details for the model expression (`f`), and fixed effects coding specifications (e.g., effect or dummy coding) can be found at [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/).
