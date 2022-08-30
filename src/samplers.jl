@@ -246,13 +246,12 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
         	#print
 		if iter in these2Keep
 			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
-			IO.outMCMC(outPut,"u",vcat(u...)')
 			IO.outMCMC(outPut,"varE",varE)
 			IO.outMCMC(outPut,"varU",hcat([varU[k] for k in keys(varU)]...))
 
 			##later will be similar to M
 			for zSet in keys(Z)
-                                IO.outMCMC(outPut,"random$(ZKeyPos[zSet])",vcat(u[ZKeyPos[zSet],:]...)')
+                                IO.outMCMC(outPut,"u$(ZKeyPos[zSet])",vcat(u[ZKeyPos[zSet],:]...)')
                         end
 			##
 

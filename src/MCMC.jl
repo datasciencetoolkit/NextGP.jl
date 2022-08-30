@@ -29,12 +29,11 @@ runGibbs = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}
 
 	#########make MCMC output files. Maybe better to move into samplers
 	IO.outMCMC(outFolder,"b",levelsFE)
-#	IO.outMCMC(outFolder,"u",levelsRE)
 
         for i in 1:length(levelsRE)
 		nameRE = hcat(vcat(collect(values(levelsRE))[i]...)...)
 		println("names for $(collect(keys(levelsRE))[i]): $(collect(values(levelsRE))[i])")
-		IO.outMCMC(outFolder,"random$i",nameRE)
+		IO.outMCMC(outFolder,"u$i",nameRE)
 	end	
 	
 
