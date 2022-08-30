@@ -185,6 +185,7 @@ function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blo
 
 	
 	idFE = hcat(vcat(values(idFE)...)...) #not a dictionary anymore
+	idRE = hcat(vcat(values(idRE)...)...) #not a dictionary anymore
 
 	println("random effect IDs: $idRE")       
 	println("random effect IDs: $idFE")
