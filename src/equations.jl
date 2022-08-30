@@ -166,7 +166,6 @@ function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blo
 		my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
 		idFE[terms4StatsModels[i]] = coefnames(my_ApplySch) 	
 		thisX = modelcols(my_ApplySch, userData)
-		print(thisX)	
 #		thisX = StatsModels.modelmatrix(f.rhs[i], userData,hints= userHints)
 		FE[terms4StatsModels[i]] = thisX
 		thisX = 0
@@ -184,7 +183,8 @@ function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blo
 
 
 	println("random effect IDs: $idRE")       
- 
+	println("random effect IDs: $idFE")
+	 
         return idRE, idFE, Ainv, vec(yVec), FE, RE, ME, regionSizes
 end
 
