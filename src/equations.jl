@@ -123,7 +123,7 @@ function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blo
 		
 	idRE = OrderedDict{Any,Any}()
 
-	idFE = OrderedDict{Any,Any}()	
+	idFE = OrderedDict{Any,Any}() #fixed effects and their levels	
 
 
         for i in 1:length(f.rhs)
@@ -183,6 +183,8 @@ function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blo
 		end
 	end
 
+	
+	idFE = hcat(vcat(values(idFE)...)...) #not a dictionary anymore
 
 	println("random effect IDs: $idRE")       
 	println("random effect IDs: $idFE")

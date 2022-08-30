@@ -25,6 +25,11 @@ runGibbs = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}
 
 	levelsRE,levelsFE,Ainv,yVec,FE,RE,ME,regionSizes = equations.mme(formula,userData,userHints=myHints,blocks=blockThese,path2ped=userPedData,paths2geno=genotypes)
 
+
+	#make MCMC output files
+	IO.outMCMC(outFolder,"b",levelsFE)
+
+
 	###
 	levelsY = levelsRE	
 	
