@@ -53,7 +53,7 @@ function mme(f::StatsModels.TermOrTerms, userData::DataFrame;userHints::Dict,blo
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
 
 	#otherwise it changes original input data globally?????
-	#userData = deepcopy(inputData)
+	userData = deepcopy(inputData)
 
 	for n in Symbol.(names(userData))
                 if typeof(userData[!,n]).==Array{Int, 1}
