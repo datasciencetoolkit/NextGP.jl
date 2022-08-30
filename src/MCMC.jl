@@ -16,6 +16,7 @@ include("equations.jl")
 include("runTime.jl")
 include("samplers.jl")
 include("misc.jl")
+include("outFiles.jl")
 
 runGibbs = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}(),blockThese=[],outFolder="outMCMC",VCV=[],userPedData=[],map=[],genotypes...)
 	
