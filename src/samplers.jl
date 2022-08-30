@@ -252,7 +252,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 
 			##later will be similar to M
 			for zSet in keys(Z)
-                                IO.outMCMC(outPut,"random$(ZKeyPos[zSet])",vec(u[ZKeyPos[zSet],:])')
+                                IO.outMCMC(outPut,"random$(ZKeyPos[zSet])",vcat(u[ZKeyPos[zSet],:]...)')
                         end
 			##
 
