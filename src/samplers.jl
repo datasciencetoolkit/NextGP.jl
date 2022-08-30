@@ -249,6 +249,13 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 			IO.outMCMC(outPut,"u",vcat(u...)')
 			IO.outMCMC(outPut,"varE",varE)
 			IO.outMCMC(outPut,"varU",hcat([varU[k] for k in keys(varU)]...))
+
+			##later will be similar to M
+			for zSet in keys(Z)
+                                IO.outMCMC(outPut,"random$zSet",u[ZKeyPos[zSet],:]')
+                        end
+			##
+
 			for mSet in keys(BetaKeyPos)
                                 IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos[mSet],:]')
                         end
