@@ -29,7 +29,9 @@ runGibbs = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}
 
 	#make MCMC output files
 	IO.outMCMC(outFolder,"b",levelsFE)
+	IO.outMCMC(outFolder,"u",levelsRE)
 
+	IO.outMCMC(outFolder,"varE","varE")
 
 	###
 	levelsY = levelsRE	
