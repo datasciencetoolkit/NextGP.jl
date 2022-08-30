@@ -265,7 +265,14 @@ end
 function sampleX!(X,b,iXpX,nFix,nColEachX,keyX,ycorr,varE)
         #block for each effect
         for xSet in keys(X)
+		println("xSet: $xSet")
+		
 		pos = keyX[xSet]
+
+		println("pos: $pos")	
+		println(keyX[xSet])
+	        println(b[pos])	
+	
                 ycorr    .+= X[xSet]*b[pos]
                 rhs      = X[xSet]'*ycorr
                 meanMu   = iXpX[xSet]*rhs
