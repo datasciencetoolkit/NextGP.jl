@@ -21,13 +21,13 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 #        isa(x2, CategoricalArray) ||
 #                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
 
-        u = unique(x2);
+        u = sort(unique(x2));
         filter!(x->x≠0,u)
         Z = Matrix{Bool}(undef, length(x1), length(u))
         for i in eachindex(u)
         	@. Z[:, i] = x1 .== u[i]
         end
-           return unique(x1),Z
+           return u,Z
        end
 
 
