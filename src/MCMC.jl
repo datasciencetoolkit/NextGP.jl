@@ -31,12 +31,10 @@ runGibbs = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}
 	IO.outMCMC(outFolder,"b",levelsFE)
 	IO.outMCMC(outFolder,"u",levelsRE)
 
-	IO.outMCMC(outFolder,"varE","varE")
+	IO.outMCMC(outFolder,"varE",["varE"])
 
-	###
-	levelsY = levelsRE	
 	
-        samplers.runSampler(levelsY,Ainv,yVec,FE,RE,nChain,nBurn,nThin,VCV,ME,map,regionSizes,outFolder)
+        samplers.runSampler(Ainv,yVec,FE,RE,nChain,nBurn,nThin,VCV,ME,map,regionSizes,outFolder)
 
 	#return(yVec,FE,RE,ME)
 end
