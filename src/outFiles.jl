@@ -8,6 +8,7 @@ using CSV
 using StatsBase
 using MCMCChains
 using StatsPlots
+using DataFrames
 
 macro name(arg)
     x = string(arg)
