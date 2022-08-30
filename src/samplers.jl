@@ -265,13 +265,7 @@ end
 function sampleX!(X,b,iXpX,nFix,nColEachX,keyX,ycorr,varE)
         #block for each effect
         for xSet in keys(X)
-		
-		pos = keyX[xSet]
-
-	
-                ycorr    .+= X[xSet]*b[pos]
-                rhs      = X[xSet]'*ycorr
-                meanMu   = iXpX[xSet]*rhs
+		pos = keyX[xSet]	
                 if nColEachX[pos] == 1
 			ycorr    .+= X[xSet].*b[pos]
 			rhs      = X[xSet]'*ycorr
