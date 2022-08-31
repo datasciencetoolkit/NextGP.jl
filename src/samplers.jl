@@ -46,7 +46,6 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
         end
 
 	Zp  = deepcopy(Z) #similar(Z')
-#	zpz = Array{Array{Float64, 1},1}(undef,0)
 	zpz = OrderedDict{Any,Any}()
 	for z in keys(Z)
                 zpz[z] = diag(Z[z]'Z[z])
@@ -67,7 +66,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
         ##counts columns per effect
         nColEachX = []
         for xSet in keys(X)
-                println(xSet)
+#                println(xSet)
                 nCol = size(X[xSet],2)
                 push!(b,fill(0.0,nCol))
                 nColEachX = push!(nColEachX,nCol)
