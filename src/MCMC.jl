@@ -32,7 +32,6 @@ runGibbs = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}
 
         for i in 1:length(levelsRE)
 		nameRE = hcat(vcat(collect(values(levelsRE))[i]...)...)
-		println("names for $(collect(keys(levelsRE))[i]): $(collect(values(levelsRE))[i])")
 		IO.outMCMC(outFolder,"u$i",nameRE)
 		IO.outMCMC(outFolder,"varU$i",[join(collect(keys(levelsRE))[i],"_")])
 	end	

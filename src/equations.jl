@@ -135,16 +135,16 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 			thisM = CSV.read(path,CSV.Tables.matrix,header=false)
 			#centering
 			thisM .-= mean(thisM,dims=1) 
-			println("size of $arg1 data: $(size(thisM))")
-			println("region size for $arg1: $arg2")
+#			println("size of $arg1 data: $(size(thisM))")
+#			println("region size for $arg1: $arg2")
 			ME[arg1] = thisM
                         thisM = 0 #I can directly merge to dict above
 			regionSizes[arg1] = arg2
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
-                        println("$(terms4StatsModels[i]) is ran Type")
+#                        println("$(terms4StatsModels[i]) is ran Type")
                         sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
                         sym2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
-                        println("sym1: $sym1 sym2: $sym2")
+#                        println("sym1: $sym1 sym2: $sym2")
 			
 			IDs,thisZ = ranMat(sym1, sym2, userData, pedigree)
 			RE[(sym1,sym2)] = thisZ
