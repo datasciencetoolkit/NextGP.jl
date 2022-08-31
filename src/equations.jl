@@ -172,6 +172,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
                 end
         end
 
+	println("FE: $FE")
 	println("fixed effect IDs: $idFE")
 
 	#BLOCK FIXED EFFECTS
@@ -189,6 +190,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 #	idFE = hcat(vcat(values(idFE)...)...) #not a dictionary anymore
 #	idRE = hcat(vcat(values(idRE)...)...) #not a dictionary anymore
 
+	println("FE: $FE")
 	println("fixed effect IDs: $idFE")
 	 
         return idRE, idFE, Ainv, vec(yVec), FE, RE, ME, regionSizes
