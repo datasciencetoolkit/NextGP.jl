@@ -187,7 +187,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 	end
 
 	
-#	idFE = hcat(vcat(values(idFE)...)...) #not a dictionary anymore
+	idFE = hcat(vcat(values(idFE)...)...) #not a dictionary anymore
 #	idRE = hcat(vcat(values(idRE)...)...) #not a dictionary anymore
 
 	println("FE: $FE")
