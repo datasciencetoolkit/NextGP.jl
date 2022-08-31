@@ -158,7 +158,6 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
                        	thisZ = modelcols(my_ApplySch, userData)
 			RE[terms4StatsModels[i]] = thisZ
 			thisZ = 0
-#			push!(RE,modelcols(my_ApplySch, userData))
 
                 else
                 println("$(terms4StatsModels[i]) is $(typeof(f.rhs[i])) type")
@@ -166,7 +165,6 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 		my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
 		idFE[terms4StatsModels[i]] = coefnames(my_ApplySch) 	
 		thisX = modelcols(my_ApplySch, userData)
-#		thisX = StatsModels.modelmatrix(f.rhs[i], userData,hints= userHints)
 		FE[terms4StatsModels[i]] = thisX
 		thisX = 0
                 end
@@ -189,7 +187,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 
 	println("fixed effect IDs: $idFE")
 	
-	idFE = hcat(vcat(values(idFE)...)...) #not a dictionary anymore
+	idFE = vcat([isa(value,String) ? value : vcat(value...) for (key, value) in FE]...) #not a dictionary anymore
 #	idRE = hcat(vcat(values(idRE)...)...) #not a dictionary anymore
 
 	println("FE: $FE")
