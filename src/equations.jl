@@ -187,7 +187,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 
 	println("fixed effect IDs: $idFE")
 	
-	idFE = hcat(vcat([isa(value,String) ? value : vcat(value...) for (key, value) in idFE]...)...) #not a dictionary anymore
+	idFE = hcat([isa(value,String) ? value : vcat(value...) for (key, value) in idFE]...) #not a dictionary anymore
 #	idRE = hcat(vcat(values(idRE)...)...) #not a dictionary anymore
 
 	println("FE: $FE")
