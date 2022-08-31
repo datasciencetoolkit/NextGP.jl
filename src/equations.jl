@@ -172,6 +172,8 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
                 end
         end
 
+	println("fixed effect IDs: $idFE")
+
 	#BLOCK FIXED EFFECTS
 	for b in blocks
 		getThese = intersect(collect(keys(FE)), b)
@@ -184,10 +186,9 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 	end
 
 	
-	idFE = hcat(vcat(values(idFE)...)...) #not a dictionary anymore
+#	idFE = hcat(vcat(values(idFE)...)...) #not a dictionary anymore
 #	idRE = hcat(vcat(values(idRE)...)...) #not a dictionary anymore
 
-	println("random effect IDs: $idRE")       
 	println("fixed effect IDs: $idFE")
 	 
         return idRE, idFE, Ainv, vec(yVec), FE, RE, ME, regionSizes
