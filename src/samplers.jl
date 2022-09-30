@@ -406,7 +406,7 @@ function sampleMandMVar!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,va
 end
 
 #########USED ONES
-function sampleU(iMat,pos,Zcomp,ZpComp,zpzComp,varE,varUComp,uVec,ycorr)
+function sampleU(iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVec,ycorr)
 	λz = varE/(varUComp)
 	Yi = ZpComp*ycorr #computation of Z'ycorr for ALL  rhsU
 	nCol = length(zpzComp)
