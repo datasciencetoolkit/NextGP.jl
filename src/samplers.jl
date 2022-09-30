@@ -406,25 +406,20 @@ function sampleMandMVar!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,va
 end
 
 #########USED ONES
-function sampleU!(iStrMat,pos,Zmat,ZpMat,zpzMat,keyU,varE,varU,u,ycorr)
-	uVec = deepcopy(u[pos])
-	iMat = iStrMat[zSet]
-	tempzpz = zpzMat[zSet] ###added
-	λz = varE/(varU[zSet])
-	ycorr .+= Zmat[zSet]*uVec		
-	Yi = ZpMat[zSet]*ycorr #computation of Z'ycorr for ALL  rhsU
-	nCol = length(zpzMat[zSet])
+function sampleU(iMat,pos,Zcomp,ZpComp,zpzComp,varE,varUComp,uVec,ycorr)
+	λz = varE/(varUComp)
+	Yi = ZpComp*ycorr #computation of Z'ycorr for ALL  rhsU
+	nCol = length(zpzComp)
 	for i in 1:nCol
         	uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
 		rhsU = Yi[i] - λz*dot(iMat[:,i],uVec)
-                lhsU = tempzpz[i] + (iMat[i,i]*λz)[1]
+                lhsU = zpzComp[i] + (iMat[i,i]*λz)[1]
 		invLhsU = 1.0/lhsU
                 meanU = invLhsU*rhsU
                 uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         end
 	println("uVec: $uVec")
-	u[pos] = uVec
-        ycorr .-= Zmat[zSet]*uVec
+	return uVec
 end
 
 
@@ -441,7 +436,9 @@ function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,yc
 		else
 			println("sampling univariate U for $zSet")
                 	uPos = keyU[zSet]
-                	sampleU!(iStrMat,uPos,ZMat,ZpMat,zpzMat,keyU,varE,varU,u,ycorr)
+			ycorr .+= ZComp*uVec		
+                	u[uPos,:]  .= sampleU(iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,:],ycorr)
+			ycorr .-= ZComp*uVec		
 			varU[zSet] = sampleVarU(iStrMat[zSet],scaleZ[zSet],dfZ[zSet],u[uPos,:])
        		end
 		
