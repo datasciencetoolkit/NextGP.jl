@@ -47,12 +47,6 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
                	iXpX[x] = inv(XpX)
         end
 
-	Zp  = deepcopy(Z) #similar(Z')
-	zpz = OrderedDict{Any,Any}()
-	for z in keys(Z)
-                zpz[z] = diag(Z[z]'Z[z])
-		Zp[z]  = Z[z]'
-        end
 	
 		
         #key positions for speed
