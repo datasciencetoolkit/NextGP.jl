@@ -294,7 +294,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 		#sample variances
 #		sampleRanVar!(varU,nRand,scaleU,dfDefault,u,ZKeyPos,iVarStr)
 
-	        sampleZandZVar!(iVarStr,Z,Zp,corZ,corZPos,u,zpz,nZSet,uKeyPos,ycorr,varE,varU,scaleZ,dfZ)	
+	        sampleZandZVar!(iVarStr,Z,Zp,corZ,corZPos,u,zpz,uKeyPos,ycorr,varE,varU,scaleZ,dfZ)	
 
 		#sample marker effects and variances
 	        sampleMandMVar_view!(M,Mp,corM,corMPos,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
@@ -418,7 +418,7 @@ function sampleU!(iStrMat,pos,Zmat,ZpMat,zpzMat,keyU,varE,varU,u,ycorr)
 end
 
 
-function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,nZSet,keyU,ycorr,varE,varU,scaleZ,dfZ)
+function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,ycorr,varE,varU,scaleZ,dfZ)
         #for each marker set
         for zSet in keys(zpzMat)
 		if zSet in keys(correlatedZ)
