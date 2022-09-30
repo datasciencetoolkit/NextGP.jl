@@ -89,7 +89,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	
 	#key positions for each effect in u, for speed. Order of matrices in Z are preserved here.
 					
-        uKeyPos = OrderedDict{String,Int64}()
+        uKeyPos = OrderedDict{Any,Int64}()
         for zSet in keys(Z)
 		pos = findall(x->x==zSet, collect(keys(Z)))[]
                 uKeyPos[zSet] = pos
