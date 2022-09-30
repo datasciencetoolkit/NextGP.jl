@@ -427,6 +427,7 @@ end
 
 
 function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,ycorr,varE,varU,scaleZ,dfZ)
+	println("keys(zpzMat): $(keys(zpzMat))")
         #for each random effect
         for zSet in keys(zpzMat)
 		println("$zSet is handled")
