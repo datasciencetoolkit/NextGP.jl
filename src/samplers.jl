@@ -91,6 +91,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 					
         uKeyPos = OrderedDict{String,Int64}()
         for zSet in keys(Z)
+		println("$keysZ: $(collect(keys(Z)))")
 		println("$zSet: $(findall(zSet.==collect(keys(Z))))")
                 pos = findall(zSet.==collect(keys(Z)))[]
                 uKeyPos[zSet] = pos
