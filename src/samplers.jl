@@ -420,6 +420,7 @@ function sampleU!(iStrMat,pos,Zmat,ZpMat,zpzMat,keyU,varE,varU,u,ycorr)
                 meanU = invLhsU*rhsU
                 uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         end
+	println("uVec: $uVec")
 	u[pos] = uVec
         ycorr .-= Zmat[zSet]*uVec
 end
@@ -434,6 +435,7 @@ function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,yc
 			nowZp = ZpMat[zSet] ###
 			error("correlated random effects are not allowed")
 		else
+			println("sampling univariate U for $zSet)
                 	uPos = keyU[zSet]
                 	sampleU!(iStrMat,uPos,Zmat,ZpMat,zpzMat,keyU,varE,varU,u,ycorr)
 			varU[zSet] = sampleVarU(iStrMat[zSet],scaleZ[zSet],dfZ[zSet],u[uPos,:])
