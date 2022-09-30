@@ -116,6 +116,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 					push!(tempzpz,c'c)					
 					# push!(tempzpz,BLAS.dot(c,c))
 				end
+				Zp[pSet]  = transpose(Z[pSet])						
 				zpz[pSet] = tempzpz
 			end
 		elseif  issubset(pSet,keys(Z))
