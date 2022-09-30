@@ -322,7 +322,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
                                 IO.outMCMC(outPut,"u$(uKeyPos[zSet])",u[uKeyPos[zSet],:]')
                         end
 			for pSet in keys(zpz)
-				IO.outMCMC(outPut,"var".*pSet,varU[pSet])
+				IO.outMCMC(outPut,"var"*uKeyPos[pSet],varU[pSet]) #join values for multivariate in uKeyPos[pSet])
 			end
 
 			for mSet in keys(BetaKeyPos)
