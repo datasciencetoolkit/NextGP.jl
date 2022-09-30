@@ -112,7 +112,6 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 				println("univariate zpz for $pSet")
 				tempzpz = []
 				nowZ = Z[pSet]
-				println("typeof nowZ: $(typeof(nowZ))")					
 				for c in eachcol(nowZ)
 					push!(tempzpz,c'c)					
 					# push!(tempzpz,BLAS.dot(c,c))
@@ -171,12 +170,13 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	for zSet ∈ keys(zpz)
 		dfZ[zSet] = 3.0+size(priorVCV[zSet],1)
 	end
-
-
+																
 	scaleZ = Dict{Any,Any}()
         for zSet in keys(zpz)
                 nZComp = size(priorVCV[zSet],1)
-                nZComp > 1 ? scaleZ[zSet] = priorVCV[zSet].*(dfZ[zSet]-nZComp-1.0)  : scaleZ[zSet] = priorVCV[zSet]*(dfZ[zSet]-2.0)/dfZ[zSet] #I make float and array of float
+		#priorVCV[zSet][2] is a temporary solution
+                #nZComp > 1 ? scaleZ[zSet] = priorVCV[zSet].*(dfZ[zSet]-nZComp-1.0)  : scaleZ[zSet] = priorVCV[zSet]*(dfZ[zSet]-2.0)/dfZ[zSet] #I make float and array of float
+		nZComp > 1 ? scaleZ[zSet] = priorVCV[zSet][2].*(dfZ[zSet]-nZComp-1.0)  : scaleZ[zSet] = priorVCV[zSet][2]*(dfZ[zSet]-2.0)/dfZ[zSet] #I make float and array of float														
         end
 
 												
