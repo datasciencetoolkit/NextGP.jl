@@ -316,7 +316,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 			##
 			
 			for zSet in keys(uKeyPos)
-                                IO.outMCMC(outPut,"u$zSet",u[uKeyPos[zSet],:]')
+                                IO.outMCMC(outPut,"u$(uKeyPos[zSet])",u[uKeyPos[zSet],:]')
                         end
 			for pSet in keys(zpz)
 				IO.outMCMC(outPut,"var".*pSet,varU[pSet])
