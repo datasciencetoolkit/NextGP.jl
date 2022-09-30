@@ -112,6 +112,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 				println("univariate zpz for $pSet")
 				tempzpz = []
 				nowZ = Z[pSet]
+				println("typeof nowZ: $(typeof(nowZ))")					
 				for c in eachcol(nowZ)
 					push!(tempzpz,BLAS.dot(c,c))
 				end
