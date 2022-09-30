@@ -438,13 +438,6 @@ function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,yc
 			println("sampling univariate U for $zSet")
                 	uPos = keyU[zSet]
 			ycorr .+= ZMat[zSet]*u[uPos,:]
-			println("KEYS")
-			println("$(keys(iStrMat))")
-			println("$(keys(ZMat))")
-			println("$(keys(ZpMat))")
-			println("$(keys(zpzMat))")
-			println("$(keys(varU))")
-			
                 	u[uPos,:]  .= sampleU(iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,:],ycorr)
 			ycorr .-= ZMat[zSet]*u[uPos,:]		
 			varU[zSet] = sampleVarU(iStrMat[zSet],scaleZ[zSet],dfZ[zSet],u[uPos,:])
