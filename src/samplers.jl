@@ -289,11 +289,13 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	
 		#sample random effects
 		# always returns corrected Y and new u
-		sampleZ!(iVarStr,Z,Zp,zpz,nRand,ZKeyPos,varE,varU,u,ycorr)
+#		sampleZ!(iVarStr,Z,Zp,zpz,nRand,ZKeyPos,varE,varU,u,ycorr)
 
 		#sample variances
-		sampleRanVar!(varU,nRand,scaleU,dfDefault,u,ZKeyPos,iVarStr)
-		
+#		sampleRanVar!(varU,nRand,scaleU,dfDefault,u,ZKeyPos,iVarStr)
+
+	        sampleZandZVar!(iVarStr,Z,Zp,corZ,corZPos,u,zpz,nZSet,uKeyPos,ycorr,varE,varU,scaleZ,dfZ)	
+
 		#sample marker effects and variances
 	        sampleMandMVar_view!(M,Mp,corM,corMPos,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
                		
@@ -372,25 +374,6 @@ function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,ZKeyPos,varE,varU,u,ycorr)
 end
 
 
-#Sampling marker effects
-function sampleM!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta)
-        #for each marker set
-        for mSet in keys(MMat)
-                for r in 1:regions[keyM[mSet]]
-                        theseLoci = regionsMat[keyM[mSet]][r]
-                        regionSize = length(theseLoci)
-                        lambda = varE/(varBeta[keyM[mSet]][r])
-                        for locus in theseLoci
-                                BLAS.axpy!(beta[keyM[mSet],locus],MMat[mSet][:,locus],ycorr)
-                                rhs = BLAS.dot(MMat[mSet][:,locus],ycorr)
-                                lhs = mpmMat[mSet][locus] + lambda
-                                meanBeta = lhs\rhs
-                                beta[keyM[mSet],locus] = sampleBeta(meanBeta, lhs, varE)
-                                BLAS.axpy!(-1.0*beta[keyM[mSet],locus],MMat[mSet][:,locus],ycorr)
-                        end
-                end
-        end
-end
 
 function sampleMandMVar!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
         #for each marker set
@@ -411,6 +394,45 @@ function sampleMandMVar!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,va
 			varBeta[mSet][r] = sampleVarBeta(scaleM[pos],dfM[pos],beta[pos,theseLoci],regionSize)
                 end
         end
+end
+
+#########USED ONES
+function sampleU!(iStrMat,pos,Zmat,ZpMat,zpzMat,keyU,varE,varU,u,ycorr)
+	uVec = deepcopy(u[pos])
+	iMat = iStrMat[zSet]
+	tempzpz = zpzMat[zSet] ###added
+	λz = varE/(varU[zSet])
+	ycorr .+= Zmat[zSet]*uVec		
+	Yi = ZpMat[zSet]*ycorr #computation of Z'ycorr for ALL  rhsU
+	nCol = length(zpzMat[zSet])
+	for i in 1:nCol
+        	uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
+		rhsU = Yi[i] - λz*dot(iMat[:,i],uVec)
+                lhsU = tempzpz[i] + (iMat[i,i]*λz)[1]
+		invLhsU = 1.0/lhsU
+                meanU = invLhsU*rhsU
+                uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
+        end
+	u[pos] = uVec
+        ycorr .-= Zmat[zSet]*uVec
+end
+
+
+function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,nZSet,keyU,ycorr,varE,varU,scaleZ,dfZ)
+        #for each marker set
+        for zSet in keys(zpzMat)
+		if zSet in keys(correlatedZ)
+#			println("$zSet in corZ")
+			uPos = keyCorZ[zSet]
+			nowZp = ZpMat[zSet] ###
+			error("correlated random effects are not allowed")
+		else
+                	uPos = keyU[zSet]
+                	sampleU!(iStrMat,uPos,Zmat,ZpMat,zpzMat,keyU,varE,varU,u,ycorr)
+			varU[zSet] = sampleVarU(iStrMat[zSet],scaleZ[zSet],dfZ[zSet],u[uPos,:])
+       		end
+		
+	 end
 end
 
 function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,keyBeta,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
@@ -473,8 +495,14 @@ function sampleBeta(meanBeta, lhs, varE)
     return rand(Normal(meanBeta,sqrt(lhs\varE)))
 end
 
+#sample random effects' variances (new U)
+function sampleVarU(iMat,scale_ranVar,df_ranVar,effVec)
+	n = size(iMat,2)
+	return (scale_ranVar*df_ranVar + effVec'*iMat*effVec)/rand(Chisq(df_ranVar + n))
+end
+
 #sample random effects' variances
-function sampleRanVar!(varU,nRand,scale_ranVar,df_ranVar,effVec,keyZ,iStrMat)
+function sampleRanVar!(varU,scale_ranVar,df_ranVar,effVec,keyZ,iStrMat)
 	for z in keys(scale_ranVar)
 		pos = keyZ[z]
 		n = size(iStrMat[z],2)
