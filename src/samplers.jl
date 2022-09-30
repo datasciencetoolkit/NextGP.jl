@@ -435,7 +435,7 @@ function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,yc
 			nowZp = ZpMat[zSet] ###
 			error("correlated random effects are not allowed")
 		else
-			println("sampling univariate U for $zSet)
+			println("sampling univariate U for $zSet")
                 	uPos = keyU[zSet]
                 	sampleU!(iStrMat,uPos,Zmat,ZpMat,zpzMat,keyU,varE,varU,u,ycorr)
 			varU[zSet] = sampleVarU(iStrMat[zSet],scaleZ[zSet],dfZ[zSet],u[uPos,:])
