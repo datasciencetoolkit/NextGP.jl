@@ -106,7 +106,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	for pSet ∈ keys(priorVCV)
 		corEffects = []
 		corPositions = []
-		if typeof(pSet)==String
+		if typeof(pSet)==Tuple{String, String}
 			println("$pSet is univariate")
 			if pSet ∈ keys(Z)
 				println("univariate zpz for $pSet")
