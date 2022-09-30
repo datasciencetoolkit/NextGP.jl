@@ -24,6 +24,8 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	##This is not really nFix, but the "blocks" of fixed effects
         nFix  = length(X)
 	nRand = length(Z)
+	nColEachZ    = [size(Z[z],2) for z in keys(Z)]
+	println("number of random effects: $nColEachZ")
 	nData = length(Y)
 	nMarkerSets = length(M)
 	nMarkers    = [size(M[m],2) for m in keys(M)]
@@ -58,9 +60,6 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
         [XKeyPos[collect(keys(X))[i]]=i for i in 1:length(keys(X))]
 
 	
-	ZKeyPos = OrderedDict{Any,Int64}()
-	[ZKeyPos[collect(keys(Z))[i]]=i for i in 1:length(keys(Z))]
-	
         ##make b and u arrays
         b = Array{Array{Float64, 1},1}(undef,0)
         ##counts columns per effect
@@ -70,33 +69,6 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
                 nCol = size(X[xSet],2)
                 push!(b,fill(0.0,nCol))
                 nColEachX = push!(nColEachX,nCol)
-        end
-
-        u = Array{Array{Float64, 1},1}(undef,0)
-        ##counts columns per effect
-        nColEachZ = []
-	##get priors per effect
-	iVarStr = Dict{Any,Array{Float64,2}}() #inverses will be computed
-	varU_prior = OrderedDict{Any,Any}()
-        for zSet in keys(Z)
-                nCol = size(Z[zSet],2)
-                push!(u,fill(0.0,nCol))
-                nColEachZ = push!(nColEachZ,nCol)
-		#var structures and priors
-		if haskey(priorVCV,zSet)	
-			if isempty(priorVCV[zSet][1])
-				println("priorVCV structure for $zSet is empty, an identity matrix will be used")
-				iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
-			elseif priorVCV[zSet][1]=="A"
-				iVarStr[zSet] = iA
-				println("priorVCV structure for $zSet is A, computed A matrix will be used")
-			else 	iVarStr[zSet] = inv(priorVCV[zSet][1])
-			end
-			varU_prior[zSet] = priorVCV[zSet][2]
-		else	println("priorVCV structure for $zSet is empty, an identity matrix will be used with an arbitrary variance of 100")
-			iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
-			varU_prior[zSet] = 100	
-		end
         end
 
 	#set up for E	
@@ -114,18 +86,106 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
         else
        		scaleE    = varE_prior*(dfE-2.0)/dfE    
    	end
-	
-	##no correlated random effects
-	scaleU = Dict{Any,Any}()
-	for zSet in keys(Z)
-		scaleU[zSet] = varU_prior[zSet]*(dfDefault-2.0)/dfDefault
-	end	
-
 
 	#pre-computations using priors, not relevant for correlated random effects
    	νS_E = scaleE*dfE
 
 
+	#### New u
+	
+	#key positions for each effect in u, for speed. Order of matrices in Z are preserved here.
+					
+        uKeyPos = OrderedDict{String,Int64}()
+        for zSet in keys(Z)
+                pos = findall(zSet.==collect(keys(Z)))[]
+                uKeyPos[zSet] = pos
+        end
+
+	#matrices are ready
+				
+	Zp = OrderedDict{Any,Any}()
+       	zpz = OrderedDict{Any,Any}()
+		
+	corZ = OrderedDict{Any,Any}()
+	corZPos = OrderedDict{Any,Any}()
+											
+	for pSet ∈ keys(priorVCV)
+		corEffects = []
+		corPositions = []
+		if typeof(pSet)==String
+			println("$pSet is univariate")
+			if pSet ∈ keys(Z)
+				println("univariate zpz for $pSet")
+				tempzpz = []
+				nowZ = Z[pSet]
+				for c in eachcol(nowZ)
+					push!(tempzpz,BLAS.dot(c,c))
+				end
+				zpz[pSet] = tempzpz
+			end
+		elseif  issubset(pSet,keys(Z))
+			println("$pSet will be correlated")
+			correlate = collect(pSet)
+			for pSubSet in correlate
+				println(pSubSet)
+				push!(corEffects,pSubSet)
+				push!(corPositions,findall(pSubSet.==keys(Z))[])
+			end
+			if issubset(corEffects,collect(keys(Z)))
+				corZPos[pSet] = corPositions
+				corZ[pSet] = corEffects
+				tempZ = hcat.(eachcol.(getindex.(Ref(Z), (pSet)))...)
+				for d in corEffects
+                       			delete!(Z,d)
+               			end
+				Z[pSet]   = tempZ
+				zpz[pSet] = MatByMat.(tempZ)
+				Zp[pSet]  = transpose.(tempZ)
+				tempZ = 0
+			end
+		end
+	end
+	
+	##get priors per effect
+													
+	iVarStr = Dict{Any,Array{Float64,2}}() #inverses will be computed
+	varU_prior = OrderedDict{Any,Any}()
+        for zSet in keys(Z)
+                nCol = size(Z[zSet],2)
+		#var structures and priors
+		if haskey(priorVCV,zSet)	
+			if isempty(priorVCV[zSet][1])
+				println("priorVCV structure for $zSet is empty, an identity matrix will be used")
+				iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
+			elseif priorVCV[zSet][1]=="A"
+				iVarStr[zSet] = iA
+				println("priorVCV structure for $zSet is A, computed A matrix will be used")
+			else 	iVarStr[zSet] = inv(priorVCV[zSet][1])
+			end
+			varU_prior[zSet] = priorVCV[zSet][2]
+		else	println("priorVCV structure for $zSet is empty, an identity matrix will be used with an arbitrary variance of 100")
+			iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
+			varU_prior[zSet] = 100	
+		end
+        end
+
+	#df, shape, scale...															
+	
+	dfZ = Dict{Any,Any}()	
+	for zSet ∈ keys(zpz)
+		dfZ[zSet] = 3.0+size(priorVCV[zSet],1)
+	end
+
+
+	scaleZ = Dict{Any,Any}()
+        for zSet in keys(zpz)
+                nZComp = size(priorVCV[zSet],1)
+                nZComp > 1 ? scaleZ[zSet] = priorVCV[zSet].*(dfZ[zSet]-nZComp-1.0)  : scaleZ[zSet] = priorVCV[zSet]*(dfZ[zSet]-2.0)/dfZ[zSet] #I make float and array of float
+        end
+
+												
+        ####
+																					
 
 	#ADD MARKERS
 	# read map file and make regions
@@ -209,12 +269,12 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	
 	#storage
 
-	varU = varU_prior #for storage
+	u = zeros(Float64,nRand,maximum(vcat([0,nColEachZ]...))) #zero is for max to work when no random effect is present #can allow unequal length! Remove tail zeros for printing....
 
+	varU = deepcopy(varU_prior) #for storage
 
 	beta = zeros(Float64,nMarkerSets,maximum(vcat([0,nMarkers]...))) #zero is for max to work when no SNP data is present #can allow unequal length! Remove tail zeros for printing....
 #	vcovBeta = fill(Matrix(Diagonal(varM)),maximum(nRegions)) #can allow unequal length! Remove tail zeros for printing....
-
 
         varBeta = OrderedDict{Any,Any}()
         for mSet in keys(mpm)
