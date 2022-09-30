@@ -303,17 +303,24 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 		if iter in these2Keep
 			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
 			IO.outMCMC(outPut,"varE",varE)
-			IO.outMCMC(outPut,"varU",hcat([varU[k] for k in keys(varU)]...))
+#			IO.outMCMC(outPut,"varU",hcat([varU[k] for k in keys(varU)]...))
 
 			##later will be similar to M
-			for zSet in keys(Z)
-                                IO.outMCMC(outPut,"u$(ZKeyPos[zSet])",vcat(u[ZKeyPos[zSet],:]...)')
-                        end
+#			for zSet in keys(Z)
+#                                IO.outMCMC(outPut,"u$(ZKeyPos[zSet])",vcat(u[ZKeyPos[zSet],:]...)')
+#                        end
 	
-			for pSet in keys(zpz)
-                                IO.outMCMC(outPut,"varU$(ZKeyPos[pSet])",varU[pSet])
-                        end
+#			for pSet in keys(zpz)
+#                                IO.outMCMC(outPut,"varU$(ZKeyPos[pSet])",varU[pSet])
+#                        end
 			##
+			
+			for zSet in keys(uKeyPos)
+                                IO.outMCMC(outPut,"u$zSet",u[uKeyPos[zSet],:]')
+                        end
+			for pSet in keys(zpz)
+				IO.outMCMC(outPut,"var".*pSet,varU[pSet])
+			end
 
 			for mSet in keys(BetaKeyPos)
                                 IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos[mSet],:]')
