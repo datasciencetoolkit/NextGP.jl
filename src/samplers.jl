@@ -427,8 +427,9 @@ end
 
 
 function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,ycorr,varE,varU,scaleZ,dfZ)
-        #for each marker set
+        #for each random effect
         for zSet in keys(zpzMat)
+		println("$zSet is handled")
 		if zSet in keys(correlatedZ)
 #			println("$zSet in corZ")
 			uPos = keyCorZ[zSet]
