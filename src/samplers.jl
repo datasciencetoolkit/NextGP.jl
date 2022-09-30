@@ -114,7 +114,8 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 				nowZ = Z[pSet]
 				println("typeof nowZ: $(typeof(nowZ))")					
 				for c in eachcol(nowZ)
-					push!(tempzpz,BLAS.dot(c,c))
+					push!(tempzpz,c'c)					
+					# push!(tempzpz,BLAS.dot(c,c))
 				end
 				zpz[pSet] = tempzpz
 			end
