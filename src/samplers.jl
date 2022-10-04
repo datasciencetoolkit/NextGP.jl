@@ -408,7 +408,8 @@ end
 
 #########USED ONES
 function sampleU(iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVec,ycorr)
-	λz = varE/(varUComp)
+	println("uVec: $uVec")
+	λz = varE/varUComp
 	Yi = ZpComp*ycorr #computation of Z'ycorr for ALL  rhsU
 	nCol = length(zpzComp)
 	for i in 1:nCol
@@ -439,6 +440,7 @@ function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,yc
                 	uPos = keyU[zSet]
 			ycorr .+= ZMat[zSet]*u[uPos,:]
                 	u[uPos,:]  .= sampleU(iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,:],ycorr)
+			println("uVec: $(u[uPos,:])")
 			ycorr .-= ZMat[zSet]*u[uPos,:]		
 			varU[zSet] = sampleVarU(iStrMat[zSet],scaleZ[zSet],dfZ[zSet],u[uPos,:])
        		end
