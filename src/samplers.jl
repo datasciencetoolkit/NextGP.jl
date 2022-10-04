@@ -407,7 +407,8 @@ function sampleMandMVar!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,va
 end
 
 #########USED ONES
-function sampleU(iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVec,ycorr)
+function sampleU(iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
+	uVec = deepcopy(uVector)
 	println("uVec: $uVec")
 	λz = varE/varUComp
 	Yi = ZpComp*ycorr #computation of Z'ycorr for ALL  rhsU
