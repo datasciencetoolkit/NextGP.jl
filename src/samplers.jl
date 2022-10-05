@@ -25,7 +25,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
         nFix  = length(X)
 	nRand = length(Z)
 #	nColEachZ    = [size(Z[z],2) for z in keys(Z)]
-	nColEachZ    = Dict(z => size(Z[z],2) for z in keys(Z))
+	nColEachZ    = OrderedDict(z => size(Z[z],2) for z in keys(Z))
 	println("number of random effects: $nColEachZ")
 	nData = length(Y)
 	nMarkerSets = length(M)
@@ -267,7 +267,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	
 	#storage
 
-	u = zeros(Float64,nRand,maximum(vcat([0,nColEachZ]...))) #zero is for max to work when no random effect is present #can allow unequal length! Remove tail zeros for printing....
+	u = zeros(Float64,nRand,maximum(vcat([0,values(nColEachZ)]...))) #zero is for max to work when no random effect is present #can allow unequal length! Remove tail zeros for printing....
 
 	varU = deepcopy(varU_prior) #for storage
 
