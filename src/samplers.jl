@@ -8,6 +8,7 @@ using CSV
 using DataFrames
 using DataStructures
 using ProgressMeter
+using PrettyTables
 
 include("outFiles.jl")
 include("misc.jl")
