@@ -284,8 +284,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	sleep(0.1)
 	
 		#sample residual variance
-#	       	varE = sampleVarE(νS_E,ycorr,dfE,nData)
-		varE = varE_prior
+	       	varE = sampleVarE(νS_E,ycorr,dfE,nData)
 		
 		#sample fixed effects
         	#always returns corrected Y and new b
@@ -433,7 +432,7 @@ function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,nC
 			ycorr .+= ZMat[zSet]*u[uPos,1:nCols[zSet]]
                 	u[uPos,1:nCols[zSet]]  .= sampleU(iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,1:nCols[zSet]],ycorr)
 			ycorr .-= ZMat[zSet]*u[uPos,1:nCols[zSet]]		
-#			varU[zSet] = sampleVarU(iStrMat[zSet],scaleZ[zSet],dfZ[zSet],u[uPos,1:nCols[zSet]])
+			varU[zSet] = sampleVarU(iStrMat[zSet],scaleZ[zSet],dfZ[zSet],u[uPos,1:nCols[zSet]])
        		end
 		
 	 end
