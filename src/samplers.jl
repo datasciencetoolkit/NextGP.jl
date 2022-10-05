@@ -266,8 +266,6 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	
 	
 	#storage
-	println("vcat $(vcat([0,collect(values(nColEachZ))]...))")
-	println("vcat $(maximum(vcat([0,collect(values(nColEachZ))]...)))")
 	u = zeros(Float64,nRand,maximum(vcat([0,collect(values(nColEachZ))]...))) #zero is for max to work when no random effect is present #can allow unequal length! Remove tail zeros for printing....
 
 	varU = deepcopy(varU_prior) #for storage
@@ -321,6 +319,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 			##
 			
 			for zSet in keys(uKeyPos)
+				println("output zSet: $zSet")
                                 IO.outMCMC(outPut,"u$(uKeyPos[zSet])",u[uKeyPos[zSet],:]')
                         end
 			for pSet in keys(zpz)
