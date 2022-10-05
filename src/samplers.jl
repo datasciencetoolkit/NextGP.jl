@@ -267,6 +267,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	
 	#storage
 
+	println("vcat $(maximum(vcat([0,values(nColEachZ)]...)))")
 	u = zeros(Float64,nRand,maximum(vcat([0,values(nColEachZ)]...))) #zero is for max to work when no random effect is present #can allow unequal length! Remove tail zeros for printing....
 
 	varU = deepcopy(varU_prior) #for storage
