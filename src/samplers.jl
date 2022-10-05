@@ -26,7 +26,6 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	nRand = length(Z)
 #	nColEachZ    = [size(Z[z],2) for z in keys(Z)]
 	nColEachZ    = OrderedDict(z => size(Z[z],2) for z in keys(Z))
-	println("number of random effects: $nColEachZ")
 	nData = length(Y)
 	nMarkerSets = length(M)
 	nMarkers    = [size(M[m],2) for m in keys(M)]
