@@ -284,7 +284,8 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	sleep(0.1)
 	
 		#sample residual variance
-	       	varE = sampleVarE(νS_E,ycorr,dfE,nData)
+#	       	varE = sampleVarE(νS_E,ycorr,dfE,nData)
+		varE = varE_prior
 		
 		#sample fixed effects
         	#always returns corrected Y and new b
@@ -292,11 +293,6 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	
 		#sample random effects
 		# always returns corrected Y and new u
-#		sampleZ!(iVarStr,Z,Zp,zpz,nRand,ZKeyPos,varE,varU,u,ycorr)
-
-		#sample variances
-#		sampleRanVar!(varU,nRand,scaleU,dfDefault,u,ZKeyPos,iVarStr)
-
 	        sampleZandZVar!(iVarStr,Z,Zp,corZ,corZPos,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
 
 		#sample marker effects and variances
@@ -410,7 +406,6 @@ end
 #########USED ONES
 function sampleU(iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
 	uVec = deepcopy(uVector)
-	println("uVec: $uVec")
 	λz = varE/varUComp
 	Yi = ZpComp*ycorr #computation of Z'ycorr for ALL  rhsU
 	nCol = length(zpzComp)
@@ -422,18 +417,14 @@ function sampleU(iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
                 meanU = invLhsU*rhsU
                 uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         end
-	println("uVec: $uVec")
 	return uVec
 end
 
 
 function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,nCols,ycorr,varE,varU,scaleZ,dfZ)
-	println("keys(zpzMat): $(keys(zpzMat))")
         #for each random effect
         for zSet in keys(zpzMat)
-		println("$zSet is handled")
 		if zSet in keys(correlatedZ)
-#			println("$zSet in corZ")
 			uPos = keyCorZ[zSet]
 			nowZp = ZpMat[zSet] ###
 			error("correlated random effects are not allowed")
@@ -442,7 +433,6 @@ function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,nC
                 	uPos = keyU[zSet]
 			ycorr .+= ZMat[zSet]*u[uPos,1:nCols[zSet]]
                 	u[uPos,1:nCols[zSet]]  .= sampleU(iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,1:nCols[zSet]],ycorr)
-			println("uVec: $(u[uPos,:])")
 			ycorr .-= ZMat[zSet]*u[uPos,1:nCols[zSet]]		
 			varU[zSet] = sampleVarU(iStrMat[zSet],scaleZ[zSet],dfZ[zSet],u[uPos,1:nCols[zSet]])
        		end
