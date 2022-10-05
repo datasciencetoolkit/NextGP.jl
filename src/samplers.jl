@@ -24,7 +24,8 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	##This is not really nFix, but the "blocks" of fixed effects
         nFix  = length(X)
 	nRand = length(Z)
-	nColEachZ    = [size(Z[z],2) for z in keys(Z)]
+#	nColEachZ    = [size(Z[z],2) for z in keys(Z)]
+	nColEachZ    = Dict(z => size(Z[z],2) for z in keys(Z))
 	println("number of random effects: $nColEachZ")
 	nData = length(Y)
 	nMarkerSets = length(M)
