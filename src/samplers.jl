@@ -67,8 +67,30 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
         end
 
 	#set up for E
-	isempty(priorVCV["e"][1]) ? strE = Matrix(1.0I,nData,nData) : strE = priorVCV["e"][1]
-	isempty(priorVCV["e"][2]) ? varE_prior = 100 : varE_prior = priorVCV["e"][2]
+#	isempty(priorVCV["e"][1]) ? strE = Matrix(1.0I,nData,nData) : strE = priorVCV["e"][1]
+#	isempty(priorVCV["e"][2]) ? varE_prior = 100 : varE_prior = priorVCV["e"][2]
+	
+	#no inverse implemented yet!
+	if haskey(priorVCV,"e")	
+		if isempty(priorVCV["e"][1]) || priorVCV["e"][1]=="I" 
+				println("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used")
+				strE = Matrix(1.0I,nCol,nCol)
+		elseif priorVCV["e"][1]=="D"
+				strE = D ##no inverse  yet
+				println("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used")
+				error("var-cov structure \"D\" has not been implemented yet")
+		else 
+				error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
+		end
+		varE_prior = priorVCV["e"][2]
+	else	
+		println("prior var-cov for \"e\" is fully  empty. An identity matrix will be used with an arbitrary variance of 100")		
+		strE = Matrix(1.0I,nCol,nCol)
+		varE_prior = 100
+		#just add to priors
+		priorVCV["e"] = ("I",varE_prior)
+	end
+				
 
 	#parameters for priors
         dfE = 4.0
@@ -152,17 +174,18 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 		#var structures and priors
 		if haskey(priorVCV,zSet)	
 			if isempty(priorVCV[zSet][1]) || priorVCV[zSet][1]=="I" 
-				println("priorVCV structure for $zSet is either empty or \"I\" was given. An identity matrix will be used")
+				println("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used")
 				iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
 			elseif priorVCV[zSet][1]=="A"
 				iVarStr[zSet] = iA
-				println("priorVCV structure for $zSet is A. Computed A matrix (from pedigree file) will be used")
+				println("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used")
 			else 	iVarStr[zSet] = inv(priorVCV[zSet][1])
 			end
 			varU_prior[zSet] = priorVCV[zSet][2]
-		else	println("prior for $zSet is empty. An identity matrix will be used with an arbitrary variance of 100")
-			iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
-			varU_prior[zSet] = 100	
+		else	println("prior var-cov for $zSet is empty. An identity matrix will be used with an arbitrary variance of 100")
+		iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
+		varU_prior[zSet] = 100
+		priorVCV[zSet] = ("I",varU_prior[zSet])
 		end
         end
 
@@ -301,7 +324,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 		end
 	push!(summarize,[mSet,"M",str,value,dfM[mSet],scaleM[mSet]])
 	end
-	push!(summarize,["e","Res",strE,varE_prior,dfE,scaleE])
+	push!(summarize,["e","Res",priorVCV["e"][1],priorVCV["e"][2],dfE,scaleE])
 	println("\n ---------------- Summary of analysis ---------------- \n")
 	display(pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l))
 
