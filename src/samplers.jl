@@ -175,7 +175,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 																
 	scaleZ = Dict{Any,Any}()
         for zSet in keys(zpz)
-                nZComp = size(priorVCV[zSet],1)
+                nZComp = size(priorVCV[zSet][2],1)
 		#priorVCV[zSet][2] is a temporary solution
                 #nZComp > 1 ? scaleZ[zSet] = priorVCV[zSet].*(dfZ[zSet]-nZComp-1.0)  : scaleZ[zSet] = priorVCV[zSet]*(dfZ[zSet]-2.0)/dfZ[zSet] #I make float and array of float
 		nZComp > 1 ? scaleZ[zSet] = priorVCV[zSet][2].*(dfZ[zSet]-nZComp-1.0)  : scaleZ[zSet] = priorVCV[zSet][2]*(dfZ[zSet]-2.0)/dfZ[zSet] #I make float and array of float														
