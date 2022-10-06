@@ -278,6 +278,21 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
                 varBeta[mSet] = [priorVCV[mSet] for i in 1:length(regionArray[mSet])] #later, direct reference to key when varM_prior is a dictionary
         end
 
+	#summarize analysis
+	summarize = DataFrame(Effect=Any[],Type=Any[],Str=Any[],Value=Any[],df=Any[],scale=Any[])
+	for zSet in keys(zpz)
+		if zSet ∈ keys(priorVCV)
+			str = priorVCV[zSet][1]
+			value = priorVCV[zSet][2]
+		else 
+			str = "I"
+		     	value = varU_prior[zSet]
+		end
+	push!(summarize,[zSet,"Z",str,value,dfZ[zSet],scaleZ[zSet]])
+	end
+	println("\n ---------------- Summary of analysis ---------------- \n")
+	display(pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l))
+
 
 	#Start McMC
 @showprogress 1 "MCMC progress..." for iter in 1:chainLength
