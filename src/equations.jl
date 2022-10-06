@@ -126,7 +126,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 	idFE = OrderedDict{Any,Any}() #fixed effects and their levels	
 
 	#summarize input
-	summarize = DataFrame(Variable=Any[],Type=Any[],Levels=Int32[],prior_df=Float32[],prior_mean=Float32[],prior_var=Float32[])
+	summarize = DataFrame(Variable=Any[],Type=Any[],Levels=Int32[],prior_df=Any[],prior_mean=Any[],prior_var=Any[])
 
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
