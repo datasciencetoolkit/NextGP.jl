@@ -75,6 +75,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 		if isempty(priorVCV["e"][1]) || priorVCV["e"][1]=="I" 
 				println("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used")
 				strE = Matrix(1.0I,nData,nData)
+				priorVCV["e"] = ("I",priorVCV["e"][2])
 		elseif priorVCV["e"][1]=="D"
 				strE = D ##no inverse  yet
 				println("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used")
@@ -82,7 +83,6 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 		else 
 				error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
 		end
-		varE_prior = priorVCV["e"][2]
 	else	
 		println("prior var-cov for \"e\" is fully  empty. An identity matrix will be used with an arbitrary variance of 100")		
 		strE = Matrix(1.0I,nData,nData)
@@ -97,11 +97,11 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	dfDefault = 4.0
  
 	       
-	if varE_prior==0.0
-		varE_prior  = 0.0005
+	if priorVCV["e"][2]==0.0
+		priorVCV["e"][2]  = 0.0005
        		scaleE     = 0.0005
         else
-       		scaleE    = varE_prior*(dfE-2.0)/dfE    
+       		scaleE    = priorVCV["e"]*(dfE-2.0)/dfE    
    	end
 
 	#pre-computations using priors, not relevant for correlated random effects
