@@ -1,6 +1,6 @@
 module equations
 
-using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames
+using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables
 
 include("misc.jl")
 
@@ -125,6 +125,8 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 
 	idFE = OrderedDict{Any,Any}() #fixed effects and their levels	
 
+	#summarize input
+	summarize = DataFrame(Variable=String[],Type=String[],Levels=Int32[],prior_df=Float32[],prior_mean=Float32[],prior_var=Float32[])
 
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
@@ -140,6 +142,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 			ME[arg1] = thisM
                         thisM = 0 #I can directly merge to dict above
 			regionSizes[arg1] = arg2
+			push!(summarize,[arg1,typeof(thisM),size(thisM),missing,missing,missing])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
 #                        println("$(terms4StatsModels[i]) is ran Type")
                         sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
@@ -150,6 +153,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 			RE[(sym1,sym2)] = thisZ
 			thisZ = 0
 			idRE[(sym1,sym2)] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
+			push!(summarize,[(sym1,sym2),typeof(RE[(sym1,sym2)]),size(RE[(sym1,sym2)],2),missing,missing,missing])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         println("$(terms4StatsModels[i]) is | Type")
                         my_sch = schema(userData, userHints) #work on userData and userHints
@@ -158,6 +162,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
                        	thisZ = modelcols(my_ApplySch, userData)
 			RE[terms4StatsModels[i]] = thisZ
 			thisZ = 0
+			push!(summarize,[f.rhs[i],typeof(RE[terms4StatsModels[i]]),size(RE[terms4StatsModels[i]],2),missing,missing,missing])
 
                 else
                 println("$(terms4StatsModels[i]) is $(typeof(f.rhs[i])) type")
@@ -167,8 +172,11 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 		thisX = modelcols(my_ApplySch, userData)
 		FE[terms4StatsModels[i]] = thisX
 		thisX = 0
+		push!(summarize,[f.rhs[i],typeof(FE[terms4StatsModels[i]]),size(FE[terms4StatsModels[i]],2),missing,missing,missing])
                 end
         end
+
+	display(pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l))
 
 
 	#BLOCK FIXED EFFECTS
