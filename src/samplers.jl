@@ -187,6 +187,8 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 
 	#ADD MARKERS
 	# read map file and make regions
+																		
+	############priorVCV cannot be empty for markers, currently!!																	
 
 	#key positions for each effect in beta, for speed. Order of matrices in M are preserved here.
         BetaKeyPos = OrderedDict{String,Int64}()
@@ -247,7 +249,6 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 		end
 	end  	
 
-#	nRegions  = [mSet => length(regionArray[mSet]) for mSet in keys(regionArray)] #per marker set
 	nRegions  = OrderedDict(mSet => length(regionArray[mSet]) for mSet in keys(regionArray))
 	println("number of regions: $(values(nRegions))")
 
@@ -286,6 +287,16 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 			value = priorVCV[zSet][2]
 		else 
 			str = "I"
+		     	value = varU_prior[zSet]
+		end
+	push!(summarize,[zSet,"Z",str,value,dfZ[zSet],scaleZ[zSet]])
+	end
+	for mSet in keys(mpm)
+		if mSet ∈ keys(priorVCV)
+			str = nRegions[mSet]
+			value = priorVCV[mSet]
+		else 
+			str = "WG(I)"
 		     	value = varU_prior[zSet]
 		end
 	push!(summarize,[zSet,"Z",str,value,dfZ[zSet],scaleZ[zSet]])
