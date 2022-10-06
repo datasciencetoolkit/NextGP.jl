@@ -101,7 +101,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 		priorVCV["e"][2]  = 0.0005
        		scaleE     = 0.0005
         else
-       		scaleE    = priorVCV["e"]*(dfE-2.0)/dfE    
+       		scaleE    = priorVCV["e"][2]*(dfE-2.0)/dfE    
    	end
 
 	#pre-computations using priors, not relevant for correlated random effects
