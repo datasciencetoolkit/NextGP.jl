@@ -172,7 +172,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
                 end
         end
 	
-	println("\n ------------------ Summary of input ------------------ \n")
+	println("\n ---------------- Summary of input ---------------- \n")
 	display(pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l))
 
 
