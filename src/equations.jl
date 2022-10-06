@@ -141,7 +141,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 			ME[arg1] = thisM
                         thisM = 0 #I can directly merge to dict above
 			regionSizes[arg1] = arg2
-			push!(summarize,[arg1,"BayesPR",typeof(thisM),size(thisM)])
+			push!(summarize,[arg1,"BayesPR",typeof(thisM),size(thisM,2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
                         sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
                         sym2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
