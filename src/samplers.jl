@@ -301,7 +301,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 		end
 	push!(summarize,[mSet,"M",str,value,dfM[mSet],scaleM[mSet]])
 	end
-	push!(summarize,[e,"Res",strE,varE_prior,dfE,scaleE])
+	push!(summarize,["e","Res",strE,varE_prior,dfE,scaleE])
 	println("\n ---------------- Summary of analysis ---------------- \n")
 	display(pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l))
 
