@@ -170,7 +170,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	
 	dfZ = Dict{Any,Any}()	
 	for zSet ∈ keys(zpz)
-		dfZ[zSet] = 3.0+size(priorVCV[zSet],1)
+		dfZ[zSet] = 3.0+size(priorVCV[zSet][2],1)
 	end
 																
 	scaleZ = Dict{Any,Any}()
