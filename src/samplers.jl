@@ -66,9 +66,9 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
                 nColEachX = push!(nColEachX,nCol)
         end
 
-	#set up for E	
+	#set up for E
 	isempty(priorVCV["e"][1]) ? strE = Matrix(1.0I,nData,nData) : strE = priorVCV["e"][1]
-	varE_prior = priorVCV["e"][2]
+	isempty(priorVCV["e"][2]) ? varE_prior = 100 : varE_prior = priorVCV["e"][2]
 
 	#parameters for priors
         dfE = 4.0
@@ -295,12 +295,13 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 		if mSet ∈ keys(priorVCV)
 			str = nRegions[mSet]
 			value = priorVCV[mSet]
-		else 
+		else #### later, handel this above, when dealing with priorVCV is allowed to be empty
 			str = "WG(I)"
-		     	value = varU_prior[zSet]
+		     	value = 0.001
 		end
-	push!(summarize,[zSet,"Z",str,value,dfZ[zSet],scaleZ[zSet]])
+	push!(summarize,[mSet,"M",str,value,dfM[mSet],scaleM[mSet]])
 	end
+	push!(summarize,[e,"Res",strE,varE_prior,dfE,scaleE])
 	println("\n ---------------- Summary of analysis ---------------- \n")
 	display(pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l))
 
