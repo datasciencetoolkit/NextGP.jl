@@ -130,7 +130,6 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
-			println("$(terms4StatsModels[i]) is BayesPR Type")
 			arg1 = repr((f.rhs[i].args_parsed)[1])
 			arg2 = parse(Int64,repr((f.rhs[i].args_parsed)[2]))
 			path = paths2geno[Symbol(arg1)]
@@ -144,7 +143,6 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 			regionSizes[arg1] = arg2
 			push!(summarize,[arg1,"BayesPR",typeof(thisM),size(thisM),missing,missing,missing])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
-#                        println("$(terms4StatsModels[i]) is ran Type")
                         sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
                         sym2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
 #                        println("sym1: $sym1 sym2: $sym2")
@@ -155,7 +153,6 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 			idRE[(sym1,sym2)] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
 			push!(summarize,[(sym1,sym2),"ran",typeof(RE[(sym1,sym2)]),size(RE[(sym1,sym2)],2),missing,missing,missing])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
-                        println("$(terms4StatsModels[i]) is | Type")
                         my_sch = schema(userData, userHints) #work on userData and userHints
                         my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
 			#####NO IDs for this effect!!! Will be added later!!!!#####################################################
@@ -165,7 +162,6 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 			push!(summarize,[f.rhs[i],"|",typeof(RE[terms4StatsModels[i]]),size(RE[terms4StatsModels[i]],2),missing,missing,missing])
 
                 else
-                println("$(terms4StatsModels[i]) is $(typeof(f.rhs[i])) type")
 		my_sch = schema(userData, userHints)
 		my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
 		idFE[terms4StatsModels[i]] = coefnames(my_ApplySch) 	
