@@ -151,16 +151,16 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
                 nCol = size(Z[zSet],2)
 		#var structures and priors
 		if haskey(priorVCV,zSet)	
-			if isempty(priorVCV[zSet][1])
-				println("priorVCV structure for $zSet is empty, an identity matrix will be used")
+			if isempty(priorVCV[zSet][1]) || priorVCV[zSet][1]=="I" 
+				println("priorVCV structure for $zSet is either empty or \"I\" was given. An identity matrix will be used")
 				iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
 			elseif priorVCV[zSet][1]=="A"
 				iVarStr[zSet] = iA
-				println("priorVCV structure for $zSet is A, computed A matrix will be used")
+				println("priorVCV structure for $zSet is A. Computed A matrix (from pedigree file) will be used")
 			else 	iVarStr[zSet] = inv(priorVCV[zSet][1])
 			end
 			varU_prior[zSet] = priorVCV[zSet][2]
-		else	println("priorVCV structure for $zSet is empty, an identity matrix will be used with an arbitrary variance of 100")
+		else	println("prior for $zSet is empty. An identity matrix will be used with an arbitrary variance of 100")
 			iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
 			varU_prior[zSet] = 100	
 		end
