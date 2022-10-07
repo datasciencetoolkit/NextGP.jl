@@ -280,8 +280,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 	println("BetaKeyPos: $BetaKeyPos")
 	println("CorM: $corM")	
-	println("CorMPos: $corMPos")	
-
+	
 	dfM = Dict{Any,Any}()	
 	for mSet ∈ keys(mpm)
 		dfM[mSet] = 3.0+size(priorVCV[mSet],1)
