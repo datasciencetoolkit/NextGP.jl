@@ -24,9 +24,9 @@ runGibbs = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}
 
 	println("Building parts of MME")
 
-	levelsFR,Ainv,yVec,FE,RE,ME,regionSizes = equations.mme(formula,userData,userHints=myHints,blocks=blockThese,path2ped=userPedData,paths2geno=genotypes)
+	levelsFR,Ainv,yVec,FE,RE,ME,regionSizes = equations.mme(formula,userData,userHints=myHints,path2ped=userPedData,paths2geno=genotypes)
 	
-        samplers.runSampler(Ainv,yVec,FE,RE,levelsFR,nChain,nBurn,nThin,VCV,ME,map,regionSizes,outFolder)
+        samplers.runSampler(Ainv,yVec,FE,RE,levelsFR,blocks=blockThese,nChain,nBurn,nThin,VCV,ME,map,regionSizes,outFolder)
 
 	#return(yVec,FE,RE,ME)
 end
