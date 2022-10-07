@@ -327,6 +327,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	push!(summarize,["e","Res",priorVCV["e"][1],dfE,scaleE])
 	println("\n ---------------- Summary of analysis ---------------- \n")
 	display(pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l))
+	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
 
 
 	#Start McMC
