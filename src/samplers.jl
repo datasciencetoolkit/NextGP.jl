@@ -328,7 +328,7 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 	#########make MCMC output files.
 	IO.outMCMC(outPut,"b",levelDict[:levelsFE])
 
-        for i in 1:length(levelsRE)
+        for i in 1:length(levelDict[:levelsRE])
 		nameRE = hcat(vcat(collect(values(levelDict[:levelsRE]))[i]...)...)
 		IO.outMCMC(outPut,"u$i",nameRE)
 		IO.outMCMC(outPut,"varU$i",[join(collect(keys(levelDict[:levelsRE]))[i],"_")])
