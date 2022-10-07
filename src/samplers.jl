@@ -25,12 +25,10 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 	##This is not really nFix, but the "blocks" of fixed effects
         nFix  = length(X)
 	nRand = length(Z)
-#	nColEachZ    = [size(Z[z],2) for z in keys(Z)]
 	nColEachZ    = OrderedDict(z => size(Z[z],2) for z in keys(Z))
 	nData = length(Y)
 	nMarkerSets = length(M)
 	nMarkers    = [size(M[m],2) for m in keys(M)]
-	println("number of markers: $nMarkers")
 
         #initial computations and settings
 	ycorr = deepcopy(Y)
@@ -126,9 +124,7 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 		corEffects = []
 		corPositions = []
 		if typeof(pSet)==Tuple{String, String}
-			println("$pSet is univariate")
 			if pSet ∈ keys(Z)
-				println("univariate zpz for $pSet")
 				tempzpz = []
 				nowZ = Z[pSet]
 				for c in eachcol(nowZ)
@@ -139,10 +135,8 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 				zpz[pSet] = tempzpz
 			end
 		elseif  issubset(pSet,keys(Z))
-			println("$pSet will be correlated")
 			correlate = collect(pSet)
 			for pSubSet in correlate
-				println(pSubSet)
 				push!(corEffects,pSubSet)
 				push!(corPositions,findall(pSubSet.==keys(Z))[])
 			end
@@ -347,11 +341,9 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
 		
 		#sample fixed effects
-        	#always returns corrected Y and new b
 	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
 	
 		#sample random effects
-		# always returns corrected Y and new u
 	        sampleZandZVar!(iVarStr,Z,Zp,corZ,corZPos,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
 
 		#sample marker effects and variances
@@ -361,17 +353,6 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 		if iter in these2Keep
 			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
 			IO.outMCMC(outPut,"varE",varE)
-#			IO.outMCMC(outPut,"varU",hcat([varU[k] for k in keys(varU)]...))
-
-			##later will be similar to M
-#			for zSet in keys(Z)
-#                                IO.outMCMC(outPut,"u$(ZKeyPos[zSet])",vcat(u[ZKeyPos[zSet],:]...)')
-#                        end
-	
-#			for pSet in keys(zpz)
-#                                IO.outMCMC(outPut,"varU$(ZKeyPos[pSet])",varU[pSet])
-#                        end
-			##
 			
 			for zSet in keys(uKeyPos)
                                 IO.outMCMC(outPut,"u$(uKeyPos[zSet])",u[uKeyPos[zSet],1:nColEachZ[zSet]]')
@@ -413,55 +394,7 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,keyX,ycorr,varE)
         end
 end
 
-#Sampling random effects
-function sampleZ!(iStrMat,Zmat,ZpMat,zpzMat,nRand,ZKeyPos,varE,varU,u,ycorr)
-	#block for each effect
-	for zSet in keys(Zmat)
-		pos = ZKeyPos[zSet]
-		uVec = deepcopy(u[pos])
-		iMat = iStrMat[zSet]
-		tempzpz = zpzMat[zSet] ###added
-		λz = varE/(varU[zSet])
-	        ycorr .+= Zmat[zSet]*uVec		
-	        Yi = ZpMat[zSet]*ycorr #computation of Z'ycorr for ALL  rhsU
-		nCol = length(zpzMat[zSet])
-	        for i in 1:nCol
-        	        uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
-			rhsU = Yi[i] - λz*dot(iMat[:,i],uVec)
-                	lhsU = tempzpz[i] + (iMat[i,i]*λz)[1]
-			invLhsU = 1.0/lhsU
-                	meanU = invLhsU*rhsU
-                	uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
-        	end
-		u[pos] = uVec
-        	ycorr .-= Zmat[zSet]*uVec
-	end
-end
 
-
-
-function sampleMandMVar!(MMat,beta,mpmMat,nMSet,keyM,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
-        #for each marker set
-        for mSet in keys(MMat)
-		pos = keyM[mSet]
-                for r in 1:regions[pos]
-                        theseLoci = regionsMat[pos][r]
-                        regionSize = length(theseLoci)
-                        lambda = varE/(varBeta[mSet][r])
-                        for locus in theseLoci
-                                BLAS.axpy!(beta[pos,locus],MMat[mSet][:,locus],ycorr)
-                                rhs = BLAS.dot(MMat[mSet][:,locus],ycorr)
-                                lhs = mpmMat[mSet][locus] + lambda
-                                meanBeta = lhs\rhs
-                                beta[pos,locus] = sampleBeta(meanBeta, lhs, varE)
-                                BLAS.axpy!(-1.0*beta[pos,locus],MMat[mSet][:,locus],ycorr)
-                        end
-			varBeta[mSet][r] = sampleVarBeta(scaleM[pos],dfM[pos],beta[pos,theseLoci],regionSize)
-                end
-        end
-end
-
-#########USED ONES
 function sampleU(iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
 	uVec = deepcopy(uVector)
 	λz = varE/varUComp
@@ -487,7 +420,6 @@ function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,nC
 			nowZp = ZpMat[zSet] ###
 			error("correlated random effects are not allowed")
 		else
-#			println("sampling univariate U for $zSet")
                 	uPos = keyU[zSet]
 			ycorr .+= ZMat[zSet]*u[uPos,1:nCols[zSet]]
                 	u[uPos,1:nCols[zSet]]  .= sampleU(iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,1:nCols[zSet]],ycorr)
@@ -502,7 +434,6 @@ function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,k
         #for each marker set
         for mSet in keys(mpmMat)
 		if mSet in keys(correlatedM)
-#			println("$mSet in corM")
 			betaPos = keyCorM[mSet]
 			nowMp = MpMat[mSet] ###
 			for r in 1:regions[mSet]
@@ -563,16 +494,6 @@ function sampleVarU(iMat,scale_ranVar,df_ranVar,effVec)
 	n = size(iMat,2)
 	return (scale_ranVar*df_ranVar + effVec'*iMat*effVec)/rand(Chisq(df_ranVar + n))
 end
-
-#sample random effects' variances
-function sampleRanVar!(varU,scale_ranVar,df_ranVar,effVec,keyZ,iStrMat)
-	for z in keys(scale_ranVar)
-		pos = keyZ[z]
-		n = size(iStrMat[z],2)
-		varU[z] = (scale_ranVar[z]*df_ranVar + effVec[pos]'*iStrMat[z]*effVec[pos])/rand(Chisq(df_ranVar + n))
-	end
-end
-
 
 function sampleMarkerVar!(beta,varBeta,nMSet,keyM,regions,regionsMat,scaleM,dfM)
         #for each marker set
