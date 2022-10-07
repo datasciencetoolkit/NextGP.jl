@@ -250,10 +250,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		                regionArray[pSet] = theseRegions
 			end
 		elseif  issubset(pSet,keys(M))
-			println("$pSet will be correlated")
 			correlate = collect(pSet)
 			for pSubSet in correlate
-				println(pSubSet)
 				push!(corEffects,pSubSet)
 				push!(corPositions,findall(pSubSet.==keys(M))[])
 			end
