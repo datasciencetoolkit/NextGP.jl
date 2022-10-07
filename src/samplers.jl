@@ -73,16 +73,13 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	#no inverse implemented yet!
 	if haskey(priorVCV,"e")	
 		if isempty(priorVCV["e"][1]) || priorVCV["e"][1]=="I" 
-				println("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used")
-				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used"; color = :green)
+				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
 				strE = Matrix(1.0I,nData,nData)
 				priorVCV["e"] = ("I",priorVCV["e"][2])
 		elseif priorVCV["e"][1]=="D"
 				strE = D ##no inverse  yet
-				println("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used")
-				printstyled("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used"; color = :green)
-
 				error("var-cov structure \"D\" has not been implemented yet")
+				printstyled("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used\n"; color = :green)
 		else 
 				error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
 		end
@@ -106,10 +103,6 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
         else
        		scaleE    = priorVCV["e"][2]*(dfE-2.0)/dfE    
    	end
-
-	#pre-computations using priors, not relevant for correlated random effects
-   	νS_E = scaleE*dfE
-
 
 	#### New u
 	
@@ -177,19 +170,16 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 		#var structures and priors
 		if haskey(priorVCV,zSet)	
 			if isempty(priorVCV[zSet][1]) || priorVCV[zSet][1]=="I" 
-				println("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used")
-				printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used"; color = :green)
+				printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
 				iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
 			elseif priorVCV[zSet][1]=="A"
 				iVarStr[zSet] = iA
-				println("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used")
-				printstyled("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used"; color = :blue)
+				printstyled("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used\n"; color = :blue)
 			else 	iVarStr[zSet] = inv(priorVCV[zSet][1])
 			end
 			varU_prior[zSet] = priorVCV[zSet][2]
 		else	
-			println("prior var-cov for $zSet is empty. An identity matrix will be used with an arbitrary variance of 100")
-			printstyled("prior var-cov for $zSet is empty. An identity matrix will be used with an arbitrary variance of 100"; color = :blue)
+			printstyled("prior var-cov for $zSet is empty. An identity matrix will be used with an arbitrary variance of 100\n"; color = :blue)
 		iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
 		varU_prior[zSet] = 100
 		priorVCV[zSet] = ("I",varU_prior[zSet])
@@ -207,7 +197,6 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
         for zSet in keys(zpz)
                 nZComp = size(priorVCV[zSet][2],1)
 		#priorVCV[zSet][2] is a temporary solution
-                #nZComp > 1 ? scaleZ[zSet] = priorVCV[zSet].*(dfZ[zSet]-nZComp-1.0)  : scaleZ[zSet] = priorVCV[zSet]*(dfZ[zSet]-2.0)/dfZ[zSet] #I make float and array of float
 		nZComp > 1 ? scaleZ[zSet] = priorVCV[zSet][2].*(dfZ[zSet]-nZComp-1.0)  : scaleZ[zSet] = priorVCV[zSet][2]*(dfZ[zSet]-2.0)/dfZ[zSet] #I make float and array of float														
         end
 
@@ -341,7 +330,7 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	sleep(0.1)
 	
 		#sample residual variance
-	       	varE = sampleVarE(νS_E,ycorr,dfE,nData)
+	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
 		
 		#sample fixed effects
         	#always returns corrected Y and new b
@@ -595,8 +584,8 @@ function sampleVarCovBeta(scalem,dfm,whichLoci,regionSize)
 end
 
 #Sample residual variance
-function sampleVarE(νS_e,yCorVec,df_e,nRecords)
-    return (νS_e + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords))
+function sampleVarE(df_e,S_e,yCorVec,nRecords)
+    return (df_e*S_e + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords))
 end
 
 
