@@ -217,7 +217,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	############priorVCV cannot be empty for markers, currently!!																	
 
 	#key positions for each effect in beta, for speed. Order of matrices in M are preserved here.
-        BetaKeyPos = OrderedDict{Any,Int64}()
+        BetaKeyPos = OrderedDict{Any,Any}()
         for mSet in keys(M)
                 pos = findall(mSet.==collect(keys(M)))[]
                 BetaKeyPos[mSet] = pos
