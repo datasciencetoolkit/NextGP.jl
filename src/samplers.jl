@@ -175,14 +175,18 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 		if haskey(priorVCV,zSet)	
 			if isempty(priorVCV[zSet][1]) || priorVCV[zSet][1]=="I" 
 				println("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used")
+				printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used"; color = :green)
 				iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
 			elseif priorVCV[zSet][1]=="A"
 				iVarStr[zSet] = iA
 				println("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used")
+				printstyled("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used"; color = :blue)
 			else 	iVarStr[zSet] = inv(priorVCV[zSet][1])
 			end
 			varU_prior[zSet] = priorVCV[zSet][2]
-		else	println("prior var-cov for $zSet is empty. An identity matrix will be used with an arbitrary variance of 100")
+		else	
+			println("prior var-cov for $zSet is empty. An identity matrix will be used with an arbitrary variance of 100")
+			printstyled("prior var-cov for $zSet is empty. An identity matrix will be used with an arbitrary variance of 100"; color = :blue)
 		iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
 		varU_prior[zSet] = 100
 		priorVCV[zSet] = ("I",varU_prior[zSet])
@@ -326,7 +330,6 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	end
 	push!(summarize,["e","Res",priorVCV["e"][1],dfE,scaleE])
 	println("\n ---------------- Summary of analysis ---------------- \n")
-	display(pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l))
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
 
 
