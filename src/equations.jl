@@ -35,7 +35,7 @@ ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Sy
 
 
 """
-	function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,blocks,path2ped,paths2geno)
+	function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,path2ped,paths2geno)
 
 * `NextGP` relies on `StatsModels.jl` package for model expression (`f`), and fixed effect design matrix generation.
 * Details for the model expression (`f`), and fixed effects coding specifications (e.g., effect or dummy coding) can be found at [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/).
@@ -47,7 +47,7 @@ ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Sy
     * all `String` rhs variables (also those made `Categorical`) are dummy coded, except those defined by the user in `userHints`, 
     * all `Float` rhs variables are centered.
 """
-function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,blocks,path2ped,paths2geno)
+function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,path2ped,paths2geno)
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
