@@ -34,7 +34,10 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	### X and b
 	levelsX = levelDict[:levelsFE]
 	
-	#BLOCK FIXED EFFECTS
+	#==BLOCK FIXED EFFECTS.
+	Order of blocks is as definde by the user
+	Order of variables within blocks is always the same as in the model definition, not defined by the user in each block.
+	==#
 	for b in blocks
 		getThese = intersect(collect(keys(X)), b)
 		X[Tuple(getThese)] = hcat(getindex.(Ref(X), getThese)...)
@@ -54,8 +57,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	#Key positions of variablese and blocks for speed. b is an array of arrays.
         XKeyPos = OrderedDict{Any,Int64}()
         [XKeyPos[collect(keys(X))[i]]=i for i in 1:length(keys(X))]
-	println("XKeyPos $XKeyPos")
-
 	        
 	##make iXpX, Z', zpz (for uncor)
         iXpX = deepcopy(X)
@@ -73,16 +74,13 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
         ##counts columns per effect
         nColEachX = []
         for xSet in keys(X)
-#                println(xSet)
                 nCol = size(X[xSet],2)
                 push!(b,fill(0.0,nCol))
                 nColEachX = push!(nColEachX,nCol)
         end
 
 	#set up for E
-#	isempty(priorVCV["e"][1]) ? strE = Matrix(1.0I,nData,nData) : strE = priorVCV["e"][1]
-#	isempty(priorVCV["e"][2]) ? varE_prior = 100 : varE_prior = priorVCV["e"][2]
-	
+						
 	#no inverse implemented yet!
 	if haskey(priorVCV,"e")	
 		if isempty(priorVCV["e"][1]) || priorVCV["e"][1]=="I" 
@@ -278,7 +276,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	end  	
 
 	nRegions  = OrderedDict(mSet => length(regionArray[mSet]) for mSet in keys(regionArray))
-	println("number of regions: $(values(nRegions))")
 
 
 	dfM = Dict{Any,Any}()	
