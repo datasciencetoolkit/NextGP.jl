@@ -326,16 +326,16 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 
 
 	#########make MCMC output files.
-	IO.outMCMC(outFolder,"b",levelDict[:levelsFE])
+	IO.outMCMC(outPut,"b",levelDict[:levelsFE])
 
         for i in 1:length(levelsRE)
 		nameRE = hcat(vcat(collect(values(levelDict[:levelsRE]))[i]...)...)
-		IO.outMCMC(outFolder,"u$i",nameRE)
-		IO.outMCMC(outFolder,"varU$i",[join(collect(keys(levelDict[:levelsRE]))[i],"_")])
+		IO.outMCMC(outPut,"u$i",nameRE)
+		IO.outMCMC(outPut,"varU$i",[join(collect(keys(levelDict[:levelsRE]))[i],"_")])
 	end	
 	
 
-	IO.outMCMC(outFolder,"varE",["varE"])
+	IO.outMCMC(outPut,"varE",["varE"])
 	##########
 
 
