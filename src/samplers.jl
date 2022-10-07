@@ -16,7 +16,7 @@ include("misc.jl")
 export runSampler
 
 #main sampler
-function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS,outPut)
+function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS,outPut)
 	
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
@@ -323,6 +323,20 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	push!(summarize,["e","Res",priorVCV["e"][1],dfE,scaleE])
 	println("\n ---------------- Summary of analysis ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
+
+
+	#########make MCMC output files.
+	IO.outMCMC(outFolder,"b",levelDict[levelsFE])
+
+        for i in 1:length(levelsRE)
+		nameRE = hcat(vcat(collect(values(levelDict[levelsRE]))[i]...)...)
+		IO.outMCMC(outFolder,"u$i",nameRE)
+		IO.outMCMC(outFolder,"varU$i",[join(collect(keys(levelDict[levelsRE]))[i],"_")])
+	end	
+	
+
+	IO.outMCMC(outFolder,"varE",["varE"])
+	##########
 
 
 	#Start McMC
