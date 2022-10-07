@@ -164,24 +164,6 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 	println("\n ---------------- Summary of input ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
 
-
-	#==BLOCK FIXED EFFECTS
-	Fixed effects are printed together, random effects are printed seperate.
-	Moving this to samplers may cause problems, if the blocking changes order.
-	This is because, fixed effect file is created in advance in MCMC module.
-	==#
-	for b in blocks
-		getThese = intersect(collect(keys(FE)), b)
-		FE[Tuple(getThese)] = hcat(getindex.(Ref(FE), getThese)...)
-		idFE[Tuple(getThese)] = vcat(getindex.(Ref(idFE), getThese)...)
-		for d in getThese
-			delete!(FE,d)
-			delete!(idFE,d)
-		end
-	end
-	
-	idFE = hcat(vcat([isa(value,String) ? value : vcat(value...) for (key, value) in idFE]...)...) #not a dictionary anymore
-
 	idFR = OrderedDict(:levelsFE => idFE, :levelsRE => idRE)
 
         return idFR, Ainv, vec(yVec), FE, RE, ME, regionSizes
