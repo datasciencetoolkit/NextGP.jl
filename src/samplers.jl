@@ -51,7 +51,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	#not a dictionary anymore, and consistent with possible new order.
 	levelsX = hcat(vcat([isa(value,String) ? value : vcat(value...) for (key, value) in levelsX]...)...)
 	
-	#Key positions for speed. New positions, considers blocks!
+	#Key positions of variablese and blocks for speed. b is an array of arrays.
         XKeyPos = OrderedDict{Any,Int64}()
         [XKeyPos[collect(keys(X))[i]]=i for i in 1:length(keys(X))]
 	println("XKeyPos $XKeyPos")
