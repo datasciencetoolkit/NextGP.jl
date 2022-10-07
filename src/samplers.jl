@@ -279,8 +279,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 
 	println("BetaKeyPos: $BetaKeyPos")
-	println("CorM: $CorM")	
-	println("CorMPos: $CorMPos")	
+	println("CorM: $corM")	
+	println("CorMPos: $corMPos")	
 
 	dfM = Dict{Any,Any}()	
 	for mSet ∈ keys(mpm)
