@@ -165,7 +165,11 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
 
 
-	#BLOCK FIXED EFFECTS
+	#==BLOCK FIXED EFFECTS
+	Fixed effects are printed together, random effects are printed seperate.
+	Moving this to samplers may cause problems, if the blocking changes order.
+	This is because, fixed effect file is created in advance in MCMC module.
+	==#
 	for b in blocks
 		getThese = intersect(collect(keys(FE)), b)
 		FE[Tuple(getThese)] = hcat(getindex.(Ref(FE), getThese)...)
