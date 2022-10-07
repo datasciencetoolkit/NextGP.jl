@@ -271,7 +271,10 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
                 		regionArray[pSet] = theseRegions
 			end
 		end
-	end  	
+	end
+	
+	#pos for individual marker set
+	BetaKeyPos4Print = OrderedDict(vcat([isa(k,String) ? k => v : collect(k) .=> collect(v) for (k,v) in myDict]...))
 
 	nRegions  = OrderedDict(mSet => length(regionArray[mSet]) for mSet in keys(regionArray))
 
@@ -374,8 +377,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
 			end
 
-			for mSet in keys(BetaKeyPos)
-                                IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos[mSet],:]')
+			for mSet in keys(BetaKeyPos4Print)
+                                IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
                         end
 			for pSet in keys(mpm)
 				IO.outMCMC(outPut,"var".*pSet,varBeta[pSet])
