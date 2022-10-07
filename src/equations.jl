@@ -176,11 +176,12 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 		end
 	end
 
-
+	println("idFE: $idFE")
 	
 	idFE = hcat(vcat([isa(value,String) ? value : vcat(value...) for (key, value) in idFE]...)...) #not a dictionary anymore
 
-	 
+	println("idFE: $idFE")	
+
         return idRE, idFE, Ainv, vec(yVec), FE, RE, ME, regionSizes
 end
 
