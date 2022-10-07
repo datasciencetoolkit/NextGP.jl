@@ -82,7 +82,7 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 				error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
 		end
 	else	
-		println("prior var-cov for \"e\" is fully  empty. An identity matrix will be used with an arbitrary variance of 100")		
+		printstyled("prior var-cov for \"e\" is fully  empty. An identity matrix will be used with an arbitrary variance of 100\n"; color = :green)
 		strE = Matrix(1.0I,nData,nData)
 		varE_prior = 100
 		#just add to priors
@@ -168,12 +168,12 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 				iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
 			elseif priorVCV[zSet][1]=="A"
 				iVarStr[zSet] = iA
-				printstyled("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used\n"; color = :blue)
+				printstyled("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used\n"; color = :green)
 			else 	iVarStr[zSet] = inv(priorVCV[zSet][1])
 			end
 			varU_prior[zSet] = priorVCV[zSet][2]
 		else	
-			printstyled("prior var-cov for $zSet is empty. An identity matrix will be used with an arbitrary variance of 100\n"; color = :blue)
+			printstyled("prior var-cov for $zSet is empty. An identity matrix will be used with an arbitrary variance of 100\n"; color = :green)
 		iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
 		varU_prior[zSet] = 100
 		priorVCV[zSet] = ("I",varU_prior[zSet])
