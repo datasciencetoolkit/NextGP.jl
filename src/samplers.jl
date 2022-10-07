@@ -74,11 +74,14 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
 	if haskey(priorVCV,"e")	
 		if isempty(priorVCV["e"][1]) || priorVCV["e"][1]=="I" 
 				println("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used")
+				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used"; color = :green)
 				strE = Matrix(1.0I,nData,nData)
 				priorVCV["e"] = ("I",priorVCV["e"][2])
 		elseif priorVCV["e"][1]=="D"
 				strE = D ##no inverse  yet
 				println("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used")
+				printstyled("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used"; color = :green)
+
 				error("var-cov structure \"D\" has not been implemented yet")
 		else 
 				error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
