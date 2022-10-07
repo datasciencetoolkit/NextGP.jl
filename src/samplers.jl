@@ -277,9 +277,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	BetaKeyPos4Print = OrderedDict(vcat([isa(k,String) ? k => v : collect(k) .=> collect(v) for (k,v) in BetaKeyPos]...))
 
 	nRegions  = OrderedDict(mSet => length(regionArray[mSet]) for mSet in keys(regionArray))
-
-
-	println("BetaKeyPos: $BetaKeyPos")
 	
 	dfM = Dict{Any,Any}()	
 	for mSet ∈ keys(mpm)
@@ -347,7 +344,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	for mSet in keys(BetaKeyPos4Print)
    		IO.outMCMC(outPut,"beta$mSet",hcat(["rs_$i" for i in 1:nMarkers[mSet]]...))
         end
-	#FOR VARIANCES, IMPLEMENT CONSIDERING REGIONS
+	#FOR VARIANCES, IMPLEMENT CONSIDERING REGIONS (theseRegions) and matrix size
 	
 
 	IO.outMCMC(outPut,"varE",["varE"])
