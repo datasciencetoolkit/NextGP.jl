@@ -26,7 +26,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	nColEachZ    = OrderedDict(z => size(Z[z],2) for z in keys(Z))
 	nData = length(Y)
 	nMarkerSets = length(M)
-	nMarkers    = [size(M[m],2) for m in keys(M)]
+	nMarkers    = OrderedDict(m => size(M[m],2) for m in keys(M))
 
         #initial computations and settings
 	ycorr = deepcopy(Y)
@@ -299,8 +299,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 	varU = deepcopy(varU_prior) #for storage
 
-	beta = zeros(Float64,nMarkerSets,maximum(vcat([0,nMarkers]...))) #zero is for max to work when no SNP data is present #can allow unequal length! Remove tail zeros for printing....
-#	vcovBeta = fill(Matrix(Diagonal(varM)),maximum(nRegions)) #can allow unequal length! Remove tail zeros for printing....
+	beta = zeros(Float64,nMarkerSets,maximum(vcat([0,collect(values(nMarkers))]...))) #zero is for max to work when no SNP data is present #can allow unequal length! Remove tail zeros for printing....
 
         varBeta = OrderedDict{Any,Any}()
         for mSet in keys(mpm)
@@ -343,6 +342,12 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		IO.outMCMC(outPut,"u$i",nameRE)
 		IO.outMCMC(outPut,"varU$i",[join(collect(keys(levelDict[:levelsRE]))[i],"_")])
 	end	
+	
+	#arbitrary marker names
+	for mSet in keys(BetaKeyPos4Print)
+   		IO.outMCMC(outPut,"beta$mSet",hcat(["rs_$i" for i in 1:nMarkers[mSet]]...))
+        end
+	#FOR VARIANCES, IMPLEMENT CONSIDERING REGIONS
 	
 
 	IO.outMCMC(outPut,"varE",["varE"])
