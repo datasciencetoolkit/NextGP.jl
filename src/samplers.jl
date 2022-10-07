@@ -32,16 +32,32 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 
         #initial computations and settings
 	ycorr = deepcopy(Y)
+	
+	### X and b
+	
+	levelsX = levelDict[:levelsFE]
+	
+	#BLOCK FIXED EFFECTS
+	for b in blocks
+		getThese = intersect(collect(keys(X)), b)
+		X[Tuple(getThese)] = hcat(getindex.(Ref(X), getThese)...)
+		levelsX[Tuple(getThese)] = vcat(getindex.(Ref(levelsX), getThese)...)
+		for d in getThese
+			delete!(X,d)
+			delete!(levelsX,d)
+		end
+	end
+	
+	#not a dictionary anymore, and consistent with possible new order.
+	levelsX = hcat(vcat([isa(value,String) ? value : vcat(value...) for (key, value) in levelsX]...)...)
 	        
 	##make iXpX, Z', zpz (for uncor)
         iXpX = deepcopy(X)
         for x in keys(X)
 		XpX = X[x]'X[x]
-#		if !isposdef(XpX)
 		if isa(XpX,Matrix{Float64}) 
 			XpX += Matrix(I*minimum(abs.(diag(XpX)./10000)),size(XpX))
 			#XpX += Matrix(I*minimum(abs.(diag(XpX)./size(X[x],1))),size(XpX))
-#		end
 		end
                	iXpX[x] = inv(XpX)
         end
@@ -320,8 +336,9 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 
 
 	#########make MCMC output files.
-	IO.outMCMC(outPut,"b",levelDict[:levelsFE])
+	IO.outMCMC(outPut,"b",levelsX)
 
+	#check for correlated RE
         for i in 1:length(levelDict[:levelsRE])
 		nameRE = hcat(vcat(collect(values(levelDict[:levelsRE]))[i]...)...)
 		IO.outMCMC(outPut,"u$i",nameRE)
