@@ -129,10 +129,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				
 	Zp = OrderedDict{Any,Any}()
        	zpz = OrderedDict{Any,Any}()
-		
-	corZ = OrderedDict{Any,Any}()
-	corZPos = OrderedDict{Any,Any}()
-											
+													
 	for pSet ∈ keys(priorVCV)
 		corEffects = []
 		corPositions = []
@@ -154,12 +151,12 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				push!(corPositions,findall(pSubSet.==keys(Z))[])
 			end
 			if issubset(corEffects,collect(keys(Z)))
-				corZPos[pSet] = corPositions
-				corZ[pSet] = corEffects
 				tempZ = hcat.(eachcol.(getindex.(Ref(Z), (pSet)))...)
 				for d in corEffects
                        			delete!(Z,d)
+					delete!(uKeyPos,d)												
                			end
+				uKeyPos[pSet] = corPositions
 				Z[pSet]   = tempZ
 				zpz[pSet] = MatByMat.(tempZ)
 				Zp[pSet]  = transpose.(tempZ)
@@ -167,6 +164,11 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			end
 		end
 	end
+																	
+	#pos for individual random effect
+	#this part "collect(k) .=> collect(v)" will change for correlated random effects.
+	uKeyPos4Print = OrderedDict(vcat([isa(k,Tuple{String,String}) ? k => v : collect(k) .=> collect(v) for (k,v) in uKeyPos]...))
+
 	
 	##get priors per effect
 													
@@ -370,8 +372,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
 			IO.outMCMC(outPut,"varE",varE)
 			
-			for zSet in keys(uKeyPos)
-                                IO.outMCMC(outPut,"u$(uKeyPos[zSet])",u[uKeyPos[zSet],1:nColEachZ[zSet]]')
+			for zSet in keys(uKeyPos4Print)
+                                IO.outMCMC(outPut,"u$(uKeyPos4Print[zSet])",u[uKeyPos4Print[zSet],1:nColEachZ[zSet]]')
                         end
 			for pSet in keys(zpz)
 				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
