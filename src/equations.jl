@@ -97,12 +97,6 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 		Ainv = []
 	else
 
-#		pedigree = CSV.read(path2ped,DataFrame)
-#		pedigree.ID  = CategoricalArray(pedigree.ID)
-#		pedigree.Dam = CategoricalArray(pedigree.Dam)
-#		pedigree.Sire = CategoricalArray(pedigree.Sire)
-#		A = makeA(pedigree[!,:Sire],pedigree[!,:Dam])
-		
 		pedigree,Ainv = makePed(path2ped,userData.ID)
 		
 		#sort data by pedigree. Needs to be carefully checked
@@ -134,19 +128,14 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 			arg2 = parse(Int64,repr((f.rhs[i].args_parsed)[2]))
 			path = paths2geno[Symbol(arg1)]
 			thisM = CSV.read(path,CSV.Tables.matrix,header=false)
-			#centering
 			thisM .-= mean(thisM,dims=1) 
-#			println("size of $arg1 data: $(size(thisM))")
-#			println("region size for $arg1: $arg2")
 			ME[arg1] = thisM
                         thisM = 0 #I can directly merge to dict above
 			regionSizes[arg1] = arg2
 			push!(summarize,[arg1,"BayesPR",typeof(ME[arg1]),size(ME[arg1],2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
                         sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
-                        sym2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string
-#                        println("sym1: $sym1 sym2: $sym2")
-			
+                        sym2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string			
 			IDs,thisZ = ranMat(sym1, sym2, userData, pedigree)
 			RE[(sym1,sym2)] = thisZ
 			thisZ = 0
@@ -173,7 +162,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
         end
 	
 	println("\n ---------------- Summary of input ---------------- \n")
-	display(pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l))
+	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
 
 
 	#BLOCK FIXED EFFECTS
@@ -190,7 +179,6 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 
 	
 	idFE = hcat(vcat([isa(value,String) ? value : vcat(value...) for (key, value) in idFE]...)...) #not a dictionary anymore
-#	idRE = hcat(vcat(values(idRE)...)...) #not a dictionary anymore
 
 	 
         return idRE, idFE, Ainv, vec(yVec), FE, RE, ME, regionSizes
