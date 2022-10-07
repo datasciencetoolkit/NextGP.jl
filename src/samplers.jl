@@ -278,6 +278,10 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	nRegions  = OrderedDict(mSet => length(regionArray[mSet]) for mSet in keys(regionArray))
 
 
+	println("BetaKeyPos: $BetaKeyPos")
+	println("CorM: $CorM")	
+	println("CorMPos: $CorMPos")	
+
 	dfM = Dict{Any,Any}()	
 	for mSet ∈ keys(mpm)
 		dfM[mSet] = 3.0+size(priorVCV[mSet],1)
