@@ -362,7 +362,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
 	
 		#sample random effects
-	        sampleZandZVar!(iVarStr,Z,Zp,corZ,corZPos,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
+	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
 
 		#sample marker effects and variances
 	        sampleMandMVar_view!(M,Mp,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
@@ -430,14 +430,14 @@ function sampleU(iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
 end
 
 
-function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,nCols,ycorr,varE,varU,scaleZ,dfZ)
+function sampleZandZVar!(iStrMat,ZMat,ZpMat,u,zpzMat,keyU,nCols,ycorr,varE,varU,scaleZ,dfZ)
         #for each random effect
         for zSet in keys(zpzMat)
-		if zSet in keys(correlatedZ)
-			uPos = keyCorZ[zSet]
+		if !isa(zSet,Tuple{String,String})
+			uPos = keyU[zSet]
 			nowZp = ZpMat[zSet] ###
 			error("correlated random effects are not allowed")
-		else
+		elseif isa(zSet,Tuple{String,String})
                 	uPos = keyU[zSet]
 			ycorr .+= ZMat[zSet]*u[uPos,1:nCols[zSet]]
                 	u[uPos,1:nCols[zSet]]  .= sampleU(iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,1:nCols[zSet]],ycorr)
