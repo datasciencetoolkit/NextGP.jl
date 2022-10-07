@@ -35,6 +35,11 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 	
 	### X and b
 	
+	#Key positions for speed. Old positions, before blocking!
+        XKeyPos = OrderedDict{Any,Int64}()
+        [XKeyPos[collect(keys(X))[i]]=i for i in 1:length(keys(X))]
+
+	
 	levelsX = levelDict[:levelsFE]
 	
 	#BLOCK FIXED EFFECTS
@@ -61,13 +66,6 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 		end
                	iXpX[x] = inv(XpX)
         end
-
-	
-		
-        #key positions for speed
-        XKeyPos = OrderedDict{Any,Int64}()
-        [XKeyPos[collect(keys(X))[i]]=i for i in 1:length(keys(X))]
-
 	
         ##make b and u arrays
         b = Array{Array{Float64, 1},1}(undef,0)
