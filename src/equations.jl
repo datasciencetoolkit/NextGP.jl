@@ -182,7 +182,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,bl
 	
 	idFE = hcat(vcat([isa(value,String) ? value : vcat(value...) for (key, value) in idFE]...)...) #not a dictionary anymore
 
-	idFR = OrderedDict(levelsFE => idFE, levelsRE => idRE)
+	idFR = OrderedDict(:levelsFE => idFE, :levelsRE => idRE)
 
         return idFR, Ainv, vec(yVec), FE, RE, ME, regionSizes
 end
