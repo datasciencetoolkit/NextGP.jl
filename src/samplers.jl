@@ -22,8 +22,6 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
 
         #some info
-	##This is not really nFix, but the "blocks" of fixed effects
-        nFix  = length(X)
 	nRand = length(Z)
 	nColEachZ    = OrderedDict(z => size(Z[z],2) for z in keys(Z))
 	nData = length(Y)
@@ -34,12 +32,6 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 	ycorr = deepcopy(Y)
 	
 	### X and b
-	
-	#Key positions for speed. Old positions, before blocking!
-        XKeyPos = OrderedDict{Any,Int64}()
-        [XKeyPos[collect(keys(X))[i]]=i for i in 1:length(keys(X))]
-
-	
 	levelsX = levelDict[:levelsFE]
 	
 	#BLOCK FIXED EFFECTS
@@ -53,8 +45,17 @@ function runSampler(iA,Y,X,Z,levelDict,chainLength,burnIn,outputFreq,priorVCV,M,
 		end
 	end
 	
+	##This is not really nFix, but the "blocks" of fixed effects
+        nFix  = length(X)
+	
 	#not a dictionary anymore, and consistent with possible new order.
 	levelsX = hcat(vcat([isa(value,String) ? value : vcat(value...) for (key, value) in levelsX]...)...)
+	
+	#Key positions for speed. New positions, considers blocks!
+        XKeyPos = OrderedDict{Any,Int64}()
+        [XKeyPos[collect(keys(X))[i]]=i for i in 1:length(keys(X))]
+	println("XKeyPos $XKeyPos")
+
 	        
 	##make iXpX, Z', zpz (for uncor)
         iXpX = deepcopy(X)
