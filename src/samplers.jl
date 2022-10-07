@@ -303,28 +303,28 @@ function runSampler(iA,Y,X,Z,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps
         end
 
 	#summarize analysis
-	summarize = DataFrame(Effect=Any[],Type=Any[],Str=Any[],Value=Any[],df=Any[],scale=Any[])
+	summarize = DataFrame(Effect=Any[],Type=Any[],Str=Any[],df=Any[],scale=Any[])
 	for zSet in keys(zpz)
 		if zSet ∈ keys(priorVCV)
 			str = priorVCV[zSet][1]
-			value = priorVCV[zSet][2]
+			#value = priorVCV[zSet][2]
 		else 
 			str = "I"
-		     	value = varU_prior[zSet]
+		     	#value = varU_prior[zSet]
 		end
-	push!(summarize,[zSet,"Z",str,value,dfZ[zSet],scaleZ[zSet]])
+	push!(summarize,[zSet,"Z",str,dfZ[zSet],scaleZ[zSet]])
 	end
 	for mSet in keys(mpm)
 		if mSet ∈ keys(priorVCV)
 			str = nRegions[mSet]
-			value = priorVCV[mSet]
+			#value = priorVCV[mSet]
 		else #### later, handel this above, when dealing with priorVCV is allowed to be empty
 			str = "WG(I)"
-		     	value = 0.001
+		     	#value = 0.001
 		end
-	push!(summarize,[mSet,"M",str,value,dfM[mSet],scaleM[mSet]])
+	push!(summarize,[mSet,"M",str,dfM[mSet],scaleM[mSet]])
 	end
-	push!(summarize,["e","Res",priorVCV["e"][1],priorVCV["e"][2],dfE,scaleE])
+	push!(summarize,["e","Res",priorVCV["e"][1],dfE,scaleE])
 	println("\n ---------------- Summary of analysis ---------------- \n")
 	display(pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l))
 
