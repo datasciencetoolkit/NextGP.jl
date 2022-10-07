@@ -230,7 +230,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
        	mpm = OrderedDict{Any,Any}()
 		
 	corM = OrderedDict{Any,Any}()
-	corMPos = OrderedDict{Any,Any}()
 	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()	
 
 	for pSet ∈ keys(priorVCV)
@@ -258,12 +257,13 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				push!(corPositions,findall(pSubSet.==keys(M))[])
 			end
 			if issubset(corEffects,collect(keys(M)))
-				corMPos[pSet] = corPositions
 				corM[pSet] = corEffects
 				tempM = hcat.(eachcol.(getindex.(Ref(M), (pSet)))...)
 				for d in corEffects
                        			delete!(M,d)
+					delete!(BetaKeyPos,d)
                			end
+				BetaKeyPos[pSet] = corPositions
 				M[pSet]   = tempM
 				mpm[pSet] = MatByMat.(tempM)
 				Mp[pSet]  = transpose.(tempM)
@@ -364,7 +364,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	        sampleZandZVar!(iVarStr,Z,Zp,corZ,corZPos,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
 
 		#sample marker effects and variances
-	        sampleMandMVar_view!(M,Mp,corM,corMPos,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
+	        sampleMandMVar_view!(M,Mp,corM,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
                		
         	#print
 		if iter in these2Keep
@@ -447,11 +447,11 @@ function sampleZandZVar!(iStrMat,ZMat,ZpMat,correlatedZ,keyCorZ,u,zpzMat,keyU,nC
 	 end
 end
 
-function sampleMandMVar_view!(MMat,MpMat,correlatedM,keyCorM,beta,mpmMat,nMSet,keyBeta,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
+function sampleMandMVar_view!(MMat,MpMat,correlatedM,beta,mpmMat,nMSet,keyBeta,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
         #for each marker set
         for mSet in keys(mpmMat)
 		if mSet in keys(correlatedM)
-			betaPos = keyCorM[mSet]
+			betaPos = keyBeta[mSet]
 			nowMp = MpMat[mSet] ###
 			for r in 1:regions[mSet]
 				theseLoci = regionsMat[mSet][r]
