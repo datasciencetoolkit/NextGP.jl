@@ -274,7 +274,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	end
 	
 	#pos for individual marker set
-	BetaKeyPos4Print = OrderedDict(vcat([isa(k,String) ? k => v : collect(k) .=> collect(v) for (k,v) in myDict]...))
+	BetaKeyPos4Print = OrderedDict(vcat([isa(k,String) ? k => v : collect(k) .=> collect(v) for (k,v) in BetaKeyPos]...))
 
 	nRegions  = OrderedDict(mSet => length(regionArray[mSet]) for mSet in keys(regionArray))
 
