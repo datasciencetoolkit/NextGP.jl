@@ -83,7 +83,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
                 nColEachX = push!(nColEachX,nCol)
         end
 
-	#set up for E
+	#set up for E. E is the first, always!
 						
 	#no inverse implemented yet!
 	if haskey(priorVCV,:e)	
@@ -105,6 +105,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		#just add to priors
 		priorVCV[:e] = ("I",varE_prior)
 	end
+								
+	delete!(priorVCV,:e)
 				
 
 	#parameters for priors
