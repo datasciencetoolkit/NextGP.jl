@@ -18,6 +18,10 @@ export runSampler
 #main sampler
 function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS,outPut)
 	
+	println("X: $(keys(X))")
+	println("Z: $(keys(Z))")
+
+	
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
 
