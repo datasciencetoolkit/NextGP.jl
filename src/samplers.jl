@@ -330,7 +330,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		end
 	push!(summarize,[mSet,"M",str,dfM[mSet],scaleM[mSet]])
 	end
-	push!(summarize,["e","Res",priorVCV["e"][1],dfE,scaleE])
+	push!(summarize,["e","Res",priorVCV[:e][1],dfE,scaleE])
 	println("\n ---------------- Summary of analysis ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
 
