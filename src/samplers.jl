@@ -133,7 +133,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	Zp = OrderedDict{Any,Any}()
        	zpz = OrderedDict{Any,Any}()
 													
-	for pSet ∈ filter(p -> p.first!=:e, priorVar) #keys(priorVCV) excluding :e
+	for pSet ∈ filter(p -> p.first!=:e, priorVCV) #keys(priorVCV) excluding :e
 		corEffects = []
 		corPositions = []
 		if typeof(pSet)==Tuple{String, String}
