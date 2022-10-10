@@ -31,7 +31,7 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
        end
 
 
-ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,Symbol(arg1)],data2[!,Symbol(arg2)])
+ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,arg1],data2[!,arg2])
 
 
 """
@@ -126,7 +126,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
 			arg1 = repr((f.rhs[i].args_parsed)[1])
 			arg2 = parse(Int64,repr((f.rhs[i].args_parsed)[2]))
-			path = paths2geno[Symbol(arg1)]
+			path = paths2geno[arg1]
 			thisM = CSV.read(path,CSV.Tables.matrix,header=false)
 			thisM .-= mean(thisM,dims=1) 
 			ME[arg1] = thisM
@@ -134,8 +134,8 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 			regionSizes[arg1] = arg2
 			push!(summarize,[arg1,"BayesPR",typeof(ME[arg1]),size(ME[arg1],2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
-                        sym1 = repr((f.rhs[i].args_parsed)[1]) #now it is Symbol
-                        sym2 = repr((f.rhs[i].args_parsed)[2]) #now it is from string			
+                        sym1 = repr((f.rhs[i].args_parsed)[1])
+                        sym2 = repr((f.rhs[i].args_parsed)[2])			
 			IDs,thisZ = ranMat(sym1, sym2, userData, pedigree)
 			RE[(sym1,sym2)] = thisZ
 			thisZ = 0
@@ -151,13 +151,13 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 			push!(summarize,[f.rhs[i],"|",typeof(RE[terms4StatsModels[i]]),size(RE[terms4StatsModels[i]],2)])
 
                 else
-		my_sch = schema(userData, userHints)
-		my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
-		idFE[terms4StatsModels[i]] = coefnames(my_ApplySch) 	
-		thisX = modelcols(my_ApplySch, userData)
-		FE[terms4StatsModels[i]] = thisX
-		thisX = 0
-		push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(FE[terms4StatsModels[i]]),size(FE[terms4StatsModels[i]],2)])
+			my_sch = schema(userData, userHints)
+			my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
+			idFE[terms4StatsModels[i]] = coefnames(my_ApplySch) 	
+			thisX = modelcols(my_ApplySch, userData)
+			FE[terms4StatsModels[i]] = thisX
+			thisX = 0
+			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(FE[terms4StatsModels[i]]),size(FE[terms4StatsModels[i]],2)])
                 end
         end
 	
