@@ -106,9 +106,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		priorVCV[:e] = ("I",varE_prior)
 	end
 								
-	delete!(priorVCV,:e)
-				
-
 	#parameters for priors
         dfE = 4.0
 	dfDefault = 4.0
@@ -120,6 +117,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
         else
        		scaleE    = priorVCV[:e][2]*(dfE-2.0)/dfE    
    	end
+									
+	delete!(priorVCV,:e)
 
 	#### New u
 	
