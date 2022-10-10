@@ -82,12 +82,12 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	#set up for E
 						
 	#no inverse implemented yet!
-	if haskey(priorVCV,"e")	
-		if isempty(priorVCV["e"][1]) || priorVCV["e"][1]=="I" 
+	if haskey(priorVCV,:e)	
+		if isempty(priorVCV[:e][1]) || priorVCV[:e][1]=="I" 
 				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
 				strE = Matrix(1.0I,nData,nData)
-				priorVCV["e"] = ("I",priorVCV["e"][2])
-		elseif priorVCV["e"][1]=="D"
+				priorVCV[:e] = ("I",priorVCV[:e][2])
+		elseif priorVCV[:e][1]=="D"
 				strE = D ##no inverse  yet
 				error("var-cov structure \"D\" has not been implemented yet")
 				printstyled("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used\n"; color = :green)
@@ -99,7 +99,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		strE = Matrix(1.0I,nData,nData)
 		varE_prior = 100
 		#just add to priors
-		priorVCV["e"] = ("I",varE_prior)
+		priorVCV[:e] = ("I",varE_prior)
 	end
 				
 
@@ -108,11 +108,11 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	dfDefault = 4.0
  
 	       
-	if priorVCV["e"][2]==0.0
-		priorVCV["e"][2]  = 0.0005
+	if priorVCV[:e][2]==0.0
+		priorVCV[:e][2]  = 0.0005
        		scaleE     = 0.0005
         else
-       		scaleE    = priorVCV["e"][2]*(dfE-2.0)/dfE    
+       		scaleE    = priorVCV[:e][2]*(dfE-2.0)/dfE    
    	end
 
 	#### New u
@@ -373,17 +373,17 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			IO.outMCMC(outPut,"varE",varE)
 			
 			for zSet in keys(uKeyPos4Print)
-                                IO.outMCMC(outPut,"u$(uKeyPos4Print[zSet])",u[uKeyPos4Print[zSet],1:nColEachZ[zSet]]')
+                                IO.outMCMC(outPut,"u$(uKeyPos4Print[String(zSet)])",u[uKeyPos4Print[String(zSet)],1:nColEachZ[String(zSet)]]')
                         end
 			for pSet in keys(zpz)
-				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
+				IO.outMCMC(outPut,"varU$(uKeyPos[String(pSet)])",varU[String(pSet)]) #join values for multivariate in uKeyPos[String(pSet)])
 			end
 
 			for mSet in keys(BetaKeyPos4Print)
-                                IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
+                                IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[String(mSet)],:]')
                         end
 			for pSet in keys(mpm)
-				IO.outMCMC(outPut,"var".*pSet,varBeta[pSet])
+				IO.outMCMC(outPut,"var".*(String(pSet)),varBeta[String(pSet)])
 			end
 		end
 	end
@@ -433,11 +433,11 @@ end
 function sampleZandZVar!(iStrMat,ZMat,ZpMat,u,zpzMat,keyU,nCols,ycorr,varE,varU,scaleZ,dfZ)
         #for each random effect
         for zSet in keys(zpzMat)
-		if !isa(zSet,Tuple{String,String})
+		if !isa(zSet,Tuple{Symbol,Symbol})
 			uPos = keyU[zSet]
 			nowZp = ZpMat[zSet] ###
 			error("correlated random effects are not allowed")
-		elseif isa(zSet,Tuple{String,String})
+		elseif isa(zSet,Tuple{Symbol,Symbol})
                 	uPos = keyU[zSet]
 			ycorr .+= ZMat[zSet]*u[uPos,1:nCols[zSet]]
                 	u[uPos,1:nCols[zSet]]  .= sampleU(iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,1:nCols[zSet]],ycorr)
