@@ -51,6 +51,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
+	terms4StatsModels = Symbol.(terms4StatsModels)
 
 	#otherwise it changes original input data globally?????
 	userData = deepcopy(inputData)
