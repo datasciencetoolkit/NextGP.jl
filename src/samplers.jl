@@ -21,6 +21,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	println("X: $(keys(X))")
 	println("Z: $(keys(Z))")
 
+	#summarize analysis. Will be filled in later.
+	summarize = DataFrame(Effect=Any[],Type=Any[],Str=Any[],df=Any[],scale=Any[])
 	
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
@@ -117,8 +119,9 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
         else
        		scaleE    = priorVCV[:e][2]*(dfE-2.0)/dfE    
    	end
-									
+	push!(summarize,["e","Random",priorVCV[:e][1],dfE,scaleE])						
 	delete!(priorVCV,:e)
+	println("scaleE: $scaleE")
 
 	#### New u
 	
@@ -309,7 +312,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
         end
 
 	#summarize analysis
-	summarize = DataFrame(Effect=Any[],Type=Any[],Str=Any[],df=Any[],scale=Any[])
 	for zSet in keys(zpz)
 		if zSet ∈ keys(priorVCV)
 			str = priorVCV[zSet][1]
@@ -318,7 +320,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			str = "I"
 		     	#value = varU_prior[zSet]
 		end
-	push!(summarize,[zSet,"Z",str,dfZ[zSet],scaleZ[zSet]])
+	push!(summarize,[zSet,"Random",str,dfZ[zSet],scaleZ[zSet]])
 	end
 	for mSet in keys(mpm)
 		if mSet ∈ keys(priorVCV)
@@ -328,9 +330,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			str = "WG(I)"
 		     	#value = 0.001
 		end
-	push!(summarize,[mSet,"M",str,dfM[mSet],scaleM[mSet]])
+	push!(summarize,[mSet,"Random (Marker)",str,dfM[mSet],scaleM[mSet]])
 	end
-	push!(summarize,["e","Res",priorVCV[:e][1],dfE,scaleE])
 	println("\n ---------------- Summary of analysis ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
 
