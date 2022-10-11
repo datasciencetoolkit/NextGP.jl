@@ -134,22 +134,22 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 			regionSizes[arg1] = arg2
 			push!(summarize,[arg1,"BayesPR",typeof(ME[arg1]),size(ME[arg1],2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
-                        sym1 = sym2 = Symbol(repr((f.rhs[i].args_parsed)[1]))
-			IDs,thisZ = ranMat(sym1, sym2, userData4ran, pedigree)
-			RE[(sym1,sym2)] = thisZ
+                        arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
+			IDs,thisZ = ranMat(arg, arg, userData4ran, pedigree)
+			RE[arg] = thisZ
 			thisZ = 0
-			idRE[(sym1,sym2)] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
+			idRE[arg] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
 			push!(summarize,[(sym1,sym2),"ran",typeof(RE[(sym1,sym2)]),size(RE[(sym1,sym2)],2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         my_sch = schema(userData, userHints) #work on userData and userHints
                         my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
 			#####ID is from the pheno  file directly, order not  checked!#####################################################
-			repr((f.rhs[i].args_parsed)[1]) == "1" ? sym1 = Symbol("ı") : sym1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
-                        sym2 = Symbol(repr((f.rhs[i].args_parsed)[2]))
+			repr((f.rhs[i].args_parsed)[1]) == "1" ? arg1 = Symbol("ı") : arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
+                        arg2 = Symbol(repr((f.rhs[i].args_parsed)[2]))
                        	thisZ = modelcols(my_ApplySch, userData)
-			RE[(sym1,sym2)] = thisZ
+			RE[(arg1,arg2)] = thisZ
 			thisZ = 0
-			idRE[(sym1,sym2)] = unique(userData[!,sym2])
+			idRE[(arg1,arg2)] = unique(userData[!,arg2])
 			push!(summarize,[(sym1,sym2),"|",typeof(RE[(sym1,sym2)]),size(RE[(sym1,sym2)],2)])
 
                 else
