@@ -136,7 +136,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		corEffects = []
 		corPositions = []
 		#tuple of symbols symbol (:ID)
-		if (isa(pSet,Symbol) && in(pSet,keys(Z))
+		if isa(pSet,Symbol) && in(pSet,keys(Z))
 			tempzpz = []
 			nowZ = Z[pSet]
 			for c in eachcol(nowZ)
