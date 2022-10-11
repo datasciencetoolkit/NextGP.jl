@@ -132,11 +132,11 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	Zp = OrderedDict{Any,Any}()
        	zpz = OrderedDict{Any,Any}() #Has the order in priorVCV, which may be unordered Dict() by the user. Analysis follow this order.
 													
-	for pSet ∈ keys(priorVCV) # excluding :e keys(filter(p -> p.first!=:e, priorVCV))
+	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV) 
 		corEffects = []
 		corPositions = []
-		#tuple of symbols (:ID,:Dam) or symbol (:ID)
-		if ((isa(pSet,Tuple{Vararg{Symbol}})) || (typeof(pSet)==Symbol)) && in(pSet,keys(Z))
+		#tuple of symbols symbol (:ID)
+		if (isa(pSet,Symbol) && in(pSet,keys(Z))
 			tempzpz = []
 			nowZ = Z[pSet]
 			for c in eachcol(nowZ)
@@ -146,7 +146,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			Zp[pSet]  = transpose(Z[pSet])						
 			zpz[pSet] = tempzpz
 		#tuple of tuples ((:ID,:Dam),(:Dam,:Dam))
-		elseif (isa(pSet,Tuple{Vararg{Tuple}})) && all((in).(pSet,Ref(keys(Z)))) #if all elements are available #issubset(pSet,keys(Z))
+		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(Z)))) #if all elements are available #issubset(pSet,keys(Z))
 			correlate = collect(pSet)
 			for pSubSet in correlate
 				push!(corEffects,pSubSet)
