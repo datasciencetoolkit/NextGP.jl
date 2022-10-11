@@ -107,7 +107,8 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 		select!(userData, Not(:order))
 		
 		#picking up new IDs (row/column number) from pedigree, and put into sire and dam in the phenotypic data
-		userData[!,[:ID,:Sire,:Dam]] .= pedigree[[findall(pedigree.origID.==x)[] for x in userData.origID],[:ID,:Sire,:Dam]]
+		userData4ran = deepcopy(userData)
+		userData4ran[!,[:ID,:Sire,:Dam]] .= pedigree[[findall(pedigree.origID.==x)[] for x in userData4ran.origID],[:ID,:Sire,:Dam]]
 		
 	end	
 
