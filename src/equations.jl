@@ -139,7 +139,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 			RE[arg] = thisZ
 			thisZ = 0
 			idRE[arg] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
-			push!(summarize,[(sym1,sym2),"ran",typeof(RE[(sym1,sym2)]),size(RE[(sym1,sym2)],2)])
+			push!(summarize,[arg,"ran",typeof(RE[arg]),size(RE[arg],2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         my_sch = schema(userData, userHints) #work on userData and userHints
                         my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
