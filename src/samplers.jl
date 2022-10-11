@@ -356,7 +356,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		IO.outMCMC(outPut,"u$i",levRE)
 		isa(collect(keys(levelDict[:levelsRE]))[i], Symbol) ? nameRE_VCV = String(collect(keys(levelDict[:levelsRE]))[i]) : nameRE_VCV = join(collect(keys(levelDict[:levelsRE]))[i].args)
 #		IO.outMCMC(outPut,"varU$i",[join(collect(keys(levelDict[:levelsRE]))[i],"_")])
-		IO.outMCMC(outPut,"varU$i",nameRE_VCV)
+		IO.outMCMC(outPut,"varU$i",[nameRE_VCV]) #[] to have it as one row
 	end	
 	
 	#arbitrary marker names
@@ -452,11 +452,11 @@ end
 function sampleZandZVar!(iStrMat,ZMat,ZpMat,u,zpzMat,keyU,nCols,ycorr,varE,varU,scaleZ,dfZ)
         #for each random effect
         for zSet in keys(zpzMat)
-		if !isa(zSet,Tuple{Symbol,Symbol})
+		if isa(zSet,Tuple)
 			uPos = keyU[zSet]
 			nowZp = ZpMat[zSet] ###
 			error("correlated random effects are not allowed")
-		elseif isa(zSet,Tuple{Symbol,Symbol})
+		elseif isa(zSet,Symbol) || isa(zSet,Expr)
                 	uPos = keyU[zSet]
 			ycorr .+= ZMat[zSet]*u[uPos,1:nCols[zSet]]
                 	u[uPos,1:nCols[zSet]]  .= sampleU(iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,1:nCols[zSet]],ycorr)
