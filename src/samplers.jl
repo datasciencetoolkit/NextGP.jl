@@ -348,7 +348,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	#########make MCMC output files.
 	IO.outMCMC(outPut,"b",levelsX)
 	
-	println("keys level dict $(collect(keys(levelDict[:levelsRE])))")
+	println("level dict $(levelDict[:levelsRE])")
 
 	#check for correlated RE
         for i in 1:length(levelDict[:levelsRE])
