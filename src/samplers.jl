@@ -17,9 +17,7 @@ export runSampler
 
 #main sampler
 function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS,outPut)
-	
-	println("Z: $Z")
-	
+		
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
 
@@ -182,7 +180,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 																	
 	#pos for individual random effect
 	#this part "collect(k) .=> collect(v)" will change for correlated random effects.
-	println("uKeyPos: $uKeyPos")
 	uKeyPos4Print = OrderedDict(vcat([(isa(k,Symbol) || isa(k,Expr)) ? k => v : collect(k) .=> collect(v) for (k,v) in uKeyPos]...))
 	
 	##get priors per effect
@@ -350,6 +347,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 	#########make MCMC output files.
 	IO.outMCMC(outPut,"b",levelsX)
+	
+	println("keys level dict $(collect(keys(levelDict[:levelsRE]))[i])")
 
 	#check for correlated RE
         for i in 1:length(levelDict[:levelsRE])
