@@ -170,8 +170,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 																	
 	#pos for individual random effect
 	#this part "collect(k) .=> collect(v)" will change for correlated random effects.
-	uKeyPos4Print = OrderedDict(vcat([isa(k,Tuple{String,String}) ? k => v : collect(k) .=> collect(v) for (k,v) in uKeyPos]...))
-
+	uKeyPos4Print = OrderedDict(vcat([isa(k,Tuple{Symbol,Symbol}) ? k => v : collect(k) .=> collect(v) for (k,v) in uKeyPos]...))
+	println("uKeyPos4Print: $uKeyPos4Print")
 	
 	##get priors per effect
 													
