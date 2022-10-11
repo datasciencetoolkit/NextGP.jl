@@ -107,8 +107,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 		select!(userData, Not(:order))
 		
 		#picking up new IDs (row/column number) from pedigree, and put into sire and dam in the phenotypic data
-		userData4ran = deepcopy(userData)
-		userData4ran[!,[:ID,:Sire,:Dam]] .= pedigree[[findall(pedigree.origID.==x)[] for x in userData4ran.origID],[:ID,:Sire,:Dam]]
+		userData[!,[:ID,:Sire,:Dam]] .= pedigree[[findall(pedigree.origID.==x)[] for x in userData.origID],[:ID,:Sire,:Dam]]
 		
 	end	
 
@@ -135,7 +134,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 			push!(summarize,[arg1,"BayesPR",typeof(ME[arg1]),size(ME[arg1],2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
                         arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
-			IDs,thisZ = ranMat(arg, arg, userData4ran, pedigree)
+			IDs,thisZ = ranMat(arg, arg, userData, pedigree)
 			RE[arg] = thisZ
 			thisZ = 0
 			idRE[arg] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
