@@ -18,9 +18,6 @@ export runSampler
 #main sampler
 function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS,outPut)
 	
-	println("X: $(keys(X))")
-	println("Z: $(keys(Z))")
-	
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
 
@@ -82,7 +79,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
                 nColEachX = push!(nColEachX,nCol)
         end
 
-	#set up for E. E is the first, always!
+	#set up for E.
 						
 	#no inverse implemented yet!
 	if haskey(priorVCV,:e)	
@@ -131,12 +128,12 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	#matrices are ready
 				
 	Zp = OrderedDict{Any,Any}()
-       	zpz = OrderedDict{Any,Any}()
+       	zpz = OrderedDict{Any,Any}() #Has the order in priorVCV, which may be unordered Dict() by the user. Analysis follow this order.
 													
 	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) #keys(priorVCV) excluding :e
 		corEffects = []
 		corPositions = []
-		if typeof(pSet)==Tuple{Symbol, Symbol}
+		if ((typeof(pSet)==Tuple) || (typeof(pSet)==Symbol)) && in(pSet,keys(Z))
 			if pSet ∈ keys(Z)
 				tempzpz = []
 				nowZ = Z[pSet]
