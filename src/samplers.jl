@@ -133,7 +133,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) #keys(priorVCV) excluding :e
 		corEffects = []
 		corPositions = []
-		if ((typeof(pSet)==Tuple) || (typeof(pSet)==Symbol)) && in(pSet,keys(Z))
+		if ((isa(pSet,Tuple{Vararg{Symbol}})) || (typeof(pSet)==Symbol)) && in(pSet,keys(Z))
 			if pSet ∈ keys(Z)
 				tempzpz = []
 				nowZ = Z[pSet]
