@@ -132,20 +132,18 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	Zp = OrderedDict{Any,Any}()
        	zpz = OrderedDict{Any,Any}() #Has the order in priorVCV, which may be unordered Dict() by the user. Analysis follow this order.
 													
-	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) #keys(priorVCV) excluding :e
+	for pSet ∈ keys(priorVCV) # excluding :e keys(filter(p -> p.first!=:e, priorVCV))
 		corEffects = []
 		corPositions = []
 		if ((isa(pSet,Tuple{Vararg{Symbol}})) || (typeof(pSet)==Symbol)) && in(pSet,keys(Z))
-			if pSet ∈ keys(Z)
-				tempzpz = []
-				nowZ = Z[pSet]
-				for c in eachcol(nowZ)
-					push!(tempzpz,c'c)					
-					# push!(tempzpz,BLAS.dot(c,c))
-				end
-				Zp[pSet]  = transpose(Z[pSet])						
-				zpz[pSet] = tempzpz
+			tempzpz = []
+			nowZ = Z[pSet]
+			for c in eachcol(nowZ)
+				push!(tempzpz,c'c)					
+				# push!(tempzpz,BLAS.dot(c,c))
 			end
+			Zp[pSet]  = transpose(Z[pSet])						
+			zpz[pSet] = tempzpz
 		elseif  issubset(pSet,keys(Z))
 			correlate = collect(pSet)
 			for pSubSet in correlate
@@ -164,7 +162,20 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				Zp[pSet]  = transpose.(tempZ)
 				tempZ = 0
 			end
+		else
+			printstyled("A prior was provided for $pSet, but it was not found in the data. It will be ignored \n"; color = :red)		
 		end
+	end
+																
+	for pSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
+		printstyled("No prior was provided for $pSet, but it was not included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
+		tempzpz = []
+		nowZ = Z[pSet]
+		for c in eachcol(nowZ)
+			push!(tempzpz,c'c)					
+		end
+		Zp[pSet]  = transpose(Z[pSet])						
+		zpz[pSet] = tempzpz
 	end
 																	
 	#pos for individual random effect
