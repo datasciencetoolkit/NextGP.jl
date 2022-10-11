@@ -135,6 +135,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	for pSet ∈ keys(priorVCV) # excluding :e keys(filter(p -> p.first!=:e, priorVCV))
 		corEffects = []
 		corPositions = []
+		#tuple of symbols (:ID,:Dam) or symbol (:ID)
 		if ((isa(pSet,Tuple{Vararg{Symbol}})) || (typeof(pSet)==Symbol)) && in(pSet,keys(Z))
 			tempzpz = []
 			nowZ = Z[pSet]
@@ -144,7 +145,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			end
 			Zp[pSet]  = transpose(Z[pSet])						
 			zpz[pSet] = tempzpz
-		elseif  issubset(pSet,keys(Z))
+		#tuple of tuples ((:ID,:Dam),(:Dam,:Dam))
+		elseif (isa(pSet,Tuple{Vararg{Tuple}})) && all((in).(pSet,Ref(keys(Z)))) #if all elements are available #issubset(pSet,keys(Z))
 			correlate = collect(pSet)
 			for pSubSet in correlate
 				push!(corEffects,pSubSet)
