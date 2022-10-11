@@ -145,11 +145,14 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         my_sch = schema(userData, userHints) #work on userData and userHints
                         my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
-			#####NO IDs for this effect!!! Will be added later!!!!#####################################################
+			#####ID is from the pheno  file directly, order not  checked!#####################################################
+			repr((f.rhs[i].args_parsed)[1]) == "1" ? sym1 = "I" : sym1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
+                        sym2 = Symbol(repr((f.rhs[i].args_parsed)[2]))
                        	thisZ = modelcols(my_ApplySch, userData)
-			RE[terms4StatsModels[i]] = thisZ
+			RE[(sym1,sym2)] = thisZ
 			thisZ = 0
-			push!(summarize,[f.rhs[i],"|",typeof(RE[terms4StatsModels[i]]),size(RE[terms4StatsModels[i]],2)])
+			idRE[(sym1,sym2)] = unique(userData[!,sym2])
+			push!(summarize,[f.rhs[i],"|",typeof(RE[(sym1,sym2)]),size(RE[(sym1,sym2)],2)])
 
                 else
 			my_sch = schema(userData, userHints)
