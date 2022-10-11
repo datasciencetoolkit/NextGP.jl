@@ -134,7 +134,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 			push!(summarize,[arg1,"BayesPR",typeof(ME[arg1]),size(ME[arg1],2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
                         arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
-			IDs,thisZ = ranMat(arg, arg, userData, pedigree)
+			IDs,thisZ = ranMat(arg, :ID, userData, pedigree)
 			RE[arg] = thisZ
 			thisZ = 0
 			idRE[arg] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
