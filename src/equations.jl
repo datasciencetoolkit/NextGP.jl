@@ -144,13 +144,14 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
                         my_sch = schema(userData, userHints) #work on userData and userHints
                         my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
 			#####ID is from the pheno  file directly, order not  checked!#####################################################
-			repr((f.rhs[i].args_parsed)[1]) == "1" ? arg1 = Symbol("ı") : arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
+			arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
                         arg2 = Symbol(repr((f.rhs[i].args_parsed)[2]))
+			arg = Meta.parse(join([arg1,arg2]," | "))
                        	thisZ = modelcols(my_ApplySch, userData)
-			RE[join([arg1,arg2],"_")] = thisZ
+			RE[arg] = thisZ
 			thisZ = 0
-			idRE[join([arg1,arg2],"_")] = unique(userData[!,arg2])
-			push!(summarize,[(sym1,sym2),"|",typeof(RE[(sym1,sym2)]),size(RE[(sym1,sym2)],2)])
+			idRE[arg] = unique(userData[!,arg2])
+			push!(summarize,[arg,"|",typeof(RE[arg]),size(RE[arg],2)])
 
                 else
 			my_sch = schema(userData, userHints)
