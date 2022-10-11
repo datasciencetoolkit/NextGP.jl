@@ -135,8 +135,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV) 
 		corEffects = []
 		corPositions = []
-		#tuple of symbols symbol (:ID)
-		if isa(pSet,Symbol) && in(pSet,keys(Z))
+		#symbol :ID or expression :(1|ID)
+		if (isa(pSet,Symbol) || isa(pSet,Expr)) && in(pSet,keys(Z))
 			tempzpz = []
 			nowZ = Z[pSet]
 			for c in eachcol(nowZ)
@@ -145,7 +145,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			end
 			Zp[pSet]  = transpose(Z[pSet])						
 			zpz[pSet] = tempzpz
-		#tuple of tuples ((:ID,:Dam),(:Dam,:Dam))
+		#tuple of symbols (:ID,:Dam)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(Z)))) #if all elements are available #issubset(pSet,keys(Z))
 			correlate = collect(pSet)
 			for pSubSet in correlate
@@ -355,7 +355,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
         for i in 1:length(levelDict[:levelsRE])
 		nameRE = hcat(vcat(collect(values(levelDict[:levelsRE]))[i]...)...)
 		IO.outMCMC(outPut,"u$i",nameRE)
-		IO.outMCMC(outPut,"varU$i",[join(collect(keys(levelDict[:levelsRE]))[i],"_")])
+#		IO.outMCMC(outPut,"varU$i",[join(collect(keys(levelDict[:levelsRE]))[i],"_")])
+		IO.outMCMC(outPut,"varU$i",collect(keys(levelDict[:levelsRE]))[i])
 	end	
 	
 	#arbitrary marker names
