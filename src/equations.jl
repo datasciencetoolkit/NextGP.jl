@@ -135,8 +135,8 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 			regionSizes[arg1] = arg2
 			push!(summarize,[arg1,"BayesPR",typeof(ME[arg1]),size(ME[arg1],2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
-                        sym1 = repr((f.rhs[i].args_parsed)[1])
-                        sym2 = repr((f.rhs[i].args_parsed)[2])			
+                        sym1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
+                        sym2 = Symbol(repr((f.rhs[i].args_parsed)[2]))			
 			IDs,thisZ = ranMat(sym1, sym2, userData, pedigree)
 			RE[(sym1,sym2)] = thisZ
 			thisZ = 0
