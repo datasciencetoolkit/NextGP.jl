@@ -253,6 +253,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		                regionArray[pSet] = theseRegions
 			end
 		elseif  isa(pSet,Tuple)
+			println("$pSet is a Tuple in M")
 			correlate = collect(pSet)
 			for pSubSet in correlate
 				push!(corEffects,pSubSet)
