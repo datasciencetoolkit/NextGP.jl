@@ -146,7 +146,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
                         my_sch = schema(userData, userHints) #work on userData and userHints
                         my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
 			#####ID is from the pheno  file directly, order not  checked!#####################################################
-			repr((f.rhs[i].args_parsed)[1]) == "1" ? sym1 = "I" : sym1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
+			repr((f.rhs[i].args_parsed)[1]) == "1" ? sym1 = Symbol("ı") : sym1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
                         sym2 = Symbol(repr((f.rhs[i].args_parsed)[2]))
                        	thisZ = modelcols(my_ApplySch, userData)
 			RE[(sym1,sym2)] = thisZ
