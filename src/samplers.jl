@@ -382,7 +382,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
                                 IO.outMCMC(outPut,"u$(uKeyPos4Print[zSet])",u[uKeyPos4Print[zSet],1:nColEachZ[zSet]]')
                         end
 			for pSet in keys(zpz)
-				IO.outMCMC(outPut,"varU$(uKeyPos[String(pSet)])",varU[String(pSet)]) #join values for multivariate in uKeyPos[String(pSet)])
+				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[String(pSet)])
 			end
 
 			for mSet in keys(BetaKeyPos4Print)
