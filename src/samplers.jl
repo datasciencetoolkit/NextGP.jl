@@ -133,7 +133,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	Zp = OrderedDict{Any,Any}()
        	zpz = OrderedDict{Any,Any}()
 													
-	for pSet ∈ filter(p -> p.first!=:e, priorVCV) #keys(priorVCV) excluding :e
+	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) #keys(priorVCV) excluding :e
 		corEffects = []
 		corPositions = []
 		if typeof(pSet)==Tuple{String, String}
@@ -236,10 +236,10 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		
 	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()	
 
-	for pSet ∈ keys(priorVCV)
+	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) #keys(priorVCV) excluding :e
 		corEffects = []
 		corPositions = []
-		if typeof(pSet)==String
+		if typeof(pSet)==Symbol
 			println("$pSet is univariate")
 			if pSet ∈ keys(M)
 				println("univariate mpm for $pSet")
@@ -252,7 +252,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],rS[pSet])
 		                regionArray[pSet] = theseRegions
 			end
-		elseif  issubset(pSet,keys(M))
+		elseif  isa(pSet,Tuple)
 			correlate = collect(pSet)
 			for pSubSet in correlate
 				push!(corEffects,pSubSet)
