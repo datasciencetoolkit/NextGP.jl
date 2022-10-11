@@ -5,7 +5,7 @@ struct RandTerm <: AbstractTerm
     data::Char
 end
 
-ran(s::Char, d::Char) = RandTerm(s, d)
+ran(s::Char) = RandTerm(s)
 
 struct PartRegTerm <: AbstractTerm
     mat::Char
