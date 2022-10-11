@@ -252,7 +252,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],rS[pSet])
 		                regionArray[pSet] = theseRegions
 			end
-		elseif  isa(pSet,Tuple) && issubset(vcat(pSet,keys(M))
+		elseif  isa(pSet,Tuple) && issubset(vcat(pSet),keys(M))
 			println("$pSet is a Tuple in M")
 			correlate = collect(pSet)
 			for pSubSet in correlate
