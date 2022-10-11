@@ -144,7 +144,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			Zp[pSet]  = transpose(Z[pSet])						
 			zpz[pSet] = tempzpz
 		#tuple of symbols (:ID,:Dam)
-		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(Z)))) #if all elements are available #issubset(pSet,keys(Z))
+		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(Z)))) #if all elements are available # all([pSet .in Ref(keys(Z))])
 			correlate = collect(pSet)
 			for pSubSet in correlate
 				push!(corEffects,pSubSet)
@@ -348,7 +348,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	#########make MCMC output files.
 	IO.outMCMC(outPut,"b",levelsX)
 	
-	println("level dict $(levelDict[:levelsRE])")
+	println("level dict $levelDict")
 
 	#check for correlated RE
         for i in 1:length(levelDict[:levelsRE])
