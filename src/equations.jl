@@ -152,7 +152,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 			RE[(sym1,sym2)] = thisZ
 			thisZ = 0
 			idRE[(sym1,sym2)] = unique(userData[!,sym2])
-			push!(summarize,[f.rhs[i],"|",typeof(RE[(sym1,sym2)]),size(RE[(sym1,sym2)],2)])
+			push!(summarize,[(sym1,sym2),"|",typeof(RE[(sym1,sym2)]),size(RE[(sym1,sym2)],2)])
 
                 else
 			my_sch = schema(userData, userHints)
