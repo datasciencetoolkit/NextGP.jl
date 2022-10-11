@@ -147,9 +147,9 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 			repr((f.rhs[i].args_parsed)[1]) == "1" ? arg1 = Symbol("ı") : arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
                         arg2 = Symbol(repr((f.rhs[i].args_parsed)[2]))
                        	thisZ = modelcols(my_ApplySch, userData)
-			RE[(arg1,arg2)] = thisZ
+			RE[join([arg1,arg2],"_")] = thisZ
 			thisZ = 0
-			idRE[(arg1,arg2)] = unique(userData[!,arg2])
+			idRE[join([arg1,arg2],"_")] = unique(userData[!,arg2])
 			push!(summarize,[(sym1,sym2),"|",typeof(RE[(sym1,sym2)]),size(RE[(sym1,sym2)],2)])
 
                 else
