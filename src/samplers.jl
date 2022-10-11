@@ -352,10 +352,11 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 	#check for correlated RE
         for i in 1:length(levelDict[:levelsRE])
-		nameRE = hcat(vcat(collect(values(levelDict[:levelsRE]))[i]...)...)
-		IO.outMCMC(outPut,"u$i",nameRE)
+		levRE = hcat(vcat(collect(values(levelDict[:levelsRE]))[i]...)...)
+		IO.outMCMC(outPut,"u$i",levRE)
+		isa(collect(keys(levelDict[:levelsRE]))[i], Symbol) ? nameRE_VCV = String(collect(keys(levelDict[:levelsRE]))[i]) : nameRE_VCV = join(collect(keys(levelDict[:levelsRE]))[i])
 #		IO.outMCMC(outPut,"varU$i",[join(collect(keys(levelDict[:levelsRE]))[i],"_")])
-		IO.outMCMC(outPut,"varU$i",collect(keys(levelDict[:levelsRE]))[i])
+		IO.outMCMC(outPut,"varU$i",nameRE_VCV)
 	end	
 	
 	#arbitrary marker names
@@ -401,7 +402,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
                                 IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
                         end
 			for pSet in keys(mpm)
-				IO.outMCMC(outPut,"var".*(String(pSet)),varBeta[pSet])
+				IO.outMCMC(outPut,"var".*pSet,varBeta[pSet])
 			end
 		end
 	end
