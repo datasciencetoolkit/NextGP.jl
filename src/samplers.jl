@@ -338,7 +338,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	end
 	for mSet in keys(mpm)
 		if mSet ∈ keys(priorVCV)
-			str = nRegions[mSet]
+			str = "Block of $(nRegions[mSet]) SNP\(s\)"
 			#value = priorVCV[mSet]
 		else #### later, handel this above, when dealing with priorVCV is allowed to be empty
 			str = "WG(I)"
@@ -370,7 +370,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		isa(mSet, Symbol) ? nameM_VCV = ["reg_$r" for r in 1:nRegions[mSet]] : nameRE_VCV = vcat([["reg_$i" for j in 1:length(mSet)^2] for i in 1:nRegions[mSet]]...)
 		IO.outMCMC(outPut,"var$mSet",[nameM_VCV]) #[] to have it as one row
         end
-	#FOR VARIANCES, IMPLEMENT CONSIDERING REGIONS (theseRegions) and matrix size
 	
 
 	IO.outMCMC(outPut,"varE",["e"])
