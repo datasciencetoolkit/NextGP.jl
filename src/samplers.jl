@@ -244,8 +244,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
        	mpm = OrderedDict{Any,Any}()
 		
 	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()	
-
-	println("M: $M")
+	
+	println("keysM: $(keys(M))")
 
 	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
 		println("pSet: $pSet")
