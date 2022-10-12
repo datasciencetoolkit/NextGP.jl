@@ -364,7 +364,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	#FOR VARIANCES, IMPLEMENT CONSIDERING REGIONS (theseRegions) and matrix size
 	
 
-	IO.outMCMC(outPut,"varE",["varE"])
+	IO.outMCMC(outPut,"varE",["e"])
 	##########
 
 
