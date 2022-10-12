@@ -367,8 +367,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	#arbitrary marker names
 	for mSet in keys(BetaKeyPos4Print)
    		IO.outMCMC(outPut,"beta$mSet",hcat(["rs_$i" for i in 1:nMarkers[mSet]]...))
-		nameRE_VCV = vcat([["reg_$i" for j in 1:length(mSet)^2] for i in 1:nRegions[mSet]]...)
-#		isa(mSet, Symbol) ? nameM_VCV = ["reg_$r" for r in 1:nRegions[mSet]] : nameRE_VCV = vcat([["reg_$i" for j in 1:length(mSet)^2] for i in 1:nRegions[mSet]]...)
+		isa(mSet, Symbol) ? nameM_VCV = ["reg_$r" for r in 1:nRegions[mSet]] : nameRE_VCV = vcat([["reg_$i" for j in 1:length(mSet)^2] for i in 1:nRegions[mSet]]...)
 		IO.outMCMC(outPut,"var$(nameM_VCV)",[nameM_VCV]) #[] to have it as one row
         end
 	#FOR VARIANCES, IMPLEMENT CONSIDERING REGIONS (theseRegions) and matrix size
