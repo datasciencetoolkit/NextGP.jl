@@ -245,24 +245,21 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		
 	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()	
 
-	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) #keys(priorVCV) excluding :e
+	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
 		corEffects = []
 		corPositions = []
-		if (typeof(pSet)==Symbol) && in(pSet,keys(M))
-			println("$pSet is univariate")
-			if pSet ∈ keys(M)
-				println("univariate mpm for $pSet")
-				tempmpm = []
-				nowM = M[pSet]
-				for c in eachcol(nowM)
-					push!(tempmpm,BLAS.dot(c,c))
-				end
-				mpm[pSet] = tempmpm
-				theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],rS[pSet])
-		                regionArray[pSet] = theseRegions
+		#symbol :M1 or expression
+		if isa(pSet,Symbol) && in(pSet,keys(M))
+			tempmpm = []
+			nowM = M[pSet]
+			for c in eachcol(nowM)
+				push!(tempmpm,BLAS.dot(c,c))
 			end
-		elseif  isa(pSet,Tuple) && issubset(vcat(pSet),keys(M))
-			println("$pSet is a Tuple in M")
+			mpm[pSet] = tempmpm
+			theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],rS[pSet])
+		        regionArray[pSet] = theseRegions
+		#tuple of symbols (:M1,:M2)
+		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
 			correlate = collect(pSet)
 			for pSubSet in correlate
 				push!(corEffects,pSubSet)
@@ -283,11 +280,25 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				theseRegions = prep2RegionData(outPut,pSet,paths2maps[nowMap],rS[nowMap]) ###first data
                 		regionArray[pSet] = theseRegions
 			end
+		else
+			printstyled("A prior was provided for $pSet, but it was not found in the data. It will be ignored \n"; color = :red)
 		end
 	end
 	
+	for pSet in collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]
+		printstyled("No prior was provided for $pSet, but it was not included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
+		tempmpm = []
+		nowM = M[pSet]
+		for c in eachcol(nowM)
+			push!(tempmpm,BLAS.dot(c,c))
+		end
+		mpm[pSet] = tempmpm
+		theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],rS[pSet])
+		regionArray[pSet] = theseRegions
+	end
+	
 	#pos for individual marker set
-	BetaKeyPos4Print = OrderedDict(vcat([isa(k,String) ? k => v : collect(k) .=> collect(v) for (k,v) in BetaKeyPos]...))
+	BetaKeyPos4Print = OrderedDict(vcat([isa(k,Symbol) ? k => v : collect(k) .=> collect(v) for (k,v) in BetaKeyPos]...))
 
 	nRegions  = OrderedDict(mSet => length(regionArray[mSet]) for mSet in keys(regionArray))
 	
