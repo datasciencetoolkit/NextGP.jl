@@ -126,9 +126,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
 			arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
 			arg2 = parse(Int64,repr((f.rhs[i].args_parsed)[2]))
-			println("type of paths2Gno: $(typeof(paths2geno))")
 			path = paths2geno[arg1]
-			println("$arg1 data read from $path")
 			thisM = CSV.read(path,CSV.Tables.matrix,header=false)
 			thisM .-= mean(thisM,dims=1) 
 			ME[arg1] = thisM
