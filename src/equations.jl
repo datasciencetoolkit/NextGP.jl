@@ -88,7 +88,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
         RE = OrderedDict{Any,Any}()
 
 	ME = OrderedDict{Any,Any}()
-	regionSizes = OrderedDict{String,Int64}()
+	regionSizes = OrderedDict{Symbol,Int64}()
 
 
         #read pedigree
