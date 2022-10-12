@@ -162,8 +162,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				Zp[pSet]  = transpose.(tempZ)
 				tempZ = 0
 			end
-		else
-			printstyled("A prior was provided for $pSet, but it was not found in the data. It will be ignored \n"; color = :red)		
 		end
 	end
 																
@@ -245,10 +243,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		
 	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()	
 	
-	println("keysM: $(keys(M))")
-
 	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
-		println("pSet: $pSet")
 		corEffects = []
 		corPositions = []
 		#symbol :M1 or expression
@@ -283,8 +278,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				theseRegions = prep2RegionData(outPut,pSet,paths2maps[nowMap],rS[nowMap]) ###first data
                 		regionArray[pSet] = theseRegions
 			end
-		else
-			printstyled("A prior was provided for $pSet, but it was not found in the data. It will be ignored \n"; color = :red)
 		end
 	end
 	
