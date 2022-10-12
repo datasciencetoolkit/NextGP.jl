@@ -338,7 +338,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	end
 	for mSet in keys(mpm)
 		if mSet ∈ keys(priorVCV)
-			str = "Block of $(nRegions[mSet]) SNP"
+			str = "Block of $(nRegions[mSet]) SNP(s)"
 			#value = priorVCV[mSet]
 		else #### later, handel this above, when dealing with priorVCV is allowed to be empty
 			str = "WG(I)"
