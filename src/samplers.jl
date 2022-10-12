@@ -245,7 +245,10 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		
 	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()	
 
+	println("M: $M")
+
 	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
+		println("pSet: $pSet")
 		corEffects = []
 		corPositions = []
 		#symbol :M1 or expression
@@ -286,7 +289,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	end
 	
 	for pSet in collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]
-		printstyled("No prior was provided for $pSet, but it was not included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
+		printstyled("No prior was provided for $pSet, but it was included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
 		tempmpm = []
 		nowM = M[pSet]
 		for c in eachcol(nowM)
@@ -411,7 +414,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
                                 IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
                         end
 			for pSet in keys(mpm)
-				IO.outMCMC(outPut,"var".*pSet,varBeta[pSet])
+				IO.outMCMC(outPut,"var".*String(pSet),varBeta[pSet])
 			end
 		end
 	end
