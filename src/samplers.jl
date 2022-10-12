@@ -265,17 +265,19 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			end
 			if issubset(corEffects,collect(keys(M)))
 				tempM = hcat.(eachcol.(getindex.(Ref(M), (pSet)))...)
+				rS[pSet] = rS[first(pSet)]
 				for d in corEffects
                        			delete!(M,d)
 					delete!(BetaKeyPos,d)
+					delete!(rS,d)
                			end
 				BetaKeyPos[pSet] = corPositions
 				M[pSet]   = tempM
 				mpm[pSet] = MatByMat.(tempM)
 				Mp[pSet]  = transpose.(tempM)
 				tempM = 0
-				nowMap = first(pSet)					 #should throw out error if sets have different lengths! implement it here!
-				theseRegions = prep2RegionData(outPut,pSet,paths2maps[nowMap],rS[nowMap]) ###first data
+				nowMap = first(pSet)		#should throw out error if sets have different lengths! implement it here!
+				theseRegions = prep2RegionData(outPut,pSet,paths2maps[nowMap],rS[pSet]) ###first data
                 		regionArray[pSet] = theseRegions
 			end
 		end
@@ -338,7 +340,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	end
 	for mSet in keys(mpm)
 		if mSet ∈ keys(priorVCV)
-			str = "Block of $(nRegions[mSet]) SNP(s)"
+			str = "$(nRegions[mSet]) block(s) of $(rS[mSet]) SNP(s)"
 			#value = priorVCV[mSet]
 		else #### later, handel this above, when dealing with priorVCV is allowed to be empty
 			str = "WG(I)"
