@@ -367,6 +367,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	#arbitrary marker names
 	for mSet in keys(BetaKeyPos4Print)
    		IO.outMCMC(outPut,"beta$mSet",hcat(["rs_$i" for i in 1:nMarkers[mSet]]...))
+		isa(mSet, Symbol) ? nameM_VCV = String(mSet) : nameRE_VCV = join(mSet)
+		IO.outMCMC(outPut,"var$(nameM_VCV)",[nameM_VCV]) #[] to have it as one row
         end
 	#FOR VARIANCES, IMPLEMENT CONSIDERING REGIONS (theseRegions) and matrix size
 	
@@ -526,19 +528,6 @@ function sampleVarU(iMat,scale_ranVar,df_ranVar,effVec)
 	n = size(iMat,2)
 	return (scale_ranVar*df_ranVar + effVec'*iMat*effVec)/rand(Chisq(df_ranVar + n))
 end
-
-function sampleMarkerVar!(beta,varBeta,nMSet,keyM,regions,regionsMat,scaleM,dfM)
-        #for each marker set
-        for mSet in keys(varBeta)
-		pos = keyM[mSet]
-                for r in 1:regions[pos] #dont have to compute 1000000 times, take it out
-                        theseLoci = regionsMat[pos][r]
-                        regionSize = length(theseLoci)
-                        varBeta[mSet][r] = sampleVarBeta(scaleM[pos],dfM[pos],beta[pos,theseLoci],regionSize)
-                end
-        end
-end
-
 
 #sample marker variances
 function sampleVarBeta(scalem,dfm,whichLoci,regionSize)
