@@ -480,7 +480,8 @@ function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,nMSet,keyBeta,regionsMat,re
         for mSet in keys(mpmMat)
 		if isa(mSet,Tuple)
 			betaPos = keyBeta[mSet]
-			nowMp = MpMat[mSet] ###
+#			nowMp = MpMat[mSet] ###
+			nowMp = view(MpMat[mSet],:,:)
 			for r in 1:regions[mSet]
 				theseLoci = regionsMat[mSet][r]
 				regionSize = length(theseLoci)
@@ -488,7 +489,6 @@ function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,nMSet,keyBeta,regionsMat,re
 				for locus in theseLoci
 					RHS = zeros(size(invB,1))	
 					ycorr .+= MMat[mSet][locus]*beta[betaPos,locus]					
-
 					RHS = (nowMp[locus]*ycorr)./varE
 					invLHS::Array{Float64,2} = inv((mpmMat[mSet][locus]./varE) .+ invB)
 					meanBeta::Array{Float64,1} = invLHS*RHS
