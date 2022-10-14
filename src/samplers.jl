@@ -506,6 +506,10 @@ function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,nMSet,keyBeta,regionsMat,re
                         	lambda = varE/(varBeta[mSet][r])
                         	for locus in theseLoci
 					#
+					println(typeof(view(beta,betaPos,locus)))
+					println(typeof(beta[betaPos,locus]))
+					println(typeof(view(MMat[mSet],:,locus)))
+					println(typeof(ycorr))
                                 	BLAS.axpy!(view(beta,betaPos,locus),view(MMat[mSet],:,locus),ycorr)
 					
 #					BLAS.axpy!(beta[betaPos,locus],view(nowM,:,locus),ycorr)
