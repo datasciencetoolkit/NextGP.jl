@@ -515,7 +515,7 @@ function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,nMSet,keyBeta,regionsMat,re
 					
 #                               	lhs::Float64 = mpmMat[mSet][locus] + lambda
 			                #
-					lhs::Float64 = view(mpmMat[mSet],:,:)[locus] + lambda
+					lhs::Float64 = view(mpmMat[mSet],locus) + lambda
                                 	meanBeta::Float64 = lhs\rhs
                                 	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
 #                                	BLAS.axpy!(-1.0*beta[betaPos,locus],view(nowM,:,locus),ycorr)
