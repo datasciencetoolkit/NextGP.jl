@@ -392,17 +392,10 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
 
 		#sample marker effects and variances
-@time	        sampleMandMVar_view!(M,Mp,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
+@time	        sampleMandMVar_view!(M,Mp,beta,mpm,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
 	
-		
-		println(nMarkerSets)
-		println(BetaKeyPos)
-		println(regionArray)
-		println(nRegions)
-		println(varBeta)
-
 @time        	for mSet in keys(mpm)
-	        	sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],nMarkerSets[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
+	        	sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
 		end
                		
         	#print
@@ -486,7 +479,7 @@ function sampleZandZVar!(iStrMat,ZMat,ZpMat,u,zpzMat,keyU,nCols,ycorr,varE,varU,
 	 end
 end
 
-function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,nMSet,keyBeta,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
+function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,keyBeta,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
         #for each marker set
         for mSet in keys(mpmMat)
 		if isa(mSet,Tuple)
@@ -533,7 +526,7 @@ end
 
 
 
-function sampleMandMVar_view2!(mSet,MMat,nowMp,beta,mpmMat,nMSet,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+function sampleMandMVar_view2!(mSet,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
         #for each marker set
 		if isa(mSet,Tuple)
 			for r in 1:regions
