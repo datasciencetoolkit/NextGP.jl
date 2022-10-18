@@ -384,23 +384,23 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	sleep(0.1)
 	
 		#sample residual variance
-	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
+@time	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
 		
 		#sample fixed effects
-	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
+@time	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
 	
 		#sample random effects
-	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
+@time	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
 
 		#sample marker effects and variances
 #	        sampleMandMVar_view!(M,Mp,beta,mpm,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
 	
-#        	for mSet in keys(mpm)
-#	        	sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
-#		end
+ @time       	for mSet in keys(mpm)
+	        	sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
+		end
                		
         	#print
-		if iter in these2Keep
+@time		if iter in these2Keep
 			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
 			IO.outMCMC(outPut,"varE",varE)
 			
