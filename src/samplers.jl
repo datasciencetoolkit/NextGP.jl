@@ -383,7 +383,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	sleep(0.1)
 	
 		#sample residual variance
-		println("-------------------")
 	       	@time varE = sampleVarE(dfE,scaleE,ycorr,nData)
 		
 		#sample fixed effects
@@ -498,6 +497,7 @@ function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,nMSet,keyBeta,regionsMat,re
 				varBeta[mSet][r] = sampleVarCovBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
 			end	
 		else
+		println("-------------------")
 @time			nowM = MMat[mSet]
 @time                	betaPos = keyBeta[mSet]
                 	for r in 1:regions[mSet]
