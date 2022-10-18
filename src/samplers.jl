@@ -498,16 +498,16 @@ function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,nMSet,keyBeta,regionsMat,re
 			end	
 		else
 		println("-------------------")
-println("regions[mSet]: $(regions[mSet])")
-@time			nowM = MMat[mSet]
-@time                	betaPos = keyBeta[mSet]
+			nowM = MMat[mSet]
+                	betaPos = keyBeta[mSet]
                 	for r in 1:regions[mSet]
-@time                        	theseLoci = regionsMat[mSet][r]
-@time                        	regionSize = length(theseLoci)
+                        	theseLoci = regionsMat[mSet][r]
+                        	regionSize = length(theseLoci)
 @time                        	lambda = varE/(varBeta[mSet][r])
                         	for locus in theseLoci
 @time					BLAS.axpy!(beta[betaPos,locus],view(nowM,:,locus),ycorr)
 @time                                	rhs::Float64 = BLAS.dot(view(nowM,:,locus),ycorr)
+@time                                	rhs::Float64 = BLAS.dot(nowM[:,locus],ycorr)
 @time	                               	lhs::Float64 = mpmMat[mSet][locus] + lambda
 @time                                	meanBeta::Float64 = lhs\rhs
 @time                                	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
