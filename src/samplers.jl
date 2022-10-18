@@ -254,6 +254,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				push!(tempmpm,BLAS.dot(c,c))
 			end
 			mpm[pSet] = tempmpm
+			Mp[pSet] = []
 			theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],rS[pSet])
 		        regionArray[pSet] = theseRegions
 		#tuple of symbols (:M1,:M2)
