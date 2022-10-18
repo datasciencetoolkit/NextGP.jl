@@ -393,10 +393,10 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
 
 		#sample marker effects and variances
-#	        sampleMandMVar_view!(M,Mp,beta,mpm,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
+@time	        sampleMandMVar_view!(M,Mp,beta,mpm,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
 	
 
-        	@time for mSet in keys(mpm)
+@time        	for mSet in keys(mpm)
 	        	sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
 		end
                		
@@ -412,11 +412,11 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
 			end
 			
-			@time for mSet in keys(BetaKeyPos4Print)
+			for mSet in keys(BetaKeyPos4Print)
                                 IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
                         end
 			
-			@time for pSet in keys(mpm)
+			for pSet in keys(mpm)
 				IO.outMCMC(outPut,"var".*String(pSet),varBeta[pSet]')
 			end
 		end
@@ -482,41 +482,41 @@ function sampleZandZVar!(iStrMat,ZMat,ZpMat,u,zpzMat,keyU,nCols,ycorr,varE,varU,
 	 end
 end
 
-function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,keyBeta,regionsMat,regions,ycorr,varE,varBeta,scaleM,dfM)
+function sampleMandMVar_view!(M,Mp,beta,mpm,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
         #for each marker set
-        for mSet in keys(mpmMat)
+        for mSet in keys(mpm)
 		if isa(mSet,Tuple)
-			betaPos = keyBeta[mSet]
-			nowMp = MpMat[mSet] ###
-			for r in 1:regions[mSet]
-				theseLoci = regionsMat[mSet][r]
+			betaPos = BetaKeyPos[mSet]
+			nowMp = Mp[mSet] ###
+			for r in 1:nRegions[mSet]
+				theseLoci = regionArray[mSet][r]
 				regionSize = length(theseLoci)
 				invB = inv(varBeta[mSet][r])
 				for locus in theseLoci
 					RHS = zeros(size(invB,1))	
-					ycorr .+= MMat[mSet][locus]*beta[betaPos,locus]					
+					ycorr .+= M[mSet][locus]*beta[betaPos,locus]					
 					RHS = (nowMp[locus]*ycorr)./varE
-					invLHS::Array{Float64,2} = inv((mpmMat[mSet][locus]./varE) .+ invB)
+					invLHS::Array{Float64,2} = inv((mpm[mSet][locus]./varE) .+ invB)
 					meanBETA::Array{Float64,1} = invLHS*RHS
 					beta[betaPos,locus] = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
-					ycorr .-= MMat[mSet][locus]*beta[betaPos,locus]	
+					ycorr .-= M[mSet][locus]*beta[betaPos,locus]	
 				end
 				varBeta[mSet][r] = sampleVarCovBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
 			end	
 		else
-			nowM = MMat[mSet]
-                	betaPos = keyBeta[mSet]
+			nowM = M[mSet]
+                	betaPos = BetaKeyPos[mSet]
 			local rhs::Float64
 			local lhs::Float64
 			local meanBeta::Float64
-                	for r in 1:regions[mSet]
-                        	theseLoci = regionsMat[mSet][r]
+                	for r in 1:nRegions[mSet]
+                        	theseLoci = regionArray[mSet][r]
                         	regionSize = length(theseLoci)
                         	lambda = varE/(varBeta[mSet][r])
                         	for locus in theseLoci
 					BLAS.axpy!(beta[betaPos,locus],view(nowM,:,locus),ycorr)
                                 	rhs = BLAS.dot(view(nowM,:,locus),ycorr)
-	                               	lhs = mpmMat[mSet][locus] + lambda
+	                               	lhs = mpm[mSet][locus] + lambda
                                 	meanBeta = lhs\rhs
                                 	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
                                 	BLAS.axpy!(-1.0*beta[betaPos,locus],view(nowM,:,locus),ycorr)
