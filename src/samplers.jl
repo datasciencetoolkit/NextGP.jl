@@ -395,7 +395,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		#sample marker effects and variances
 #	        sampleMandMVar_view!(M,Mp,beta,mpm,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
 	
-		println("--------")
         	for mSet in keys(mpm)
 	        	sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
 		end
@@ -412,11 +411,11 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
 			end
 			
-@time			for mSet in keys(BetaKeyPos4Print)
+			for mSet in keys(BetaKeyPos4Print)
                                 IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
                         end
 			
-@time			for pSet in keys(mpm)
+			for pSet in keys(mpm)
 				IO.outMCMC(outPut,"var".*String(pSet),varBeta[pSet]')
 			end
 		end
@@ -556,14 +555,14 @@ function sampleMandMVar_view2!(mSet,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,re
                         	regionSize = length(theseLoci)
                         	lambda = varE/(varBeta[mSet][r])
                         	for locus in theseLoci
-@time					BLAS.axpy!(beta[betaPos,locus],view(MMat,:,locus),ycorr)
-@time                                	rhs = BLAS.dot(view(MMat,:,locus),ycorr)
-@time	                               	lhs = mpmMat[locus] + lambda
-@time                                	meanBeta = lhs\rhs
-@time                                	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
-@time                                	BLAS.axpy!(-1.0*beta[betaPos,locus],view(MMat,:,locus),ycorr)
+					BLAS.axpy!(beta[betaPos,locus],view(MMat,:,locus),ycorr)
+                                	rhs = BLAS.dot(view(MMat,:,locus),ycorr)
+	                               	lhs = mpmMat[locus] + lambda
+                                	meanBeta = lhs\rhs
+                                	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
+                                	BLAS.axpy!(-1.0*beta[betaPos,locus],view(MMat,:,locus),ycorr)
                        		end
-@time                       	varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
+                       	varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
                 	end
        		end
 end
