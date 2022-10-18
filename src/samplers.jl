@@ -397,20 +397,20 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
                		
         	#print
 		if iter in these2Keep
-			@time IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
-			@time IO.outMCMC(outPut,"varE",varE)
+			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
+			IO.outMCMC(outPut,"varE",varE)
 			
-			@time for zSet in keys(uKeyPos4Print)
+			for zSet in keys(uKeyPos4Print)
                                 IO.outMCMC(outPut,"u$(uKeyPos4Print[zSet])",u[uKeyPos4Print[zSet],1:nColEachZ[zSet]]')
                         end
-			@time for pSet in keys(zpz)
+			for pSet in keys(zpz)
 				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
 			end
 
-			@time for mSet in keys(BetaKeyPos4Print)
+			for mSet in keys(BetaKeyPos4Print)
                                 IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
                         end
-			@time for pSet in keys(mpm)
+			for pSet in keys(mpm)
 				IO.outMCMC(outPut,"var".*String(pSet),varBeta[pSet]')
 			end
 		end
@@ -498,21 +498,21 @@ function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,nMSet,keyBeta,regionsMat,re
 				varBeta[mSet][r] = sampleVarCovBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
 			end	
 		else
-			nowM = MMat[mSet]
-                	betaPos = keyBeta[mSet]
+@time			nowM = MMat[mSet]
+@time                	betaPos = keyBeta[mSet]
                 	for r in 1:regions[mSet]
-                        	theseLoci = regionsMat[mSet][r]
-                        	regionSize = length(theseLoci)
-                        	lambda = varE/(varBeta[mSet][r])
+@time                        	theseLoci = regionsMat[mSet][r]
+@time                        	regionSize = length(theseLoci)
+@time                        	lambda = varE/(varBeta[mSet][r])
                         	for locus in theseLoci
-					BLAS.axpy!(beta[betaPos,locus],view(nowM,:,locus),ycorr)
-                                	rhs::Float64 = BLAS.dot(view(nowM,:,locus),ycorr)
-	                               	lhs::Float64 = mpmMat[mSet][locus] + lambda
-                                	meanBeta::Float64 = lhs\rhs
-                                	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
-                                	BLAS.axpy!(-1.0*beta[betaPos,locus],view(nowM,:,locus),ycorr)
+@time					BLAS.axpy!(beta[betaPos,locus],view(nowM,:,locus),ycorr)
+@time                                	rhs::Float64 = BLAS.dot(view(nowM,:,locus),ycorr)
+@time	                               	lhs::Float64 = mpmMat[mSet][locus] + lambda
+@time                                	meanBeta::Float64 = lhs\rhs
+@time                                	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
+@time                                	BLAS.axpy!(-1.0*beta[betaPos,locus],view(nowM,:,locus),ycorr)
                        		end
-                        	varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
+@time                        	varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
                 	end
        		end
 	 end
