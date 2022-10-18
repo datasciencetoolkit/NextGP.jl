@@ -490,8 +490,8 @@ function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,nMSet,keyBeta,regionsMat,re
 					ycorr .+= MMat[mSet][locus]*beta[betaPos,locus]					
 					RHS = (nowMp[locus]*ycorr)./varE
 					invLHS::Array{Float64,2} = inv((mpmMat[mSet][locus]./varE) .+ invB)
-					meanBeta::Array{Float64,1} = invLHS*RHS
-					beta[betaPos,locus] = rand(MvNormal(meanBeta,convert(Array,Symmetric(invLHS))))
+					meanBETA::Array{Float64,1} = invLHS*RHS
+					beta[betaPos,locus] = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
 					ycorr .-= MMat[mSet][locus]*beta[betaPos,locus]	
 				end
 				varBeta[mSet][r] = sampleVarCovBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
