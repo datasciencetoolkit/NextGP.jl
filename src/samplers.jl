@@ -497,7 +497,6 @@ function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,nMSet,keyBeta,regionsMat,re
 				varBeta[mSet][r] = sampleVarCovBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
 			end	
 		else
-		println("-------------------")
 			nowM = MMat[mSet]
                 	betaPos = keyBeta[mSet]
 			local rhs::Float64
