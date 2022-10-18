@@ -545,7 +545,6 @@ function sampleMandMVar_view2!(M,Mp,beta,mpm,nMSet,keyBeta,regionsMat,regions,yc
 				varBeta[mSet][r] = sampleVarCovBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
 			end	
 		else
-			nowM = M[mSet]
                 	betaPos = keyBeta[mSet]
 			local rhs::Float64
 			local lhs::Float64
@@ -555,12 +554,12 @@ function sampleMandMVar_view2!(M,Mp,beta,mpm,nMSet,keyBeta,regionsMat,regions,yc
                         	regionSize = length(theseLoci)
                         	lambda = varE/(varBeta[mSet][r])
                         	for locus in theseLoci
-					BLAS.axpy!(beta[betaPos,locus],view(nowM,:,locus),ycorr)
-                                	rhs = BLAS.dot(view(nowM,:,locus),ycorr)
+					BLAS.axpy!(beta[betaPos,locus],M[mSet][:,locus],ycorr)
+                                	rhs = BLAS.dot(M[mSet][:,locus],ycorr)
 	                               	lhs = mpm[mSet][locus] + lambda
                                 	meanBeta = lhs\rhs
                                 	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
-                                	BLAS.axpy!(-1.0*beta[betaPos,locus],view(nowM,:,locus),ycorr)
+                                	BLAS.axpy!(-1.0*beta[betaPos,locus],M[mSet][:,locus],ycorr)
                        		end
                         	varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
                 	end
