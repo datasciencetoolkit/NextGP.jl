@@ -395,7 +395,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 @time	        sampleMandMVar_view!(M,Mp,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
 
 @time        	for mSet in keys(mpm)
-	        	sampleMandMVar_view2!(M[mSet],Mp[mSet],beta,mpm[mSet],nMarkerSets[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta[mSet],scaleM[mSet],dfM[mSet])
+	        	sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],nMarkerSets[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta[mSet],scaleM[mSet],dfM[mSet])
 		end
                		
         	#print
@@ -526,7 +526,7 @@ end
 
 
 
-function sampleMandMVar_view2!(MMat,nowMp,beta,mpmMat,nMSet,betaPos,regionsMat,regions,ycorr,varE,varBetaNow,scaleMNow,dfMNow)
+function sampleMandMVar_view2!(mSet,MMat,nowMp,beta,mpmMat,nMSet,betaPos,regionsMat,regions,ycorr,varE,varBetaNow,scaleMNow,dfMNow)
         #for each marker set
 		if isa(mSet,Tuple)
 			for r in 1:regions
