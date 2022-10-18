@@ -383,33 +383,34 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	sleep(0.1)
 	
 		#sample residual variance
-	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
+		println("-------------------")
+	       	@time varE = sampleVarE(dfE,scaleE,ycorr,nData)
 		
 		#sample fixed effects
-	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
+	        @time sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
 	
 		#sample random effects
-	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
+	        @time sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
 
 		#sample marker effects and variances
-	        sampleMandMVar_view!(M,Mp,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
+	        @time sampleMandMVar_view!(M,Mp,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
                		
         	#print
 		if iter in these2Keep
-			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
-			IO.outMCMC(outPut,"varE",varE)
+			@time IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
+			@time IO.outMCMC(outPut,"varE",varE)
 			
-			for zSet in keys(uKeyPos4Print)
+			@time for zSet in keys(uKeyPos4Print)
                                 IO.outMCMC(outPut,"u$(uKeyPos4Print[zSet])",u[uKeyPos4Print[zSet],1:nColEachZ[zSet]]')
                         end
-			for pSet in keys(zpz)
+			@time for pSet in keys(zpz)
 				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
 			end
 
-			for mSet in keys(BetaKeyPos4Print)
+			@time for mSet in keys(BetaKeyPos4Print)
                                 IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
                         end
-			for pSet in keys(mpm)
+			@time for pSet in keys(mpm)
 				IO.outMCMC(outPut,"var".*String(pSet),varBeta[pSet]')
 			end
 		end
