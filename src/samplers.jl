@@ -416,14 +416,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
                                 IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
                         end
 			
-			
-			
-			@time for mSet in keys(BetaKeyPos4Print)
-                                IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet]:BetaKeyPos4Print[mSet],:])
-                        end
-			
-			
-			
 			@time for pSet in keys(mpm)
 				IO.outMCMC(outPut,"var".*String(pSet),varBeta[pSet]')
 			end
