@@ -395,7 +395,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		#sample marker effects and variances
 #	        sampleMandMVar_view!(M,Mp,beta,mpm,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
 	
-
+		println("--------")
         	for mSet in keys(mpm)
 	        	sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
 		end
@@ -412,11 +412,11 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
 			end
 			
-			for mSet in keys(BetaKeyPos4Print)
+@time			for mSet in keys(BetaKeyPos4Print)
                                 IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
                         end
 			
-			for pSet in keys(mpm)
+@time			for pSet in keys(mpm)
 				IO.outMCMC(outPut,"var".*String(pSet),varBeta[pSet]')
 			end
 		end
@@ -563,7 +563,7 @@ function sampleMandMVar_view2!(mSet,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,re
 @time                                	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
 @time                                	BLAS.axpy!(-1.0*beta[betaPos,locus],view(MMat,:,locus),ycorr)
                        		end
-                        	varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
+@time                       	varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
                 	end
        		end
 end
