@@ -394,15 +394,15 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		#sample marker effects and variances
 @time	        sampleMandMVar_view!(M,Mp,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
 	
-		println(M[mSet])
-		println(Mp[mSet])
+		println(M)
+		println(Mp)
 		println(beta)
-		println(mpm[mSet])
-		println(nMarkerSets[mSet])
-		println(BetaKeyPos[mSet])
-		println(regionArray[mSet])
-		println(nRegions[mSet])
-		println(varBeta[mSet])
+		println(mpm)
+		println(nMarkerSets)
+		println(BetaKeyPos)
+		println(regionArray)
+		println(nRegions)
+		println(varBeta)
 
 @time        	for mSet in keys(mpm)
 	        	sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],nMarkerSets[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
