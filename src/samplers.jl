@@ -550,11 +550,11 @@ function sampleMandMVar_view2!(mSet,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,re
 			local rhs::Float64
 			local lhs::Float64
 			local meanBeta::Float64
-                	@inbounds for r in 1:regions
+                	for r in 1:regions
                         	theseLoci = regionsMat[r]
                         	regionSize = length(theseLoci)
                         	lambda = varE/(varBeta[mSet][r])
-                        	@inbounds for locus in theseLoci
+                        	for locus in theseLoci
 					BLAS.axpy!(beta[betaPos,locus],view(MMat,:,locus),ycorr)
                                 	rhs = BLAS.dot(view(MMat,:,locus),ycorr)
 	                               	lhs = mpmMat[locus] + lambda
