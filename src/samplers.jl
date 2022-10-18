@@ -394,10 +394,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		#sample marker effects and variances
 @time	        sampleMandMVar_view!(M,Mp,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
 	
-		println(M)
-		println(Mp)
-		println(beta)
-		println(mpm)
+		
 		println(nMarkerSets)
 		println(BetaKeyPos)
 		println(regionArray)
