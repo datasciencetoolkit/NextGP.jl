@@ -383,16 +383,16 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	sleep(0.1)
 	
 		#sample residual variance
-	       	@time varE = sampleVarE(dfE,scaleE,ycorr,nData)
+	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
 		
 		#sample fixed effects
-	        @time sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
+	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
 	
 		#sample random effects
-	        @time sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
+	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
 
 		#sample marker effects and variances
-	        @time sampleMandMVar_view!(M,Mp,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
+	        sampleMandMVar_view!(M,Mp,beta,mpm,nMarkerSets,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
                		
         	#print
 		if iter in these2Keep
@@ -498,6 +498,7 @@ function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,nMSet,keyBeta,regionsMat,re
 			end	
 		else
 		println("-------------------")
+println("regions[mSet]: $(regions[mSet])")
 @time			nowM = MMat[mSet]
 @time                	betaPos = keyBeta[mSet]
                 	for r in 1:regions[mSet]
