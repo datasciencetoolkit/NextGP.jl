@@ -506,16 +506,16 @@ function sampleMandMVar_view!(MMat,MpMat,beta,mpmMat,nMSet,keyBeta,regionsMat,re
                 	for r in 1:regions[mSet]
                         	theseLoci = regionsMat[mSet][r]
                         	regionSize = length(theseLoci)
-#                        	lambda = varE/(varBeta[mSet][r])
+                        	lambda = varE/(varBeta[mSet][r])
                         	for locus in theseLoci
-@time					BLAS.axpy!(beta[betaPos,locus],nowM[:,locus],ycorr)
-@time                                	rhs = BLAS.dot(nowM[:,locus],ycorr)
-@time	                               	lhs = mpmMat[mSet][locus] + varE/(varBeta[mSet][r]) #lambda
-@time                                	meanBeta = lhs\rhs
-@time                                	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
-@time                                	BLAS.axpy!(-1.0*beta[betaPos,locus],nowM[:,locus],ycorr)
+					BLAS.axpy!(beta[betaPos,locus],nowM[:,locus],ycorr)
+                                	rhs = BLAS.dot(nowM[:,locus],ycorr)
+	                               	lhs = mpmMat[mSet][locus] + lambda
+                                	meanBeta = lhs\rhs
+                                	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
+                                	BLAS.axpy!(-1.0*beta[betaPos,locus],nowM[:,locus],ycorr)
                        		end
-@time                        	varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
+                        	varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
                 	end
        		end
 	 end
