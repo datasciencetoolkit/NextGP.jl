@@ -397,7 +397,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	
 
         	for mSet in keys(mpm)
-			println("mSet: $mSet")
 	        	sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
 		end
                		
