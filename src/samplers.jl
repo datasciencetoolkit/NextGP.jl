@@ -535,7 +535,7 @@ function sampleMandMVar_view2!(mSet,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,re
 				theseLoci = regionsMat[r]
 				regionSize = length(theseLoci)
 				invB = inv(varBetaNow[r])
-				for locus in theseLoci
+				for locus in theseLoci::UnitRange{Int64}
 					RHS = zeros(size(invB,1))	
 					ycorr .+= MMat[locus]*beta[betaPos,locus]					
 					RHS = (nowMp[locus]*ycorr)./varE
@@ -554,7 +554,7 @@ function sampleMandMVar_view2!(mSet,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,re
                         	theseLoci = regionsMat[r]
                         	regionSize = length(theseLoci)
                         	lambda = varE/(varBeta[mSet][r])
-                        	for locus in theseLoci
+                        	for locus in theseLoci::UnitRange{Int64}
 					BLAS.axpy!(beta[betaPos,locus],view(MMat,:,locus),ycorr)
                                 	rhs = BLAS.dot(view(MMat,:,locus),ycorr)
 	                               	lhs = mpmMat[locus] + lambda
