@@ -395,16 +395,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		#sample marker effects and variances
 @time	        sampleMandMVar_view!(M,Mp,beta,mpm,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
 	
-		println("$(keys(M))")
-		println("$(keys(Mp))")
-		println("$(keys(mpm))")
-		println("$(keys(BetaKeyPos))")
-		println("$(keys(regionArray))")
-		println("$(keys(nRegions))")
-		println("$(keys(scaleM))")
-		println("$(keys(dfM))")
 
-	
 @time        	for mSet in keys(mpm)
 			println("mSet: $mSet")
 	        	sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
