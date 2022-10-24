@@ -47,7 +47,7 @@ ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,arg1],data2[!,arg2])
 """
 function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,path2ped,paths2geno)
 	
-	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? ErrorException("Models without constant term are not allowed") : nothing 
+	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
 	
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
