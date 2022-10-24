@@ -125,7 +125,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 	#summarize input
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
 
-        for i in 1:length(terms(f.rhs))
+        for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
 			arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
 			arg2 = parse(Int64,repr((f.rhs[i].args_parsed)[2]))
