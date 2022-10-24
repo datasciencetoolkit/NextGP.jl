@@ -389,8 +389,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		#sample fixed effects
 #	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
 
-		for xSet in keys(ixpx)
-			sampleX2!(xSet,b,ixpx,nColEachX[XKeyPos[xSet]],XKeyPos[xSet],ycorr,varE)
+		for xSet in keys(iXpX)
+			sampleX2!(xSet,X[xSet],b,iXpX[xSet],nColEachX[XKeyPos[xSet]],XKeyPos[xSet],ycorr,varE)
 		end
 	
 		#sample random effects
@@ -451,20 +451,20 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,keyX,ycorr,varE)
 end
 
 
-function sampleX2!(xSet,b,ixpx,nCol,pos,ycorr,varE)
+function sampleX2!(xSet,XMat,b,ixpx,nCol,pos,ycorr,varE)
         #block for each effect
         if nCol == 1
-		ycorr    .+= xSet.*b[pos]
-		rhs      = xSet'*ycorr
+		ycorr    .+= xMat.*b[pos]
+		rhs      = xMat'*ycorr
 		meanMu   = ixpx*rhs			
                 b[pos] .= rand(Normal(meanMu[],sqrt((ixpx*varE))[]))
-		ycorr    .-= xSet.*b[pos]
+		ycorr    .-= xMat.*b[pos]
         else	
-		ycorr    .+= xSet*b[pos]
-                rhs      = xSet'*ycorr
+		ycorr    .+= xMat*b[pos]
+                rhs      = xMat'*ycorr
                 meanMu   = ixpx*rhs
 		b[pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(ixpx*varE))))
-		ycorr    .-= xSet*b[pos]
+		ycorr    .-= xMat*b[pos]
         end
 end
 
