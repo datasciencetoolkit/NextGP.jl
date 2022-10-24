@@ -451,7 +451,7 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,keyX,ycorr,varE)
 end
 
 
-function sampleX2!(xSet,XMat,b,ixpx,nCol,pos,ycorr,varE)
+function sampleX2!(xSet,xMat,b,ixpx,nCol,pos,ycorr,varE)
         #block for each effect
         if nCol == 1
 		ycorr    .+= xMat.*b[pos]
