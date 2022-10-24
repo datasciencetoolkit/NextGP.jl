@@ -163,7 +163,7 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 			thisX = modelcols(my_ApplySch, userData)
 			FE[terms4StatsModels[i]] = thisX
 			thisX = 0
-			push!(summarize,[f.rhs[i],typeof(terms(f.rhs)[i]),typeof(FE[terms4StatsModels[i]]),size(FE[terms4StatsModels[i]],2)])
+			push!(summarize,[terms(f.rhs)[i],typeof(terms(f.rhs)[i]),typeof(FE[terms4StatsModels[i]]),size(FE[terms4StatsModels[i]],2)])
                 end
         end
 	
