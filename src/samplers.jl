@@ -384,23 +384,24 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	sleep(0.1)
 	
 		#sample residual variance
-@time	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
+	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
 		
 		#sample fixed effects
-@time	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
+	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
 	
 		#sample random effects
-@time	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
+	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
 
 		#sample marker effects and variances
 #	        sampleMandMVar_view!(M,Mp,beta,mpm,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
 	
- @time       	for mSet in keys(mpm)
-	        	sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
+	       	for mSet in keys(mpm)
+	        	#sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
+			sampleMandMVar!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
 		end
                		
         	#print
-@time		if iter in these2Keep
+		if iter in these2Keep
 			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
 			IO.outMCMC(outPut,"varE",varE)
 			
@@ -566,6 +567,47 @@ function sampleMandMVar_view2!(mSet,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,re
                 	end
        		end
 end
+
+##### Component-wise, seperated functions for symbol and tuple
+function sampleMandMVar!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+	for r in 1:regions
+		theseLoci = regionsMat[r]
+		regionSize = length(theseLoci)
+		invB = inv(varBetaNow[r])
+		for locus in theseLoci::UnitRange{Int64}
+			RHS = zeros(size(invB,1))	
+			ycorr .+= MMat[locus]*beta[betaPos,locus]					
+			RHS = (nowMp[locus]*ycorr)./varE
+			invLHS::Array{Float64,2} = inv((mpmMat[locus]./varE) .+ invB)
+			meanBETA::Array{Float64,1} = invLHS*RHS
+			beta[betaPos,locus] = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
+			ycorr .-= MMat[locus]*beta[betaPos,locus]	
+		end
+		varBeta[mSet][r] = sampleVarCovBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
+	end
+end
+
+function sampleMandMVar!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+	local rhs::Float64
+	local lhs::Float64
+	local meanBeta::Float64
+	for r in 1:regions
+		theseLoci = regionsMat[r]
+		regionSize = length(theseLoci)
+		lambda = varE/(varBeta[mSet][r])
+		for locus in theseLoci::UnitRange{Int64}
+			BLAS.axpy!(beta[betaPos,locus],view(MMat,:,locus),ycorr)
+			rhs = BLAS.dot(view(MMat,:,locus),ycorr)
+			lhs = mpmMat[locus] + lambda
+			meanBeta = lhs\rhs
+			beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
+			BLAS.axpy!(-1.0*beta[betaPos,locus],view(MMat,:,locus),ycorr)
+		end
+		varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
+	end
+end
+
+#####
 
 
 
