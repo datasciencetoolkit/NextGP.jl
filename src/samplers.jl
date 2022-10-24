@@ -387,7 +387,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
 		
 		#sample fixed effects
-	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
+#	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
+		sampleX2!(xSet,b,ixpx,nColEachX[keyX[xSet]],keyX[xSet],ycorr,varE)
 	
 		#sample random effects
 	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
@@ -443,6 +444,24 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,keyX,ycorr,varE)
 			b[pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[xSet]*varE))))
 			ycorr    .-= X[xSet]*b[pos]
                 end
+        end
+end
+
+
+function sampleX2!(xSet,b,ixpx,nCol,pos,ycorr,varE)
+        #block for each effect
+        if nCol == 1
+		ycorr    .+= xSet.*b[pos]
+		rhs      = xSet'*ycorr
+		meanMu   = ixpx*rhs			
+                b[pos] .= rand(Normal(meanMu[],sqrt((ixpx*varE))[]))
+		ycorr    .-= xSet.*b[pos]
+        else	
+		ycorr    .+= xSet*b[pos]
+                rhs      = xSet'*ycorr
+                meanMu   = ixpx*rhs
+		b[pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(ixpx*varE))))
+		ycorr    .-= xSet*b[pos]
         end
 end
 
