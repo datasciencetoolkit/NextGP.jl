@@ -390,8 +390,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 #	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
 
 		for xSet in keys(iXpX)
-		println("typeof X typeof(X[xSet])")
-			sampleX2!(xSet,X[xSet],b,iXpX[xSet],nColEachX[XKeyPos[xSet]],XKeyPos[xSet],ycorr,varE)
+		println("typeof X $(typeof(X[xSet]))")
+			sampleX2!(xSet,X[xSet],b,iXpX[xSet],XKeyPos[xSet],ycorr,varE)
 		end
 	
 		#sample random effects
