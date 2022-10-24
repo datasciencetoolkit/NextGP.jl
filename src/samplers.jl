@@ -390,6 +390,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 #	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
 
 		for xSet in keys(iXpX)
+		println("typeof X typeof(X[xSet])")
 			sampleX2!(xSet,X[xSet],b,iXpX[xSet],nColEachX[XKeyPos[xSet]],XKeyPos[xSet],ycorr,varE)
 		end
 	
@@ -451,21 +452,22 @@ function sampleX!(X,b,iXpX,nFix,nColEachX,keyX,ycorr,varE)
 end
 
 
-function sampleX2!(xSet,xMat,b,ixpx,nCol,pos,ycorr,varE)
+function sampleX2!(xSet,xMat::Array{Float64, 1},b,ixpx,pos,ycorr,varE)
         #block for each effect
-        if nCol == 1
 		ycorr    .+= xMat.*b[pos]
 		rhs      = xMat'*ycorr
 		meanMu   = ixpx*rhs			
                 b[pos] .= rand(Normal(meanMu[],sqrt((ixpx*varE))[]))
-		ycorr    .-= xMat.*b[pos]
-        else	
+		ycorr    .-= xMat.*b[pos]        
+end
+
+function sampleX2!(xSet,xMat::Array{Float64, 2},b,ixpx,pos,ycorr,varE)
+        #block for each effect
 		ycorr    .+= xMat*b[pos]
                 rhs      = xMat'*ycorr
                 meanMu   = ixpx*rhs
 		b[pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(ixpx*varE))))
 		ycorr    .-= xMat*b[pos]
-        end
 end
 
 
