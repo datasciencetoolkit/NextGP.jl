@@ -388,7 +388,10 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		
 		#sample fixed effects
 #	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
-		sampleX2!(xSet,b,ixpx,nColEachX[keyX[xSet]],keyX[xSet],ycorr,varE)
+
+		for xSet in keys(ixpx)
+			sampleX2!(xSet,b,ixpx,nColEachX[XKeyPos[xSet]],XKeyPos[xSet],ycorr,varE)
+		end
 	
 		#sample random effects
 	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
