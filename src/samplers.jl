@@ -72,11 +72,9 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
         ##make b and u arrays
         b = Array{Array{Float64, 1},1}(undef,0)
         ##counts columns per effect
-        nColEachX = []
         for xSet in keys(X)
                 nCol = size(X[xSet],2)
                 push!(b,fill(0.0,nCol))
-                nColEachX = push!(nColEachX,nCol)
         end
 
 	#set up for E.
@@ -104,9 +102,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 								
 	#parameters for priors
         dfE = 4.0
-	dfDefault = 4.0
- 
-	       
+ 	       
 	if priorVCV[:e][2]==0.0
 		priorVCV[:e][2]  = 0.0005
        		scaleE     = 0.0005
@@ -401,25 +397,25 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		end
                		
         	#print
-		if iter in these2Keep
-			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
-			IO.outMCMC(outPut,"varE",varE)
+#		if iter in these2Keep
+#			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
+#			IO.outMCMC(outPut,"varE",varE)
 			
-			for zSet in keys(uKeyPos4Print)
-                                IO.outMCMC(outPut,"u$(uKeyPos4Print[zSet])",u[uKeyPos4Print[zSet],1:nColEachZ[zSet]]')
-                        end
-			for pSet in keys(zpz)
-				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
-			end
+#			for zSet in keys(uKeyPos4Print)
+#                                IO.outMCMC(outPut,"u$(uKeyPos4Print[zSet])",u[uKeyPos4Print[zSet],1:nColEachZ[zSet]]')
+#                        end
+#			for pSet in keys(zpz)
+#				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
+#			end
 			
-			for mSet in keys(BetaKeyPos4Print)
-                                IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
-                        end
+#			for mSet in keys(BetaKeyPos4Print)
+#                                IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
+#                        end
 			
-			for pSet in keys(mpm)
-				IO.outMCMC(outPut,"var".*String(pSet),varBeta[pSet]')
-			end
-		end
+#			for pSet in keys(mpm)
+#				IO.outMCMC(outPut,"var".*String(pSet),varBeta[pSet]')
+#			end
+#		end
 	end
 end
 
