@@ -47,7 +47,7 @@ ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,arg1],data2[!,arg2])
 """
 function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,path2ped,paths2geno)
 	
-#	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
+	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
 	
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
@@ -125,8 +125,8 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 	#summarize input
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
 
-        for i in 1:length(terms(f.rhs))
-		if (terms(f.rhs)[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
+        for i in 1:length(f.rhs)
+		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
 			arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
 			arg2 = parse(Int64,repr((f.rhs[i].args_parsed)[2]))
 			path = paths2geno[arg1]
@@ -136,16 +136,16 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
                         thisM = 0 #I can directly merge to dict above
 			regionSizes[arg1] = arg2
 			push!(summarize,[arg1,"BayesPR",typeof(ME[arg1]),size(ME[arg1],2)])
-                elseif (terms(f.rhs)[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
+                elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
                         arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
 			IDs,thisZ = ranMat(arg, :ID, userData, pedigree)
 			RE[arg] = thisZ
 			thisZ = 0
 			idRE[arg] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
 			push!(summarize,[arg,"ran",typeof(RE[arg]),size(RE[arg],2)])
-                elseif (terms(f.rhs)[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
+                elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         my_sch = schema(userData, userHints) #work on userData and userHints
-                        my_ApplySch = apply_schema(terms(f.rhs[i]), my_sch, MixedModels.MixedModel)
+                        my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
 			#####ID is from the pheno  file directly, order not  checked!#####################################################
 			arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
                         arg2 = Symbol(repr((f.rhs[i].args_parsed)[2]))
@@ -158,12 +158,12 @@ function mme(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,pa
 
                 else
 			my_sch = schema(userData, userHints)
-			my_ApplySch = apply_schema(terms(f.rhs)[i], my_sch, MixedModels.MixedModel)
+			my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
 			idFE[terms4StatsModels[i]] = coefnames(my_ApplySch) 	
 			thisX = modelcols(my_ApplySch, userData)
 			FE[terms4StatsModels[i]] = thisX
 			thisX = 0
-			push!(summarize,[terms(f.rhs)[i],typeof(terms(f.rhs)[i]),typeof(FE[terms4StatsModels[i]]),size(FE[terms4StatsModels[i]],2)])
+			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(FE[terms4StatsModels[i]]),size(FE[terms4StatsModels[i]],2)])
                 end
         end
 	
