@@ -381,7 +381,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 	#Start McMC
 @showprogress 1 "MCMC progress..." for iter in 1:chainLength
-	sleep(0.1)
 	
 		#sample residual variance
 #	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
