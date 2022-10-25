@@ -397,25 +397,25 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		end
                		
         	#print
-#		if iter in these2Keep
-#			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
-#			IO.outMCMC(outPut,"varE",varE)
+		if iter in these2Keep
+			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
+			IO.outMCMC(outPut,"varE",varE)
 			
-#			for zSet in keys(uKeyPos4Print)
-#                                IO.outMCMC(outPut,"u$(uKeyPos4Print[zSet])",u[uKeyPos4Print[zSet],1:nColEachZ[zSet]]')
-#                        end
-#			for pSet in keys(zpz)
-#				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
-#			end
+			for zSet in keys(uKeyPos4Print)
+                                IO.outMCMC(outPut,"u$(uKeyPos4Print[zSet])",u[uKeyPos4Print[zSet],1:nColEachZ[zSet]]')
+                        end
+			for pSet in keys(zpz)
+				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
+			end
 			
-#			for mSet in keys(BetaKeyPos4Print)
-#                                IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
-#                        end
+			for mSet in keys(BetaKeyPos4Print)
+                                IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
+                        end
 			
-#			for pSet in keys(mpm)
-#				IO.outMCMC(outPut,"var".*String(pSet),varBeta[pSet]')
-#			end
-#		end
+			for pSet in keys(mpm)
+				IO.outMCMC(outPut,"var".*String(pSet),varBeta[pSet]')
+			end
+		end
 	end
 end
 
