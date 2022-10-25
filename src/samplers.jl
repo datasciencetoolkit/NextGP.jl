@@ -384,22 +384,22 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	sleep(0.1)
 	
 		#sample residual variance
-	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
+#	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
 		
 		#sample fixed effects
 
-		for xSet in keys(iXpX)
-			sampleX!(xSet,X[xSet],b,iXpX[xSet],XKeyPos[xSet],ycorr,varE)
-		end
+#		for xSet in keys(iXpX)
+#			sampleX!(xSet,X[xSet],b,iXpX[xSet],XKeyPos[xSet],ycorr,varE)
+#		end
 	
 		#sample random effects
-	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
+#	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
 
 		#sample marker effects and variances
 	
-	       	for mSet in keys(mpm)
-			sampleMandMVar!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
-		end
+#	       	for mSet in keys(mpm)
+#			sampleMandMVar!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
+#		end
                		
         	#print
 #		if iter in these2Keep
