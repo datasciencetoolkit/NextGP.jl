@@ -387,71 +387,46 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
 		
 		#sample fixed effects
-#	        sampleX!(X,b,iXpX,nFix,nColEachX,XKeyPos,ycorr,varE)
 
 		for xSet in keys(iXpX)
-			sampleX2!(xSet,X[xSet],b,iXpX[xSet],XKeyPos[xSet],ycorr,varE)
+			sampleX!(xSet,X[xSet],b,iXpX[xSet],XKeyPos[xSet],ycorr,varE)
 		end
 	
 		#sample random effects
 	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
 
 		#sample marker effects and variances
-#	        sampleMandMVar_view!(M,Mp,beta,mpm,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
 	
 	       	for mSet in keys(mpm)
-	        	#sampleMandMVar_view2!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
 			sampleMandMVar!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
 		end
                		
         	#print
-		if iter in these2Keep
-			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
-			IO.outMCMC(outPut,"varE",varE)
+#		if iter in these2Keep
+#			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
+#			IO.outMCMC(outPut,"varE",varE)
 			
-			for zSet in keys(uKeyPos4Print)
-                                IO.outMCMC(outPut,"u$(uKeyPos4Print[zSet])",u[uKeyPos4Print[zSet],1:nColEachZ[zSet]]')
-                        end
-			for pSet in keys(zpz)
-				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
-			end
+#			for zSet in keys(uKeyPos4Print)
+#                                IO.outMCMC(outPut,"u$(uKeyPos4Print[zSet])",u[uKeyPos4Print[zSet],1:nColEachZ[zSet]]')
+#                        end
+#			for pSet in keys(zpz)
+#				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
+#			end
 			
-			for mSet in keys(BetaKeyPos4Print)
-                                IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
-                        end
+#			for mSet in keys(BetaKeyPos4Print)
+#                                IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
+#                        end
 			
-			for pSet in keys(mpm)
-				IO.outMCMC(outPut,"var".*String(pSet),varBeta[pSet]')
-			end
-		end
+#			for pSet in keys(mpm)
+#				IO.outMCMC(outPut,"var".*String(pSet),varBeta[pSet]')
+#			end
+#		end
 	end
 end
 
 
 #Sampling fixed effects
-
-function sampleX!(X,b,iXpX,nFix,nColEachX,keyX,ycorr,varE)
-        #block for each effect
-        for xSet in keys(X)
-		pos = keyX[xSet]	
-                if nColEachX[pos] == 1
-			ycorr    .+= X[xSet].*b[pos]
-			rhs      = X[xSet]'*ycorr
-			meanMu   = iXpX[xSet]*rhs			
-                        b[pos] .= rand(Normal(meanMu[],sqrt((iXpX[xSet]*varE))[]))
-			ycorr    .-= X[xSet].*b[pos]
-                else	
-			ycorr    .+= X[xSet]*b[pos]
-                        rhs      = X[xSet]'*ycorr
-                        meanMu   = iXpX[xSet]*rhs
-			b[pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(iXpX[xSet]*varE))))
-			ycorr    .-= X[xSet]*b[pos]
-                end
-        end
-end
-
-
-function sampleX2!(xSet,xMat::Array{Float64, 1},b,ixpx,pos,ycorr,varE)
+function sampleX!(xSet,xMat::Array{Float64, 1},b,ixpx,pos,ycorr,varE)
         #block for each effect
 		ycorr    .+= xMat.*b[pos]
 		rhs      = xMat'*ycorr
@@ -460,7 +435,7 @@ function sampleX2!(xSet,xMat::Array{Float64, 1},b,ixpx,pos,ycorr,varE)
 		ycorr    .-= xMat.*b[pos]        
 end
 
-function sampleX2!(xSet,xMat::Array{Float64, 2},b,ixpx,pos,ycorr,varE)
+function sampleX!(xSet,xMat::Array{Float64, 2},b,ixpx,pos,ycorr,varE)
         #block for each effect
 		ycorr    .+= xMat*b[pos]
                 rhs      = xMat'*ycorr
@@ -469,7 +444,7 @@ function sampleX2!(xSet,xMat::Array{Float64, 2},b,ixpx,pos,ycorr,varE)
 		ycorr    .-= xMat*b[pos]
 end
 
-
+#sample random effects
 function sampleU(iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
 	uVec = deepcopy(uVector)
 	λz = varE/varUComp
@@ -505,91 +480,8 @@ function sampleZandZVar!(iStrMat,ZMat,ZpMat,u,zpzMat,keyU,nCols,ycorr,varE,varU,
 	 end
 end
 
-function sampleMandMVar_view!(M,Mp,beta,mpm,BetaKeyPos,regionArray,nRegions,ycorr,varE,varBeta,scaleM,dfM)
-        #for each marker set
-        for mSet in keys(mpm)
-		if isa(mSet,Tuple)
-			betaPos = BetaKeyPos[mSet]
-			nowMp = Mp[mSet] ###
-			for r in 1:nRegions[mSet]
-				theseLoci = regionArray[mSet][r]
-				regionSize = length(theseLoci)
-				invB = inv(varBeta[mSet][r])
-				for locus in theseLoci
-					RHS = zeros(size(invB,1))	
-					ycorr .+= M[mSet][locus]*beta[betaPos,locus]					
-					RHS = (nowMp[locus]*ycorr)./varE
-					invLHS::Array{Float64,2} = inv((mpm[mSet][locus]./varE) .+ invB)
-					meanBETA::Array{Float64,1} = invLHS*RHS
-					beta[betaPos,locus] = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
-					ycorr .-= M[mSet][locus]*beta[betaPos,locus]	
-				end
-				varBeta[mSet][r] = sampleVarCovBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
-			end	
-		else
-			nowM = M[mSet]
-                	betaPos = BetaKeyPos[mSet]
-			local rhs::Float64
-			local lhs::Float64
-			local meanBeta::Float64
-                	for r in 1:nRegions[mSet]
-                        	theseLoci = regionArray[mSet][r]
-                        	regionSize = length(theseLoci)
-                        	lambda = varE/(varBeta[mSet][r])
-                        	for locus in theseLoci
-					BLAS.axpy!(beta[betaPos,locus],view(nowM,:,locus),ycorr)
-                                	rhs = BLAS.dot(view(nowM,:,locus),ycorr)
-	                               	lhs = mpm[mSet][locus] + lambda
-                                	meanBeta = lhs\rhs
-                                	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
-                                	BLAS.axpy!(-1.0*beta[betaPos,locus],view(nowM,:,locus),ycorr)
-                       		end
-                        	varBeta[mSet][r] = sampleVarBeta(scaleM[mSet],dfM[mSet],beta[betaPos,theseLoci],regionSize)
-                	end
-       		end
-	 end
-end
 
-
-#component-wise
-function sampleMandMVar_view2!(mSet,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
-        #for each marker set
-		if isa(mSet,Tuple)
-			for r in 1:regions
-				theseLoci = regionsMat[r]
-				regionSize = length(theseLoci)
-				invB = inv(varBetaNow[r])
-				for locus in theseLoci::UnitRange{Int64}
-					RHS = zeros(size(invB,1))	
-					ycorr .+= MMat[locus]*beta[betaPos,locus]					
-					RHS = (nowMp[locus]*ycorr)./varE
-					invLHS::Array{Float64,2} = inv((mpmMat[locus]./varE) .+ invB)
-					meanBETA::Array{Float64,1} = invLHS*RHS
-					beta[betaPos,locus] = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
-					ycorr .-= MMat[locus]*beta[betaPos,locus]	
-				end
-				varBeta[mSet][r] = sampleVarCovBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
-			end	
-		else
-			local rhs::Float64
-			local lhs::Float64
-			local meanBeta::Float64
-                	for r in 1:regions
-                        	theseLoci = regionsMat[r]
-                        	regionSize = length(theseLoci)
-                        	lambda = varE/(varBeta[mSet][r])
-                        	for locus in theseLoci::UnitRange{Int64}
-					BLAS.axpy!(beta[betaPos,locus],view(MMat,:,locus),ycorr)
-                                	rhs = BLAS.dot(view(MMat,:,locus),ycorr)
-	                               	lhs = mpmMat[locus] + lambda
-                                	meanBeta = lhs\rhs
-                                	beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
-                                	BLAS.axpy!(-1.0*beta[betaPos,locus],view(MMat,:,locus),ycorr)
-                       		end
-                       	varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
-                	end
-       		end
-end
+#sample random marker effects
 
 ##### Component-wise, seperated functions for symbol and tuple
 function sampleMandMVar!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
