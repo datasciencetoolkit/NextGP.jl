@@ -393,11 +393,11 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 		#sample marker effects and variances
 	
-@time	       	for mSet in keys(mpm)
+	       	for mSet in keys(mpm)
 			sampleMandMVar!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
 		end
 		
-@time		for mSet in keys(mpm)
+		for mSet in keys(mpm)
 			sampleMandMVarGI!(mSet,M[mSet],Mp[mSet],beta2,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
 		end
                		
@@ -413,12 +413,12 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
 			end
 			
-@time			for mSet in keys(BetaKeyPos4Print)
+			for mSet in keys(BetaKeyPos4Print)
                                 IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
                         end
 
 
-@time			for mSet in keys(BetaKeyPos4Print)
+			for mSet in keys(BetaKeyPos4Print)
 				IO.outMCMC(outPut,"beta$mSet",beta2[BetaKeyPos4Print[mSet]])
                         end
 
@@ -510,6 +510,7 @@ function sampleMandMVar!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,r
 end
 
 function sampleMandMVar!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+	println("----- ORIG -----")
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -518,18 +519,19 @@ function sampleMandMVar!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,
 		regionSize = length(theseLoci)
 		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
-			BLAS.axpy!(beta[betaPos,locus],view(MMat,:,locus),ycorr)
+@time			BLAS.axpy!(beta[betaPos,locus],view(MMat,:,locus),ycorr)
 			rhs = BLAS.dot(view(MMat,:,locus),ycorr)
 			lhs = mpmMat[locus] + lambda
 			meanBeta = lhs\rhs
-			beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
-			BLAS.axpy!(-1.0*beta[betaPos,locus],view(MMat,:,locus),ycorr)
+@time			beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
+@time			BLAS.axpy!(-1.0*beta[betaPos,locus],view(MMat,:,locus),ycorr)
 		end
-		varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
+@time		varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
 	end
 end
 
 function sampleMandMVarGI!(mSet::Symbol,MMat,nowMp,beta2,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+	println("----- GI -----")
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -538,14 +540,14 @@ function sampleMandMVarGI!(mSet::Symbol,MMat,nowMp,beta2,mpmMat,betaPos,regionsM
 		regionSize = length(theseLoci)
 		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
-			BLAS.axpy!(getindex(beta2[betaPos],locus),view(MMat,:,locus),ycorr)
+@time			BLAS.axpy!(getindex(beta2[betaPos],locus),view(MMat,:,locus),ycorr)
 			rhs = BLAS.dot(view(MMat,:,locus),ycorr)
 			lhs = mpmMat[locus] + lambda
 			meanBeta = lhs\rhs
-			setindex!.(beta2[betaPos,:],sampleBeta(meanBeta, lhs, varE),locus)
-			BLAS.axpy!(-1.0*getindex(beta2[betaPos],locus),view(MMat,:,locus),ycorr)
+@time			setindex!.(beta2[betaPos,:],sampleBeta(meanBeta, lhs, varE),locus)
+@time			BLAS.axpy!(-1.0*getindex(beta2[betaPos],locus),view(MMat,:,locus),ycorr)
 		end
-		varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,getindex(beta2[betaPos],theseLoci),regionSize)
+@time		varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,getindex(beta2[betaPos],theseLoci),regionSize)
 	end
 end
 
