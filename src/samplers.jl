@@ -504,7 +504,7 @@ function sampleMandMVar!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,r
 	for r in 1:regions
 		theseLoci = regionsMat[r]
 		regionSize = length(theseLoci)
-		invB = inv(varBeta[r])
+		invB = inv(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			RHS = zeros(size(invB,1))	
 			ycorr .+= MMat[locus]*beta[betaPos,locus]					
@@ -563,7 +563,7 @@ function sampleMandMVarGI!(mSet::Tuple,MMat,nowMp,beta2,mpmMat,betaPos,regionsMa
 	for r in 1:regions
 		theseLoci = regionsMat[r]
 		regionSize = length(theseLoci)
-		invB = inv(varBeta[r])
+		invB = inv(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			RHS = zeros(size(invB,1))	
 			ycorr .+= MMat[locus]*getindex.(beta2[betaPos],locus)				
