@@ -519,7 +519,8 @@ function sampleMandMVar!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,
 ###			BLAS.axpy!(-1.0*beta[betaPos,locus],view(MMat,:,locus),ycorr)
 			BLAS.axpy!(-1.0*getindex.(beta[betaPos,:],locus)[],view(MMat,:,locus),ycorr)
 		end
-		varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
+###		varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
+		varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,getindex.(beta[betaPos,:],theseLoci),regionSize)
 	end
 end
 
