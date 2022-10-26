@@ -371,7 +371,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		
 	#arbitrary marker names
 	for mSet in keys(BetaKeyPos4Print)
-	println("mSet: $mSet")
    		IO.outMCMC(outPut,"beta$mSet",hcat(["rs_$i" for i in 1:nMarkers[mSet]]...))
         end
 	
@@ -505,7 +504,7 @@ function sampleMandMVar!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,r
 	for r in 1:regions
 		theseLoci = regionsMat[r]
 		regionSize = length(theseLoci)
-		invB = inv(varBetaNow[r])
+		invB = inv(varBeta[r])
 		for locus in theseLoci::UnitRange{Int64}
 			RHS = zeros(size(invB,1))	
 			ycorr .+= MMat[locus]*beta[betaPos,locus]					
@@ -564,7 +563,7 @@ function sampleMandMVarGI!(mSet::Tuple,MMat,nowMp,beta2,mpmMat,betaPos,regionsMa
 	for r in 1:regions
 		theseLoci = regionsMat[r]
 		regionSize = length(theseLoci)
-		invB = inv(varBetaNow[r])
+		invB = inv(varBeta[r])
 		for locus in theseLoci::UnitRange{Int64}
 			RHS = zeros(size(invB,1))	
 			ycorr .+= MMat[locus]*getindex.(beta2[betaPos],locus)				
