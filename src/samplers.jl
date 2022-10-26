@@ -429,7 +429,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 
 			for pSet in keys(mpm)
-				IO.outMCMC(outPut,"var$(pSet)",varBeta[pSet]')
+#				IO.outMCMC(outPut,"var$(pSet)", varBeta[pSet]')
+				IO.outMCMC(outPut,"var$(pSet)",hcat(reduce(hcat,varBeta[pSet])...))
 			end
 		end
 	end
