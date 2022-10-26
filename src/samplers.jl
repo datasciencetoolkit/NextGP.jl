@@ -364,6 +364,9 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		IO.outMCMC(outPut,"varU$i",[nameRE_VCV]) #[] to have it as one row
 	end	
 	
+		println("regionArray: $(regionArray)")
+
+	
 	#arbitrary marker names
 	for mSet in keys(BetaKeyPos4Print)
    		IO.outMCMC(outPut,"beta$mSet",hcat(["rs_$i" for i in 1:nMarkers[mSet]]...))
@@ -375,7 +378,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	IO.outMCMC(outPut,"varE",["e"])
 	##########
 	
-	println("regionArray: $(regionArray)")
 
 
 	#Start McMC
