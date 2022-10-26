@@ -317,7 +317,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 ####	beta = zeros(Float64,nMarkerSets,maximum(vcat([0,collect(values(nMarkers))]...))) #zero is for max to work when no SNP data is present #can allow unequal length! Remove tail zeros for printing....
 	beta = [zeros(Float64,1,collect(values(nMarkers))[i]) for i in 1:nMarkerSets] #zero is for max to work when no SNP data is present #can allow unequal length! Remove tail zeros for printing....
-	println("beta: $size(beta) $typeof(beta) $beta")
+	println("beta: $(size(beta)) $(typeof(beta)) $beta")
 
         varBeta = OrderedDict{Any,Any}()
         for mSet in keys(mpm)
@@ -510,13 +510,13 @@ function sampleMandMVar!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,
 		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 ###			BLAS.axpy!(beta[betaPos,locus],view(MMat,:,locus),ycorr)
-			BLAS.axpy!(getindex(beta[betaPos,:],locus),view(MMat,:,locus),ycorr)
+			BLAS.axpy!(getindex.(beta[betaPos,:],locus)[],view(MMat,:,locus),ycorr)
 			rhs = BLAS.dot(view(MMat,:,locus),ycorr)
 			lhs = mpmMat[locus] + lambda
 			meanBeta = lhs\rhs
 			beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
 ###			BLAS.axpy!(-1.0*beta[betaPos,locus],view(MMat,:,locus),ycorr)
-			BLAS.axpy!(-1.0*getindex(beta[betaPos,:],locus),view(MMat,:,locus),ycorr)
+			BLAS.axpy!(-1.0*getindex.(beta[betaPos,:],locus)[],view(MMat,:,locus),ycorr)
 		end
 		varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
 	end
