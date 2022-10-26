@@ -363,11 +363,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 #		IO.outMCMC(outPut,"varU$i",[join(collect(keys(levelDict[:levelsRE]))[i],"_")])
 		IO.outMCMC(outPut,"varU$i",[nameRE_VCV]) #[] to have it as one row
 	end	
-	
-	println("BetaKeyPos4Print: $(BetaKeyPos4Print)")
-	println("nMarkers: $(nMarkers)")
-	println("nRegions: $(nRegions)")
-	
 		
 	#arbitrary marker names
 	for mSet in keys(BetaKeyPos4Print)
