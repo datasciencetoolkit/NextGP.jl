@@ -317,7 +317,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 ####	beta = zeros(Float64,nMarkerSets,maximum(vcat([0,collect(values(nMarkers))]...))) #zero is for max to work when no SNP data is present #can allow unequal length! Remove tail zeros for printing....
 	beta = [zeros(Float64,1,collect(values(nMarkers))[i]) for i in 1:nMarkerSets] #zero is for max to work when no SNP data is present #can allow unequal length! Remove tail zeros for printing....
-	println("beta: $size(beta) $type(beta) $beta")
+	println("beta: $size(beta) $typeof(beta) $beta")
 
         varBeta = OrderedDict{Any,Any}()
         for mSet in keys(mpm)
