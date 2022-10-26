@@ -514,7 +514,8 @@ function sampleMandMVar!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,
 			rhs = BLAS.dot(view(MMat,:,locus),ycorr)
 			lhs = mpmMat[locus] + lambda
 			meanBeta = lhs\rhs
-			beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
+###			beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
+			setindex!.(beta[betaPos,:],sampleBeta(meanBeta, lhs, varE),locus)
 ###			BLAS.axpy!(-1.0*beta[betaPos,locus],view(MMat,:,locus),ycorr)
 			BLAS.axpy!(-1.0*getindex.(beta[betaPos,:],locus)[],view(MMat,:,locus),ycorr)
 		end
