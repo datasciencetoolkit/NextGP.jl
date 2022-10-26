@@ -549,6 +549,25 @@ function sampleMandMVarGI!(mSet::Symbol,MMat,nowMp,beta2,mpmMat,betaPos,regionsM
 	end
 end
 
+##### Component-wise, seperated functions for symbol and tuple
+function sampleMandMVarGI!(mSet::Tuple,MMat,nowMp,beta2,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+	for r in 1:regions
+		theseLoci = regionsMat[r]
+		regionSize = length(theseLoci)
+		invB = inv(varBetaNow[r])
+		for locus in theseLoci::UnitRange{Int64}
+			RHS = zeros(size(invB,1))	
+			ycorr .+= MMat[locus]*getindex.(beta2[betaPos],locus)				
+			RHS = (nowMp[locus]*ycorr)./varE
+			invLHS::Array{Float64,2} = inv((mpmMat[locus]./varE) .+ invB)
+			meanBETA::Array{Float64,1} = invLHS*RHS
+			setindex!.(beta2[betaPos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
+			ycorr .-= MMat[locus]*getindex.(beta2[betaPos],locus)	
+		end
+		varBeta[mSet][r] = sampleVarCovBetaGI(scaleMNow,dfMNow,reduce(hcat,getindex.(beta2[betaPos],Ref(theseLoci))),regionSize)
+	end
+end
+
 #####
 
 
@@ -571,6 +590,11 @@ end
 
 function sampleVarCovBeta(scalem,dfm,whichLoci,regionSize)
 	Sb = whichLoci*whichLoci'
+	return rand(InverseWishart(dfm + regionSize, scalem + Sb))
+end
+
+function sampleVarCovBetaGI(scalem,dfm,whichLoci,regionSize)
+	Sb = whichLoci'whichLoci
 	return rand(InverseWishart(dfm + regionSize, scalem + Sb))
 end
 
