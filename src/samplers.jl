@@ -374,6 +374,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 	IO.outMCMC(outPut,"varE",["e"])
 	##########
+	
+	println("regionArray: $(regionArray)")
 
 
 	#Start McMC
