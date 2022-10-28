@@ -12,7 +12,7 @@ using Printf
 
 
 
-include("equations.jl")
+include("prepMatVec.jl")
 include("runTime.jl")
 include("samplers.jl")
 include("misc.jl")
@@ -22,7 +22,7 @@ runGibbs = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}
 	
 	folderHandler(outFolder)
 
-	levelsFR,Ainv,yVec,FE,RE,ME,regionSizes = equations.mme(formula,userData,userHints=myHints,path2ped=userPedData,paths2geno=genotypes)
+	levelsFR,Ainv,yVec,FE,RE,ME,regionSizes = prepMatVec.prep(formula,userData,userHints=myHints,path2ped=userPedData,paths2geno=genotypes)
 	
         samplers.runSampler(Ainv,yVec,FE,RE,levelsFR,blockThese,nChain,nBurn,nThin,VCV,ME,map,regionSizes,outFolder)
 
