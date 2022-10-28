@@ -1,6 +1,6 @@
 module MCMC
 
-export runGibbs
+export runLMEM
 
 using DataFrames
 using CategoricalArrays
@@ -18,7 +18,7 @@ include("samplers.jl")
 include("misc.jl")
 include("outFiles.jl")
 
-runGibbs = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}(),blockThese=[],outFolder="outMCMC",VCV=[],userPedData=[],map=[],genotypes...)
+runLMEM = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}(),blockThese=[],outFolder="outMCMC",VCV=[],userPedData=[],map=[],genotypes...)
 	
 	folderHandler(outFolder)
 
