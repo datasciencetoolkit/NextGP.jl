@@ -5,6 +5,23 @@
 * Currently one core dependency is the [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/) package, for model expression, and fixed effect design matrix generation.
 * Checking `StatsModels.jl`'s manual for at least [`formula`](https://juliastats.org/StatsModels.jl/latest/formula/#The-@formula-language)  and  [`categorical data`](https://juliastats.org/StatsModels.jl/latest/contrasts/#Modeling-categorical-data) could be useful. 
 
+## Basic Model
+
+`NextGP.jl` uses the following basic model:
+
+$$
+\mathbf{y}= \mathbf{X}\mathbf{b} + \sum_{i}\mathbf{Z_i}\mathbf{u_i}  + \sum_{j}\mathbf{M_j}\boldsymbol{\beta_j} + \mathbf{e}
+$$
+
+* $\mathbf{y}$ is a vector of phenotypes corrected
+* $\mathbf{X}$ is a matrix of fixed effects
+* $\mathbf{b} is a vector of fixed effects
+* $\mathbf{Z_i}$ are matrices of random effects
+* $\mathbf{u_i}$ are vectors of random effects
+* $\mathbf{M_i}$ are matrices of random effects
+* $\mathbf{\boldsymbol{\beta}_i}$ are vectors of random marker effects
+* $\mathbf{e}$ is the vector of random environmental
+effects
 
 ## Public Functions
 

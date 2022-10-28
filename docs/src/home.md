@@ -13,12 +13,18 @@
 * Unknown (co)variance components (e.g., marker,additive genetic,residual...)
 
 ## Pkg Registry
+
+To install the latest official version, please use the following standard Julia command.
+
 ```@example
 using Pkg
 Pkg.add("NextGP")
 ```
 ## Unstable
+
+To install the latest unofficial version (1.0.0), please use the following.
+
 ```@example
-pkg> Pkg.add(url = "https://github.com/datasciencetoolkit/NextGP.jl", rev="dev")
+pkg> Pkg.add(url = "https://github.com/datasciencetoolkit/NextGP.jl", rev="dev_1.0.0")
 ```
 
