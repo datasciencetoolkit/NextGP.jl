@@ -879,7 +879,7 @@ uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 
 [[deps.NextGP]]
 deps = ["CSV", "CategoricalArrays", "DataFrames", "DataStructures", "DelimitedFiles", "Distributions", "LinearAlgebra", "MCMCChains", "MixedModels", "PedigreeBase", "PrettyTables", "Printf", "ProgressMeter", "StatsBase", "StatsModels", "StatsPlots"]
-git-tree-sha1 = "a72a14b395a5d51d3cbd9621c485723f4d3e7d09"
+git-tree-sha1 = "b772fa1efadc312b71cc254b4898b25e1cbbd8e2"
 repo-rev = "dev_1.0.0"
 repo-url = "https://github.com/datasciencetoolkit/NextGP.jl"
 uuid = "1a32220a-4ac3-442e-849d-1943511e16f7"
