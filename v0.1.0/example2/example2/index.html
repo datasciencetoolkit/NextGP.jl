@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Example2 · NextGP.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../home/"><img src="../../assets/logo.png" alt="NextGP.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../home/">NextGP.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../home/">Home</a></li><li><a class="tocitem" href="../../">Modules</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../../example1/example1/">Example1</a></li><li class="is-active"><a class="tocitem" href>Example2</a></li></ul></li><li><a class="tocitem" href="../../citation/">Citation</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Example2</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Example2</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/datasciencetoolkit/NextGP.jl/blob/main/docs/src/example2/example2.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><pre><code class="language-julia hljs">using CSV, StatsModels, DataFrames, NextGP</code></pre><pre><code class="language-julia hljs">data = CSV.read(&quot;YOURPATH/phenotypes.csv&quot;,DataFrame)</code></pre><pre><code class="language-text hljs">ID     Sire  Dam   Herds Pen BW
+QGG5   QGG1  QGG2  1     1   35.0
+QGG6   QGG3  QGG2  1     2   20.0
+QGG7   QGG4  QGG6  1     2   25.0
+QGG8   QGG3  QGG5  1     1   40.0
+QGG9   QGG1  QGG6  2     1   42.0
+QGG10  QGG3  QGG2  2     2   22.0
+QGG11  QGG3  QGG7  2     2   35.0
+QGG12  QGG8  QGG7  3     2   34.0
+QGG13  QGG9  QGG2  3     1   20.0
+QGG14  QGG3  QGG6  3     2   40.0</code></pre><pre><code class="language-julia hljs">pedigree = &quot;YOURPATH/pedigreeBase.txt&quot;</code></pre><pre><code class="nohighlight hljs">&quot;YOURPATH/pedigreeBase.txt&quot;</code></pre><pre><code class="language-text hljs">#Pedigree for the above example
+QGG1 0 0
+QGG2 0 0
+QGG3 0 0
+QGG4 0 0
+QGG5 QGG1 QGG2
+QGG6 QGG3 QGG2
+QGG7 QGG4 QGG6
+QGG8 QGG3 QGG5
+QGG9 QGG1 QGG6
+QGG10 QGG3 QGG2
+QGG11 QGG3 QGG7
+QGG12 QGG8 QGG7
+QGG13 QGG9 QGG2
+QGG14 QGG3 QGG6</code></pre><pre><code class="language-julia hljs">f = @formula(BW ~ Herds + Pen + ran(ID, ID) + ran(Dam,ID) + ran(Dam, Dam))</code></pre><pre><code class="nohighlight hljs">FormulaTerm
+Response:
+  BW(unknown)
+Predictors:
+  Herds(unknown)
+  Pen(unknown)
+  (ID)-&gt;ran(ID, ID)
+  (Dam,ID)-&gt;ran(Dam, ID)
+  (Dam)-&gt;ran(Dam, Dam)</code></pre><pre><code class="language-julia hljs">myHints = Dict(:Dam =&gt; StatsModels.FullDummyCoding(),:ID =&gt; StatsModels.FullDummyCoding(),:Herds =&gt; StatsModels.DummyCoding(),:Pen =&gt; StatsModels.FullDummyCoding())</code></pre><pre><code class="nohighlight hljs">Dict{Symbol, AbstractContrasts} with 4 entries:
+  :Pen   =&gt; FullDummyCoding()
+  :ID    =&gt; FullDummyCoding()
+  :Herds =&gt; DummyCoding(nothing, nothing)
+  :Dam   =&gt; FullDummyCoding()</code></pre><pre><code class="language-julia hljs">blk = [(&quot;Herds&quot;,&quot;Pen&quot;)]</code></pre><pre><code class="nohighlight hljs">1-element Vector{Tuple{String, String}}:
+ (&quot;Herds&quot;, &quot;Pen&quot;)</code></pre><pre><code class="language-julia hljs"># later the writing will be simplified
+priorVar = Dict((&quot;ID&quot;,&quot;ID&quot;) =&gt; (&quot;A&quot;,150),
+                (&quot;Dam&quot;,&quot;ID&quot;) =&gt; (&quot;A&quot;,90),
+                (&quot;Dam&quot;,&quot;Dam&quot;) =&gt; ([],40),
+                &quot;e&quot;=&gt; ([],350))</code></pre><pre><code class="nohighlight hljs">Dict{Any, Tuple{Any, Int64}} with 4 entries:
+  (&quot;Dam&quot;, &quot;Dam&quot;) =&gt; (Any[], 40)
+  &quot;e&quot;            =&gt; (Any[], 350)
+  (&quot;Dam&quot;, &quot;ID&quot;)  =&gt; (&quot;A&quot;, 90)
+  (&quot;ID&quot;, &quot;ID&quot;)   =&gt; (&quot;A&quot;, 150)</code></pre><pre><code class="language-julia hljs">runGibbs(f,data,5000,1000,10;myHints=myHints,blockThese=blk,VCV=priorVar,userPedData=pedigree)</code></pre><pre><code class="nohighlight hljs">[32mMCMC progress... 100%|███████████████████████████████████| Time: 0:08:32[39m
+
+
+outMCMC has been created to store the MCMC output
+Building parts of MME
+Herds is Term type
+Pen is Term type
+(ran(ID,ID)) is ran Type
+sym1: ID sym2: ID
+(ran(Dam,ID)) is ran Type
+sym1: Dam sym2: ID
+(ran(Dam,Dam)) is ran Type
+sym1: Dam sym2: Dam
+number of markers: Any[]
+(&quot;Herds&quot;, &quot;Pen&quot;)
+priorVCV structure for (&quot;ID&quot;, &quot;ID&quot;) is A, computed A matrix will be used
+priorVCV structure for (&quot;Dam&quot;, &quot;ID&quot;) is A, computed A matrix will be used
+priorVCV structure for (&quot;Dam&quot;, &quot;Dam&quot;) is empty, an identity matrix will be used
+e is univariate
+number of regions: Any[]</code></pre><pre><code class="language-julia hljs">postMCMC_b = summaryMCMC(&quot;b&quot;,summary=true)</code></pre><pre><code class="nohighlight hljs">Chains MCMC chain (400×4×1 Array{Float64, 3}):
+
+Iterations        = 1:1:400
+Number of chains  = 1
+Samples per chain = 400
+parameters        = param_1, param_2, param_3, param_4
+
+Summary Statistics
+		mean      std      naive_se    mcse      ess       rhat    
+     param_1    3.4966   11.5168     0.5758    0.5996   367.7749    1.0019
+     param_2    1.9941   10.6965     0.5348    0.4786   514.1442    0.9991
+     param_3   34.6249   13.1674     0.6584    0.8944   196.3730    0.9996
+     param_4   26.9112   12.8549     0.6427    1.0136   199.1124    1.0003</code></pre><p>...............</p><p><img src="../output_9_1.svg" alt="svg"/></p><pre><code class="language-julia hljs">postMCMC_u = summaryMCMC(&quot;varU&quot;,summary=true)</code></pre><pre><code class="nohighlight hljs">Chains MCMC chain (400×3×1 Array{Float64, 3}):
+
+Iterations        = 1:1:400
+Number of chains  = 1
+Samples per chain = 400
+parameters        = param_1, param_2, param_3
+
+Summary Statistics
+			mean      std      naive_se    mcse      ess       rhat
+     param_1   96.1806   82.0867     4.1043    4.1074   306.2494    1.0005
+     param_2   66.2353   65.5439     3.2772    4.7650   300.4542    0.9992
+     param_3   29.0011   28.2076     1.4104    1.4688   346.3286    1.0012</code></pre><p>................</p><p><img src="../output_10_1.svg" alt="svg"/></p><pre><code class="language-julia hljs">postMCMC_e = summaryMCMC(&quot;varE&quot;,summary=true)</code></pre><pre><code class="nohighlight hljs">Chains MCMC chain (400×1×1 Array{Float64, 3}):
+
+Iterations        = 1:1:400
+Number of chains  = 1
+Samples per chain = 400
+parameters        = param_1
+
+Summary Statistics
+			mean      std      naive_se    mcse      ess       rhat
+     param_1   142.1475   86.5155     4.3258    3.7103   426.5393    1.0002</code></pre><p>..............</p><p><img src="../output_11_1.svg" alt="svg"/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../example1/example1/">« Example1</a><a class="docs-footer-nextpage" href="../../citation/">Citation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.23 on <span class="colophon-date" title="Friday 28 October 2022 22:43">Friday 28 October 2022</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
