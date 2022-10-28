@@ -14,7 +14,7 @@ using StatsModels
 using MixedModels
 using Printf
 
-include("equations.jl")
+include("prepMatVec.jl")
 include("runTime.jl")
 include("MCMC.jl")
 include("misc.jl")
@@ -24,7 +24,7 @@ using .MCMC
 export runGibbs
 using .IO
 export summaryMCMC
-using .equations
-export mme
+using .prepMatVec
+export prep
 
 end
