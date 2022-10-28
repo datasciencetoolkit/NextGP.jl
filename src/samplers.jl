@@ -30,6 +30,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
         #initial computations and settings
 	ycorr = deepcopy(Y)
+
+	priorVCV = convert(Dict{Symbol, Any},priorVCV)
 	
 	### X and b
 	levelsX = levelDict[:levelsFE]
