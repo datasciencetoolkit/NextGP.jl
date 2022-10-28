@@ -21,7 +21,7 @@ include("misc.jl")
 include("outFiles.jl")
 
 using .MCMC
-export runGibbs
+export runLMEM
 using .IO
 export summaryMCMC
 using .prepMatVec
