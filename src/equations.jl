@@ -1,4 +1,4 @@
-module prepData
+module prepMatVec
 
 using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables
 
