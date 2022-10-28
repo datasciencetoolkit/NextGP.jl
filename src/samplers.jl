@@ -315,8 +315,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 	varU = deepcopy(varU_prior) #for storage
 
-	beta = zeros(Float64,nMarkerSets,maximum(vcat([0,collect(values(nMarkers))]...))) #zero is for max to work when no SNP data is present #can allow unequal length! Remove tail zeros for printing....
-#	beta2 = [zeros(Float64,1,collect(values(nMarkers))[i]) for i in 1:nMarkerSets] #zero is for max to work when no SNP data is present #can allow unequal length! Remove tail zeros for printing....
+	beta2 = [zeros(Float64,1,collect(values(nMarkers))[i]) for i in 1:nMarkerSets] #zero is for max to work when no SNP data is present #can allow unequal length! Remove tail zeros for printing....
 
         varBeta = OrderedDict{Any,Any}()
         for mSet in keys(mpm)
@@ -360,7 +359,6 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		levRE = hcat(vcat(collect(values(levelDict[:levelsRE]))[i]...)...)
 		IO.outMCMC(outPut,"u$i",levRE)
 		isa(collect(keys(levelDict[:levelsRE]))[i], Symbol) ? nameRE_VCV = String(collect(keys(levelDict[:levelsRE]))[i]) : nameRE_VCV = join(collect(keys(levelDict[:levelsRE]))[i].args)[2:end]
-#		IO.outMCMC(outPut,"varU$i",[join(collect(keys(levelDict[:levelsRE]))[i],"_")])
 		IO.outMCMC(outPut,"varU$i",[nameRE_VCV]) #[] to have it as one row
 	end	
 		
@@ -397,13 +395,10 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 		#sample marker effects and variances
 	
-	       	for mSet in keys(mpm)
-			sampleMandMVar!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
-		end
 		
-#		for mSet in keys(mpm)
-#			sampleMandMVarGI!(mSet,M[mSet],Mp[mSet],beta2,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
-#		end
+		for mSet in keys(mpm)
+			sampleMandMVar!(mSet,M[mSet],Mp[mSet],beta2,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
+		end
                		
         	#print
 		if iter in these2Keep
@@ -417,20 +412,13 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
 			end
 			
+
 			for mSet in keys(BetaKeyPos4Print)
-                                IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet],:]')
+				IO.outMCMC(outPut,"beta$mSet",beta2[BetaKeyPos4Print[mSet]])
                         end
 
-
-#			for mSet in keys(BetaKeyPos4Print)
-#				IO.outMCMC(outPut,"beta$mSet",beta2[BetaKeyPos4Print[mSet]])
-#                        end
-
-
-
 			for pSet in keys(mpm)
-				IO.outMCMC(outPut,"var$(pSet)", varBeta[pSet]')
-#				IO.outMCMC(outPut,"var$(pSet)",hcat(reduce(hcat,varBeta[pSet])...))
+				IO.outMCMC(outPut,"var$(pSet)",hcat(reduce(hcat,varBeta[pSet])...))
 			end
 		end
 	end
@@ -496,45 +484,9 @@ end
 #sample random marker effects
 
 ##### Component-wise, seperated functions for symbol and tuple
-function sampleMandMVar!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
-	for r in 1:regions
-		theseLoci = regionsMat[r]
-		regionSize = length(theseLoci)
-		invB = inv(varBeta[mSet][r])
-		for locus in theseLoci::UnitRange{Int64}
-			RHS = zeros(size(invB,1))	
-			ycorr .+= MMat[locus]*beta[betaPos,locus]					
-			RHS = (nowMp[locus]*ycorr)./varE
-			invLHS::Array{Float64,2} = inv((mpmMat[locus]./varE) .+ invB)
-			meanBETA::Array{Float64,1} = invLHS*RHS
-			beta[betaPos,locus] = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
-			ycorr .-= MMat[locus]*beta[betaPos,locus]	
-		end
-		varBeta[mSet][r] = sampleVarCovBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
-	end
-end
 
-function sampleMandMVar!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
-	local rhs::Float64
-	local lhs::Float64
-	local meanBeta::Float64
-	for r in 1:regions
-		theseLoci = regionsMat[r]
-		regionSize = length(theseLoci)
-		lambda = varE/(varBeta[mSet][r])
-		for locus in theseLoci::UnitRange{Int64}
-			BLAS.axpy!(beta[betaPos,locus],view(MMat,:,locus),ycorr)
-			rhs = BLAS.dot(view(MMat,:,locus),ycorr)
-			lhs = mpmMat[locus] + lambda
-			meanBeta = lhs\rhs
-			beta[betaPos,locus] = sampleBeta(meanBeta, lhs, varE)
-			BLAS.axpy!(-1.0*beta[betaPos,locus],view(MMat,:,locus),ycorr)
-		end
-		varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,beta[betaPos,theseLoci],regionSize)
-	end
-end
 
-function sampleMandMVarGI!(mSet::Symbol,MMat,nowMp,beta2,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+function sampleMandMVar!(mSet::Symbol,MMat,nowMp,beta2,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -555,7 +507,7 @@ function sampleMandMVarGI!(mSet::Symbol,MMat,nowMp,beta2,mpmMat,betaPos,regionsM
 end
 
 ##### Component-wise, seperated functions for symbol and tuple
-function sampleMandMVarGI!(mSet::Tuple,MMat,nowMp,beta2,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+function sampleMandMVar!(mSet::Tuple,MMat,nowMp,beta2,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
 	for r in 1:regions
 		theseLoci = regionsMat[r]
 		regionSize = length(theseLoci)
@@ -569,7 +521,7 @@ function sampleMandMVarGI!(mSet::Tuple,MMat,nowMp,beta2,mpmMat,betaPos,regionsMa
 			setindex!.(beta2[betaPos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
 			ycorr .-= MMat[locus]*getindex.(beta2[betaPos],locus)	
 		end
-		varBeta[mSet][r] = sampleVarCovBetaGI(scaleMNow,dfMNow,reduce(hcat,getindex.(beta2[betaPos],Ref(theseLoci))),regionSize)
+		varBeta[mSet][r] = sampleVarCovBeta(scaleMNow,dfMNow,reduce(hcat,getindex.(beta2[betaPos],Ref(theseLoci))),regionSize)
 	end
 end
 
@@ -594,11 +546,6 @@ function sampleVarBeta(scalem,dfm,whichLoci,regionSize)::Float64
 end
 
 function sampleVarCovBeta(scalem,dfm,whichLoci,regionSize)
-	Sb = whichLoci*whichLoci'
-	return rand(InverseWishart(dfm + regionSize, scalem + Sb))
-end
-
-function sampleVarCovBetaGI(scalem,dfm,whichLoci,regionSize)
 	Sb = whichLoci'whichLoci
 	return rand(InverseWishart(dfm + regionSize, scalem + Sb))
 end
