@@ -25,4 +25,5 @@ makedocs(
 # for more information..
 deploydocs(
     repo = "github.com/datasciencetoolkit/NextGP.jl",
+devurl = "dev_1.0.0",
 )
