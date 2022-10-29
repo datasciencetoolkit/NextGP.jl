@@ -4,7 +4,6 @@ Original source for the example data and code from [`StatsModels.jl`](https://ju
 ```julia
 using Pkg
 Pkg.add(["GLM","DataFrames","StatsModels","StableRNGs"])
-Pkg.add(url="https://github.com/dataScienceToolKit/NextGP.jl#dev")
 ```
 
 ```julia
@@ -156,45 +155,47 @@ See StatsModels.jl documentation for alternatives
 myHints = Dict(:b => StatsModels.FullDummyCoding())
 =#
 
-priorVar = Dict("e" => ([],0.01))
+priorVar = Dict(:e => ([],0.01))
 
-
-runGibbs(f,data,1000,100,10;VCV=priorVar)
+runLMEM(f,data,100000,20000,10;VCV=priorVar)
 ```
-
-    [32mMCMC progress... 100%|███████████████████████████████████| Time: 0:01:46[39m
-
-
-    outMCMC has been created to store the MCMC output
-    Building parts of MME
-    1 is ConstantTerm{Int64} type
-    a is Term type
-    b is Term type
-    1
-    a
-    b
-    e is univariate
+    Output folder outMCMC exists. Removing its content
+    
+     ---------------- Summary of input ---------------- 
+    
+    |[1m Variable [0m|[1m Term                [0m|[1m Type            [0m|[1m Levels [0m|
+    |----------|---------------------|-----------------|--------|
+    | 1        | ConstantTerm{Int64} | Vector{Float64} | 1      |
+    | a        | Term                | Vector{Float64} | 1      |
+    | b        | Term                | Matrix{Float64} | 3      |
+    [32mprior var-cov structure for "e" is either empty or "I" was given. An identity matrix will be used[39m
+    
+     ---------------- Summary of analysis ---------------- 
+    
+    |[1m Effect [0m|[1m Type   [0m|[1m Str [0m|[1m df  [0m|[1m scale [0m|
+    |--------|--------|-----|-----|-------|
+    | e      | Random | I   | 4.0 | 0.005 |
 
 
 ```julia
-postmean_b = summaryMCMC("b";summary=true)
+postmean_b = summaryMCMC("b";summary=true,plots=true)
 ```
 
 
     Chains MCMC chain (90×5×1 Array{Float64, 3}):
     
-    Iterations        = 1:1:90
+    Iterations        = 1:1:8000
     Number of chains  = 1
-    Samples per chain = 90
-    parameters        = param_1, param_2, param_3, param_4, param_5
-    
+    Samples per chain = 8000
+    parameters        = (Intercept), a, b: e, b: f, b: g   
+ 
     Summary Statistics
                      mean      std      naive_se    mcse      ess       rhat
-         param_1    2.1758    0.1633     0.0172    0.0282   58.4130    1.0054
-         param_2    6.8008    0.2824     0.0298    0.0265   66.1012    1.0148
-         param_3    6.0294    0.2549     0.0269    0.0334   86.3682    0.9965
-         param_4    7.6209    0.2117     0.0223    0.0342   57.0216    1.0141
-         param_5    8.8120    0.2593     0.0273    0.0341   73.2393    1.0010
+         (Intercept) 2.1758    0.1633     0.0172    0.0282   58.4130    1.0054
+               a     6.8008    0.2824     0.0298    0.0265   66.1012    1.0148
+             b:e     6.0294    0.2549     0.0269    0.0334   86.3682    0.9965
+             b:f     7.6209    0.2117     0.0223    0.0342   57.0216    1.0141
+             b:g     8.8120    0.2593     0.0273    0.0341   73.2393    1.0010
     
  .........
 
