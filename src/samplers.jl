@@ -15,6 +15,9 @@ include("misc.jl")
 
 export runSampler
 
+#define type for priorVCV to include Expression :(1|Dam)  or Symbol (:Dam)
+IntOrString = Union{Int,AbstractString}
+
 #main sampler
 function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS,outPut)
 		
@@ -31,7 +34,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
         #initial computations and settings
 	ycorr = deepcopy(Y)
 
-	priorVCV = convert(Dict{Symbol, Any},priorVCV)
+#	priorVCV = convert(Dict{Symbol, Any},priorVCV)
+	priorVCV = convert(Dict{ExprOrSymbol, Any},priorVCV)	
 	
 	### X and b
 	levelsX = levelDict[:levelsFE]
