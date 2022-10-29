@@ -73,48 +73,17 @@ myHints = Dict(:Dam => StatsModels.FullDummyCoding(),:ID => StatsModels.FullDumm
 ```
 
 
-
-
-    Dict{Symbol, AbstractContrasts} with 4 entries:
-      :Pen   => FullDummyCoding()
-      :ID    => FullDummyCoding()
-      :Herds => DummyCoding(nothing, nothing)
-      :Dam   => FullDummyCoding()
-
-
-
-
 ```julia
-blk = [("Herds","Pen")]
+blk = [(:Herds,:Pen)]
 ```
 
 
-
-
-    1-element Vector{Tuple{String, String}}:
-     ("Herds", "Pen")
-
-
-
-
 ```julia
-# later the writing will be simplified
-priorVar = Dict(("ID","ID") => ("A",150),
-                ("Dam","ID") => ("A",90),
-                ("Dam","Dam") => ([],40),
-                "e"=> ([],350))
+priorVar = Dict(:ID => ("A",150),
+                :Dam => ("A",90),
+                :(1|Dam) => ("I",40),
+                :e => ([],350))
 ```
-
-
-
-
-    Dict{Any, Tuple{Any, Int64}} with 4 entries:
-      ("Dam", "Dam") => (Any[], 40)
-      "e"            => (Any[], 350)
-      ("Dam", "ID")  => ("A", 90)
-      ("ID", "ID")   => ("A", 150)
-
-
 
 
 ```julia

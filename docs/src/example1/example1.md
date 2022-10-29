@@ -163,7 +163,7 @@ runLMEM(f,data,100000,20000,10;VCV=priorVar)
     
      ---------------- Summary of input ---------------- 
     
-    |[1m Variable [0m|[1m Term                [0m|[1m Type            [0m|[1m Levels [0m|
+    |Variable   Term                  Type              Levels
     |----------|---------------------|-----------------|--------|
     | 1        | ConstantTerm{Int64} | Vector{Float64} | 1      |
     | a        | Term                | Vector{Float64} | 1      |
@@ -172,7 +172,7 @@ runLMEM(f,data,100000,20000,10;VCV=priorVar)
     
      ---------------- Summary of analysis ---------------- 
     
-    |[1m Effect [0m|[1m Type   [0m|[1m Str [0m|[1m df  [0m|[1m scale [0m|
+    |Effect   Type     Str   df    scale
     |--------|--------|-----|-----|-------|
     | e      | Random | I   | 4.0 | 0.005 |
 
