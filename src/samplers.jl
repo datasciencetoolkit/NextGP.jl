@@ -30,7 +30,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	nData = length(Y)
 	nMarkerSets = length(M)
 	nMarkers    = OrderedDict(m => size(M[m],2) for m in keys(M))
-
+	println("number of phenotypes/observations: $nData")
         #initial computations and settings
 	ycorr = deepcopy(Y)
 
