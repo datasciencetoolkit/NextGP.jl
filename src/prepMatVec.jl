@@ -145,7 +145,8 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			push!(summarize,[arg,"ran",typeof(RE[arg]),size(RE[arg],2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         my_sch = schema(userData, userHints) #work on userData and userHints
-                        my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
+			
+			f.rhs[i].args_parsed[1] == ConstantTerm{Int64}(1) ? my_ApplySch = apply_schema(f.rhs[i].args_parsed[2], my_sch, MixedModels.MixedModel) : my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel) 	
 			#####ID is from the pheno  file directly, order not  checked!#####################################################
 			arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
                         arg2 = Symbol(repr((f.rhs[i].args_parsed)[2]))
