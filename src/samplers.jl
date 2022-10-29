@@ -16,7 +16,7 @@ include("misc.jl")
 export runSampler
 
 #define type for priorVCV to include Expression :(1|Dam)  or Symbol (:Dam)
-IntOrString = Union{Int,AbstractString}
+ExprOrSymbol = Union{Expr,Symbol}
 
 #main sampler
 function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS,outPut)
