@@ -11,6 +11,7 @@
   - Permanent environmental effects
 * Correlated marker effects for multi-breed analysis
 * Unknown (co)variance components (e.g., marker,additive genetic,residual...)
+* It is users responsibility to make sure that the order of the individuals in the data sets aligns
 
 ## Pkg Registry
 

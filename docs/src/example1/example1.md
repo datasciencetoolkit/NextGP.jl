@@ -182,7 +182,7 @@ postmean_b = summaryMCMC("b";summary=true,plots=true)
 ```
 
 
-    Chains MCMC chain (90×5×1 Array{Float64, 3}):
+    Chains MCMC chain (8000×5×1 Array{Float64, 3}):
     
     Iterations        = 1:1:8000
     Number of chains  = 1

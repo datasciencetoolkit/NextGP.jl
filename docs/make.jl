@@ -13,6 +13,7 @@ makedocs(
 	    "Modules" => "index.md",
 	    "Examples" => ["Example1" => "example1/example1.md",
 			   "Example2" => "example2/example2.md",
+			   "Example3" => "example3/example3.md",	
 			],
 	    "Citation" => "citation.md",
          ],
@@ -25,5 +26,5 @@ makedocs(
 # for more information..
 deploydocs(
     repo = "github.com/datasciencetoolkit/NextGP.jl",
-devurl = "dev_1.0.0",
+#devurl = "dev_1.0.0",
 )
