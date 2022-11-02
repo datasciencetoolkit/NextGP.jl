@@ -89,8 +89,8 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		if ismissing(priorVCV[:e].str) || priorVCV[:e].str=="I" 
 				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
 				strE = Matrix(1.0I,nData,nData)
-				priorVCV[:e] = ("I",priorVCV[:e].m,priorVCV[:e].v)
-		elseif priorVCV[:e][1]=="D"
+				priorVCV[:e] = Random("I",priorVCV[:e].m,priorVCV[:e].v)
+		elseif priorVCV[:e].str=="D"
 				strE = D ##no inverse  yet
 				error("var-cov structure \"D\" has not been implemented yet")
 				printstyled("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used\n"; color = :green)
@@ -101,7 +101,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 		printstyled("prior var-cov for \"e\" is fully  empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
 		strE = Matrix(1.0I,nData,nData)
 		#just add to priors
-		priorVCV[:e] = ("I",0,100)
+		priorVCV[:e] = Random("I",0,100)
 	end
 								
 	#parameters for priors
@@ -199,9 +199,9 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			varU_prior[zSet] = priorVCV[zSet].v
 		else	
 			printstyled("prior var-cov for $zSet is empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
-		iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
-		varU_prior[zSet] = 100
-		priorVCV[zSet] = ("I",0,100)
+			varU_prior[zSet] = 100
+			priorVCV[zSet] = Random("I",0,100)
+			iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
 		end
         end
 
