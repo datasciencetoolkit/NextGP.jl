@@ -6,6 +6,15 @@ include("misc.jl")
 
 export prep
 
+function getTerms(f.rhs)
+	terms4StatsModels = String.(split(repr(f.rhs), ('+')))
+        terms4StatsModels = replace.(terms4StatsModels, ":" => "")
+        terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
+        terms4StatsModels = Symbol.(terms4StatsModels)
+	return(terms4StatsModels)
+end
+
+
 """
         make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
 
@@ -49,10 +58,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	
 #	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
 	
-        terms4StatsModels = String.(split(repr(f.rhs), ('+')))
-        terms4StatsModels = replace.(terms4StatsModels, ":" => "")
-        terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
-	terms4StatsModels = Symbol.(terms4StatsModels)
+	terms4StatsModels = getTerms(f.rhs)
 
 	#otherwise it changes original input data globally?????
 	userData = deepcopy(inputData)
@@ -91,7 +97,6 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
         RE = OrderedDict{Any,Any}()
 
 	ME = OrderedDict{Any,Any}()
-	regionSizes = OrderedDict{Any,Int64}()
 
 
         #read pedigree
@@ -126,23 +131,21 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
 
         for i in 1:length(f.rhs)
-		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PR")
+		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "SNP")
 			arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
-			arg2 = parse(Int64,repr((f.rhs[i].args_parsed)[2]))
 			path = paths2geno[arg1]
 			thisM = CSV.read(path,CSV.Tables.matrix,header=false)
 			thisM .-= mean(thisM,dims=1) 
 			ME[arg1] = thisM
                         thisM = 0 #I can directly merge to dict above
-			regionSizes[arg1] = arg2
-			push!(summarize,[arg1,"BayesPR",typeof(ME[arg1]),size(ME[arg1],2)])
-                elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "ran")
+			push!(summarize,[arg1,"SNP",typeof(ME[arg1]),size(ME[arg1],2)])
+                elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
                         arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
 			IDs,thisZ = ranMat(arg, :ID, userData, pedigree)
 			RE[arg] = thisZ
 			thisZ = 0
 			idRE[arg] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
-			push!(summarize,[arg,"ran",typeof(RE[arg]),size(RE[arg],2)])
+			push!(summarize,[arg,"PED",typeof(RE[arg]),size(RE[arg],2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         my_sch = schema(userData, userHints) #work on userData and userHints
 			
@@ -173,7 +176,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 
 	idFR = OrderedDict(:levelsFE => idFE, :levelsRE => idRE)
 
-        return idFR, Ainv, vec(yVec), FE, RE, ME, regionSizes
+        return idFR, Ainv, vec(yVec), FE, RE, ME
 end
 
 end

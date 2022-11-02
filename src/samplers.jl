@@ -19,7 +19,7 @@ export runSampler
 ExprOrSymbol = Union{Expr,Symbol}
 
 #main sampler
-function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,rS,outPut)
+function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,priorVCV,M,paths2maps,outPut)
 		
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
@@ -86,10 +86,10 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 						
 	#no inverse implemented yet!
 	if haskey(priorVCV,:e)	
-		if isempty(priorVCV[:e][1]) || priorVCV[:e][1]=="I" 
+		if ismissing(priorVCV[:e].str) || priorVCV[:e].str=="I" 
 				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
 				strE = Matrix(1.0I,nData,nData)
-				priorVCV[:e] = ("I",priorVCV[:e][2])
+				priorVCV[:e] = ("I",priorVCV[:e].m,priorVCV[:e].v)
 		elseif priorVCV[:e][1]=="D"
 				strE = D ##no inverse  yet
 				error("var-cov structure \"D\" has not been implemented yet")
@@ -98,21 +98,20 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
 		end
 	else	
-		printstyled("prior var-cov for \"e\" is fully  empty. An identity matrix will be used with an arbitrary variance of 100\n"; color = :green)
+		printstyled("prior var-cov for \"e\" is fully  empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
 		strE = Matrix(1.0I,nData,nData)
-		varE_prior = 100
 		#just add to priors
-		priorVCV[:e] = ("I",varE_prior)
+		priorVCV[:e] = ("I",0,100)
 	end
 								
 	#parameters for priors
         dfE = 4.0
  	       
-	if priorVCV[:e][2]==0.0
-		priorVCV[:e][2]  = 0.0005
+	if priorVCV[:e].v==0.0
+		priorVCV[:e].v  = 0.0005
        		scaleE     = 0.0005
         else
-       		scaleE    = priorVCV[:e][2]*(dfE-2.0)/dfE    
+       		scaleE    = priorVCV[:e].v*(dfE-2.0)/dfE    
    	end
 
 
@@ -189,20 +188,20 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
                 nCol = size(Z[zSet],2)
 		#var structures and priors
 		if haskey(priorVCV,zSet)	
-			if isempty(priorVCV[zSet][1]) || priorVCV[zSet][1]=="I" 
+			if ismissing(priorVCV[zSet].str) || priorVCV[zSet].str=="I" 
 				printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
 				iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
-			elseif priorVCV[zSet][1]=="A"
-				iVarStr[zSet] = iA
+			elseif priorVCV[zSet].str=="A"
 				printstyled("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used\n"; color = :green)
-			else 	iVarStr[zSet] = inv(priorVCV[zSet][1])
+				iVarStr[zSet] = iA
+			else 	iVarStr[zSet] = inv(priorVCV[zSet].str)
 			end
-			varU_prior[zSet] = priorVCV[zSet][2]
+			varU_prior[zSet] = priorVCV[zSet].v
 		else	
-			printstyled("prior var-cov for $zSet is empty. An identity matrix will be used with an arbitrary variance of 100\n"; color = :green)
+			printstyled("prior var-cov for $zSet is empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
 		iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
 		varU_prior[zSet] = 100
-		priorVCV[zSet] = ("I",varU_prior[zSet])
+		priorVCV[zSet] = ("I",0,100)
 		end
         end
 
@@ -210,14 +209,14 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	
 	dfZ = Dict{Any,Any}()	
 	for zSet ∈ keys(zpz)
-		dfZ[zSet] = 3.0+size(priorVCV[zSet][2],1)
+		dfZ[zSet] = 3.0+size(priorVCV[zSet].v,1)
 	end
 																
 	scaleZ = Dict{Any,Any}()
         for zSet in keys(zpz)
-                nZComp = size(priorVCV[zSet][2],1)
-		#priorVCV[zSet][2] is a temporary solution
-		nZComp > 1 ? scaleZ[zSet] = priorVCV[zSet][2].*(dfZ[zSet]-nZComp-1.0)  : scaleZ[zSet] = priorVCV[zSet][2]*(dfZ[zSet]-2.0)/dfZ[zSet] #I make float and array of float														
+                nZComp = size(priorVCV[zSet].v,1)
+		#priorVCV[zSet].v is a temporary solution
+		nZComp > 1 ? scaleZ[zSet] = priorVCV[zSet].v .* (dfZ[zSet]-nZComp-1.0)  : scaleZ[zSet] = priorVCV[zSet].v * (dfZ[zSet]-2.0)/dfZ[zSet] #I make float and array of float														
         end
 
 												
@@ -256,7 +255,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			end
 			mpm[pSet] = tempmpm
 			Mp[pSet] = []
-			theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],rS[pSet])
+			theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],priorVCV[pSet].r)
 		        regionArray[pSet] = theseRegions
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
@@ -267,11 +266,9 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			end
 			if issubset(corEffects,collect(keys(M)))
 				tempM = hcat.(eachcol.(getindex.(Ref(M), (pSet)))...)
-				rS[pSet] = rS[first(pSet)]
 				for d in corEffects
                        			delete!(M,d)
 					delete!(BetaKeyPos,d)
-					delete!(rS,d)
                			end
 				BetaKeyPos[pSet] = corPositions
 				M[pSet]   = tempM
@@ -279,21 +276,21 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 				Mp[pSet]  = transpose.(tempM)
 				tempM = 0
 				nowMap = first(pSet)		#should throw out error if sets have different lengths! implement it here!
-				theseRegions = prep2RegionData(outPut,pSet,paths2maps[nowMap],rS[pSet]) ###first data
+				theseRegions = prep2RegionData(outPut,pSet,paths2maps[nowMap],priorVCV[pSet].r)
                 		regionArray[pSet] = theseRegions
 			end
 		end
 	end
 	
 	for pSet in collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]
-		printstyled("No prior was provided for $pSet, but it was included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
+		printstyled("No prior was provided for $pSet, but it was included in the data. It will be made uncorrelated with default priors and region size 9999 (WG)\n"; color = :green)		
 		tempmpm = []
 		nowM = M[pSet]
 		for c in eachcol(nowM)
 			push!(tempmpm,BLAS.dot(c,c))
 		end
 		mpm[pSet] = tempmpm
-		theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],rS[pSet])
+		theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],9999)
 		regionArray[pSet] = theseRegions
 	end
 	
@@ -304,14 +301,14 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	
 	dfM = Dict{Any,Any}()	
 	for mSet ∈ keys(mpm)
-		dfM[mSet] = 3.0+size(priorVCV[mSet],1)
+		dfM[mSet] = 3.0+size(priorVCV[mSet].v,1)
 	end
 
 
 	scaleM = Dict{Any,Any}()
         for mSet in keys(mpm)
                 nMComp = size(priorVCV[mSet],1)
-                nMComp > 1 ? scaleM[mSet] = priorVCV[mSet].*(dfM[mSet]-nMComp-1.0)  : scaleM[mSet] = priorVCV[mSet]*(dfM[mSet]-2.0)/dfM[mSet] #I make float and array of float
+                nMComp > 1 ? scaleM[mSet] = priorVCV[mSet].v .* (dfM[mSet]-nMComp-1.0)  : scaleM[mSet] = priorVCV[mSet].v * (dfM[mSet]-2.0)/dfM[mSet] #I make float and array of float
         end
 	
 	
@@ -320,11 +317,11 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 	varU = deepcopy(varU_prior) #for storage
 
-	beta2 = [zeros(Float64,1,collect(values(nMarkers))[i]) for i in 1:nMarkerSets] #zero is for max to work when no SNP data is present #can allow unequal length! Remove tail zeros for printing....
+	beta = [zeros(Float64,1,collect(values(nMarkers))[i]) for i in 1:nMarkerSets] #zero is for max to work when no SNP data is present #can allow unequal length! Remove tail zeros for printing....
 
         varBeta = OrderedDict{Any,Any}()
         for mSet in keys(mpm)
-                varBeta[mSet] = [priorVCV[mSet] for i in 1:length(regionArray[mSet])] #later, direct reference to key when varM_prior is a dictionary
+                varBeta[mSet] = [priorVCV[mSet].v for i in 1:length(regionArray[mSet])] #later, direct reference to key when varM_prior is a dictionary
         end
 
 	#summarize analysis
@@ -332,25 +329,25 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	
 	for zSet in keys(zpz)
 		if zSet ∈ keys(priorVCV)
-			str = priorVCV[zSet][1]
-			#value = priorVCV[zSet][2]
+			str = priorVCV[zSet].str
+			#value = priorVCV[zSet].v
 		else 
 			str = "I"
-		     	#value = varU_prior[zSet]
+		     	#value = varU_prior[zSet].v
 		end
 	push!(summarize,[zSet,"Random",str,dfZ[zSet],scaleZ[zSet]])
 	end
 	for mSet in keys(mpm)
 		if mSet ∈ keys(priorVCV)
 			str = "$(nRegions[mSet]) block(s)"
-			#value = priorVCV[mSet]
+			#value = priorVCV[mSet].v
 		else #### later, handel this above, when dealing with priorVCV is allowed to be empty
 			str = "WG(I)"
 		     	#value = 0.001
 		end
 	push!(summarize,[mSet,"Random (Marker)",str,dfM[mSet],scaleM[mSet]])
 	end
-	push!(summarize,["e","Random",priorVCV[:e][1],dfE,scaleE])						
+	push!(summarize,["e","Random",priorVCV[:e].str,dfE,scaleE])						
 
 	println("\n ---------------- Summary of analysis ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
@@ -402,7 +399,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 	
 		
 		for mSet in keys(mpm)
-			sampleMandMVar!(mSet,M[mSet],Mp[mSet],beta2,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
+			sampleMandMVar!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
 		end
                		
         	#print
@@ -419,7 +416,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 			
 
 			for mSet in keys(BetaKeyPos4Print)
-				IO.outMCMC(outPut,"beta$mSet",beta2[BetaKeyPos4Print[mSet]])
+				IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet]])
                         end
 
 			for pSet in keys(mpm)
@@ -491,7 +488,7 @@ end
 ##### Component-wise, seperated functions for symbol and tuple
 
 
-function sampleMandMVar!(mSet::Symbol,MMat,nowMp,beta2,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+function sampleMandMVar!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -500,33 +497,33 @@ function sampleMandMVar!(mSet::Symbol,MMat,nowMp,beta2,mpmMat,betaPos,regionsMat
 		regionSize = length(theseLoci)
 		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
-			BLAS.axpy!(getindex(beta2[betaPos],locus),view(MMat,:,locus),ycorr)
+			BLAS.axpy!(getindex(beta[betaPos],locus),view(MMat,:,locus),ycorr)
 			rhs = BLAS.dot(view(MMat,:,locus),ycorr)
 			lhs = mpmMat[locus] + lambda
 			meanBeta = lhs\rhs
-			setindex!(beta2[betaPos],sampleBeta(meanBeta, lhs, varE),locus)
-			BLAS.axpy!(-1.0*getindex(beta2[betaPos],locus),view(MMat,:,locus),ycorr)
+			setindex!(beta[betaPos],sampleBeta(meanBeta, lhs, varE),locus)
+			BLAS.axpy!(-1.0*getindex(beta[betaPos],locus),view(MMat,:,locus),ycorr)
 		end
-		varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,getindex(beta2[betaPos],theseLoci),regionSize)
+		varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,getindex(beta[betaPos],theseLoci),regionSize)
 	end
 end
 
 ##### Component-wise, seperated functions for symbol and tuple
-function sampleMandMVar!(mSet::Tuple,MMat,nowMp,beta2,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+function sampleMandMVar!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
 	for r in 1:regions
 		theseLoci = regionsMat[r]
 		regionSize = length(theseLoci)
 		invB = inv(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			RHS = zeros(size(invB,1))	
-			ycorr .+= MMat[locus]*getindex.(beta2[betaPos],locus)				
+			ycorr .+= MMat[locus]*getindex.(beta[betaPos],locus)				
 			RHS = (nowMp[locus]*ycorr)./varE
 			invLHS::Array{Float64,2} = inv((mpmMat[locus]./varE) .+ invB)
 			meanBETA::Array{Float64,1} = invLHS*RHS
-			setindex!.(beta2[betaPos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
-			ycorr .-= MMat[locus]*getindex.(beta2[betaPos],locus)	
+			setindex!.(beta[betaPos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
+			ycorr .-= MMat[locus]*getindex.(beta[betaPos],locus)	
 		end
-		varBeta[mSet][r] = sampleVarCovBeta(scaleMNow,dfMNow,reduce(hcat,getindex.(beta2[betaPos],Ref(theseLoci))),regionSize)
+		varBeta[mSet][r] = sampleVarCovBeta(scaleMNow,dfMNow,reduce(hcat,getindex.(beta[betaPos],Ref(theseLoci))),regionSize)
 	end
 end
 
