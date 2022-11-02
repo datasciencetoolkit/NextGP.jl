@@ -6,7 +6,7 @@ include("misc.jl")
 
 export prep
 
-function getTerms(f.rhs)
+function getTerms(f)
 	terms4StatsModels = String.(split(repr(f.rhs), ('+')))
         terms4StatsModels = replace.(terms4StatsModels, ":" => "")
         terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
@@ -58,7 +58,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	
 #	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
 	
-	terms4StatsModels = getTerms(f.rhs)
+	terms4StatsModels = getTerms(f)
 
 	#otherwise it changes original input data globally?????
 	userData = deepcopy(inputData)
