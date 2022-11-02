@@ -1,8 +1,10 @@
 module NextGP
 
 #exporting run-time equivalent of functions
-export ran
-export PR
+export PED
+export SNP
+export BayesPR
+export Random
 
 #
 export makeA
