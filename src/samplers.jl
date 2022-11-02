@@ -308,7 +308,7 @@ function runSampler(iA,Y,X,Z,levelDict,blocks,chainLength,burnIn,outputFreq,prio
 
 	scaleM = Dict{Any,Any}()
         for mSet in keys(mpm)
-                nMComp = size(priorVCV[mSet],1)
+                nMComp = size(priorVCV[mSet].v,1)
                 nMComp > 1 ? scaleM[mSet] = priorVCV[mSet].v .* (dfM[mSet]-nMComp-1.0)  : scaleM[mSet] = priorVCV[mSet].v * (dfM[mSet]-2.0)/dfM[mSet] #I make float and array of float
         end
 	
