@@ -376,3 +376,5 @@ function getMME!(iA,Y,X,Z,levelDict,blocks,priorVCV,M,paths2maps,outPut)
 	return ycorr, nData, dfE, scaleE, X, iXpX, XKeyPos, b, Z, iVarStr, Zp, zpz, uKeyPos, uKeyPos4Print, nColEachZ, u, varU, scaleZ, dfZ, M, Mp, mpm, BetaKeyPos, BetaKeyPos4Print, beta, regionArray, nRegions, varBeta, scaleM, dfM, chainLength, burnIn, outputFreq, outPut
 	
 end
+
+end
