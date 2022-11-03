@@ -14,6 +14,7 @@ using Printf
 
 include("prepMatVec.jl")
 include("runTime.jl")
+include("mme.jl")
 include("samplers.jl")
 include("misc.jl")
 include("outFiles.jl")
@@ -23,10 +24,11 @@ runLMEM = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}(
 	folderHandler(outFolder)
 
 	levelsFR,Ainv,yVec,FE,RE,ME = prepMatVec.prep(formula,userData,userHints=myHints,path2ped=userPedData,paths2geno=genotypes)
-	
-        samplers.runSampler(Ainv,yVec,FE,RE,levelsFR,blockThese,nChain,nBurn,nThin,VCV,ME,map,outFolder)
 
-	#return(yVec,FE,RE,ME)
+	ycorr,nData,dfE,scaleE,X,iXpX,XKeyPos,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos4Print,nColEachZ,u,varU,scaleZ,dfZ,M,Mp,mpm,BetaKeyPos,BetaKeyPos4Print,beta,regionArray,nRegions,varBeta,scaleM,dfM = mme.getMME!(iA,Y,X,Z,levelDict,blockThese,VCV,ME,map,outFolder)
+	
+	samplers.runSampler!(ycorr,nData,dfE,scaleE,X,iXpX,XKeyPos,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos4Print,nColEachZ,u,varU,scaleZ,dfZ,M,Mp,mpm,BetaKeyPos,BetaKeyPos4Print,beta,regionArray,nRegions,varBeta,scaleM,dfM,nChain,nBurn,nThin,outFolder)
+	
 end
 
 end
