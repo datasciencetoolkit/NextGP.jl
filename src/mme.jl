@@ -14,8 +14,6 @@ include("misc.jl")
 include("runTime.jl")
 include("functions.jl")
 
-using NextGP
-
 export getMME!
 
 #define type for priorVCV to include Expression :(1|Dam)  or Symbol (:Dam)
