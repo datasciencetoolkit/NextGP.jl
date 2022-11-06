@@ -18,9 +18,10 @@ struct BayesPRType
     r::Int
     m::Any
     v::Float64
+    name::String
 end
 
-BayesPR(r::Int,m::Any,v::Float64) = BayesPRType(r,m,v)
+BayesPR(r::Int,m::Any,v::Float64;name="BayesPR") = BayesPRType(r,m,v,name)
 
 
 struct RandomEffectType <: AbstractTerm
