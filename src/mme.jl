@@ -351,7 +351,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 	push!(summarize,[mSet,"Random (Marker)",str,dfM[mSet],scaleM[mSet]])
 	end
 	
-	BayesX = Dict(v==NextGP.BayesPRType ? k => sampleBayesPR! : k => v for (k,v) in BayesX)
+	BayesX = Dict(v==BayesPRType ? k => sampleBayesPR! : k => v for (k,v) in BayesX)
 	println("BayesX: $BayesX")
 
 
