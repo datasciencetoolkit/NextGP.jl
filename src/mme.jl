@@ -13,6 +13,9 @@ include("outFiles.jl")
 include("misc.jl")
 include("runTime.jl")
 
+include("NextGP.jl")
+using .NextGP
+
 export getMME!
 
 #define type for priorVCV to include Expression :(1|Dam)  or Symbol (:Dam)
@@ -353,7 +356,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 
 	println("BayesX_mme1: $BayesX")
 	
-	BayesX = Dict(v==BayesPRType ? k => sampleBayesPR! : k => v for (k,v) in BayesX)
+	BayesX = Dict(v==NextGP.BayesPRType ? k => sampleBayesPR! : k => v for (k,v) in BayesX)
 	println("BayesX_mme2: $BayesX")
 
 
