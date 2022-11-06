@@ -12,7 +12,7 @@ include("outFiles.jl")
 
 export sampleVarE
 export sampleX!
-export BayesPR!
+export sampleBayesPR!
 export BayesPR
 export sampleZandZVar!
 
@@ -77,7 +77,7 @@ end
 ##### Component-wise, seperated functions for symbol and tuple
 
 
-function BayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+function sampleBayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -97,10 +97,10 @@ function BayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions
 	end
 end
 
-BayesPR(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow) = BayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+BayesPR(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow) = sampleBayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
 
 ##### Component-wise, seperated functions for symbol and tuple
-function BayesPR!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+function sampleBayesPR!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
 	for r in 1:regions
 		theseLoci = regionsMat[r]
 		regionSize = length(theseLoci)
