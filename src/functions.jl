@@ -10,6 +10,9 @@ using DataStructures
 
 include("outFiles.jl")
 
+export sampleVarE
+export sampleX!
+export BayesPR
 
 #Sampling fixed effects
 function sampleX!(xSet,xMat::Array{Float64, 1},b,ixpx,pos,ycorr,varE)
