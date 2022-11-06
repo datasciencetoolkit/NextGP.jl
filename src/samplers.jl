@@ -13,7 +13,7 @@ using PrettyTables
 include("outFiles.jl")
 include("misc.jl")
 include("runTime.jl")
-include("function.jl")
+include("functions.jl")
 
 
 export runSampler!
