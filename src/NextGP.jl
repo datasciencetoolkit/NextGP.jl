@@ -29,4 +29,7 @@ export summaryMCMC
 using .prepMatVec
 export prep
 
+include("functions.jl")
+using .functions
+
 end
