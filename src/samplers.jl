@@ -30,12 +30,12 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,iXpX,XKeyPos,b,Z,iVarStr,Zp,zpz,uK
 @showprogress 1 "MCMC progress..." for iter in 1:chainLength
 	
 		#sample residual variance
-	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
+	       	varE = functions.sampleVarE(dfE,scaleE,ycorr,nData)
 		
 		#sample fixed effects
 
 		for xSet in keys(iXpX)
-			sampleX!(xSet,X[xSet],b,iXpX[xSet],XKeyPos[xSet],ycorr,varE)
+			functions.sampleX!(xSet,X[xSet],b,iXpX[xSet],XKeyPos[xSet],ycorr,varE)
 		end
 	
 		#sample random effects
