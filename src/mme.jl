@@ -343,6 +343,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 
 	for mSet in keys(mpm)
 		if mSet ∈ keys(priorVCV)
+			println("typeof: $(isa(priorVCV[mSet],BayesPRType))")
 			BayesX[mSet] = typeof(priorVCV[mSet])
 			str = "$(nRegions[mSet]) block(s)"
 			#value = priorVCV[mSet].v
@@ -355,10 +356,6 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 	end
 
 	[v==BayesPRType ? BayesX[k] = sampleBayesPR! : BayesX[k] = v for (k,v) in BayesX]
-
-	println("BayesX in mme2: $BayesX")
-
-        [isa(v,BayesPRType) ? BayesX[k] = sampleBayesPR! : BayesX[k] = v for (k,v) in BayesX]
 
         println("BayesX in mme3: $BayesX")
 
