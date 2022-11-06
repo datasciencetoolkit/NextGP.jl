@@ -2,6 +2,9 @@ module prepMatVec
 
 using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables
 
+import StatsModels.terms
+StatsModels.terms!(path::String) = path #path for data and map
+
 include("misc.jl")
 
 export prep
@@ -132,9 +135,14 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "SNP")
-			arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
-			path = paths2geno[arg1]
-			thisM = CSV.read(path,CSV.Tables.matrix,header=false)
+#			arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
+#			path = paths2geno[arg1]			
+#			thisM = CSV.read(path,CSV.Tables.matrix,header=false)
+			(arg1,arg2,arg3...) = f.rhs[i].args_parsed
+			arg1 = Symbol(repr(arg1))
+			println("args: $arg1, $arg2, $arg3")
+			println("reading this: $arg2")
+			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false)
 			thisM .-= mean(thisM,dims=1) 
 			ME[arg1] = thisM
                         thisM = 0 #I can directly merge to dict above
