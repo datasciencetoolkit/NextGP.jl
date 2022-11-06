@@ -353,8 +353,8 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 	end
 
 	println("BayesX_mme1: $BayesX")
-	
-	BayesX = Dict(v==NextGP.BayesPRType ? k => sampleBayesPR! : k => v for (k,v) in BayesX)
+	println("Typeof: typeof.(collect(values(BayesX)))")	
+	BayesX = Dict(v==BayesPRType ? k => sampleBayesPR! : k => v for (k,v) in BayesX)
 	println("BayesX_mme2: $BayesX")
 
 
