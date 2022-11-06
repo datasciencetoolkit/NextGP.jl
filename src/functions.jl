@@ -60,7 +60,7 @@ end
 ##### Component-wise, seperated functions for symbol and tuple
 
 
-function sampleBayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+function BayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -81,7 +81,7 @@ function sampleBayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,r
 end
 
 ##### Component-wise, seperated functions for symbol and tuple
-function sampleBayesPR!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+function BayesPR!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
 	for r in 1:regions
 		theseLoci = regionsMat[r]
 		regionSize = length(theseLoci)
