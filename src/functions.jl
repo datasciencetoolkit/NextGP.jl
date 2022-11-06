@@ -80,6 +80,8 @@ function BayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions
 	end
 end
 
+BayesPR(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow) = BayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+
 ##### Component-wise, seperated functions for symbol and tuple
 function BayesPR!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
 	for r in 1:regions
