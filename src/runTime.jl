@@ -16,12 +16,12 @@ SNP(name::Char,path::String;map::String="") = GenomicTerm(name,path,map)
 
 struct BayesPRType
     r::Int
-    m::Any
-    v::Float64
+    m::Union{Vector{Float64},Float64}
+    v::Union{Matrix{Float64},Float64}
     name::String
 end
 
-BayesPR(r::Int,m::Any,v::Float64;name="BayesPR") = BayesPRType(r,m,v,name)
+BayesPR(r::Int,m::Union{Vector{Float64},Float64},v::Union{Matrix{Float64},Float64};name="BayesPR") = BayesPRType(r,m,v,name)
 
 
 struct RandomEffectType <: AbstractTerm
