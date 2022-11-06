@@ -14,7 +14,6 @@ include("misc.jl")
 include("runTime.jl")
 
 include("NextGP.jl")
-using .NextGP
 
 export getMME!
 
