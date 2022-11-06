@@ -140,13 +140,13 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 #			thisM = CSV.read(path,CSV.Tables.matrix,header=false)
 			(arg1,arg2,arg3...) = f.rhs[i].args_parsed
 			arg1 = Symbol(repr(arg1))
-			println("args: $arg1, $arg2, $arg3")
+			println("args: $arg1, $arg2, $(arg3[1])")
 			println("reading this: $arg2")
 			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false)
 			thisM .-= mean(thisM,dims=1) 
 			ME[arg1] = thisM
                         thisM = 0 #I can directly merge to dict above
-			map[arg1] = arg3
+			map[arg1] = arg3[1]
 			push!(summarize,[arg1,"SNP",typeof(ME[arg1]),size(ME[arg1],2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
                         arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
@@ -185,7 +185,9 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 
 	idFR = OrderedDict(:levelsFE => idFE, :levelsRE => idRE)
 
-        return idFR, Ainv, vec(yVec), FE, RE, ME, MarkerMaps
+	println("marker map: $map")
+
+        return idFR, Ainv, vec(yVec), FE, RE, ME, map
 end
 
 end
