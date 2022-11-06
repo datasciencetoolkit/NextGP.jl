@@ -13,7 +13,6 @@ include("outFiles.jl")
 export sampleVarE
 export sampleX!
 export sampleBayesPR!
-export BayesPR
 export sampleZandZVar!
 
 #Sampling fixed effects
@@ -148,5 +147,7 @@ function sampleVarE(df_e,S_e,yCorVec,nRecords)
     return (df_e*S_e + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords))
 end
 
+
+export BayesPR
 
 end
