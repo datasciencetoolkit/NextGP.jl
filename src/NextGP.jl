@@ -3,7 +3,7 @@ module NextGP
 #exporting run-time equivalent of functions
 export PED
 export SNP
-#export BayesPR
+export BayesPR
 export Random
 
 #
@@ -29,8 +29,5 @@ export summaryMCMC
 using .prepMatVec
 export prep
 
-include("functions.jl")
-using .functions
-export BayesPR
 
 end

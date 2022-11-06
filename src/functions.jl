@@ -13,6 +13,7 @@ include("outFiles.jl")
 export sampleVarE
 export sampleX!
 export sampleBayesPR!
+export BayesPR
 export sampleZandZVar!
 
 #Sampling fixed effects
@@ -148,6 +149,5 @@ function sampleVarE(df_e,S_e,yCorVec,nRecords)
 end
 
 
-export BayesPR
 
 end

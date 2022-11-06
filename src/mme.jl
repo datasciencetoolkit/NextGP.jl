@@ -352,7 +352,10 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 	push!(summarize,[mSet,"Random (Marker)",str,dfM[mSet],scaleM[mSet]])
 	end
 
-
+	println("typeof BayesX: $(typeof.(collect(values(BayesX))))")
+	println("$(isa(BayesX[:M],BayesPRType))")
+	println("$(BayesX[:M]==BayesPRType)")
+	println("$(BayesX[:M].==BayesPRType)")
         println("BayesX in mme3: $BayesX")
 
 
