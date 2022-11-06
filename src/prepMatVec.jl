@@ -140,8 +140,6 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 #			thisM = CSV.read(path,CSV.Tables.matrix,header=false)
 			(arg1,arg2,arg3...) = f.rhs[i].args_parsed
 			arg1 = Symbol(repr(arg1))
-			println("args: $arg1, $arg2, $(arg3[1])")
-			println("reading this: $arg2")
 			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false)
 			thisM .-= mean(thisM,dims=1) 
 			ME[arg1] = thisM
@@ -185,7 +183,6 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 
 	idFR = OrderedDict(:levelsFE => idFE, :levelsRE => idRE)
 
-	println("marker map: $map")
 
         return idFR, Ainv, vec(yVec), FE, RE, ME, map
 end

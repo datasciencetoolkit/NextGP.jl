@@ -333,16 +333,28 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 		end
 	push!(summarize,[zSet,"Random",str,dfZ[zSet],scaleZ[zSet]])
 	end
+
+
+	###Bayesian Alphabet methods
+	BayesX = OrderedDict{Symbol,Any}()
+
 	for mSet in keys(mpm)
 		if mSet ∈ keys(priorVCV)
+			BayesX[mSet] = typeof(priorVCV[mSet])
 			str = "$(nRegions[mSet]) block(s)"
 			#value = priorVCV[mSet].v
 		else #### later, handel this above, when dealing with priorVCV is allowed to be empty
+			BayesX[mSet] = BayesPRType #with region size 9999
 			str = "WG(I)"
 		     	#value = 0.001
 		end
 	push!(summarize,[mSet,"Random (Marker)",str,dfM[mSet],scaleM[mSet]])
 	end
+	
+	BayesX = Dict(v==NextGP.BayesPRType ? k => sampleBayesPR! : k => v for (k,v) in BayesX)
+	println("BayesX: $BayesX")
+
+
 	push!(summarize,["e","Random",priorVCV[:e].str,dfE,scaleE])						
 
 	println("\n ---------------- Summary of analysis ---------------- \n")
@@ -373,7 +385,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 
 	IO.outMCMC(outPut,"varE",["e"])
 	##########
-	return ycorr, nData, dfE, scaleE, X, iXpX, XKeyPos, b, Z, iVarStr, Zp, zpz, uKeyPos, uKeyPos4Print, nColEachZ, u, varU, scaleZ, dfZ, M, Mp, mpm, BetaKeyPos, BetaKeyPos4Print, beta, regionArray, nRegions, varBeta, scaleM, dfM, outPut
+	return ycorr, nData, dfE, scaleE, X, iXpX, XKeyPos, b, Z, iVarStr, Zp, zpz, uKeyPos, uKeyPos4Print, nColEachZ, u, varU, scaleZ, dfZ, M, Mp, mpm, BetaKeyPos, BetaKeyPos4Print, beta, regionArray, nRegions, varBeta, scaleM, dfM, BayesX
 	
 end
 
