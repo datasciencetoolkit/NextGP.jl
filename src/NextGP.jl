@@ -31,5 +31,6 @@ export prep
 
 include("functions.jl")
 using .functions
+export BayesPR
 
 end
