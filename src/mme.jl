@@ -13,7 +13,6 @@ include("outFiles.jl")
 include("misc.jl")
 include("runTime.jl")
 
-include("NextGP.jl")
 
 export getMME!
 
