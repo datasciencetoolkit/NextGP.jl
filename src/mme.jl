@@ -19,7 +19,7 @@ export getMME!
 ExprOrSymbol = Union{Expr,Symbol}
 
 #main sampler
-function getMME!(iA,Y,X,Z,levelDict,blocks,priorVCV,M,paths2maps,outPut)
+function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 		
         #some info
 	nRand = length(Z)
@@ -313,7 +313,7 @@ function getMME!(iA,Y,X,Z,levelDict,blocks,priorVCV,M,paths2maps,outPut)
 
 	varU = deepcopy(varU_prior) #for storage
 
-	beta = [zeros(Float64,1,collect(values(nMarkers))[i]) for i in 1:nMarkerSets] #zero is for max to work when no SNP data is present #can allow unequal length! Remove tail zeros for printing....
+	beta = [zeros(Float64,1,collect(values(nMarkers))[i]) for i in 1:nMarkerSets]
 
         varBeta = OrderedDict{Any,Any}()
         for mSet in keys(mpm)

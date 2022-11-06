@@ -41,7 +41,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,iXpX,XKeyPos,b,Z,iVarStr,Zp,zpz,uK
 	
 		
 		for mSet in keys(mpm)
-			sampleMandMVar!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
+			sampleBayesPR!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
 		end
                		
         	#print
@@ -130,7 +130,7 @@ end
 ##### Component-wise, seperated functions for symbol and tuple
 
 
-function sampleMandMVar!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+function sampleBayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -146,12 +146,12 @@ function sampleMandMVar!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,
 			setindex!(beta[betaPos],sampleBeta(meanBeta, lhs, varE),locus)
 			BLAS.axpy!(-1.0*getindex(beta[betaPos],locus),view(MMat,:,locus),ycorr)
 		end
-		varBeta[mSet][r] = sampleVarBeta(scaleMNow,dfMNow,getindex(beta[betaPos],theseLoci),regionSize)
+		varBeta[mSet][r] = sampleVarBetaPR(scaleMNow,dfMNow,getindex(beta[betaPos],theseLoci),regionSize)
 	end
 end
 
 ##### Component-wise, seperated functions for symbol and tuple
-function sampleMandMVar!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+function sampleBayesPR!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
 	for r in 1:regions
 		theseLoci = regionsMat[r]
 		regionSize = length(theseLoci)
@@ -165,7 +165,7 @@ function sampleMandMVar!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,r
 			setindex!.(beta[betaPos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
 			ycorr .-= MMat[locus]*getindex.(beta[betaPos],locus)	
 		end
-		varBeta[mSet][r] = sampleVarCovBeta(scaleMNow,dfMNow,reduce(hcat,getindex.(beta[betaPos],Ref(theseLoci))),regionSize)
+		varBeta[mSet][r] = sampleVarCovBetaPR(scaleMNow,dfMNow,reduce(hcat,getindex.(beta[betaPos],Ref(theseLoci))),regionSize)
 	end
 end
 
@@ -185,11 +185,11 @@ function sampleVarU(iMat,scale_ranVar,df_ranVar,effVec)
 end
 
 #sample marker variances
-function sampleVarBeta(scalem,dfm,whichLoci,regionSize)::Float64
+function sampleVarBetaPR(scalem,dfm,whichLoci,regionSize)::Float64
 	return (scalem*dfm + BLAS.dot(whichLoci,whichLoci)) / rand(Chisq(dfm + regionSize))
 end
 
-function sampleVarCovBeta(scalem,dfm,whichLoci,regionSize)
+function sampleVarCovBetaPR(scalem,dfm,whichLoci,regionSize)
 	Sb = whichLoci'whichLoci
 	return rand(InverseWishart(dfm + regionSize, scalem + Sb))
 end

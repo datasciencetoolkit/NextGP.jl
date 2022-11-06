@@ -7,10 +7,12 @@ end
 PED(s::Char) = RandTerm(s)
 
 struct GenomicTerm <: AbstractTerm
-    mat::Char
+    name::Char
+    path::String
+    map::String
 end
 
-SNP(s::Char) = GenomicTerm(s)
+SNP(name::Char,path::String;map::String="") = GenomicTerm(name,path,map)
 
 struct BayesPRType <: AbstractTerm
     r::Int
