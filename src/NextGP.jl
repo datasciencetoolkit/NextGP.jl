@@ -6,6 +6,8 @@ export SNP
 export BayesPR
 export Random
 
+export BayesPRType
+
 #
 export makeA
 export makePed
