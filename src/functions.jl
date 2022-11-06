@@ -1,3 +1,4 @@
+module functions
 
 #Sampling fixed effects
 function sampleX!(xSet,xMat::Array{Float64, 1},b,ixpx,pos,ycorr,varE)
@@ -132,4 +133,4 @@ function sampleVarE(df_e,S_e,yCorVec,nRecords)
 end
 
 
-
+end
