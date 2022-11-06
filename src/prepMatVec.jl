@@ -45,7 +45,7 @@ ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,arg1],data2[!,arg2])
 
 
 """
-	function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,path2ped,paths2geno)
+	function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,path2ped)
 
 * `NextGP` relies on `StatsModels.jl` package for model expression (`f`), and fixed effect design matrix generation.
 * Details for the model expression (`f`), and fixed effects coding specifications (e.g., effect or dummy coding) can be found at [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/).
@@ -57,7 +57,7 @@ ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,arg1],data2[!,arg2])
     * all `String` rhs variables (also those made `Categorical`) are dummy coded, except those defined by the user in `userHints`, 
     * all `Float` rhs variables are centered.
 """
-function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,path2ped,paths2geno)
+function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,path2ped)
 	
 #	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
 	
@@ -100,7 +100,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
         RE = OrderedDict{Any,Any}()
 
 	ME = OrderedDict{Any,Any}()
-
+	map = OrderedDict{Any,Any}() 
 
         #read pedigree
 	if isempty(path2ped)
@@ -146,6 +146,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			thisM .-= mean(thisM,dims=1) 
 			ME[arg1] = thisM
                         thisM = 0 #I can directly merge to dict above
+			map[arg1] = arg3
 			push!(summarize,[arg1,"SNP",typeof(ME[arg1]),size(ME[arg1],2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
                         arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
@@ -184,7 +185,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 
 	idFR = OrderedDict(:levelsFE => idFE, :levelsRE => idRE)
 
-        return idFR, Ainv, vec(yVec), FE, RE, ME
+        return idFR, Ainv, vec(yVec), FE, RE, ME, MarkerMaps
 end
 
 end
