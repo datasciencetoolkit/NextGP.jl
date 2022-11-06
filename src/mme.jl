@@ -9,10 +9,10 @@ using DataFrames
 using DataStructures
 using PrettyTables
 
-include("outFiles.jl")
-include("misc.jl")
-include("runTime.jl")
-
+#include("outFiles.jl")
+#include("misc.jl")
+#include("runTime.jl")
+include("NextGP.jl")
 
 export getMME!
 
