@@ -1,5 +1,16 @@
 module functions
 
+
+using Distributions, LinearAlgebra
+using StatsBase
+using Printf
+using CSV
+using DataFrames
+using DataStructures
+
+include("outFiles.jl")
+
+
 #Sampling fixed effects
 function sampleX!(xSet,xMat::Array{Float64, 1},b,ixpx,pos,ycorr,varE)
         #block for each effect
