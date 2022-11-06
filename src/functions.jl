@@ -13,6 +13,7 @@ include("outFiles.jl")
 export sampleVarE
 export sampleX!
 export BayesPR
+export sampleZandZVar!
 
 #Sampling fixed effects
 function sampleX!(xSet,xMat::Array{Float64, 1},b,ixpx,pos,ycorr,varE)
