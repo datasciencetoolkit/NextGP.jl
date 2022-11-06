@@ -16,8 +16,15 @@ include("functions.jl")
 
 export getMME!
 
+struct BayesPRType <: AbstractTerm
+    r::Int
+    m::Any
+    v::Float64
+end
+
 #define type for priorVCV to include Expression :(1|Dam)  or Symbol (:Dam)
 ExprOrSymbol = Union{Expr,Symbol}
+
 
 #main sampler
 function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
