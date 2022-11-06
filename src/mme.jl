@@ -344,7 +344,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 
 	for mSet in keys(mpm)
 		if mSet ∈ keys(priorVCV)
-			priorVCV[mSet].name == "BayesPR" ? BayesX[mSet] = BayesPR : nothing
+			priorVCV[mSet].name == "BayesPR" ? BayesX[mSet] = sampleBayesPR! : nothing
 			#BayesX[mSet] = typeof(priorVCV[mSet])
 			str = "$(nRegions[mSet]) block(s)"
 			#value = priorVCV[mSet].v
