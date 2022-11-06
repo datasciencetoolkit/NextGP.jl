@@ -12,6 +12,7 @@ include("outFiles.jl")
 
 export sampleVarE
 export sampleX!
+export BayesPR!
 export BayesPR
 export sampleZandZVar!
 

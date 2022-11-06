@@ -12,7 +12,6 @@ using PrettyTables
 include("outFiles.jl")
 include("misc.jl")
 include("runTime.jl")
-include("functions.jl")
 
 export getMME!
 
@@ -346,7 +345,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 			str = "$(nRegions[mSet]) block(s)"
 			#value = priorVCV[mSet].v
 		else #### later, handel this above, when dealing with priorVCV is allowed to be empty
-			BayesX[mSet] = BayesPRType #with region size 9999
+			BayesX[mSet] = BayesPR #with region size 9999
 			str = "WG(I)"
 		     	#value = 0.001
 		end
