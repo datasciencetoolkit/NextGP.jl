@@ -357,9 +357,6 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 	end
 	
 
-	println("BayesX in mme2: $BayesX")
-
-
 	push!(summarize,["e","Random",priorVCV[:e].str,dfE,scaleE])						
 
 	println("\n ---------------- Summary of analysis ---------------- \n")

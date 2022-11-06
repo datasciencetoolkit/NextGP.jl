@@ -97,7 +97,6 @@ function sampleBayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,r
 	end
 end
 
-BayesPR(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow) = sampleBayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
 
 ##### Component-wise, seperated functions for symbol and tuple
 function sampleBayesPR!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
