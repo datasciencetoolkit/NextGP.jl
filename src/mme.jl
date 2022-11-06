@@ -16,6 +16,13 @@ include("functions.jl")
 
 export getMME!
 
+struct BayesPRType <: AbstractTerm
+    r::Int
+    m::Any
+    v::Float64
+end
+
+BayesPR(r::Int,m::Any,v::Float64) = BayesPRType(r,m,v)
 
 #define type for priorVCV to include Expression :(1|Dam)  or Symbol (:Dam)
 ExprOrSymbol = Union{Expr,Symbol}
