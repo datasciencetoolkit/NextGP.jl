@@ -13,6 +13,9 @@ include("outFiles.jl")
 include("misc.jl")
 include("runTime.jl")
 
+include("functions.jl")
+using .functions
+
 export getMME!
 
 #define type for priorVCV to include Expression :(1|Dam)  or Symbol (:Dam)
