@@ -353,11 +353,8 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 	end
 
 	println("$(isa(BayesX[:M],BayesPRType))")
-	println("$(BayesX[:M]==BayesPRType)")
-	println("$(BayesX[:M].==BayesPRType)")
-        println("$(isa(BayesX[:M],NextGP.BayesPRType))")
-        println("$(BayesX[:M]==NextGP.BayesPRType)")
-        println("$(BayesX[:M].==NextGP.BayesPRType)")
+	println("$(typeof(BayesX[:M])==BayesPRType)")
+	println("$(typeof(BayesX[:M]).==BayesPRType)")
         println("BayesX in mme3: $BayesX")
 
 
