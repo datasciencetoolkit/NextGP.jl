@@ -340,7 +340,6 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,out
 		regionArray[pSet] = theseRegions
 	end
 
-	println("rhsM: $rhsM")
 	
 	#pos for individual marker set
 	BetaKeyPos4Print = OrderedDict(vcat([isa(k,Symbol) ? k => v : collect(k) .=> collect(v) for (k,v) in BetaKeyPos]...))
