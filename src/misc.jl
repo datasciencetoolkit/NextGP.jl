@@ -96,7 +96,8 @@ function makeG(inputFile::String;method=1)
 		thisM ./= sqrt2pq
 		G = MatByMat(thisM)./length(p)
 	else error("enter a valid method")
-	end  
+	end
+	G .+= Matrix(0.001*I,size(thisM,1),size(thisM,1))  
 	return G	
 end
 
@@ -117,6 +118,7 @@ function makeG(thisM::Array{Float64,2};method=1)
                 G = MatByMat(thisM)./length(p)
         else error("enter a valid method")
         end
+	G .+= Matrix(0.001*I,size(thisM,1),size(thisM,1))
         return G
 end
 
