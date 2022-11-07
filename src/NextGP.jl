@@ -7,6 +7,8 @@ export BayesPR
 export Random
 export BayesPRType
 export SummaryStatistics
+export estGRN_MHGibbs 
+
 
 #
 export makeA

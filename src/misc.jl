@@ -2,6 +2,7 @@ using Printf
 using DataFrames
 using CSV
 using PedigreeBase
+using StatsBase
 
 """
 	 function(dataLHS::DataFrame)
@@ -99,7 +100,25 @@ function makeG(inputFile::String;method=1)
 	return G	
 end
 
-
+"""
+        makeG(inputData::Array{Float64,2};method=1)
+Makes genomic relationship matrix based on vanRaden method 1 (defult) or method 2
+"""
+function makeG(thisM::Array{Float64,2};method=1)
+        p = mean(thisM,dims=1)./2.0
+        q = 1.0 .- p
+        thisM .-= mean(thisM,dims=1)
+        if method==1
+                G = MatByMat(thisM) ./ sum(2.0 .* p.*q)
+        elseif method==2
+                sqrt2pq = sqrt(2.0 .* p.*q)
+                replace!(sqrt2pq,Inf=>0)
+                thisM ./= sqrt2pq
+                G = MatByMat(thisM)./length(p)
+        else error("enter a valid method")
+        end
+        return G
+end
 
 #make regions
 function prep2RegionData(outPutFolder,markerSet,mapFile,fixedRegSize)

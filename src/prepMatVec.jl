@@ -1,6 +1,6 @@
 module prepMatVec
 
-using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables
+using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
 
 import StatsModels.terms
 StatsModels.terms!(path::String) = path #path for data and map
@@ -45,7 +45,7 @@ ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,arg1],data2[!,arg2])
 
 
 """
-	function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,path2ped)
+	function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,path2ped,priorVCV)
 
 * `NextGP` relies on `StatsModels.jl` package for model expression (`f`), and fixed effect design matrix generation.
 * Details for the model expression (`f`), and fixed effects coding specifications (e.g., effect or dummy coding) can be found at [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/).
@@ -98,6 +98,8 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
         FE = OrderedDict{Any,Any}() #any to block work
 
         RE = OrderedDict{Any,Any}()
+	iGRel = OrderedDict{Any,Any}()
+
 
 	ME = OrderedDict{Any,Any}()
 	map = OrderedDict{Any,Any}() 
@@ -141,11 +143,20 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			(arg1,arg2,arg3...) = f.rhs[i].args_parsed
 			arg1 = Symbol(repr(arg1))
 			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false)
-			thisM .-= mean(thisM,dims=1) 
-			ME[arg1] = thisM
-                        thisM = 0 #I can directly merge to dict above
-			map[arg1] = arg3[1]
-			push!(summarize,[arg1,"SNP",typeof(ME[arg1]),size(ME[arg1],2)])
+			
+			#str field can only be in GBLUP for marker related analysis
+			if haskey(priorVCV,arg1) && in(:str,fieldnames(typeof(priorVCV[arg1])))
+				RE[arg1] = Matrix(1.0*I,size(thisM,1),size(thisM,1))
+				iGRel[arg1] = inv(makeG(thisM;type=priorVCV[arg1].type))
+				push!(summarize,[arg1,"GBLUP",typeof(RE[arg1]),size(RE[arg1],2)])
+			else
+
+				thisM .-= mean(thisM,dims=1) 
+				ME[arg1] = thisM
+                       		thisM = 0 #I can directly merge to dict above
+				map[arg1] = arg3[1]
+				push!(summarize,[arg1,"SNP",typeof(ME[arg1]),size(ME[arg1],2)])
+			end
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
                         arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
 			IDs,thisZ = ranMat(arg, :ID, userData, pedigree)
@@ -184,7 +195,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	idFR = OrderedDict(:levelsFE => idFE, :levelsRE => idRE)
 
 
-        return idFR, Ainv, vec(yVec), FE, RE, ME, map
+        return idFR, Ainv, iGRel, vec(yVec), FE, RE, ME, map
 end
 
 end

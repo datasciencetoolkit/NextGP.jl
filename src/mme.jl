@@ -23,7 +23,7 @@ ExprOrSymbol = Union{Expr,Symbol}
 
 
 #main sampler
-function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,outPut)
+function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,outPut)
 		
         #some info
 	nRand = length(Z)
@@ -223,6 +223,9 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,out
 			elseif priorVCV[zSet].str=="A"
 				printstyled("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used\n"; color = :green)
 				iVarStr[zSet] = iA
+			elseif priorVCV[zSet].str=="G"
+                                printstyled("prior var-cov structure for $zSet is G. Computed G matrix will be used\n"; color = :green)
+                                iVarStr[zSet] = iGRel[zSet]
 			else 	iVarStr[zSet] = inv(priorVCV[zSet].str)
 			end
 			varU_prior[zSet] = priorVCV[zSet].v

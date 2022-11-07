@@ -28,9 +28,11 @@ struct RandomEffectType
     str::Any
     m::Any
     v::Float64
+    type::Int
 end
 
-Random(str::Any,m::Any,v::Float64) = RandomEffectType(str,m,v)
+Random(str::Any,m::Any,v::Float64;type::Int=1) = RandomEffectType(str,m,v,type)
+
 
 struct SummaryStatistics
     m::Union{Vector{Float64},Float64}
