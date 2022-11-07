@@ -142,6 +142,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,out
 				
 	Zp = OrderedDict{Any,Any}()
        	zpz = OrderedDict{Any,Any}() #Has the order in priorVCV, which may be unordered Dict() by the user. Analysis follow this order.
+	rhsZ = OrderedDict{Any,Any}()
 					
 	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV) 
 		corEffects = []
@@ -156,9 +157,10 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,out
 			end
 			Zp[pSet]  = transpose(Z[pSet])						
 			zpz[pSet] = tempzpz
+			rhsZ[pSet] = zeros(size(Z[pSet],2))
                         if pSet in keys(summaryStat)
-                                summaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(summaryStat[pSet].v) : zpz[pSet] += inv.(diag(summaryStat[pSet].v))
-                                summaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+                                summaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] .+= inv.(summaryStat[pSet].v) : zpz[pSet] .+= inv.(diag(summaryStat[pSet].v))
+                                summaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsZ[pSet] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                         end
 		#tuple of symbols (:ID,:Dam)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(Z)))) #if all elements are available # all([pSet .in Ref(keys(Z))])
@@ -196,9 +198,10 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,out
 		end
 		Zp[pSet]  = transpose(Z[pSet])						
 		zpz[pSet] = tempzpz
+		rhsZ[pSet] = zeros(size(Z[pSet],2))
 		if pSet in keys(summaryStat)
-                	summaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(summaryStat[pSet].v) : zpz[pSet] += inv.(diag(summaryStat[pSet].v))
-                        summaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+                	summaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] .+= inv.(summaryStat[pSet].v) : zpz[pSet] .+= inv.(diag(summaryStat[pSet].v))
+                        summaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsZ[pSet] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                 end
 	end
 																	
@@ -267,7 +270,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,out
 
 	Mp = OrderedDict{Any,Any}()
        	mpm = OrderedDict{Any,Any}()
-	
+	rhsM = OrderedDict{Any,Any}()	
 	
 	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()	
 	
@@ -282,9 +285,10 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,out
 				push!(tempmpm,BLAS.dot(c,c))
 			end
 			mpm[pSet] = tempmpm
+			rhsM[pSet] = zeros(size(M[pSet],2))
 			if pSet in keys(summaryStat)
-				summaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += inv.(summaryStat[pSet].v) : mpm[pSet] += inv.(diag(summaryStat[pSet].v))
-				summaryStat[pSet].v == Array{Float64,1} ? rhsM[pSet] = inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsM[pSet] = inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+				summaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] .+= inv.(summaryStat[pSet].v) : mpm[pSet] .+= inv.(diag(summaryStat[pSet].v))
+				summaryStat[pSet].v == Array{Float64,1} ? rhsM[pSet] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsM[pSet] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                         end
 			Mp[pSet] = []
 			theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],priorVCV[pSet].r)
@@ -327,13 +331,16 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,out
 			push!(tempmpm,BLAS.dot(c,c))
 		end
 		mpm[pSet] = tempmpm
+		rhsM[pSet] = zeros(size(M[pSet],2))
                 if pSet in keys(summaryStat)
-			summaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += inv.(summaryStat[pSet].v) : mpm[pSet] += inv.(diag(summaryStat[pSet].v))
-                        summaryStat[pSet].v == Array{Float64,1} ? rhsM[pSet] = inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsM[pSet] = inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+			summaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] .+= inv.(summaryStat[pSet].v) : mpm[pSet] .+= inv.(diag(summaryStat[pSet].v))
+                        summaryStat[pSet].v == Array{Float64,1} ? rhsM[pSet] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsM[pSet] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                 end
 		theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],9999)
 		regionArray[pSet] = theseRegions
 	end
+
+	println("rhsM: $rhsM")
 	
 	#pos for individual marker set
 	BetaKeyPos4Print = OrderedDict(vcat([isa(k,Symbol) ? k => v : collect(k) .=> collect(v) for (k,v) in BetaKeyPos]...))
