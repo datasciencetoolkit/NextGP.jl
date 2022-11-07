@@ -147,7 +147,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			#str field can only be in GBLUP for marker related analysis
 			if haskey(priorVCV,arg1) && in(:str,fieldnames(typeof(priorVCV[arg1])))
 				RE[arg1] = Matrix(1.0*I,size(thisM,1),size(thisM,1))
-				iGRel[arg1] = inv(makeG(thisM;type=priorVCV[arg1].type))
+				iGRel[arg1] = inv(makeG(thisM;method=priorVCV[arg1].type))
 				push!(summarize,[arg1,"GBLUP",typeof(RE[arg1]),size(RE[arg1],2)])
 			else
 
