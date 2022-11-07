@@ -6,6 +6,7 @@ export SNP
 export BayesPR
 export Random
 export BayesPRType
+export SummaryStatistics
 
 #
 export makeA

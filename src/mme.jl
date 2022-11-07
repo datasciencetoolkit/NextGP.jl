@@ -23,7 +23,7 @@ ExprOrSymbol = Union{Expr,Symbol}
 
 
 #main sampler
-function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
+function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,outPut)
 		
         #some info
 	nRand = length(Z)
@@ -65,8 +65,21 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 	        
 	##make iXpX, Z', zpz (for uncor)
         iXpX = deepcopy(X)
+	rhsX = deepcopy(X)
+	[rhsX[xSet] = zeros(size(X[xSet],2),size(X[xSet],2)) for xSet in keys(X)]
+
+	println("rhsX: $rhsX")	
+
         for x in keys(X)
 		XpX = X[x]'X[x]
+
+		##
+                if x in keys(summaryStat)
+	                XpX += inv(summaryStat[x].v)
+			rhsX[x] += inv(summaryStat[x].v)*(summaryStat[x].m)
+                end
+                ##
+
 		if isa(XpX,Matrix{Float64}) 
 			XpX += Matrix(I*minimum(abs.(diag(XpX)./10000)),size(XpX))
 			#XpX += Matrix(I*minimum(abs.(diag(XpX)./size(X[x],1))),size(XpX))
@@ -129,7 +142,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 				
 	Zp = OrderedDict{Any,Any}()
        	zpz = OrderedDict{Any,Any}() #Has the order in priorVCV, which may be unordered Dict() by the user. Analysis follow this order.
-													
+					
 	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV) 
 		corEffects = []
 		corPositions = []
@@ -143,6 +156,10 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 			end
 			Zp[pSet]  = transpose(Z[pSet])						
 			zpz[pSet] = tempzpz
+                        if pSet in SummaryStat
+                                SummaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(SummaryStat[pSet].v) : zpz[pSet] += inv.(diag(SummaryStat[pSet].v))
+                                SummaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(SummaryStat[pSet].v) .* (SummaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(SummaryStat[pSet].v)) .* (SummaryStat[pSet].m)
+                        end
 		#tuple of symbols (:ID,:Dam)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(Z)))) #if all elements are available # all([pSet .in Ref(keys(Z))])
 			correlate = collect(pSet)
@@ -161,6 +178,11 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 				zpz[pSet] = MatByMat.(tempZ)
 				Zp[pSet]  = transpose.(tempZ)
 				tempZ = 0
+				if pSet in SummaryStat
+					error("Not available to use summary statistics in correlated effects")
+                        		#SummaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(SummaryStat[pSet].v) : zpz[pSet] += inv.(diag(SummaryStat[pSet].v))
+                        		#SummaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(SummaryStat[pSet].v) .* (SummaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(SummaryStat[pSet].v)) .* (SummaryStat[pSet].m)
+                		end
 			end
 		end
 	end
@@ -174,6 +196,10 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 		end
 		Zp[pSet]  = transpose(Z[pSet])						
 		zpz[pSet] = tempzpz
+		if pSet in SummaryStat
+                	SummaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(SummaryStat[pSet].v) : zpz[pSet] += inv.(diag(SummaryStat[pSet].v))
+                        SummaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(SummaryStat[pSet].v) .* (SummaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(SummaryStat[pSet].v)) .* (SummaryStat[pSet].m)
+                end
 	end
 																	
 	#pos for individual random effect
@@ -219,6 +245,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 		nZComp > 1 ? scaleZ[zSet] = priorVCV[zSet].v .* (dfZ[zSet]-nZComp-1.0)  : scaleZ[zSet] = priorVCV[zSet].v * (dfZ[zSet]-2.0)/dfZ[zSet] #I make float and array of float														
         end
 
+
 												
         ####
 																					
@@ -240,7 +267,8 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 
 	Mp = OrderedDict{Any,Any}()
        	mpm = OrderedDict{Any,Any}()
-		
+	
+	
 	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()	
 	
 	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
@@ -254,6 +282,10 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 				push!(tempmpm,BLAS.dot(c,c))
 			end
 			mpm[pSet] = tempmpm
+			if pSet in SummaryStat
+				SummaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += inv.(SummaryStat[pSet].v) : mpm[pSet] += inv.(diag(SummaryStat[pSet].v))
+				SummaryStat[pSet].v == Array{Float64,1} ? rhsM[pSet] = inv.(SummaryStat[pSet].v) .* (SummaryStat[pSet].m)  : rhsM[pSet] = inv.(diag(SummaryStat[pSet].v)) .* (SummaryStat[pSet].m)
+                        end
 			Mp[pSet] = []
 			theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],priorVCV[pSet].r)
 		        regionArray[pSet] = theseRegions
@@ -273,6 +305,11 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 				BetaKeyPos[pSet] = corPositions
 				M[pSet]   = tempM
 				mpm[pSet] = MatByMat.(tempM)
+				if pSet in SummaryStat
+					error("Not available to use summary statistics in correlated effects")
+                                	#SummaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += (1.0 ./ SummaryStat[pSet].v) : mpm[pSet] += inv.(diag(SummaryStat[pSet].v))
+ 	                       	end
+ 
 				Mp[pSet]  = transpose.(tempM)
 				tempM = 0
 				nowMap = first(pSet)		#should throw out error if sets have different lengths! implement it here!
@@ -290,6 +327,10 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,paths2maps,outPut)
 			push!(tempmpm,BLAS.dot(c,c))
 		end
 		mpm[pSet] = tempmpm
+                if pSet in SummaryStat
+			SummaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += inv.(SummaryStat[pSet].v) : mpm[pSet] += inv.(diag(SummaryStat[pSet].v))
+                        SummaryStat[pSet].v == Array{Float64,1} ? rhsM[pSet] = inv.(SummaryStat[pSet].v) .* (SummaryStat[pSet].m)  : rhsM[pSet] = inv.(diag(SummaryStat[pSet].v)) .* (SummaryStat[pSet].m)
+                end
 		theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],9999)
 		regionArray[pSet] = theseRegions
 	end
