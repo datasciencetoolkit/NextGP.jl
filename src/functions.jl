@@ -17,19 +17,19 @@ export BayesPR
 export sampleZandZVar!
 
 #Sampling fixed effects
-function sampleX!(xSet,xMat::Array{Float64, 1},b,ixpx,pos,ycorr,varE)
+function sampleX!(xSet,xMat::Array{Float64, 1},b,ixpx,pos,ycorr,varE,ssRHS)
         #block for each effect
 		ycorr    .+= xMat.*b[pos]
-		rhs      = xMat'*ycorr
+		rhs      = xMat'*ycorr + ssRHS
 		meanMu   = ixpx*rhs			
                 b[pos] .= rand(Normal(meanMu[],sqrt((ixpx*varE))[]))
 		ycorr    .-= xMat.*b[pos]        
 end
 
-function sampleX!(xSet,xMat::Array{Float64, 2},b,ixpx,pos,ycorr,varE)
+function sampleX!(xSet,xMat::Array{Float64, 2},b,ixpx,pos,ycorr,varE,ssRHS)
         #block for each effect
 		ycorr    .+= xMat*b[pos]
-                rhs      = xMat'*ycorr
+                rhs      = xMat'*ycorr + ssRHS
                 meanMu   = ixpx*rhs
 		b[pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(ixpx*varE))))
 		ycorr    .-= xMat*b[pos]
@@ -77,7 +77,7 @@ end
 ##### Component-wise, seperated functions for symbol and tuple
 
 
-function sampleBayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+function sampleBayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow,ssRHS)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -87,7 +87,7 @@ function sampleBayesPR!(mSet::Symbol,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,r
 		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[betaPos],locus),view(MMat,:,locus),ycorr)
-			rhs = BLAS.dot(view(MMat,:,locus),ycorr)
+			rhs = (BLAS.dot(view(MMat,:,locus),ycorr)) + view(ssRHS,locus)
 			lhs = mpmMat[locus] + lambda
 			meanBeta = lhs\rhs
 			setindex!(beta[betaPos],sampleBeta(meanBeta, lhs, varE),locus)
@@ -99,7 +99,7 @@ end
 
 
 ##### Component-wise, seperated functions for symbol and tuple
-function sampleBayesPR!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow)
+function sampleBayesPR!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,regions,ycorr,varE,varBeta,scaleMNow,dfMNow,ssRHS)
 	for r in 1:regions
 		theseLoci = regionsMat[r]
 		regionSize = length(theseLoci)
@@ -107,7 +107,7 @@ function sampleBayesPR!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,re
 		for locus in theseLoci::UnitRange{Int64}
 			RHS = zeros(size(invB,1))	
 			ycorr .+= MMat[locus]*getindex.(beta[betaPos],locus)				
-			RHS = (nowMp[locus]*ycorr)./varE
+			RHS = ((nowMp[locus]*ycorr)./varE) + view(ssRHS,locus) 
 			invLHS::Array{Float64,2} = inv((mpmMat[locus]./varE) .+ invB)
 			meanBETA::Array{Float64,1} = invLHS*RHS
 			setindex!.(beta[betaPos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
