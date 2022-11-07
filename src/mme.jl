@@ -156,7 +156,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,out
 			end
 			Zp[pSet]  = transpose(Z[pSet])						
 			zpz[pSet] = tempzpz
-                        if pSet in summaryStat
+                        if pSet in keys(summaryStat)
                                 summaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(summaryStat[pSet].v) : zpz[pSet] += inv.(diag(summaryStat[pSet].v))
                                 summaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                         end
@@ -178,7 +178,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,out
 				zpz[pSet] = MatByMat.(tempZ)
 				Zp[pSet]  = transpose.(tempZ)
 				tempZ = 0
-				if pSet in summaryStat
+				if pSet in keys(summaryStat)
 					error("Not available to use summary statistics in correlated effects")
                         		#SummaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(SummaryStat[pSet].v) : zpz[pSet] += inv.(diag(SummaryStat[pSet].v))
                         		#SummaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(SummaryStat[pSet].v) .* (SummaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(SummaryStat[pSet].v)) .* (SummaryStat[pSet].m)
@@ -196,7 +196,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,out
 		end
 		Zp[pSet]  = transpose(Z[pSet])						
 		zpz[pSet] = tempzpz
-		if pSet in summaryStat
+		if pSet in keys(summaryStat)
                 	summaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(summaryStat[pSet].v) : zpz[pSet] += inv.(diag(summaryStat[pSet].v))
                         summaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                 end
@@ -282,7 +282,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,out
 				push!(tempmpm,BLAS.dot(c,c))
 			end
 			mpm[pSet] = tempmpm
-			if pSet in summaryStat
+			if pSet in keys(summaryStat)
 				summaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += inv.(summaryStat[pSet].v) : mpm[pSet] += inv.(diag(summaryStat[pSet].v))
 				summaryStat[pSet].v == Array{Float64,1} ? rhsM[pSet] = inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsM[pSet] = inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                         end
@@ -327,7 +327,7 @@ function getMME!(iA,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,out
 			push!(tempmpm,BLAS.dot(c,c))
 		end
 		mpm[pSet] = tempmpm
-                if pSet in SummaryStat
+                if pSet in keys(summaryStat)
 			summaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += inv.(summaryStat[pSet].v) : mpm[pSet] += inv.(diag(summaryStat[pSet].v))
                         summaryStat[pSet].v == Array{Float64,1} ? rhsM[pSet] = inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsM[pSet] = inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                 end
