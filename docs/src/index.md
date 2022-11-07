@@ -36,6 +36,7 @@ Public functions of NextGP are documented here
 prep
 makeA
 makePed
+makeG
 ```
 
 ## Internals

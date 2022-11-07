@@ -78,6 +78,30 @@ function makePed(inputFile::String,userDataIDs)
 end
 
 
+"""
+	makeG(inputFile::String;method=1)
+Makes genomic relationship matrix based on vanRaden method 1 (defult) or method 2
+"""
+function makeG(inputFile::String;method=1)
+	thisM = CSV.read(inputFile,CSV.Tables.matrix,header=false)
+	p = mean(thisM,dims=1)./2.0
+	q = 1.0 .- p
+        thisM .-= mean(thisM,dims=1) 
+	if method==1 
+		G = MatByMat(thisM) ./ sum(2.0 .* p.*q)
+	ifelse method==2
+		sqrt2pq = sqrt(2.0 .* p.*q)
+		replace!(sqrt2pq,Inf=>0)
+		thisM ./= sqrt2pq
+		G = MatByMat(thisM)
+	else error("enter a valid method")
+	end  
+	return G
+	
+end
+
+
+
 #make regions
 function prep2RegionData(outPutFolder,markerSet,mapFile,fixedRegSize)
     accRegion = 0

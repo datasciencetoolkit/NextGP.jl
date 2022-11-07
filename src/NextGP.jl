@@ -11,6 +11,7 @@ export SummaryStatistics
 #
 export makeA
 export makePed
+export makeG
 
 using DataFrames
 using CategoricalArrays
