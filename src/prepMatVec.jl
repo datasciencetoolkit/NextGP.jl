@@ -57,7 +57,7 @@ ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,arg1],data2[!,arg2])
     * all `String` rhs variables (also those made `Categorical`) are dummy coded, except those defined by the user in `userHints`, 
     * all `Float` rhs variables are centered.
 """
-function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,path2ped)
+function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,path2ped,priorVCV)
 	
 #	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
 	
