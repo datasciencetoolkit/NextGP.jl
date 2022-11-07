@@ -89,15 +89,14 @@ function makeG(inputFile::String;method=1)
         thisM .-= mean(thisM,dims=1) 
 	if method==1 
 		G = MatByMat(thisM) ./ sum(2.0 .* p.*q)
-	ifelse method==2
+	elseif method==2
 		sqrt2pq = sqrt(2.0 .* p.*q)
 		replace!(sqrt2pq,Inf=>0)
 		thisM ./= sqrt2pq
-		G = MatByMat(thisM)
+		G = MatByMat(thisM)./length(p)
 	else error("enter a valid method")
 	end  
-	return G
-	
+	return G	
 end
 
 
