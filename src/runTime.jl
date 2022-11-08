@@ -31,7 +31,7 @@ struct RandomEffectType
     type::Int
 end
 
-Random(str::Any,m::Any,v::Float64;type::Int=1) = RandomEffectType(str,m,v,type)
+Random(str::Any,m::Any,v::Float64;type=1) = RandomEffectType(str,m,v,type)
 
 
 struct SummaryStatistics
