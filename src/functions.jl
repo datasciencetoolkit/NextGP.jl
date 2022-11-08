@@ -36,7 +36,7 @@ function sampleX!(xSet,xMat::Array{Float64, 2},b,ixpx,pos,ycorr,varE,ssRHS)
 end
 
 #sample random effects
-function sampleU(iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
+function sampleU(zSet::Symbol,iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
 	uVec = deepcopy(uVector)
 	λz = varE/varUComp
 	Yi = ZpComp*ycorr #computation of Z'ycorr for ALL  rhsU
@@ -53,17 +53,37 @@ function sampleU(iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
 end
 
 
+#sample random effects
+function sampleU(zSet::Tuple,iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
+        uVec = deepcopy(uVector)
+        λz = varE./varUComp
+        Yi = ZpComp*ycorr #computation of Z'ycorr for ALL  rhsU
+        nCol = length(zpzComp)
+        for i in 1:nCol
+                uVec[:,i] .= 0.0 #also excludes individual from iMat! Nice trick.
+                rhsU = Yi[:,i] .- λz*dot(iMat[:,i],uVec)
+                lhsU = zpzComp[i] + (iMat[i,i]*λz)[1]
+                invLhsU = inv(lhsU)
+                meanU = invLhsU*rhsU
+                uVec[:,i] = rand(MvNormal(meanU,invLhsU*varE))
+        end
+        return uVec
+end
+
+
 function sampleZandZVar!(iStrMat,ZMat,ZpMat,u,zpzMat,keyU,nCols,ycorr,varE,varU,scaleZ,dfZ)
         #for each random effect
         for zSet in keys(zpzMat)
 		if isa(zSet,Tuple)
 			uPos = keyU[zSet]
-			nowZp = ZpMat[zSet] ###
-			error("correlated random effects are not allowed")
+			ycorr .+= ZMat[zSet]*u[uPos,1:nCols[zSet]]
+			u[uPos,1:nCols[zSet]]  .= sampleU(zSet,iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,1:nCols[zSet]],ycorr)
+			ycorr .-= ZMat[zSet]*u[uPos,1:nCols[zSet]]
+                        varU[zSet] = sampleVarCoVarU(iStrMat[zSet],scaleZ[zSet],dfZ[zSet],u[uPos,1:nCols[zSet]])
 		elseif isa(zSet,Symbol) || isa(zSet,Expr)
                 	uPos = keyU[zSet]
 			ycorr .+= ZMat[zSet]*u[uPos,1:nCols[zSet]]
-                	u[uPos,1:nCols[zSet]]  .= sampleU(iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,1:nCols[zSet]],ycorr)
+                	u[uPos,1:nCols[zSet]]  .= sampleU(zSet,iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,1:nCols[zSet]],ycorr)
 			ycorr .-= ZMat[zSet]*u[uPos,1:nCols[zSet]]		
 			varU[zSet] = sampleVarU(iStrMat[zSet],scaleZ[zSet],dfZ[zSet],u[uPos,1:nCols[zSet]])
        		end
@@ -130,6 +150,12 @@ end
 function sampleVarU(iMat,scale_ranVar,df_ranVar,effVec)
 	n = size(iMat,2)
 	return (scale_ranVar*df_ranVar + effVec'*iMat*effVec)/rand(Chisq(df_ranVar + n))
+end
+
+function sampleCoVarU(iMat,scale_ranVar,df_ranVar,effVec)
+	n = size(iMat,2)
+        Sb = effVec*effVec'
+        return rand(InverseWishart(df_ranVar + n, scale_ranVar + inv(iMat)))
 end
 
 #sample marker variances
