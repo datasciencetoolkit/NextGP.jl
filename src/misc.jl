@@ -89,7 +89,7 @@ function makeG(inputFile::String;method=1)
 	q = 1.0 .- p
         thisM .-= mean(thisM,dims=1) 
 	if method==1 
-		G = MatByMat(thisM) ./ sum(2.0 .* p.*q)
+		G = (thisM*thisM') ./ sum(2.0 .* p.*q)
 	elseif method==2
 		sqrt2pq = sqrt(2.0 .* p.*q)
 		replace!(sqrt2pq,Inf=>0)
@@ -110,7 +110,7 @@ function makeG(thisM::Array{Float64,2};method=1)
         q = 1.0 .- p
         thisM .-= mean(thisM,dims=1)
         if method==1
-                G = MatByMat(thisM) ./ sum(2.0 .* p.*q)
+                G = (thisM*thisM') ./ sum(2.0 .* p.*q)
         elseif method==2
                 sqrt2pq = sqrt(2.0 .* p.*q)
                 replace!(sqrt2pq,Inf=>0)
