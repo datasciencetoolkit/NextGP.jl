@@ -100,6 +100,8 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	#summarize input
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
 
+	newME = ()
+
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "SNP")
 			(arg1,arg2,arg3...) = f.rhs[i].args_parsed
@@ -120,12 +122,9 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 				push!(summarize,[arg1,"SNP",typeof(ME[arg1]),size(ME[arg1],2)])
 			end
 
-			mTuple = Vector{@NamedTuple{nRow::Int64,nCol::Int64}}(undef, 1)[]
-			mTuple = Base.setindex(mTuple,arg1,:name)
-			mTuple = Base.setindex(mTuple,thisM,:data)
-			mTuple = Base.setindex(mTuple,"GBLUP",:method)
-			mTuple = Base.setindex(mTuple,size(thisM,1),:nRow)
-			mTuple = Base.setindex(mTuple,size(thisM,1),:nCol)
+			mTuple = NamedTuple(Dict(:arg1 => (data=thisM,map = arg3[1],method = GBLUP)))
+			
+
 			println("mTuple: $mTuple")
 
 
