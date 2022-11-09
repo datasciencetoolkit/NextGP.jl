@@ -120,7 +120,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
                        		thisM = 0 #I can directly merge to dict above
 				map[arg1] = arg3[1]
 				push!(summarize,[arg1,"SNP",typeof(ME[arg1]),size(ME[arg1],2)])
-				iGRel[arg1] = nothing ###temp
+				iGRel[arg1] = [] ###temp
 			end
 
 			mTuple = NamedTuple(Dict(:arg1 => (data=thisM,map = arg3[1],method = "GBLUP",str = iGRel))
