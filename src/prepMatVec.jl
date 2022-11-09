@@ -126,7 +126,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			mTuple = Base.setindex(mTuple,"GBLUP",:method)
 			mTuple = Base.setindex(mTuple,size(thisM,1),:nRow)
 			mTuple = Base.setindex(mTuple,size(thisM,1),:nCol)
-			println("mTuple: mTuple")
+			println("mTuple: $mTuple")
 
 
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
