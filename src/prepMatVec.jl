@@ -123,7 +123,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 				iGRel[arg1] = [] ###temp
 			end
 
-			ME[:arg1] = Dict(:data=>thisM,:map=>arg3[1],:method=>"BayesPR",:str=>iGRel,:dims=>size(thisM),:levels=>[M$i for i in 1:size(thisM,2)]) 
+			ME[:arg1] = Dict(:data=>thisM,:map=>arg3[1],:method=>"BayesPR",:str=>iGRel,:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 
 
 
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
