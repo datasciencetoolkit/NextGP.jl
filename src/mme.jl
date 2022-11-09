@@ -431,6 +431,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	
 	for i in keys(M)
 		println("key $i in M: keys(M[i])")
+	end
 	M  = NamedTuple(M)	
 	println("typeof new M: $(typeof(M))")
 	
