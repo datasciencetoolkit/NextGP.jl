@@ -116,7 +116,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			else
 
 				thisM .-= mean(thisM,dims=1) 
-				push!(summarize,[arg1,"SNP",typeof(thisM),size(M[arg1],2)])
+				push!(summarize,[arg1,"SNP",typeof(thisM),size(thisM,2)])
 				iGRel[arg1] = [] ###temp
 			end
 
