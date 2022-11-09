@@ -122,7 +122,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 				push!(summarize,[arg1,"SNP",typeof(ME[arg1]),size(ME[arg1],2)])
 			end
 
-			mTuple = NamedTuple(Dict(:arg1 => (data=thisM,map = arg3[1],method = GBLUP)))
+			mTuple = NamedTuple(Dict(:arg1 => (data=thisM,map = arg3[1],method = "GBLUP")))
 			
 
 			println("mTuple: $mTuple")
