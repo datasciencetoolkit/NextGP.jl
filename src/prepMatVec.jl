@@ -100,7 +100,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	#summarize input
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
 
-	newME = ()
+		
 
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "SNP")
@@ -120,12 +120,13 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
                        		thisM = 0 #I can directly merge to dict above
 				map[arg1] = arg3[1]
 				push!(summarize,[arg1,"SNP",typeof(ME[arg1]),size(ME[arg1],2)])
+				iGRel[arg1] = nothing ###temp
 			end
 
-			mTuple = NamedTuple(Dict(:arg1 => (data=thisM,map = arg3[1],method = "GBLUP")))
+			mTuple = NamedTuple(Dict(:arg1 => (data=thisM,map = arg3[1],method = "GBLUP",str = iGRel))
 			
 
-			println("mTuple: $mTuple")
+			#println("mTuple: $mTuple")
 
 
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
