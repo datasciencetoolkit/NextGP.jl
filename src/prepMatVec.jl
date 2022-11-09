@@ -123,7 +123,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 				iGRel[arg1] = [] ###temp
 			end
 
-			mTuple = NamedTuple(Dict(:arg1 => (data=thisM,map = arg3[1],method = "GBLUP",str = iGRel))
+			mTuple = NamedTuple(Dict(:arg1 => (data=thisM,map = arg3[1],method = "GBLUP",str = iGRel)))
 			
 
 			#println("mTuple: $mTuple")
