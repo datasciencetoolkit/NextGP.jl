@@ -116,10 +116,10 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			else
 
 				thisM .-= mean(thisM,dims=1) 
-				ME[arg1] = thisM
+				M[arg1] = thisM
                        		thisM = 0 #I can directly merge to dict above
 	#			map[arg1] = arg3[1]
-				push!(summarize,[arg1,"SNP",typeof(ME[arg1]),size(ME[arg1],2)])
+				push!(summarize,[arg1,"SNP",typeof(M[arg1]),size(M[arg1],2)])
 				iGRel[arg1] = [] ###temp
 			end
 
