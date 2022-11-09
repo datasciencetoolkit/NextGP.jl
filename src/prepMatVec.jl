@@ -65,9 +65,9 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
         RE = OrderedDict{Any,Any}()
 	iGRel = OrderedDict{Any,Any}()
 
-	MDict = OrderedDict{Any,Any}()
-	ME = OrderedDict{Any,Any}()
-	map = OrderedDict{Any,Any}() 
+	ME = Dict{Any,Any}()
+	#ME = OrderedDict{Any,Any}()
+	#map = OrderedDict{Any,Any}() 
 
         #read pedigree
 	if isempty(path2ped)
@@ -118,14 +118,12 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 				thisM .-= mean(thisM,dims=1) 
 				ME[arg1] = thisM
                        		thisM = 0 #I can directly merge to dict above
-				map[arg1] = arg3[1]
+	#			map[arg1] = arg3[1]
 				push!(summarize,[arg1,"SNP",typeof(ME[arg1]),size(ME[arg1],2)])
 				iGRel[arg1] = [] ###temp
 			end
 
-			MDict[:arg1] = (data=thisM,map = arg3[1],method = "GBLUP",str = iGRel) 
-			
-			#println("mTuple: $mTuple")
+			ME[:arg1] = Dict(:data=>thisM,:map=>arg3[1],:method=>"BayesPR",:str=>iGRel,:dims=>size(thisM),:levels=[M$i for i in 1:size(thisM,2)]) 
 
 
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
@@ -160,8 +158,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
                 end
         end
 
-	print("MDict: $MDict")
-	print("MDict: $(NamedTuple(MDict))")
+	ME = NamedTuple(ME)
 	
 	println("\n ---------------- Summary of input ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
@@ -169,7 +166,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	idFR = OrderedDict(:levelsFE => idFE, :levelsRE => idRE)
 
 
-        return idFR, Ainv, iGRel, vec(yVec), FE, RE, ME, map
+        return idFR, Ainv, iGRel, vec(yVec), FE, RE, ME
 end
 
 end

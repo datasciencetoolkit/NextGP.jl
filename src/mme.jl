@@ -23,14 +23,13 @@ ExprOrSymbol = Union{Expr,Symbol}
 
 
 #main sampler
-function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2maps,outPut)
+function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 		
         #some info
 	nRand = length(Z)
 	nColEachZ    = OrderedDict(z => size(Z[z],2) for z in keys(Z))
 	nData = length(Y)
 	nMarkerSets = length(M)
-	nMarkers    = OrderedDict(m => size(M[m],2) for m in keys(M))
         #initial computations and settings
 	ycorr = deepcopy(Y)
 
@@ -262,18 +261,15 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2ma
 	############priorVCV cannot be empty for markers, currently!!																	
 
 	#key positions for each effect in beta, for speed. Order of matrices in M are preserved here.
-        BetaKeyPos = OrderedDict{Any,Any}()
         for mSet in keys(M)
                 pos = findall(mSet.==collect(keys(M)))[]
-                BetaKeyPos[mSet] = pos
+                M[mSet][:pos] = pos
         end
 
+	beta = []
 
 	#make mpm
 
-	Mp = OrderedDict{Any,Any}()
-       	mpm = OrderedDict{Any,Any}()
-	rhsM = OrderedDict{Any,Any}()	
 	
 	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()	
 	
@@ -283,19 +279,23 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2ma
 		#symbol :M1 or expression
 		if isa(pSet,Symbol) && in(pSet,keys(M))
 			tempmpm = []
-			nowM = M[pSet]
+			nowM = M[pSet][:data]
 			for c in eachcol(nowM)
 				push!(tempmpm,BLAS.dot(c,c))
 			end
-			mpm[pSet] = tempmpm
-			rhsM[pSet] = zeros(size(M[pSet],2))
+			M[pSet][:mpm] = tempmpm
+			M[pSet][:rhs] = zeros(M[pSet][:size][2])
 			if pSet in keys(summaryStat)
-				summaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] .+= inv.(summaryStat[pSet].v) : mpm[pSet] .+= inv.(diag(summaryStat[pSet].v))
-				summaryStat[pSet].v == Array{Float64,1} ? rhsM[pSet] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsM[pSet] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+				summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
+				summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                         end
-			Mp[pSet] = []
-			theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],priorVCV[pSet].r)
-		        regionArray[pSet] = theseRegions
+			M[pSet][:Mp] = []
+			theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
+		        M[pSet][:regionArray] = theseRegions
+			M[pSet][:nRegions] = length(theseRegions)
+			
+			beta = zeros(Float64,1,M[pSet][:size][2])
+
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
 			correlate = collect(pSet)
@@ -329,36 +329,29 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2ma
 	for pSet in collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]
 		printstyled("No prior was provided for $pSet, but it was included in the data. It will be made uncorrelated with default priors and region size 9999 (WG)\n"; color = :green)		
 		tempmpm = []
-		nowM = M[pSet]
+		nowM = M[pSet][:data]
 		for c in eachcol(nowM)
 			push!(tempmpm,BLAS.dot(c,c))
 		end
-		mpm[pSet] = tempmpm
-		rhsM[pSet] = zeros(size(M[pSet],2))
+		M[pSet][:mpm] = tempmpm
+		M[pSet][:rhs] = zeros(size(M[pSet],2))
                 if pSet in keys(summaryStat)
-			summaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] .+= inv.(summaryStat[pSet].v) : mpm[pSet] .+= inv.(diag(summaryStat[pSet].v))
-                        summaryStat[pSet].v == Array{Float64,1} ? rhsM[pSet] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsM[pSet] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+			summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
+                        summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                 end
-		theseRegions = prep2RegionData(outPut,pSet,paths2maps[pSet],9999)
+		theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],9999)
 		regionArray[pSet] = theseRegions
 	end
 
 	
-	#pos for individual marker set
-	BetaKeyPos4Print = OrderedDict(vcat([isa(k,Symbol) ? k => v : collect(k) .=> collect(v) for (k,v) in BetaKeyPos]...))
-
-	nRegions  = OrderedDict(mSet => length(regionArray[mSet]) for mSet in keys(regionArray))
-	
-	dfM = Dict{Any,Any}()	
 	for mSet ∈ keys(mpm)
-		dfM[mSet] = 3.0+size(priorVCV[mSet].v,1)
+		M[mSet][:df] = 3.0+size(priorVCV[mSet].v,1)
 	end
 
 
-	scaleM = Dict{Any,Any}()
-        for mSet in keys(mpm)
+        for mSet in keys(M)
                 nMComp = size(priorVCV[mSet].v,1)
-                nMComp > 1 ? scaleM[mSet] = priorVCV[mSet].v .* (dfM[mSet]-nMComp-1.0)  : scaleM[mSet] = priorVCV[mSet].v * (dfM[mSet]-2.0)/dfM[mSet] #I make float and array of float
+                nMComp > 1 ? M[mSet][:scale] = priorVCV[mSet].v .* (M[mSet][:df]-nMComp-1.0)  : M[mSet][:scale] = priorVCV[mSet].v * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make float and array of float
         end
 	
 	
@@ -367,10 +360,8 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2ma
 
 	varU = deepcopy(varU_prior) #for storage
 
-	beta = [zeros(Float64,1,collect(values(nMarkers))[i]) for i in 1:nMarkerSets]
-
-        varBeta = OrderedDict{Any,Any}()
-        for mSet in keys(mpm)
+	varBeta = Dict{Symbol,Any}()
+        for mSet in keys(M)
                 varBeta[mSet] = [priorVCV[mSet].v for i in 1:length(regionArray[mSet])] #later, direct reference to key when varM_prior is a dictionary
         end
 
@@ -392,7 +383,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2ma
 	###Bayesian Alphabet methods
 	BayesX = OrderedDict{Symbol,Any}()
 
-	for mSet in keys(mpm)
+	for mSet in keys(M)
 		if mSet ∈ keys(priorVCV)
 			priorVCV[mSet].name == "BayesPR" ? BayesX[mSet] = sampleBayesPR! : nothing
 			#BayesX[mSet] = typeof(priorVCV[mSet])
@@ -403,7 +394,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2ma
 			str = "WG(I)"
 		     	#value = 0.001
 		end
-	push!(summarize,[mSet,"Random (Marker)",str,dfM[mSet],scaleM[mSet]])
+	push!(summarize,[mSet,"Random (Marker)",str,M[mSet][:df],M[mSet][:scale]])
 	end
 	
 
@@ -425,18 +416,24 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,paths2ma
 	end	
 		
 	#arbitrary marker names
-	for mSet in keys(BetaKeyPos4Print)
-   		IO.outMCMC(outPut,"beta$mSet",hcat(["rs_$i" for i in 1:nMarkers[mSet]]...))
+	for mSet in keys(M)
+   		IO.outMCMC(outPut,"beta$mSet",hcat(M[mSet][:levels]...))
         end
 	
 	for mSet in keys(varBeta)
-		isa(mSet, Symbol) ? nameM_VCV = ["reg_$r" for r in 1:nRegions[mSet]] : nameM_VCV = vcat([["reg_$(i)_$j" for j in 1:length(mSet)^2] for i in 1:nRegions[mSet]]...)
+		isa(mSet, Symbol) ? nameM_VCV = ["reg_$r" for r in 1:M[mSet][:nRegions]] : nameM_VCV = vcat([["reg_$(i)_$j" for j in 1:size(M[mSet][:scale],2)^2] for i in 1:M[mSet][:nRegions]]...)
 		IO.outMCMC(outPut,"var$mSet",[nameM_VCV]) #[] to have it as one row
         end
 	
 
 	IO.outMCMC(outPut,"varE",["e"])
 	##########
+	
+	for i in keys(M)
+		println("key $i in M: keys(M[i])")
+	M  = NamedTuple(M)	
+	println("typeof new M: $(typeof(M))")
+	
 	return ycorr, nData, dfE, scaleE, X, iXpX, XKeyPos, b, Z, iVarStr, Zp, zpz, uKeyPos, uKeyPos4Print, nColEachZ, u, varU, scaleZ, dfZ, M, Mp, mpm, BetaKeyPos, BetaKeyPos4Print, beta, regionArray, nRegions, varBeta, scaleM, dfM, BayesX, rhsX, rhsZ, rhsM
 	
 end
