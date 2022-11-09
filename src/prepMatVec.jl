@@ -116,15 +116,13 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			else
 
 				thisM .-= mean(thisM,dims=1) 
-				M[arg1] = thisM
-                       		thisM = 0 #I can directly merge to dict above
-	#			map[arg1] = arg3[1]
-				push!(summarize,[arg1,"SNP",typeof(M[arg1]),size(M[arg1],2)])
+				push!(summarize,[arg1,"SNP",typeof(thisM),size(M[arg1],2)])
 				iGRel[arg1] = [] ###temp
 			end
 
 			M[arg1] = Dict(:data=>thisM,:map=>arg3[1],:method=>"BayesPR",:str=>iGRel,:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 
 
+			thisM = 0
 
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
                         arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
