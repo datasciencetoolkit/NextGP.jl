@@ -341,7 +341,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	end
 
 	
-	for mSet ∈ keys(mpm)
+	for mSet ∈ keys(M)
 		M[mSet][:df] = 3.0+size(priorVCV[mSet].v,1)
 	end
 
