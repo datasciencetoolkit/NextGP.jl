@@ -4,6 +4,42 @@ using CSV
 using PedigreeBase
 using StatsBase
 
+
+function getTerms(f)
+        terms4StatsModels = String.(split(repr(f.rhs), ('+')))
+        terms4StatsModels = replace.(terms4StatsModels, ":" => "")
+        terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
+        terms4StatsModels = Symbol.(terms4StatsModels)
+        return(terms4StatsModels)
+end
+
+
+"""
+        make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
+
+* Generates random effects matrix
+* Initially works with onnly categorical vectors, to allow users add random effects as defined in StatsModels.jl
+
+"""
+function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
+#        isa(x1, CategoricalArray) ||
+#                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
+#        isa(x2, CategoricalArray) ||
+#                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
+
+        u = sort(unique(x2));
+        filter!(x->x≠0,u)
+        Z = Matrix{Bool}(undef, length(x1), length(u))
+        for i in eachindex(u)
+                @. Z[:, i] = x1 .== u[i]
+        end
+           return u,Z
+       end
+
+
+ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,arg1],data2[!,arg2])
+
+
 """
 	 function(dataLHS::DataFrame)
 Makes LHS of formula expression, when the LHS is a Matrix

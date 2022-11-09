@@ -9,40 +9,6 @@ include("misc.jl")
 
 export prep
 
-function getTerms(f)
-	terms4StatsModels = String.(split(repr(f.rhs), ('+')))
-        terms4StatsModels = replace.(terms4StatsModels, ":" => "")
-        terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
-        terms4StatsModels = Symbol.(terms4StatsModels)
-	return(terms4StatsModels)
-end
-
-
-"""
-        make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
-
-* Generates random effects matrix
-* Initially works with onnly categorical vectors, to allow users add random effects as defined in StatsModels.jl
-
-"""
-function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
-#        isa(x1, CategoricalArray) ||
-#                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
-#        isa(x2, CategoricalArray) ||
-#                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
-
-        u = sort(unique(x2));
-        filter!(x->x≠0,u)
-        Z = Matrix{Bool}(undef, length(x1), length(u))
-        for i in eachindex(u)
-        	@. Z[:, i] = x1 .== u[i]
-        end
-           return u,Z
-       end
-
-
-ranMat(arg1,arg2,data1,data2) = make_ran_matrix(data1[!,arg1],data2[!,arg2])
-
 
 """
 	function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,path2ped,priorVCV)
@@ -63,7 +29,6 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	
 	terms4StatsModels = getTerms(f)
 
-	#otherwise it changes original input data globally?????
 	userData = deepcopy(inputData)
 
 	for n in Symbol.(names(userData))
@@ -137,9 +102,6 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "SNP")
-#			arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
-#			path = paths2geno[arg1]			
-#			thisM = CSV.read(path,CSV.Tables.matrix,header=false)
 			(arg1,arg2,arg3...) = f.rhs[i].args_parsed
 			arg1 = Symbol(repr(arg1))
 			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false)
@@ -157,6 +119,16 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 				map[arg1] = arg3[1]
 				push!(summarize,[arg1,"SNP",typeof(ME[arg1]),size(ME[arg1],2)])
 			end
+
+			mTuple = Vector{@NamedTuple{nRow::Int64,nCol::Int64}}(undef, 1)[]
+			mTuple = Base.setindex(mTuple,arg1,:name)
+			mTuple = Base.setindex(mTuple,thisM,:data)
+			mTuple = Base.setindex(mTuple,"GBLUP",:method)
+			mTuple = Base.setindex(mTuple,size(thisM,1),:nRow)
+			mTuple = Base.setindex(mTuple,size(thisM,1),:nCol)
+			println("mTuple: mTuple")
+
+
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
                         arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
 			IDs,thisZ = ranMat(arg, :ID, userData, pedigree)
