@@ -269,9 +269,6 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	beta = []
 
 	#make mpm
-
-	
-	regionArray = OrderedDict{Any,Array{UnitRange{Int64},1}}()	
 	
 	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
 		corEffects = []
@@ -284,7 +281,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 				push!(tempmpm,BLAS.dot(c,c))
 			end
 			M[pSet][:mpm] = tempmpm
-			M[pSet][:rhs] = zeros(M[pSet][:size][2])
+			M[pSet][:rhs] = zeros(M[pSet][:dims][2])
 			if pSet in keys(summaryStat)
 				summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
 				summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
@@ -294,7 +291,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 		        M[pSet][:regionArray] = theseRegions
 			M[pSet][:nRegions] = length(theseRegions)
 			
-			beta = zeros(Float64,1,M[pSet][:size][2])
+			beta = zeros(Float64,1,M[pSet][:dims][2])
 
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
@@ -334,7 +331,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 			push!(tempmpm,BLAS.dot(c,c))
 		end
 		M[pSet][:mpm] = tempmpm
-		M[pSet][:rhs] = zeros(M[pSet][:size][2])
+		M[pSet][:rhs] = zeros(M[pSet][:dims][2])
                 if pSet in keys(summaryStat)
 			summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
                         summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
@@ -362,7 +359,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 
 	varBeta = Dict{Symbol,Any}()
         for mSet in keys(M)
-                varBeta[mSet] = [priorVCV[mSet].v for i in 1:length(regionArray[mSet])] #later, direct reference to key when varM_prior is a dictionary
+                varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nRegions]] #later, direct reference to key when varM_prior is a dictionary
         end
 
 	#summarize analysis
