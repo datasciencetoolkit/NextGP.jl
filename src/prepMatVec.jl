@@ -165,7 +165,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	idFR = OrderedDict(:levelsFE => idFE, :levelsRE => idRE)
 
 
-        return idFR, Ainv, iGRel, vec(yVec), FE, RE, ME
+        return idFR, Ainv, iGRel, vec(yVec), FE, RE, M
 end
 
 end
