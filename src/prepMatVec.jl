@@ -65,7 +65,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
         RE = OrderedDict{Any,Any}()
 	iGRel = OrderedDict{Any,Any}()
 
-	ME = Dict{Any,Any}()
+	M = Dict{Any,Any}()
 	#ME = OrderedDict{Any,Any}()
 	#map = OrderedDict{Any,Any}() 
 
@@ -123,7 +123,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 				iGRel[arg1] = [] ###temp
 			end
 
-			ME[:arg1] = Dict(:data=>thisM,:map=>arg3[1],:method=>"BayesPR",:str=>iGRel,:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 
+			M[:arg1] = Dict(:data=>thisM,:map=>arg3[1],:method=>"BayesPR",:str=>iGRel,:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 
 
 
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
@@ -158,7 +158,6 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
                 end
         end
 
-	ME = NamedTuple(ME)
 	
 	println("\n ---------------- Summary of input ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
