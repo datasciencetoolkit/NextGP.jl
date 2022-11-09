@@ -65,7 +65,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
         RE = OrderedDict{Any,Any}()
 	iGRel = OrderedDict{Any,Any}()
 
-
+	MDict = OrderedDict{Any,Any}()
 	ME = OrderedDict{Any,Any}()
 	map = OrderedDict{Any,Any}() 
 
@@ -123,9 +123,8 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 				iGRel[arg1] = [] ###temp
 			end
 
-			mTuple = NamedTuple(Dict(:arg1 => (data=thisM,map = arg3[1],method = "GBLUP",str = iGRel)))
+			MDict[:arg1] = (data=thisM,map = arg3[1],method = "GBLUP",str = iGRel) 
 			
-
 			#println("mTuple: $mTuple")
 
 
@@ -160,6 +159,9 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(FE[terms4StatsModels[i]]),size(FE[terms4StatsModels[i]],2)])
                 end
         end
+
+	print("MDict: $MDict")
+	print("MDict: $(NamedTuple(MDict))")
 	
 	println("\n ---------------- Summary of input ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
