@@ -334,7 +334,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 			push!(tempmpm,BLAS.dot(c,c))
 		end
 		M[pSet][:mpm] = tempmpm
-		M[pSet][:rhs] = zeros(size(M[pSet],2))
+		M[pSet][:rhs] = zeros(M[pSet][:size][2])
                 if pSet in keys(summaryStat)
 			summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
                         summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
