@@ -61,8 +61,11 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,iXpX,XKeyPos,b,Z,iVarStr,Zp,zpz,uK
 			end
 			
 
-			for mSet in keys(BetaKeyPos4Print)
-				IO.outMCMC(outPut,"beta$mSet",beta[BetaKeyPos4Print[mSet]])
+			for mSet in keys(M)
+				for p in M[:mSet].pos
+					mSet2print = mSet[pos]
+					IO.outMCMC(outPut,"beta$mSet2print",beta[pos])	
+				end
                         end
 
 			for pSet in keys(mpm)
