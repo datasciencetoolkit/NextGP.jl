@@ -43,7 +43,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,iXpX,XKeyPos,b,Z,iVarStr,Zp,zpz,uK
 		#sample marker effects and variances
 	
 		
-		for mSet in keys(mpm)
+		for mSet in keys(M)
 #			sampleBayesPR!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
 			BayesX[mSet](mSet,M[mSet],beta,ycorr,varE,varBeta)
 		end
