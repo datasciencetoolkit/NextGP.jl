@@ -62,11 +62,14 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,iXpX,XKeyPos,b,Z,iVarStr,Zp,zpz,uK
 			
 
 			for mSet in keys(M)
-				println("keys: $(keys(M[mSet]))")
-				for p in M[mSet].pos
-					println("p: $p, mSetPos: $(mSet[p])")
-					mSet2print = mSet[p]
-					IO.outMCMC(outPut,"beta$mSet2print",beta[p])	
+				if mSet==Symbol
+					IO.outMCMC(outPut,"beta$mSet",beta[M[mSet].pos])
+				elseif mSet==Tuple
+					for p in M[mSet].pos
+						println("p: $p, mSetPos: $(mSet[p])")
+						mSet2print = mSet[p]
+						IO.outMCMC(outPut,"beta$mSet2print",beta[p])	
+					end
 				end
                         end
 
