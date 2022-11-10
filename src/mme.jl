@@ -263,8 +263,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	#key positions for each effect in beta, for speed. Order of matrices in M are preserved here.
         for mSet in keys(M)
                 pos = findall(mSet.==collect(keys(M)))[]
-#                M[mSet][:pos] = pos
-		M = Base.setindex(M,(; M[mSet]..., pos = pos),mSet)
+                M[mSet][:pos] = pos
         end
 
 	beta = []
@@ -281,30 +280,17 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 			for c in eachcol(nowM)
 				push!(tempmpm,BLAS.dot(c,c))
 			end
-#			M[pSet][:mpm] = tempmpm
-#			M[pSet][:rhs] = zeros(M[pSet][:dims][2])
-
-			M = Base.setindex(M,(; M[pSet]..., mpm = tempmpm),pSet)
-			M = Base.setindex(M,(; M[pSet]..., rhs = zeros(M[pSet].dims[2])),pSet)
-			
+			M[pSet][:mpm] = tempmpm
+			M[pSet][:rhs] = zeros(M[pSet][:dims][2])
 			if pSet in keys(summaryStat)
-				summaryStat[pSet].v == Array{Float64,1} ? M[pSet].mpm .+= inv.(summaryStat[pSet].v) : M[pSet].mpm .+= inv.(diag(summaryStat[pSet].v))
-				summaryStat[pSet].v == Array{Float64,1} ? M[pSet].rhs .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet].rhs .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
-#                       	summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
-#			summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (su    mmaryStat[pSet].m)
+                       	summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
+			summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (su    mmaryStat[pSet].m)
 			end
-#			M[pSet][:Mp] = []
-			M = Base.setindex(M,(; M[pSet]..., Mp = []),pSet)
+			M[pSet][:Mp] = []
 			theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
-#		        M[pSet][:regionArray] = theseRegions
-#			M[pSet][:nRegions] = length(theseRegions)
-			
-			M = Base.setindex(M,(; M[pSet]..., regionArray = theseRegions),pSet)
-			M = Base.setindex(M,(; M[pSet]..., nRegions = length(theseRegions)),pSet)			
-
-#			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
-			beta = push!(beta,zeros(Float64,1,M[pSet].dims[2]))
-			
+		        M[pSet][:regionArray] = theseRegions
+			M[pSet][:nRegions] = length(theseRegions)
+			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))	
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
 			correlate = collect(pSet)
@@ -334,9 +320,6 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 			end
 		end
 	end
-
-	println("pSet: $(collect(keys(M)))")
-	println("pSet: $(collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))])")
 	
 	for pSet in collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]
 		printstyled("No prior was provided for $pSet, but it was included in the data. It will be made uncorrelated with default priors and region size 9999 (WG)\n"; color = :green)		
