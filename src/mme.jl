@@ -427,9 +427,9 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	##########
 	
 	for i in keys(M)
-		println("key $i in M: keys(M[i])")
+		println("key $i in M: $(keys(M[i]))")
 	end
-	M  = NamedTuple(M)	
+	M  = myUnzip(M)	
 	println("typeof new M: $(typeof(M))")
 	
 	return ycorr, nData, dfE, scaleE, X, iXpX, XKeyPos, b, Z, iVarStr, Zp, zpz, uKeyPos, uKeyPos4Print, nColEachZ, u, varU, scaleZ, dfZ, M, Mp, mpm, BetaKeyPos, BetaKeyPos4Print, beta, regionArray, nRegions, varBeta, scaleM, dfM, BayesX, rhsX, rhsZ, rhsM
