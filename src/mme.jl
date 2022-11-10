@@ -291,7 +291,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 		        M[pSet][:regionArray] = theseRegions
 			M[pSet][:nRegions] = length(theseRegions)
 			
-			beta = push!(zeros(Float64,1,M[pSet][:dims][2]))
+			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
 
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
