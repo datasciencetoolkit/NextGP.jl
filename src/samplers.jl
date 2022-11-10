@@ -64,9 +64,9 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,iXpX,XKeyPos,b,Z,iVarStr,Zp,zpz,uK
 			for mSet in keys(M)
 				println("keys: $(keys(M[mSet]))")
 				for p in M[mSet].pos
-					println("p: $p, pos: $pos, mSetPos: $(mSet[pos])")
-					mSet2print = mSet[pos]
-					IO.outMCMC(outPut,"beta$mSet2print",beta[pos])	
+					println("p: $p, mSetPos: $(mSet[p])")
+					mSet2print = mSet[p]
+					IO.outMCMC(outPut,"beta$mSet2print",beta[p])	
 				end
                         end
 
