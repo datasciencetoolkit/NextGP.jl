@@ -62,7 +62,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,iXpX,XKeyPos,b,Z,iVarStr,Zp,zpz,uK
 			
 
 			for mSet in keys(M)
-				for p in M[mSet].pos
+				for p in M[mSet].position
 					mSet2print = mSet[pos]
 					IO.outMCMC(outPut,"beta$mSet2print",beta[pos])	
 				end
