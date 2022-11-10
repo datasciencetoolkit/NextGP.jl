@@ -334,6 +334,9 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 			end
 		end
 	end
+
+	println("pSet: $(collect(keys(M)))")
+	println("pSet: $(collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))])")
 	
 	for pSet in collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]
 		printstyled("No prior was provided for $pSet, but it was included in the data. It will be made uncorrelated with default priors and region size 9999 (WG)\n"; color = :green)		
