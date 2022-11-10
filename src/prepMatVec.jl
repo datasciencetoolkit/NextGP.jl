@@ -122,9 +122,6 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 #			M[arg1] = Dict(:data=>thisM,:map=>arg3[1],:method=>"BayesPR",:str=>iGRel,:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 
 			M = Base.setindex(M,(:data=>thisM,:map=>arg3[1],:method=>"BayesPR",:str=>iGRel,:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]),arg1)
 			
-			println("keys1: $(keys(M))")
-			println("keys2: $(keys(M.arg1))")
-			
 			thisM = 0
 
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")

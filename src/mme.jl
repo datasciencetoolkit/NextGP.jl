@@ -263,7 +263,8 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	#key positions for each effect in beta, for speed. Order of matrices in M are preserved here.
         for mSet in keys(M)
                 pos = findall(mSet.==collect(keys(M)))[]
-                M[mSet][:pos] = pos
+#                M[mSet][:pos] = pos
+		M = Base.setindex(M,(; M[mSet]..., pos = pos),mSet)
         end
 
 	beta = []
