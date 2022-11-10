@@ -73,7 +73,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,iXpX,XKeyPos,b,Z,iVarStr,Zp,zpz,uK
 				end
                         end
 
-			for pSet in keys(mpm)
+			for pSet in keys(M)
 				IO.outMCMC(outPut,"var$(pSet)",hcat(reduce(hcat,varBeta[pSet])...))
 			end
 		end
