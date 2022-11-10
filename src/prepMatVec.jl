@@ -65,9 +65,8 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
         RE = OrderedDict{Any,Any}()
 	iGRel = OrderedDict{Any,Any}()
 
-	M = Dict{Any,Any}()
-	#ME = OrderedDict{Any,Any}()
-	#map = OrderedDict{Any,Any}() 
+#	M = Dict{Any,Any}()
+	M = NamedTuple()
 
         #read pedigree
 	if isempty(path2ped)
@@ -120,8 +119,12 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 				iGRel[arg1] = [] ###temp
 			end
 
-			M[arg1] = Dict(:data=>thisM,:map=>arg3[1],:method=>"BayesPR",:str=>iGRel,:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 
-
+#			M[arg1] = Dict(:data=>thisM,:map=>arg3[1],:method=>"BayesPR",:str=>iGRel,:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 
+			M = Base.setindex(M,(:data=>thisM,:map=>arg3[1],:method=>"BayesPR",:str=>iGRel,:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]),arg1)
+			
+			println("keys1: $(keys(M))")
+			println("keys2: $(keys(M.arg1))")
+			
 			thisM = 0
 
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
