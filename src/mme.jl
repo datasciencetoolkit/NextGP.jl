@@ -384,7 +384,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 		if mSet ∈ keys(priorVCV)
 			priorVCV[mSet].name == "BayesPR" ? BayesX[mSet] = sampleBayesPR! : nothing
 			#BayesX[mSet] = typeof(priorVCV[mSet])
-			str = "$(nRegions[mSet]) block(s)"
+			str = "$(M[mSet][:nRegions]) block(s)"
 			#value = priorVCV[mSet].v
 		else #### later, handel this above, when dealing with priorVCV is allowed to be empty
 			BayesX[mSet] = BayesPR #with region size 9999
