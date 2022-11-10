@@ -102,7 +102,7 @@ function sampleBayesPR!(mSet::Symbol,MMat,beta,ycorr,varE,varBeta)
 	local lhs::Float64
 	local meanBeta::Float64
 	for r in 1:MMat.nRegions
-		theseLoci = MMat.regionsArray[r]
+		theseLoci = MMat.regionArray[r]
 		regionSize = length(theseLoci)
 		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
