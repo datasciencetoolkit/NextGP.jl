@@ -17,17 +17,16 @@ export BayesPR
 export sampleZandZVar!
 
 #Sampling fixed effects
-function sampleX!(::Int,xMat,b,ycorr,varE)
-        #block for each effect
+function sampleX!(xMat,b,ycorr,varE)
+	if length(b[xMat.pos])==1
+		println("sampling Univariate X")
 		ycorr    .+= xMat.data .* b[xMat.pos]
 		rhs      = xMat.data'*ycorr .+ xMat.rhs
 		meanMu   = xMat.ixpx*rhs			
                 b[xMat.pos] .= rand(Normal(meanMu[],sqrt((ixpx*varE))[]))
-		ycorr    .-= xMat.data .* b[xMat.pos]       
-end
-
-function sampleX!(::Int,xMat,b,ycorr,varE)
-        #block for each effect
+		ycorr    .-= xMat.data .* b[xMat.pos]
+	else
+		println("sampling Multivariate X")
 		ycorr    .+= xMat.data*b[xMat.pos]
                 rhs      = xMat.data'*ycorr .+ xMat.rhs
                 meanMu   = xMat.ixpx*rhs
