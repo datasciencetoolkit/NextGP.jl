@@ -149,7 +149,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			levelX = isa(levelX,String) ? levelX : vcat(levelX...)
 			thisX = modelcols(my_ApplySch, userData)
 #			FE[terms4StatsModels[i]] = thisX
-		
+			println("sizeX: $(size(thisX))")  
 			X[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:str=>[],:dims=>vcat(size(thisX)...),:levels=>levelX) 
 		
 			thisX = 0
