@@ -64,7 +64,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
         RE = OrderedDict{Any,Any}()
 	iGRel = OrderedDict{Any,Any}()
 
-	Z = Dict{Any,Any}()
+	X = Dict{Any,Any}()
 	M = Dict{Any,Any}()
 
         #read pedigree
@@ -149,10 +149,10 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			thisX = modelcols(my_ApplySch, userData)
 #			FE[terms4StatsModels[i]] = thisX
 		
-			Z[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:str=>[],:dims=>size(thisX),:levels=>coefnames(my_ApplySch)) 
+			X[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:str=>[],:dims=>size(thisX),:levels=>coefnames(my_ApplySch)) 
 		
 			thisX = 0
-			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(Z[terms4StatsModels[i]]),size(Z[terms4StatsModels[i]],2)])
+			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(X[terms4StatsModels[i]]),size(X[terms4StatsModels[i]],2)])
                 end
         end
 
@@ -163,7 +163,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	idFR = OrderedDict(:levelsRE => idRE)
 
 
-        return idFR, Ainv, iGRel, vec(yVec), Z, RE, M
+        return idFR, Ainv, iGRel, vec(yVec), X, RE, M
 end
 
 end
