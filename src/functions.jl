@@ -23,7 +23,7 @@ function sampleX!(xMat,b,ycorr,varE)
 		ycorr    .+= xMat.data .* b[xMat.pos]
 		rhs      = xMat.data'*ycorr .+ xMat.rhs
 		meanMu   = xMat.ixpx*rhs			
-                b[xMat.pos] .= rand(Normal(meanMu[],sqrt((ixpx*varE))[]))
+                b[xMat.pos] .= rand(Normal(meanMu[],sqrt((xMat.ixpx*varE))[]))
 		ycorr    .-= xMat.data .* b[xMat.pos]
 	else
 		println("sampling Multivariate X")
