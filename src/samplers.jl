@@ -50,7 +50,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos
                		
         	#print
 		if iter in these2Keep
-			IO.outMCMC(outPut,"b",vcat(b...)') ### currently no path is provided!!!!
+			IO.outMCMC(outPut,"b",b') ### currently no path is provided!!!!
 			IO.outMCMC(outPut,"varE",varE)
 			
 			for zSet in keys(uKeyPos4Print)
