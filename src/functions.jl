@@ -17,22 +17,22 @@ export BayesPR
 export sampleZandZVar!
 
 #Sampling fixed effects
-function sampleX!(xSet,xMat::Array{Float64, 1},b,ycorr,varE)
+function sampleX!(::Int,xMat,b,ycorr,varE)
         #block for each effect
-		ycorr    .+= xMat.*b[xMat.pos]
-		rhs      = xMat'*ycorr .+ xMat.rhs
-		meanMu   = ixpx*rhs			
-                b[pos] .= rand(Normal(meanMu[],sqrt((ixpx*varE))[]))
-		ycorr    .-= xMat.*b[xMat.pos]       
+		ycorr    .+= xMat.data .* b[xMat.pos]
+		rhs      = xMat.data'*ycorr .+ xMat.rhs
+		meanMu   = xMat.ixpx*rhs			
+                b[xMat.pos] .= rand(Normal(meanMu[],sqrt((ixpx*varE))[]))
+		ycorr    .-= xMat.data .* b[xMat.pos]       
 end
 
-function sampleX!(xSet,xMat::Array{Float64, 2},b,ycorr,varE)
+function sampleX!(::Int,xMat,b,ycorr,varE)
         #block for each effect
-		ycorr    .+= xMat*b[xMat.pos]
-                rhs      = xMat'*ycorr .+ xMat.rhs
+		ycorr    .+= xMat.data*b[xMat.pos]
+                rhs      = xMat.data'*ycorr .+ xMat.rhs
                 meanMu   = xMat.ixpx*rhs
-		b[pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(xMat.ixpx*varE))))
-		ycorr    .-= xMat*b[xMat.pos]
+		b[xMat.pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(xMat.ixpx*varE))))
+		ycorr    .-= xMat.data*b[xMat.pos]
 end
 
 #sample random effects
