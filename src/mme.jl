@@ -392,7 +392,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 
 	#########make MCMC output files.
 	#not a dictionary anymore, and consistent with possible new order.
-	levelsX = hcat([value[:levels] for (key, value) in X]...)
+	levelsX = vcat([vcat(value[:levels]...) for (key, value) in X]...)
 	println("levelsX: $levelsX")
 			
 	IO.outMCMC(outPut,"b",levelsX)
