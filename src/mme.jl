@@ -57,11 +57,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	for xSet in keys(X)
                 X[xSet][:pos] = findall(xSet.==collect(keys(X)))[]
         end
-	        
-	##make iXpX, Z', zpz (for uncor)
-
-	println("rhsX: $rhsX")	
-
+		
         for xSet in keys(X)
 #		ixpx inverse taken later
 		X[xSet][:ixpx] = X[xSet]'X[xSet]
