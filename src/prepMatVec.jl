@@ -60,11 +60,11 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 
         yVec = StatsModels.modelmatrix(f.lhs, userData)
 	
-        FE = OrderedDict{Any,Any}() #any to block work
 
         RE = OrderedDict{Any,Any}()
 	iGRel = OrderedDict{Any,Any}()
 
+	F = Dict{Any,Any}()
 	M = Dict{Any,Any}()
 
         #read pedigree
@@ -92,8 +92,6 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	#seemed to be IDs for only phenotyped ones????? from the ranMat()
 		
 	idRE = OrderedDict{Any,Any}()
-
-	idFE = OrderedDict{Any,Any}() #fixed effects and their levels	
 
 	#summarize input
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
@@ -147,11 +145,14 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
                 else
 			my_sch = schema(userData, userHints)
 			my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
-			idFE[terms4StatsModels[i]] = coefnames(my_ApplySch) 	
+#			idFE[terms4StatsModels[i]] = coefnames(my_ApplySch) 	
 			thisX = modelcols(my_ApplySch, userData)
-			FE[terms4StatsModels[i]] = thisX
+#			FE[terms4StatsModels[i]] = thisX
+		
+			F[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:str=>[],:dims=>size(thisX),:levels=>coefnames(my_ApplySch)) 
+		
 			thisX = 0
-			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(FE[terms4StatsModels[i]]),size(FE[terms4StatsModels[i]],2)])
+			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(F[terms4StatsModels[i]]),size(F[terms4StatsModels[i]],2)])
                 end
         end
 
@@ -159,10 +160,10 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	println("\n ---------------- Summary of input ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
 
-	idFR = OrderedDict(:levelsFE => idFE, :levelsRE => idRE)
+	idFR = OrderedDict(:levelsRE => idRE)
 
 
-        return idFR, Ainv, iGRel, vec(yVec), FE, RE, M
+        return idFR, Ainv, iGRel, vec(yVec), F, RE, M
 end
 
 end
