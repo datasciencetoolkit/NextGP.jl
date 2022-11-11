@@ -67,7 +67,6 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
         end
 	        
 	##make iXpX, Z', zpz (for uncor)
-	[rhsX[xSet] = zeros(size(X[xSet],2),size(X[xSet],2)) for xSet in keys(X)]
 
 	println("rhsX: $rhsX")	
 
