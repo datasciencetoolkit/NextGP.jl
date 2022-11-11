@@ -153,7 +153,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			X[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:levels=>levelX) 
 		
 			thisX = 0
-			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(X[terms4StatsModels[i]]),length(X[terms4StatsModels[i]][:levels]))
+			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(X[terms4StatsModels[i]]),length(levelX)])
                 end
         end
 
