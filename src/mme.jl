@@ -42,16 +42,25 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	Order of blocks is as definde by the user
 	Order of variables within blocks is always the same as in the model definition, not defined by the user in each block.
 	==#
+	
+	println("X: $X")
+	
 	for b in blocks
 		getThese = intersect(collect(keys(X)), b)
+		println("get these: $getThese")
 		X[Tuple(getThese)] = hcat(getindex.(Ref(X), getThese)...)
+		println("X[Tuple(getThese)]: $(X[Tuple(getThese)])")
 		for d in getThese
 			delete!(X,d)
 		end
 	end
 	
+	println("X: $X")
+	
 	##This is not really nFix, but the "blocks" of fixed effects
         nFix  = length(X)
+	
+	println("nFix: $nFix")
 
 	#Key positions of variablese and blocks for speed. b is an array of arrays.		
 	for xSet in keys(X)
