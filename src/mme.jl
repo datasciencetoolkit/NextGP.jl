@@ -45,12 +45,18 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	
 	println("X: $X")
 	
+	#Key positions of variablese and blocks for speed. b is an array of arrays.		
+	for xSet in keys(X)
+                X[xSet][:pos] = findall(xSet.==collect(keys(X)))[]
+        end
+	
 	for b in blocks
 		getThese = intersect(collect(keys(X)), b)
 		X[Tuple(getThese)] = Dict{Symbol, Any}()
 		X[Tuple(getThese)][:data] = hcat(getindex.(getindex.(Ref(X), getThese),:data)...)
 		X[Tuple(getThese)][:levels] = hcat(vcat(getindex.(getindex.(Ref(X), getThese),:levels)...)...)
 		X[Tuple(getThese)][:nCol] = sum(getindex.(getindex.(Ref(X), getThese),:nCol))
+		X[Tuple(getThese)][:pos] = getindex.(getindex.(Ref(X), getThese),:pos)
 		X[Tuple(getThese)][:method] = first(getindex.(getindex.(Ref(X), getThese),:method))
 		
 		for d in getThese
@@ -63,13 +69,6 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	##This is not really nFix, but the "blocks" of fixed effects
         nFix  = length(X)
 	
-	println("nFix: $nFix")
-
-	#Key positions of variablese and blocks for speed. b is an array of arrays.		
-	for xSet in keys(X)
-                X[xSet][:pos] = findall(xSet.==collect(keys(X)))[]
-        end
-		
 	b = []
         for xSet in keys(X)
 #		ixpx inverse taken later
