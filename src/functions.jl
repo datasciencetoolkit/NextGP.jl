@@ -17,9 +17,9 @@ export BayesPR
 export sampleZandZVar!
 
 #Sampling fixed effects
-function sampleX!(xSet,xMat::Array{Float64, 1},b,ixpx,pos,ycorr,varE,ssRHS)
+function sampleX!(xSet,xMat::Array{Float64, 1},b,ycorr,varE)
         #block for each effect
-		ycorr    .+= xMat.*b[pos]
+		ycorr    .+= xMat.*b[xMat.pos]
 		rhs      = xMat'*ycorr .+ ssRHS
 		meanMu   = ixpx*rhs			
                 b[pos] .= rand(Normal(meanMu[],sqrt((ixpx*varE))[]))
