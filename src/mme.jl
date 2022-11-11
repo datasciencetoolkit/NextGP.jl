@@ -58,10 +58,11 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
                 X[xSet][:pos] = findall(xSet.==collect(keys(X)))[]
         end
 		
+	b = []
         for xSet in keys(X)
 #		ixpx inverse taken later
 		X[xSet][:ixpx] = X[xSet][:data]'X[xSet][:data]
-		X[xSet][:rhs] = zeros(X[xSet][:dims][2])
+		X[xSet][:rhs] = zeros(X[xSet][:levels])
 
                 if xSet in keys(summaryStat)
 	  		summaryStat[xSet].v == Array{Float64,1} ? X[xSet][:mpm] .+= inv.(summaryStat[xSet].v) : X[xSet][:mpm] .+= inv.(diag(summaryStat[xSet].v))
@@ -72,14 +73,10 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 			X[xSet][:ixpx] += Matrix(I*minimum(abs.(diag(X[xSet][:ixpx])./10000)),size(X[xSet][:ixpx]))
 		end
                	X[xSet][:ixpx] = inv(X[xSet][:ixpx])
+		push!(b,fill(0.0,X[xSet][:levels]))
         end
-	
-        ##make b and u arrays
-        b = Array{Array{Float64, 1},1}(undef,0)
-        ##counts columns per effect
-        for xSet in keys(X)
-                push!(b,fill(0.0,X[xSet][:dims][2]))
-        end
+	        
+      
 
 	#set up for E.
 						
