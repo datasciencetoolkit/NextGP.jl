@@ -52,10 +52,6 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	
 	##This is not really nFix, but the "blocks" of fixed effects
         nFix  = length(X)
-	
-	#not a dictionary anymore, and consistent with possible new order.
-	levelsX = hcat(vcat([isa(value,String) ? value : vcat(value...) for (key, value) in levelsX]...)...)
-	println("levelsX: $levelsX")
 
 	#Key positions of variablese and blocks for speed. b is an array of arrays.		
 	for xSet in keys(X)
@@ -395,6 +391,10 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 
 
 	#########make MCMC output files.
+	#not a dictionary anymore, and consistent with possible new order.
+	levelsX = hcat([value[:levels] for (key, value) in X]...)
+	println("levelsX: $levelsX")
+			
 	IO.outMCMC(outPut,"b",levelsX)
 	
 	#check for correlated RE
