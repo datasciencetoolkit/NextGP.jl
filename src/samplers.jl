@@ -20,7 +20,7 @@ using .functions
 export runSampler!
 
 #main sampler
-function runSampler!(ycorr,nData,dfE,scaleE,X,iXpX,XKeyPos,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos4Print,nColEachZ,u,varU,scaleZ,dfZ,M,beta,varBeta,BayesX,rhsX,rhsZ,chainLength,burnIn,outputFreq,outPut)
+function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos4Print,nColEachZ,u,varU,scaleZ,dfZ,M,beta,varBeta,BayesX,rhsZ,chainLength,burnIn,outputFreq,outPut)
 		
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
@@ -33,8 +33,8 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,iXpX,XKeyPos,b,Z,iVarStr,Zp,zpz,uK
 		
 		#sample fixed effects
 
-		for xSet in keys(iXpX)
-			sampleX!(xSet,X[xSet],b,iXpX[xSet],XKeyPos[xSet],ycorr,varE,rhsX[xSet])
+		for xSet in keys(X)
+			sampleX!(xSet,X[xSet],b,ycorr,varE)
 		end
 	
 		#sample random effects
