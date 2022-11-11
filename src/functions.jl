@@ -32,6 +32,7 @@ function sampleX!(xMat,b,ycorr,varE)
                 meanMu   = xMat.ixpx*rhs
 		b[xMat.pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(xMat.ixpx*varE))))
 		ycorr    .-= xMat.data*b[xMat.pos]
+	end
 end
 
 #sample random effects
