@@ -45,31 +45,40 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	
 	println("X: $X")
 	
-	#Key positions of variablese and blocks for speed. b is an array of arrays.		
+	#Positions of parameters for each variable and blocks for speed. b is an array of arrays.
+	countXCol = 0
 	for xSet in keys(X)
-                X[xSet][:pos] = findall(xSet.==collect(keys(X)))[]
+		columns = (countXCol+1):(countXCol+X[xSet].nCol)
+                X[xSet][:pos] = columns
+		countXCol = columns
         end
+	countXCol = 0
 	
-	for b in blocks
-		getThese = intersect(collect(keys(X)), b)
+	for blk in blocks
+		getThese = intersect(collect(keys(X)), blk)
 		X[Tuple(getThese)] = Dict{Symbol, Any}()
 		X[Tuple(getThese)][:data] = hcat(getindex.(getindex.(Ref(X), getThese),:data)...)
 		X[Tuple(getThese)][:levels] = hcat(vcat(getindex.(getindex.(Ref(X), getThese),:levels)...)...)
 		X[Tuple(getThese)][:nCol] = sum(getindex.(getindex.(Ref(X), getThese),:nCol))
 		X[Tuple(getThese)][:pos] = getindex.(getindex.(Ref(X), getThese),:pos)
 		X[Tuple(getThese)][:method] = first(getindex.(getindex.(Ref(X), getThese),:method))
-		
 		for d in getThese
 			delete!(X,d)
 		end
 	end
+
+	#array of arrays, without blocking 
 	
 	println("X: $X")
-	
+
+	println("(getindex.(getindex.(Ref(X), collect(keys(X))),:nCol))")
+	println("(getindex.(getindex.(Ref(X), keys(X)),:nCol))")
+
+	b = zeros(getindex.(getindex.(Ref(X), keys(X)),:nCol)[])
+
 	##This is not really nFix, but the "blocks" of fixed effects
         nFix  = length(X)
 	
-	b = []
         for xSet in keys(X)
 #		ixpx inverse taken later
 		X[xSet][:ixpx] = X[xSet][:data]'X[xSet][:data]
@@ -84,7 +93,6 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 			X[xSet][:ixpx] += Matrix(I*minimum(abs.(diag(X[xSet][:ixpx])./10000)),size(X[xSet][:ixpx]))
 		end
                	X[xSet][:ixpx] = inv(X[xSet][:ixpx])
-		push!(b,fill(0.0,X[xSet][:nCol]))
         end
 	        
       
