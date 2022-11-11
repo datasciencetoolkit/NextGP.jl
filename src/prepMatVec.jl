@@ -145,11 +145,12 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
                 else
 			my_sch = schema(userData, userHints)
 			my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
-#			idFE[terms4StatsModels[i]] = coefnames(my_ApplySch) 	
+			levelX = coefnames(my_ApplySch)
+			levelX = isa(value,String) ? value : vcat(value...)
 			thisX = modelcols(my_ApplySch, userData)
 #			FE[terms4StatsModels[i]] = thisX
 		
-			X[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:str=>[],:dims=>vcat(size(thisX)...),:levels=>coefnames(my_ApplySch)) 
+			X[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:str=>[],:dims=>vcat(size(thisX)...),:levels=>levelX) 
 		
 			thisX = 0
 			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(X[terms4StatsModels[i]]),last(X[terms4StatsModels[i]][:dims])])
