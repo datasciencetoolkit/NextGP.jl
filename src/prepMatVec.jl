@@ -150,7 +150,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			isa(thisX,Vector) ? nCol = 1 : nCol = size(thisX,2)
 			println("sizeX: $(size(thisX))")
 			println("sizeX: $(length(levelX))")
-			X[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:nCol=nCol,:levels=>levelX) 
+			X[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:nCol=>nCol,:levels=>levelX) 
 		
 			thisX = 0
 			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(X[terms4StatsModels[i]]),nCol])
