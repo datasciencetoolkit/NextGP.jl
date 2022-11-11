@@ -48,9 +48,9 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	#Positions of parameters for each variable and blocks for speed. b is an array of arrays.
 	countXCol = 0
 	for xSet in keys(X)
-		columns = (countXCol+1):(countXCol+X[xSet][:nCol])
-                X[xSet][:pos] = columns
-		countXCol = columns
+		nCol = X[xSet][:nCol]
+                X[xSet][:pos] = (countXCol+1):(countXCol+nCol)
+		countXCol += nCol
         end
 	countXCol = 0
 	
