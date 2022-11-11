@@ -20,19 +20,19 @@ export sampleZandZVar!
 function sampleX!(xSet,xMat::Array{Float64, 1},b,ycorr,varE)
         #block for each effect
 		ycorr    .+= xMat.*b[xMat.pos]
-		rhs      = xMat'*ycorr .+ ssRHS
+		rhs      = xMat'*ycorr .+ xMat.rhs
 		meanMu   = ixpx*rhs			
                 b[pos] .= rand(Normal(meanMu[],sqrt((ixpx*varE))[]))
-		ycorr    .-= xMat.*b[pos]        
+		ycorr    .-= xMat.*b[xMat.pos]       
 end
 
-function sampleX!(xSet,xMat::Array{Float64, 2},b,ixpx,pos,ycorr,varE,ssRHS)
+function sampleX!(xSet,xMat::Array{Float64, 2},b,ycorr,varE)
         #block for each effect
-		ycorr    .+= xMat*b[pos]
-                rhs      = xMat'*ycorr .+ ssRHS
-                meanMu   = ixpx*rhs
-		b[pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(ixpx*varE))))
-		ycorr    .-= xMat*b[pos]
+		ycorr    .+= xMat*b[xMat.pos]
+                rhs      = xMat'*ycorr .+ xMat.rhs
+                meanMu   = xMat.ixpx*rhs
+		b[pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(xMat.ixpx*varE))))
+		ycorr    .-= xMat*b[xMat.pos]
 end
 
 #sample random effects
