@@ -36,7 +36,7 @@ function sampleX!(xMat,b,ycorr,varE)
 end
 
 #sample random effects
-function sampleU(zSet::Symbol,iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
+function sampleU(zSet::Union{Expr,Symbol},iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
 	uVec = deepcopy(uVector)
 	λz = varE/varUComp
 	Yi = ZpComp*ycorr #computation of Z'ycorr for ALL  rhsU
