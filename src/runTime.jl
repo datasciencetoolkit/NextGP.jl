@@ -26,8 +26,8 @@ BayesPR(r::Int,m::Union{Vector{Float64},Float64},v::Union{Matrix{Float64},Float6
 
 struct RandomEffectType
     str::Any
-    m::Any
-    v::Float64
+    m::Union{Vector{Float64},Float64}
+    v::Union{Matrix{Float64},Float64}
     type::Int
 end
 
