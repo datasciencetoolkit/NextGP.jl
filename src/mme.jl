@@ -43,9 +43,8 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	Order of variables within blocks is always the same as in the model definition, not defined by the user in each block.
 	==#
 	
-	println("X: $X")
 	
-	#Positions of parameters for each variable and blocks for speed. b is an array of arrays.
+	#Positions of parameters for each variable and blocks for speed. b is a column vector.
 	countXCol = 0
 	for xSet in keys(X)
 		nCol = X[xSet][:nCol]
@@ -66,13 +65,6 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 			delete!(X,d)
 		end
 	end
-
-	#array of arrays, without blocking 
-	
-	println("X: $X")
-
-	println("(getindex.(getindex.(Ref(X), collect(keys(X))),:nCol))")
-	println("(getindex.(getindex.(Ref(X), keys(X)),:nCol))")
 
 	b = zeros(getindex.(getindex.(Ref(X), keys(X)),:nCol)[])
 
