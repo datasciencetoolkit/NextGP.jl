@@ -86,7 +86,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
         b = Array{Array{Float64, 1},1}(undef,0)
         ##counts columns per effect
         for xSet in keys(X)
-                push!(b,fill(0.0,X[xSet].dims[2])))
+                push!(b,fill(0.0,X[xSet].dims[2]))
         end
 
 	#set up for E.
