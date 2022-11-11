@@ -230,7 +230,7 @@ folderHandler = function(outFolder)
 	end
 end
 
-myUnzip(d::Dict) = (;(p.first => myUnzip(p.second) for p in d)...)
+myUnzip(d::Dict) = Dict(p.first => myUnzip(p.second) for p in d)
 myUnzip(d) = d
 
 
