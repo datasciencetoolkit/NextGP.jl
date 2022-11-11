@@ -65,11 +65,11 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 		X[xSet][:rhs] = zeros(X[xSet][:nCol])
 
                 if xSet in keys(summaryStat)
-	  		summaryStat[xSet].v == Array{Float64,1} ? X[xSet][:mpm] .+= inv.(summaryStat[xSet].v) : X[xSet][:mpm] .+= inv.(diag(summaryStat[xSet].v))
+	  		summaryStat[xSet].v == Array{Float64,1} ? X[xSet][:ixpx] .+= inv.(summaryStat[xSet].v) : X[xSet][:ixpx] .+= inv.(diag(summaryStat[xSet].v))
 			summaryStat[xSet].v == Array{Float64,1} ? X[xSet][:rhs] .= inv.(summaryStat[xSet].v) .* (summaryStat[xSet].m)  : X[xSet][:rhs] .= inv.(diag(summaryStat[xSet].v)) .* (summaryStat[xSet].m)
                 end
 
-		if isa(X[xSet][:xpx],Matrix{Float64}) 
+		if isa(X[xSet][:ixpx],Matrix{Float64}) 
 			X[xSet][:ixpx] += Matrix(I*minimum(abs.(diag(X[xSet][:ixpx])./10000)),size(X[xSet][:ixpx]))
 		end
                	X[xSet][:ixpx] = inv(X[xSet][:ixpx])
