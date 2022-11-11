@@ -36,8 +36,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	priorVCV = convert(Dict{ExprOrSymbol, Any},priorVCV)	
 	
 	### X and b
-	levelsX = X[:levels]
-	println("levelsX: $levelsX")
+	
 	
 	#==BLOCK FIXED EFFECTS.
 	Order of blocks is as definde by the user
@@ -46,10 +45,8 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	for b in blocks
 		getThese = intersect(collect(keys(X)), b)
 		X[Tuple(getThese)] = hcat(getindex.(Ref(X), getThese)...)
-		levelsX[Tuple(getThese)] = vcat(getindex.(Ref(levelsX), getThese)...)
 		for d in getThese
 			delete!(X,d)
-			delete!(levelsX,d)
 		end
 	end
 	
@@ -62,8 +59,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 
 	#Key positions of variablese and blocks for speed. b is an array of arrays.		
 	for xSet in keys(X)
-                pos = findall(xSet.==collect(keys(X)))[]
-                X[xSet][:pos] = pos
+                X[xSet][:pos] = findall(xSet.==collect(keys(X)))[]
         end
 	        
 	##make iXpX, Z', zpz (for uncor)
@@ -73,11 +69,11 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
         for xSet in keys(X)
 #		ixpx inverse taken later
 		X[xSet][:ixpx] = X[xSet]'X[xSet]
-		X[xSet][:rhs] = zeros(size(X[xSet],2),size(X[xSet],2)) for xSet in keys(X)]
+		X[xSet][:rhs] = zeros(X[xSet].dims[2])
 
                 if xSet in keys(summaryStat)
-	                X[xSet][:ixpx] += inv(summaryStat[xSet].v)
-			X[xSet][:rhs] += inv(summaryStat[xSet].v)*(summaryStat[xSet].m)
+	  		summaryStat[xSet].v == Array{Float64,1} ? X[xSet][:mpm] .+= inv.(summaryStat[xSet].v) : X[xSet][:mpm] .+= inv.(diag(summaryStat[xSet].v))
+			summaryStat[xSet].v == Array{Float64,1} ? X[xSet][:rhs] .= inv.(summaryStat[xSet].v) .* (summaryStat[xSet].m)  : X[xSet][:rhs] .= inv.(diag(summaryStat[xSet].v)) .* (summaryStat[xSet].m)
                 end
 
 		if isa(X[xSet][:xpx],Matrix{Float64}) 
