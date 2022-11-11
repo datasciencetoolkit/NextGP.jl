@@ -36,7 +36,8 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	priorVCV = convert(Dict{ExprOrSymbol, Any},priorVCV)	
 	
 	### X and b
-	levelsX = levelDict[:levelsFE]
+	levelsX = X[:levels]
+	println("levelsX: $levelsX")
 	
 	#==BLOCK FIXED EFFECTS.
 	Order of blocks is as definde by the user
@@ -57,41 +58,40 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	
 	#not a dictionary anymore, and consistent with possible new order.
 	levelsX = hcat(vcat([isa(value,String) ? value : vcat(value...) for (key, value) in levelsX]...)...)
-	
-	#Key positions of variablese and blocks for speed. b is an array of arrays.
-        XKeyPos = OrderedDict{Any,Int64}()
-        [XKeyPos[collect(keys(X))[i]]=i for i in 1:length(keys(X))]
+	println("levelsX: $levelsX")
+
+	#Key positions of variablese and blocks for speed. b is an array of arrays.		
+	for xSet in keys(X)
+                pos = findall(xSet.==collect(keys(X)))[]
+                X[xSet][:pos] = pos
+        end
 	        
 	##make iXpX, Z', zpz (for uncor)
-        iXpX = deepcopy(X)
-	rhsX = deepcopy(X)
 	[rhsX[xSet] = zeros(size(X[xSet],2),size(X[xSet],2)) for xSet in keys(X)]
 
 	println("rhsX: $rhsX")	
 
-        for x in keys(X)
-		XpX = X[x]'X[x]
+        for xSet in keys(X)
+#		ixpx inverse taken later
+		X[xSet][:ixpx] = X[xSet]'X[xSet]
+		X[xSet][:rhs] = zeros(size(X[xSet],2),size(X[xSet],2)) for xSet in keys(X)]
 
-		##
-                if x in keys(summaryStat)
-	                XpX += inv(summaryStat[x].v)
-			rhsX[x] += inv(summaryStat[x].v)*(summaryStat[x].m)
+                if xSet in keys(summaryStat)
+	                X[xSet][:ixpx] += inv(summaryStat[xSet].v)
+			X[xSet][:rhs] += inv(summaryStat[xSet].v)*(summaryStat[xSet].m)
                 end
-                ##
 
-		if isa(XpX,Matrix{Float64}) 
-			XpX += Matrix(I*minimum(abs.(diag(XpX)./10000)),size(XpX))
-			#XpX += Matrix(I*minimum(abs.(diag(XpX)./size(X[x],1))),size(XpX))
+		if isa(X[xSet][:xpx],Matrix{Float64}) 
+			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(XpX)./10000)),size(XpX))
 		end
-               	iXpX[x] = inv(XpX)
+               	X[xSet][:ixpx] = inv(X[xSet][:ixpx])
         end
 	
         ##make b and u arrays
         b = Array{Array{Float64, 1},1}(undef,0)
         ##counts columns per effect
         for xSet in keys(X)
-                nCol = size(X[xSet],2)
-                push!(b,fill(0.0,nCol))
+                push!(b,fill(0.0,X[xSet].dims[2])))
         end
 
 	#set up for E.
@@ -283,8 +283,8 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 			M[pSet][:mpm] = tempmpm
 			M[pSet][:rhs] = zeros(M[pSet][:dims][2])
 			if pSet in keys(summaryStat)
-                       	summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
-			summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+                       		summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
+				summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
 			end
 			M[pSet][:Mp] = []
 			theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
@@ -424,9 +424,10 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	IO.outMCMC(outPut,"varE",["e"])
 	##########
 	
+	X  = myUnzip(X)
 	M  = myUnzip(M)	
 	
-	return ycorr, nData, dfE, scaleE, X, iXpX, XKeyPos, b, Z, iVarStr, Zp, zpz, uKeyPos, uKeyPos4Print, nColEachZ, u, varU, scaleZ, dfZ, M,  beta, varBeta, BayesX, rhsX, rhsZ
+	return ycorr, nData, dfE, scaleE, X, b, Z, iVarStr, Zp, zpz, uKeyPos, uKeyPos4Print, nColEachZ, u, varU, scaleZ, dfZ, M,  beta, varBeta, BayesX, rhsZ
 	
 end
 
