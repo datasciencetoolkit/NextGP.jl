@@ -43,12 +43,10 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos
 		#sample marker effects and variances
 	
 		
-@time		for mSet in keys(M)
+		for mSet in keys(M)
 			BayesX[mSet](mSet,M,beta,ycorr,varE,varBeta)
 		end
-		
-@time		functions.sampleBayesPR2!(M,beta,ycorr,varE,varBeta)
-               		
+		               		
         	#print
 		if iter in these2Keep
 			IO.outMCMC(outPut,"b",b') ### currently no path is provided!!!!
