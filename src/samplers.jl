@@ -45,7 +45,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos
 		
 		for mSet in keys(M)
 #			sampleBayesPR!(mSet,M[mSet],Mp[mSet],beta,mpm[mSet],BetaKeyPos[mSet],regionArray[mSet],nRegions[mSet],ycorr,varE,varBeta,scaleM[mSet],dfM[mSet])
-			BayesX[mSet](mSet,M[mSet],beta,ycorr,varE,varBeta)
+			BayesX[mSet](mSet,M,beta,ycorr,varE,varBeta)
 		end
                		
         	#print
