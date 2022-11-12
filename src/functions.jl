@@ -110,7 +110,7 @@ function sampleBayesPR!(mSet::Symbol,M,beta,ycorr,varE,varBeta)
 			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
 			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 		end
-@time		@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),regionSize)
+		@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),regionSize)
 	end
 end
 	
@@ -131,7 +131,7 @@ function sampleBayesPR2!(M,beta,ycorr,varE,varBeta)
 				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			end
-	@time		@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),regionSize)
+		@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),regionSize)
 		end
 	end
 end
