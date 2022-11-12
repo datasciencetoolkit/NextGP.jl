@@ -95,23 +95,23 @@ end
 ##### Component-wise, seperated functions for symbol and tuple
 
 
-function sampleBayesPR!(mSet::Symbol,MMat,beta,ycorr,varE,varBeta)
+function sampleBayesPR!(mSet::Symbol,M,beta,ycorr,varE,varBeta)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
-	for r in 1:MMat.nRegions
-		theseLoci = MMat.regionArray[r]
+	for r in 1:M[:mSet].nRegions
+		theseLoci = M[:mSet].regionArray[r]
 		regionSize = length(theseLoci)
 		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
-			BLAS.axpy!(getindex(beta[MMat.pos],locus),view(MMat.data,:,locus),ycorr)
-			rhs = (BLAS.dot(view(MMat.data,:,locus),ycorr)) .+ view(MMat.rhs,locus)
-			lhs = MMat.mpm[locus] + lambda
+			BLAS.axpy!(getindex(beta[M[:mSet].pos],locus),view(M[:mSet].data,:,locus),ycorr)
+			rhs = (BLAS.dot(view(M[:mSet].data,:,locus),ycorr)) .+ view(M[:mSet].rhs,locus)
+			lhs = M[:mSet].mpm[locus] + lambda
 			meanBeta = lhs\rhs
-			setindex!(beta[MMat.pos],sampleBeta(meanBeta, lhs, varE),locus)
-			BLAS.axpy!(-1.0*getindex(beta[MMat.pos],locus),view(MMat.data,:,locus),ycorr)
+			setindex!(beta[M[:mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
+			BLAS.axpy!(-1.0*getindex(beta[M[:mSet].pos],locus),view(M[:mSet].data,:,locus),ycorr)
 		end
-		varBeta[mSet][r] = sampleVarBetaPR(MMat.scale,MMat.df,getindex(beta[MMat.pos],theseLoci),regionSize)
+		varBeta[mSet][r] = sampleVarBetaPR(M[:mSet].scale,M[:mSet].df,getindex(beta[M[:mSet].pos],theseLoci),regionSize)
 	end
 end
 
