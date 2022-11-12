@@ -34,7 +34,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos
 		#sample fixed effects
 
 		for xSet in keys(X)
-			sampleX!(X[xSet],b,ycorr,varE)
+			sampleX!(xSet,X,b,ycorr,varE)
 		end
 	
 		#sample random effects
