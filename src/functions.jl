@@ -94,7 +94,7 @@ end
 
 ##### Component-wise, seperated functions for symbol and tuple
 
-function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Array{Array{Float64,1},1},ycorr::Vector,varE::Float64,varBeta::Dict)
+function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector{Vector{Float64}},ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
