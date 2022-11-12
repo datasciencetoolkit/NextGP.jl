@@ -43,11 +43,11 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos
 		#sample marker effects and variances
 	
 		
-#		for mSet in keys(M)
-#			BayesX[mSet](mSet,M,beta,ycorr,varE,varBeta)
-#		end
+@time		for mSet in keys(M)
+			BayesX[mSet](mSet,M,beta,ycorr,varE,varBeta)
+		end
 		
-		sampleBayesPR2!(M,beta,ycorr,varE,varBeta)
+@time		sampleBayesPR2!(M,beta,ycorr,varE,varBeta)
                		
         	#print
 		if iter in these2Keep
