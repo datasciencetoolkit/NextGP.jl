@@ -94,13 +94,13 @@ end
 
 ##### Component-wise, seperated functions for symbol and tuple
 
-function sampleBayesPR!(mSet::Symbol,M,beta,ycorr,varE,varBeta)
+function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Array{Array{Float64,1},1},ycorr::Vector,varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
 	local lambda::Float64
 	for (r,theseLoci) in enumerate(M[mSet].regionArray)
-		regionSize = length(theseLoci)
+		regionSize::Int64 = length(theseLoci)
 		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
