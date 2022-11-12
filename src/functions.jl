@@ -17,19 +17,19 @@ export BayesPR
 export sampleZandZVar!
 
 #Sampling fixed effects
-function sampleX!(xMat::Dict,b::Vector,ycorr::Vector,varE::Float64)
-	if length(b[xMat.pos])==1
-		ycorr    .+= xMat.data .* b[xMat.pos]
-		rhs      = xMat.data'*ycorr .+ xMat.rhs
-		meanMu   = xMat.ixpx*rhs			
-                b[xMat.pos] .= rand(Normal(meanMu[],sqrt((xMat.ixpx*varE))[]))
-		ycorr    .-= xMat.data .* b[xMat.pos]
+function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Float64)
+	if length(b[X[xSet].pos])==1
+		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
+		rhs      = X[xSet].data'*ycorr .+ X[xSet].rhs
+		meanMu   = X[xSet].ixpx*rhs			
+                b[X[xSet].pos] .= rand(Normal(meanMu[],sqrt((X[xSet].ixpx*varE))[]))
+		ycorr    .-= X[xSet].data .* b[X[xSet].pos]
 	else
-		ycorr    .+= xMat.data*b[xMat.pos]
-                rhs      = xMat.data'*ycorr .+ xMat.rhs
-                meanMu   = xMat.ixpx*rhs
-		b[xMat.pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(xMat.ixpx*varE))))
-		ycorr    .-= xMat.data*b[xMat.pos]
+		ycorr    .+= X[xSet].data*b[X[xSet].pos]
+                rhs      = X[xSet].data'*ycorr .+ X[xSet].rhs
+                meanMu   = X[xSet].ixpx*rhs
+		b[X[xSet].pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(X[xSet].ixpx*varE))))
+		ycorr    .-= X[xSet].data*b[X[xSet].pos]
 	end
 end
 
