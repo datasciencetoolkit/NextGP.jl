@@ -17,7 +17,7 @@ export BayesPR
 export sampleZandZVar!
 
 #Sampling fixed effects
-function sampleX!(xMat,b,ycorr,varE)
+function sampleX!(xMat::Dict,b::Vector,ycorr::Vector,varE::Float64)
 	if length(b[xMat.pos])==1
 		ycorr    .+= xMat.data .* b[xMat.pos]
 		rhs      = xMat.data'*ycorr .+ xMat.rhs
@@ -104,7 +104,7 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,ycorr::Vector{Float64}
 		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = (BLAS.dot(view(M[mSet].data,:,locus),ycorr)) .+ view(M[mSet].rhs,locus)
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) .+ view(M[mSet].rhs,locus)
 			lhs = M[mSet].mpm[locus] + lambda
 			meanBeta = lhs\rhs
 			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
