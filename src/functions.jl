@@ -100,17 +100,17 @@ function sampleBayesPR!(mSet::Symbol,M,beta,ycorr,varE,varBeta)
 	local meanBeta::Float64
 	local lambda::Float64
 	for (r,theseLoci) in enumerate(M[mSet].regionArray)
-@time		regionSize = length(theseLoci)
-@time		lambda = varE/(varBeta[mSet][r])
+		regionSize = length(theseLoci)
+		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
-@time			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-@time			rhs = (BLAS.dot(view(M[mSet].data,:,locus),ycorr)) .+ view(M[mSet].rhs,locus)
-@time			lhs = M[mSet].mpm[locus] + lambda
-@time			meanBeta = lhs\rhs
-@time			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
-@time			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+			rhs = (BLAS.dot(view(M[mSet].data,:,locus),ycorr)) .+ view(M[mSet].rhs,locus)
+			lhs = M[mSet].mpm[locus] + lambda
+			meanBeta = lhs\rhs
+			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
+			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 		end
-@time		@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),regionSize)
+		@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),regionSize)
 	end
 end
 	
