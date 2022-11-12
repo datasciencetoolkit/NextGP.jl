@@ -47,7 +47,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos
 #			BayesX[mSet](mSet,M,beta,ycorr,varE,varBeta)
 #		end
 		
-		BayesX[mSet](M,beta,ycorr,varE,varBeta)
+		BayesPR!(M,beta,ycorr,varE,varBeta)
                		
         	#print
 		if iter in these2Keep
