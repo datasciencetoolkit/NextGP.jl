@@ -39,7 +39,7 @@ function sampleU(zSet::Union{Expr,Symbol},iMat,pos,ZComp,ZpComp,zpzComp,varE,var
 	λz = varE/varUComp
 	Yi = ZpComp*ycorr #computation of Z'ycorr for ALL  rhsU
 	nCol = length(zpzComp)
-@inbounds for i in 1:nCol
+	for i in 1:nCol
         	uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
 		rhsU = Yi[i] - λz*dot(iMat[:,i],uVec)
                 lhsU = zpzComp[i] + (iMat[i,i]*λz)[1]
@@ -57,7 +57,7 @@ function sampleU(zSet::Tuple,iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector
         λz = varE./varUComp
         Yi = ZpComp*ycorr #computation of Z'ycorr for ALL  rhsU
         nCol = length(zpzComp)
-@inbounds for i in 1:nCol
+	for i in 1:nCol
                 uVec[:,i] .= 0.0 #also excludes individual from iMat! Nice trick.
                 rhsU = Yi[:,i] .- λz*dot(iMat[:,i],uVec)
                 lhsU = zpzComp[i] + (iMat[i,i]*λz)[1]
@@ -103,7 +103,7 @@ function sampleBayesPR!(mSet::Symbol,MMat,beta,ycorr,varE,varBeta)
 		theseLoci = MMat.regionArray[r]
 		regionSize = length(theseLoci)
 		lambda = varE/(varBeta[mSet][r])
-@inbounds	for locus in theseLoci::UnitRange{Int64}
+		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[MMat.pos],locus),view(MMat.data,:,locus),ycorr)
 			rhs = (BLAS.dot(view(MMat.data,:,locus),ycorr)) .+ view(MMat.rhs,locus)
 			lhs = MMat.mpm[locus] + lambda
@@ -122,7 +122,7 @@ function sampleBayesPR!(mSet::Tuple,MMat,nowMp,beta,mpmMat,betaPos,regionsMat,re
 		theseLoci = regionsMat[r]
 		regionSize = length(theseLoci)
 		invB = inv(varBeta[mSet][r])
-@inbounds	for locus in theseLoci::UnitRange{Int64}
+		for locus in theseLoci::UnitRange{Int64}
 			RHS = zeros(size(invB,1))	
 			ycorr .+= MMat[locus]*getindex.(beta[betaPos],locus)				
 			RHS = ((nowMp[locus]*ycorr)./varE) .+ view(ssRHS,locus) 
