@@ -54,14 +54,14 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	countXCol = 0
 	
 	for blk in blocks
-		getThese = intersect(collect(keys(X)), blk)
-		X[Tuple(getThese)] = Dict{Symbol, Any}()
-		X[Tuple(getThese)][:data] = hcat(getindex.(getindex.(Ref(X), getThese),:data)...)
-		X[Tuple(getThese)][:levels] = hcat(vcat(getindex.(getindex.(Ref(X), getThese),:levels)...)...)
-		X[Tuple(getThese)][:nCol] = sum(getindex.(getindex.(Ref(X), getThese),:nCol))
-		X[Tuple(getThese)][:pos] = vcat(getindex.(getindex.(Ref(X), getThese),:pos)...)
-		X[Tuple(getThese)][:method] = first(getindex.(getindex.(Ref(X), getThese),:method))
-		for d in getThese
+#		getThese = intersect(collect(keys(X)), blk)
+		X[blk] = Dict{Symbol, Any}()
+		X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
+		X[blk][:levels] = hcat(vcat(getindex.(getindex.(Ref(X), blk),:levels)...)...)
+		X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
+		X[blk][:pos] = vcat(getindex.(getindex.(Ref(X), blk),:pos)...)
+		X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
+		for d in blk
 			delete!(X,d)
 		end
 	end
@@ -269,8 +269,6 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	#make mpm
 	
 	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
-		corEffects = []
-		corPositions = []
 		#symbol :M1 or expression
 		if isa(pSet,Symbol) && in(pSet,keys(M))
 			tempmpm = []
@@ -291,32 +289,25 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))	
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
-			correlate = collect(pSet)
-			for pSubSet in correlate
-				push!(corEffects,pSubSet)
-				push!(corPositions,findall(pSubSet.==keys(M))[])
-			end
-			if issubset(corEffects,collect(keys(M)))
-				tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), pSet),:data))...)
-				for d in corEffects
-                       			delete!(M,d)
-               			end				
-				M[pSet][:data]   = tempM
-				M[pSet][:mpm] = MatByMat.(tempM)
-				if pSet in SummaryStat
-					error("Not available to use summary statistics in correlated effects")
-                                	#SummaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += (1.0 ./ SummaryStat[pSet].v) : mpm[pSet] += inv.(diag(SummaryStat[pSet].v))
- 	                       	end
- 
-				M[pSet][:Mp]  = transpose.(tempM)
-				tempM = 0
-				maps = getindex.(getindex.(Ref(M),pSet),:map)
-				(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[pSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
-				theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
-				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nRegions] = length(theseRegions)
-
-			end
+			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), pSet),:data))...)
+			for d in corEffects
+                       		delete!(M,d)
+               		end
+			M[pSet] = Dict{Symbol, Any}()
+			M[pSet][:data] = tempM
+			M[pSet][:pos] = vcat(getindex.(getindex.(Ref(M), pSet),:pos)...)
+			M[pSet][:mpm] = MatByMat.(tempM)
+			if pSet in SummaryStat
+				error("Not available to use summary statistics in correlated effects")
+                                #SummaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += (1.0 ./ SummaryStat[pSet].v) : mpm[pSet] += inv.(diag(SummaryStat[pSet].v))
+ 	                end
+			M[pSet][:Mp]  = transpose.(tempM)
+			tempM = 0
+			maps = getindex.(getindex.(Ref(M),pSet),:map)
+			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[pSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
+			theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
+			M[pSet][:regionArray] = theseRegions
+			M[pSet][:nRegions] = length(theseRegions)
 		end
 	end
 	
