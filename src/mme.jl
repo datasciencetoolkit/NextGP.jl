@@ -66,7 +66,6 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 		end
 	end
 
-	println("X: $X")
 
 #	b = zeros(getindex.(getindex.(Ref(X), keys(X)),:nCol)[])
 	b = zeros(sum(getindex.(getindex.(Ref(X), keys(X)),:nCol)))
