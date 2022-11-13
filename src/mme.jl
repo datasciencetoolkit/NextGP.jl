@@ -297,24 +297,25 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 				push!(corPositions,findall(pSubSet.==keys(M))[])
 			end
 			if issubset(corEffects,collect(keys(M)))
-				tempM = hcat.(eachcol.(getindex.(Ref(M), (pSet)))...)
+				tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), pSet),:data))...)
 				for d in corEffects
                        			delete!(M,d)
-					delete!(BetaKeyPos,d)
-               			end
-				BetaKeyPos[pSet] = corPositions
-				M[pSet]   = tempM
-				mpm[pSet] = MatByMat.(tempM)
+               			end				
+				M[pSet][:data]   = tempM
+				M[pSet][:mpm] = MatByMat.(tempM)
 				if pSet in SummaryStat
 					error("Not available to use summary statistics in correlated effects")
                                 	#SummaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += (1.0 ./ SummaryStat[pSet].v) : mpm[pSet] += inv.(diag(SummaryStat[pSet].v))
  	                       	end
  
-				Mp[pSet]  = transpose.(tempM)
+				M[pSet][:Mp]  = transpose.(tempM)
 				tempM = 0
-				nowMap = first(pSet)		#should throw out error if sets have different lengths! implement it here!
-				theseRegions = prep2RegionData(outPut,pSet,paths2maps[nowMap],priorVCV[pSet].r)
-                		regionArray[pSet] = theseRegions
+				maps = getindex.(getindex.(Ref(M),pSet),:map)
+				(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[pSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
+				theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
+				M[pSet][:regionArray] = theseRegions
+				M[pSet][:nRegions] = length(theseRegions)
+
 			end
 		end
 	end
@@ -334,6 +335,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
                 end
 		theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],9999)
 		M[pSet][:regionArray] = theseRegions
+		M[pSet][:nRegions] = length(theseRegions)
 	end
 
 	
