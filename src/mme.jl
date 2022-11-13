@@ -290,12 +290,14 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
 			M[pSet] = Dict{Symbol, Any}()
+			maps = getindex.(getindex.(Ref(M),pSet),:map)
+			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[pSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
 			M[pSet][:pos] = vcat(getindex.(getindex.(Ref(M), pSet),:pos)...)
+			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), pSet),:data))...)
+			M[pSet][:data] = tempM
 			for d in pSet
                        		delete!(M,d)
                		end
-			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), pSet),:data))...)
-			M[pSet][:data] = tempM
 			M[pSet][:mpm] = MatByMat.(tempM)
 			if pSet in SummaryStat
 				error("Not available to use summary statistics in correlated effects")
@@ -303,8 +305,6 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
  	                end
 			M[pSet][:Mp]  = transpose.(tempM)
 			tempM = 0
-			maps = getindex.(getindex.(Ref(M),pSet),:map)
-			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[pSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
 			theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
 			M[pSet][:regionArray] = theseRegions
 			M[pSet][:nRegions] = length(theseRegions)
