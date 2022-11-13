@@ -290,12 +290,12 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
 			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), pSet),:data))...)
+			M[pSet][:pos] = vcat(getindex.(getindex.(Ref(M), pSet),:pos)...)
 			for d in pSet
                        		delete!(M,d)
                		end
 			M[pSet] = Dict{Symbol, Any}()
 			M[pSet][:data] = tempM
-			M[pSet][:pos] = vcat(getindex.(getindex.(Ref(M), pSet),:pos)...)
 			M[pSet][:mpm] = MatByMat.(tempM)
 			if pSet in SummaryStat
 				error("Not available to use summary statistics in correlated effects")
