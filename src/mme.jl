@@ -69,7 +69,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	println("X: $X")
 
 #	b = zeros(getindex.(getindex.(Ref(X), keys(X)),:nCol)[])
-	b = zeros(getindex.(getindex.(Ref(X), keys(X)),:nCol))
+	b = zeros(sum(getindex.(getindex.(Ref(X), keys(X)),:nCol)))
 
 
 	##This is not really nFix, but the "blocks" of fixed effects
