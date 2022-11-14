@@ -154,9 +154,6 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	println("\n ---------------- Summary of input ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
 
-	idFR = OrderedDict(:levelsRE => idRE)
-
-
         return vec(yVec), X, Z, M
 end
 
