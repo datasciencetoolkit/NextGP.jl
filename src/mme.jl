@@ -297,6 +297,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), pSet),:data))...)
 			M[pSet][:data] = tempM
 			for d in pSet
+				beta = push!(beta,zeros(Float64,1,M[d][:dims][2]))
                        		delete!(M,d)
                		end
 			M[pSet][:mpm] = MatByMat.(tempM)
