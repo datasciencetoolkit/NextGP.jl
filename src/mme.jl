@@ -293,6 +293,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 			maps = getindex.(getindex.(Ref(M),pSet),:map)
 			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[pSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
 			M[pSet][:pos] = vcat(getindex.(getindex.(Ref(M), pSet),:pos)...)
+			M[pSet][:levels] = first(getindex.(getindex.(Ref(M),pSet),:levels))
 			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), pSet),:data))...)
 			M[pSet][:data] = tempM
 			for d in pSet
