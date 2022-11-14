@@ -367,7 +367,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 
 
 	###Bayesian Alphabet methods
-	BayesX = OrderedDict{Symbol,Any}()
+	BayesX = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
 
 	for mSet in keys(M)
 		if mSet ∈ keys(priorVCV)
