@@ -301,6 +301,9 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
                        		delete!(M,d)
                		end
 			M[pSet][:mpm] = MatByMat.(tempM)
+			#lhs is already zero as only mpm + "nothing" is  given
+			#rhs is for now only for convenience
+			M[pSet][:rhs] = zeros(length(pSet))
 			if pSet in keys(summaryStat)
 				error("Not available to use summary statistics in correlated effects")
                                 #SummaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += (1.0 ./ SummaryStat[pSet].v) : mpm[pSet] += inv.(diag(SummaryStat[pSet].v))
