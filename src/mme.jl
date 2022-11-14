@@ -309,6 +309,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
                                 #SummaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += (1.0 ./ SummaryStat[pSet].v) : mpm[pSet] += inv.(diag(SummaryStat[pSet].v))
  	                end
 			M[pSet][:Mp]  = transpose.(tempM)
+			println("size  Mp: $(size(tempM)), $(size.(tempM))")
 			tempM = 0
 			theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
 			M[pSet][:regionArray] = theseRegions
