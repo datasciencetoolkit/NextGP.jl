@@ -123,7 +123,6 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,ycorr::Vector{Float64},
 			RHS = zeros(size(invB,1))	
 			ycorr .+= M[mSet].data[locus]*getindex.(beta[M[mSet].pos],locus)
 			RHS = ((getindex(M[mSet].Mp,locus)*ycorr)./varE) .+ getindex(M[mSet].rhs,locus)
-			println("RHS: $RHS")
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus)./varE) .+ invB)
 			meanBETA::Array{Float64,1} = invLHS*RHS
 			setindex!.(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
