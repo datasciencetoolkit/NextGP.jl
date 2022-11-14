@@ -23,7 +23,7 @@ ExprOrSymbol = Union{Expr,Symbol,Tuple}
 
 
 #main sampler
-function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
+function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		
         #some info
 	nRand = length(Z)
@@ -129,108 +129,97 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	
 	#key positions for each effect in u, for speed. Order of matrices in Z are preserved here.
 					
-        uKeyPos = OrderedDict{Any,Int64}()
         for zSet in keys(Z)
 		pos = findall(x->x==zSet, collect(keys(Z)))[]
-                uKeyPos[zSet] = pos
+                Z[zSet][:pos] = pos
         end
+	
+	u = []
 
 	#matrices are ready
-				
-	Zp = OrderedDict{Any,Any}()
-       	zpz = OrderedDict{Any,Any}() #Has the order in priorVCV, which may be unordered Dict() by the user. Analysis follow this order.
-	rhsZ = OrderedDict{Any,Any}()
-					
+									
 	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV) 
-		corEffects = []
-		corPositions = []
 		#symbol :ID or expression :(1|ID)
 		if (isa(pSet,Symbol) || isa(pSet,Expr)) && in(pSet,keys(Z))
 			tempzpz = []
-			nowZ = Z[pSet]
+			nowZ = Z[pSet][:data]
 			for c in eachcol(nowZ)
 				push!(tempzpz,c'c)					
 				# push!(tempzpz,BLAS.dot(c,c))
-			end
-			Zp[pSet]  = transpose(Z[pSet])						
-			zpz[pSet] = tempzpz
-			rhsZ[pSet] = zeros(size(Z[pSet],2))
+			end						
+			Z[pSet][:zpz] = tempzpz
+			Z[pSet][:rhs] = zeros(size(Z[pSet][:data],2))
                         if pSet in keys(summaryStat)
                                 summaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] .+= inv.(summaryStat[pSet].v) : zpz[pSet] .+= inv.(diag(summaryStat[pSet].v))
                                 summaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsZ[pSet] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                         end
+			Z[pSet][:Zp]  = transpose(Z[pSet][:data])
+			u = push!(u,zeros(Float64,1,Z[pSet][:dims][2]))
 		#tuple of symbols (:ID,:Dam)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(Z)))) #if all elements are available # all([pSet .in Ref(keys(Z))])
-			correlate = collect(pSet)
-			for pSubSet in correlate
-				push!(corEffects,pSubSet)
-				push!(corPositions,findall(pSubSet.==keys(Z))[])
-			end
-			if issubset(corEffects,collect(keys(Z)))
-				tempZ = hcat.(eachcol.(getindex.(Ref(Z), (pSet)))...)
-				for d in corEffects
-                       			delete!(Z,d)
-					delete!(uKeyPos,d)												
-               			end
-				uKeyPos[pSet] = corPositions
-				Z[pSet]   = tempZ
-				zpz[pSet] = MatByMat.(tempZ)
-				Zp[pSet]  = transpose.(tempZ)
-				tempZ = 0
-				if pSet in keys(summaryStat)
-					error("Not available to use summary statistics in correlated effects")
-                        		#SummaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(SummaryStat[pSet].v) : zpz[pSet] += inv.(diag(SummaryStat[pSet].v))
-                        		#SummaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(SummaryStat[pSet].v) .* (SummaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(SummaryStat[pSet].v)) .* (SummaryStat[pSet].m)
-                		end
-			end
+			Z[pSet] = Dict{Symbol, Any}()
+			Z[pSet][:pos] = vcat(getindex.(getindex.(Ref(Z), pSet),:pos)...)	
+			Z[pSet][:levels] = first(getindex.(getindex.(Ref(Z),pSet),:levels))
+			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), pSet),:data))...)
+			Z[pSet][:data] = tempZ
+			for d in corEffects
+				u = push!(u,zeros(Float64,1,Z[d][:dims][2]))
+                       		delete!(Z,d)
+               		end
+			Z[pSet][:zpz] = MatByMat.(tempZ)
+			#lhs is already zero as only mpm + "nothing" is  given
+			#rhs is for now only for convenience
+			Z[pSet][:rhs] = [zeros(length(pSet)) for i in 1:length(Z[pSet][:levels])]
+			if pSet in keys(summaryStat)
+				error("Not available to use summary statistics in correlated effects")
+                        	#SummaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(SummaryStat[pSet].v) : zpz[pSet] += inv.(diag(SummaryStat[pSet].v))
+                        	#SummaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(SummaryStat[pSet].v) .* (SummaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(SummaryStat[pSet].v)) .* (SummaryStat[pSet].m)
+                	end
+			Z[pSet][:Zp]  = transpose.(tempZ)
+			tempZ = 0
 		end
 	end
-																
+
+
 	for pSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
 		printstyled("No prior was provided for $pSet, but it was not included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
 		tempzpz = []
-		nowZ = Z[pSet]
+		nowZ = Z[pSet][:data]
 		for c in eachcol(nowZ)
 			push!(tempzpz,c'c)					
 		end
-		Zp[pSet]  = transpose(Z[pSet])						
-		zpz[pSet] = tempzpz
-		rhsZ[pSet] = zeros(size(Z[pSet],2))
+		Z[pSet][:Zp]  = transpose(Z[pSet])						
+		Z[pSet][:zpz] = tempzpz
+		Z[pSet][:rhs] = zeros(size(Z[pSet][:dims],2))
 		if pSet in keys(summaryStat)
                 	summaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] .+= inv.(summaryStat[pSet].v) : zpz[pSet] .+= inv.(diag(summaryStat[pSet].v))
                         summaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsZ[pSet] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                 end
 	end
-																	
-	#pos for individual random effect
-	#this part "collect(k) .=> collect(v)" will change for correlated random effects.
-	uKeyPos4Print = OrderedDict(vcat([(isa(k,Symbol) || isa(k,Expr)) ? k => v : collect(k) .=> collect(v) for (k,v) in uKeyPos]...))
-	
+																		
 	##get priors per effect
-													
-	iVarStr = Dict{Any,Array{Float64,2}}() #inverses will be computed
-	varU_prior = OrderedDict{Any,Any}()
+	##some part already in prepMatVec								
+	varU_prior = Dict{Any,Any}()
         for zSet in keys(Z)
-                nCol = size(Z[zSet],2)
 		#var structures and priors
 		if haskey(priorVCV,zSet)	
 			if ismissing(priorVCV[zSet].str) || priorVCV[zSet].str=="I" 
 				printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
-				iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
+				Z[zSet][:iVarStr] = Matrix(1.0I,Z[zSet][:dims][2],Z[zSet][:dims][2])
 			elseif priorVCV[zSet].str=="A"
 				printstyled("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used\n"; color = :green)
-				iVarStr[zSet] = iA
+				Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
 			elseif priorVCV[zSet].str=="G"
                                 printstyled("prior var-cov structure for $zSet is G. Computed G matrix will be used\n"; color = :green)
-                                iVarStr[zSet] = iGRel[zSet]
-			else 	iVarStr[zSet] = inv(priorVCV[zSet].str)
+                                Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
+			else 	Z[zSet][:iVarStr] = inv(priorVCV[zSet].str)
 			end
 			varU_prior[zSet] = priorVCV[zSet].v
 		else	
 			printstyled("prior var-cov for $zSet is empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
 			varU_prior[zSet] = 100
 			priorVCV[zSet] = Random("I",0,100)
-			iVarStr[zSet] = Matrix(1.0I,nCol,nCol)
+			Z[zSet][:iVarStr] = Matrix(1.0I,Z[zSet][:dims][2],Z[zSet][:dims][2])
 		end
         end
 
@@ -347,7 +336,6 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	
 	
 	#storage
-	u = zeros(Float64,nRand,maximum(vcat([0,collect(values(nColEachZ))]...))) #zero is for max to work when no random effect is present #can allow unequal length! Remove tail zeros for printing....
 
 	varU = deepcopy(varU_prior) #for storage
 
@@ -359,15 +347,8 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 	#summarize analysis
 	summarize = DataFrame(Effect=Any[],Type=Any[],Str=Any[],df=Any[],scale=Any[])
 	
-	for zSet in keys(zpz)
-		if zSet ∈ keys(priorVCV)
-			str = priorVCV[zSet].str
-			#value = priorVCV[zSet].v
-		else 
-			str = "I"
-		     	#value = varU_prior[zSet].v
-		end
-	push!(summarize,[zSet,"Random",str,dfZ[zSet],scaleZ[zSet]])
+	for zSet in keys(Z)
+		push!(summarize,[zSet,"Random",Z[zSet][:str],Z[zSet][:df],Z[zSet][:scale]])
 	end
 
 
