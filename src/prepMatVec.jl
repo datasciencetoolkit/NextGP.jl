@@ -148,8 +148,6 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			levelX = coefnames(my_ApplySch)
 			thisX = modelcols(my_ApplySch, userData)
 			isa(thisX,Vector) ? nCol = 1 : nCol = size(thisX,2)
-			println("sizeX: $(size(thisX))")
-			println("sizeX: $(length(levelX))")
 			X[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:nCol=>nCol,:levels=>levelX) 
 		
 			thisX = 0
