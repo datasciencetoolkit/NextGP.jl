@@ -121,7 +121,8 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,ycorr::Vector{Float64},
 		invB = inv(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			RHS = zeros(size(invB,1))	
-			ycorr .+= M[mSet].data[locus]*getindex.(beta[M[mSet].pos],locus)				
+			ycorr .+= M[mSet].data[locus]*getindex.(beta[M[mSet].pos],locus)
+			println("size M[mSet].Mp[locus]: $(size(M[mSet].Mp[locus])), size ycorr: $(size(ycorr)); size rhs: $(size(view(M[mSet].rhs))")
 			RHS = ((M[mSet].Mp[locus]*ycorr)./varE) .+ view(M[mSet].rhs,locus) 
 			invLHS::Array{Float64,2} = inv((M[mSet].mpm[locus]./varE) .+ invB)
 			meanBETA::Array{Float64,1} = invLHS*RHS
