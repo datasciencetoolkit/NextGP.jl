@@ -104,7 +104,7 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,ycorr::Vector{Float64}
 		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) .+ view(M[mSet].rhs,locus)
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) + getindex(M[mSet].rhs,locus)
 			lhs = M[mSet].mpm[locus] + lambda
 			meanBeta = lhs\rhs
 			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
@@ -122,10 +122,10 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,ycorr::Vector{Float64},
 		for locus in theseLoci::UnitRange{Int64}
 			RHS = zeros(size(invB,1))	
 			ycorr .+= M[mSet].data[locus]*getindex.(beta[M[mSet].pos],locus)
-			println("$(M[mSet].Mp[locus]*ycorr)./varE)), $(view(M[mSet].rhs,locus)), $(M[mSet].rhs[locus])")
-			RHS = ((M[mSet].Mp[locus]*ycorr)./varE) .+ M[mSet].rhs[locus]	
+			RHS = ((M[mSet].Mp[locus]*ycorr)./varE) .+ getindex(M[mSet].rhs,locus)
 			println("RHS: $RHS")
-			RHS = ((M[mSet].Mp[locus]*ycorr)./varE) .+ view(M[mSet].rhs,locus) 
+			RHS = ((getindex(M[mSet].Mp,locus)*ycorr)./varE) .+ getindex(M[mSet].rhs,locus)
+			println("RHS: $RHS")
 			invLHS::Array{Float64,2} = inv((M[mSet].mpm[locus]./varE) .+ invB)
 			meanBETA::Array{Float64,1} = invLHS*RHS
 			setindex!.(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
