@@ -27,7 +27,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		
         #some info
 	nRand = length(Z)
-	nColEachZ    = OrderedDict(z => size(Z[z],2) for z in keys(Z))
 	nData = length(Y)
 	nMarkerSets = length(M)
         #initial computations and settings
