@@ -383,7 +383,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
         for zSet in keys(Z)
 		IO.outMCMC(outPut,"u$(Z[zSet][:pos])",Z[zSet][:levels])
 		isa(collect(keys(Z))[Z[zSet][:pos]], Symbol) ? nameRE_VCV = String(collect(keys(Z))[Z[zSet][:pos]]) : nameRE_VCV = join(collect(keys(Z))[Z[zSet][:pos]].args)[2:end]
-		IO.outMCMC(outPut,"varU$i",[nameRE_VCV]) #[] to have it as one row
+		IO.outMCMC(outPut,"varU$(Z[zSet][:pos])",[nameRE_VCV]) #[] to have it as one row
 	end	
 		
 	#arbitrary marker names
