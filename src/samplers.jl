@@ -20,7 +20,7 @@ using .functions
 export runSampler!
 
 #main sampler
-function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos4Print,nColEachZ,u,varU,scaleZ,dfZ,M,beta,varBeta,BayesX,rhsZ,chainLength,burnIn,outputFreq,outPut)
+function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,BayesX,chainLength,burnIn,outputFreq,outPut)
 		
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
@@ -38,7 +38,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos
 		end
 	
 		#sample random effects
-	        sampleZandZVar!(iVarStr,Z,Zp,u,zpz,uKeyPos,nColEachZ,ycorr,varE,varU,scaleZ,dfZ)	
+	        sampleZandZVar!(Z,u,ycorr,varE,varU)	
 
 		#sample marker effects and variances
 	
@@ -52,11 +52,19 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos
 			IO.outMCMC(outPut,"b",b') ### currently no path is provided!!!!
 			IO.outMCMC(outPut,"varE",varE)
 			
-			for zSet in keys(uKeyPos4Print)
-                                IO.outMCMC(outPut,"u$(uKeyPos4Print[zSet])",u[uKeyPos4Print[zSet],1:nColEachZ[zSet]]')
+			for zSet in keys(Z)
+				if isa(zSet,Union{Expr,Symbol})
+					IO.outMCMC(outPut,"u$zSet",u[Z[zSet].pos])
+				elseif isa(zSet,Tuple)
+					for p in Z[zSet].pos
+						#zSet2print = zSet[p]
+						IO.outMCMC(outPut,"u$p",beta[p])	
+					end
+				end
                         end
-			for pSet in keys(zpz)
-				IO.outMCMC(outPut,"varU$(uKeyPos[pSet])",varU[pSet]) #join values for multivariate in uKeyPos[pSet])
+
+			for pSet in keys(Z)
+				IO.outMCMC(outPut,"var$(pSet)",hcat(reduce(hcat,varU[pSet])...))
 			end
 			
 
