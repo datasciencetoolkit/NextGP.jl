@@ -23,11 +23,11 @@ runLMEM = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}(
 	
 	folderHandler(outFolder)
 
-	levelsFR,Ainv,iGRel,yVec,X,Z,M = prepMatVec.prep(formula,userData,userHints=myHints,path2ped=userPedData,priorVCV=VCV)
+	yVec,X,Z,M = prepMatVec.prep(formula,userData,userHints=myHints,path2ped=userPedData,priorVCV=VCV)
 
-	ycorr,nData,dfE,scaleE,X,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos4Print,nColEachZ,u,varU,scaleZ,dfZ,M,beta,varBeta,BayesX,rhsZ = mme.getMME!(Ainv,iGRel,yVec,X,Z,M,levelsFR,blockThese,VCV,summaryStat,outFolder)
+	ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,BayesX= mme.getMME!(yVec,X,Z,M,blockThese,VCV,summaryStat,outFolder)
 	
-	samplers.runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,iVarStr,Zp,zpz,uKeyPos,uKeyPos4Print,nColEachZ,u,varU,scaleZ,dfZ,M,beta,varBeta,BayesX,rhsZ,nChain,nBurn,nThin,outFolder)
+	samplers.runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,BayesX,nChain,nBurn,nThin,outFolder)
 	
 end
 
