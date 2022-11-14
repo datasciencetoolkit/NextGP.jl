@@ -225,16 +225,14 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 	#df, shape, scale...															
 	
-	dfZ = Dict{Any,Any}()	
-	for zSet ∈ keys(zpz)
-		dfZ[zSet] = 3.0+size(priorVCV[zSet].v,1)
+	for zSet ∈ keys(Z)
+		Z[zSet][:df] = 3.0+size(priorVCV[zSet].v,1)
 	end
 																
-	scaleZ = Dict{Any,Any}()
-        for zSet in keys(zpz)
+        for zSet in keys(Z)
                 nZComp = size(priorVCV[zSet].v,1)
 		#priorVCV[zSet].v is a temporary solution
-		nZComp > 1 ? scaleZ[zSet] = priorVCV[zSet].v .* (dfZ[zSet]-nZComp-1.0)  : scaleZ[zSet] = priorVCV[zSet].v * (dfZ[zSet]-2.0)/dfZ[zSet] #I make float and array of float														
+		nZComp > 1 ? Z[zSet][:scale] = priorVCV[zSet].v .* (Z[zSet][:df]-nZComp-1.0)  : Z[zSet][:scale] = priorVCV[zSet].v * (Z[zSet][:df]-2.0)/Z[zSet][:df] #I make float and array of float														
         end
 
 
@@ -377,21 +375,15 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 
 	#########make MCMC output files.
-	#not a dictionary anymore, and consistent with possible new order.
-	for (key, value) in X
-		println("valueLevels: $(value[:levels])")
-	end
 	
 	levelsX = hcat([value[:levels] for (key, value) in X]...)
-	println("levelsX: $levelsX")
 			
 	IO.outMCMC(outPut,"b",levelsX)
 	
 	#check for correlated RE
-        for i in 1:length(levelDict[:levelsRE])
-		levRE = hcat(vcat(collect(values(levelDict[:levelsRE]))[i]...)...)
-		IO.outMCMC(outPut,"u$i",levRE)
-		isa(collect(keys(levelDict[:levelsRE]))[i], Symbol) ? nameRE_VCV = String(collect(keys(levelDict[:levelsRE]))[i]) : nameRE_VCV = join(collect(keys(levelDict[:levelsRE]))[i].args)[2:end]
+        for zSet in keys(Z)
+		IO.outMCMC(outPut,"u$(Z[zSet][:pos])",Z[zSet][:levels])
+		isa(collect(keys(Z))[Z[zSet][:pos]], Symbol) ? nameRE_VCV = String(collect(keys(Z))[Z[zSet][:pos]]) : nameRE_VCV = join(collect(keys(Z))[Z[zSet][:pos]].args)[2:end]
 		IO.outMCMC(outPut,"varU$i",[nameRE_VCV]) #[] to have it as one row
 	end	
 		
@@ -410,9 +402,10 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	##########
 	
 	X  = myUnzip(X)
+	Z  = myUnzip(Z)
 	M  = myUnzip(M)	
 	
-	return ycorr, nData, dfE, scaleE, X, b, Z, iVarStr, Zp, zpz, uKeyPos, uKeyPos4Print, nColEachZ, u, varU, scaleZ, dfZ, M,  beta, varBeta, BayesX, rhsZ
+	return ycorr, nData, dfE, scaleE, X, b, Z, u, varU, M,  beta, varBeta, BayesX
 	
 end
 
