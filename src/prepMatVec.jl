@@ -60,11 +60,8 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 
         yVec = StatsModels.modelmatrix(f.lhs, userData)
 	
-
-        RE = OrderedDict{Any,Any}()
-	iGRel = OrderedDict{Any,Any}()
-
 	X = Dict{Any,Any}()
+	Z = Dict{Any,Any}()
 	M = Dict{Any,Any}()
 
         #read pedigree
@@ -106,28 +103,26 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			
 			#str field can only be in GBLUP for marker related analysis
 			if haskey(priorVCV,arg1) && in(:str,fieldnames(typeof(priorVCV[arg1])))
-				RE[arg1] = Matrix(1.0*I,size(thisM,1),size(thisM,1))
-				iGRel[arg1] = inv(makeG(thisM;method=priorVCV[arg1].type))
-				push!(summarize,[arg1,"GBLUP",typeof(RE[arg1]),size(RE[arg1],2)])
+				iGRel = inv(makeG(thisM;method=priorVCV[arg1].type))
+				push!(summarize,[arg1,"GBLUP",typeof(iGRel),size(iGRel,2)])
+				Z[arg1] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>arg3[1],:method=>"GBLUP",:str=>iGRel,:dims=>size(iGRel),:levels=>["Ind$i" for i in 1:size(thisM,2)]) 	
+		
 			else
-
 				thisM .-= mean(thisM,dims=1) 
 				push!(summarize,[arg1,"SNP",typeof(thisM),size(thisM,2)])
-				iGRel[arg1] = [] ###temp
+				iGRel = [] ###temp
+				M[arg1] = Dict(:data=>thisM,:map=>arg3[1],:method=>"SNP",:str=>iGRel,:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 			
+				push!(summarize,[arg1,"Marker Effect",typeof(thisM),size(thisM,2)])
 			end
-
-			M[arg1] = Dict(:data=>thisM,:map=>arg3[1],:method=>"BayesPR",:str=>iGRel,:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 
-#			M = Base.setindex(M,(:data=>thisM,:map=>arg3[1],:method=>"BayesPR",:str=>iGRel,:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]),arg1)
-			
 			thisM = 0
 
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
                         arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
 			IDs,thisZ = ranMat(arg, :ID, userData, pedigree)
-			RE[arg] = thisZ
+			ids = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
+			Z[arg1] = Dict(:data=>thisZ,:method=>"BLUP",:str=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
 			thisZ = 0
-			idRE[arg] = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
-			push!(summarize,[arg,"PED",typeof(RE[arg]),size(RE[arg],2)])
+			push!(summarize,[arg,"PED",typeof(thisZ),size(thisZ,2)])
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         my_sch = schema(userData, userHints) #work on userData and userHints
 			
@@ -137,11 +132,11 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
                         arg2 = Symbol(repr((f.rhs[i].args_parsed)[2]))
 			arg = Meta.parse(join([arg1,arg2]," | "))
                        	thisZ = modelcols(my_ApplySch, userData)
-			RE[arg] = thisZ
+			ids = unique(userData[!,arg2])
+			strI = Matrix(1.0*I,size(thisZ,1),size(thisZ,1))
+			Z[arg] = Dict(:data=>thisZ,:method=>"|",:str=>strI,:dims=>size(strI),:levels=>ids) 	
 			thisZ = 0
-			idRE[arg] = unique(userData[!,arg2])
-			push!(summarize,[arg,"|",typeof(RE[arg]),size(RE[arg],2)])
-
+			push!(summarize,[arg,"|",typeof(thisZ),size(thisZ,2)])
                 else
 			my_sch = schema(userData, userHints)
 			my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
@@ -162,7 +157,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	idFR = OrderedDict(:levelsRE => idRE)
 
 
-        return idFR, Ainv, iGRel, vec(yVec), X, RE, M
+        return vec(yVec), X, Z, M
 end
 
 end
