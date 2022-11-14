@@ -397,7 +397,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 		println("valueLevels: $(value[:levels])")
 	end
 	
-	levelsX = hcat(vcat([value[:levels] for (key, value) in X]...)...)
+	levelsX = hcat([value[:levels] for (key, value) in X]...)
 	println("levelsX: $levelsX")
 			
 	IO.outMCMC(outPut,"b",levelsX)
