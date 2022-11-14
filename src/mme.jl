@@ -346,7 +346,7 @@ function getMME!(iA,iGRel,Y,X,Z,M,levelDict,blocks,priorVCV,summaryStat,outPut)
 
 	varU = deepcopy(varU_prior) #for storage
 
-	varBeta = Dict{Symbol,Any}()
+	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
         for mSet in keys(M)
                 varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nRegions]] #later, direct reference to key when varM_prior is a dictionary
         end
