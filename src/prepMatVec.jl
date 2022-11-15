@@ -132,7 +132,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			arg = Meta.parse(join([arg1,arg2]," | "))
                        	thisZ = modelcols(my_ApplySch, userData)
 			ids = unique(userData[!,arg2])
-			strI = Matrix(1.0*I,size(thisZ,1),size(thisZ,1))
+			strI = Matrix(1.0*I,size(thisZ,2),size(thisZ,2))
 			Z[arg] = Dict(:data=>thisZ,:method=>"|",:str=>"I",:iVarStr=>strI,:dims=>size(strI),:levels=>ids) 	
 			thisZ = 0
 			push!(summarize,[arg,"|",typeof(thisZ),size(thisZ,2)])
