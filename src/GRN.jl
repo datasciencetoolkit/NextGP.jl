@@ -1,5 +1,11 @@
 module GRN
 
+using StatsBase
+using LinearAlgebra
+using Distributions
+using CSV
+using DelimitedFiles
+
 export estGRN_MHGibbs
 
 #===
