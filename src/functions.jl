@@ -36,7 +36,7 @@ end
 #sample random effects
 function sampleU(zSet::Union{Expr,Symbol},Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
-	λz = varE/varU[:zSet]
+	λz = varE/varU[zSet]
 	Yi = Z[zSet].Zp*ycorr #computation of Z'ycorr for ALL  rhsU
 	nCol = length(uVec)
 	for i in 1:nCol
@@ -54,7 +54,7 @@ end
 
 function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
-	λz = varE ./ varU[:zSet]
+	λz = varE ./ varU[zSet]
 	Yi = Z[zSet].Zp .* ycorr #computation of Z'ycorr for ALL  rhsU
 	nCol = length(uVec[1])
 	for i in 1:nCol
