@@ -78,9 +78,9 @@ function sampleZandZVar!(Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,
 			ycorr .-= Z[mSet].data*u[Z[zSet].pos]
                         varU[zSet] = sampleVarCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
 		elseif isa(zSet,Symbol) || isa(zSet,Expr)
-			ycorr .+= Z[zSet].data*u[Z[zSet].pos[]]
+			ycorr .+= Z[zSet].data*u[Z[zSet].pos']
                 	u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
-			ycorr .-= Z[zSet].data*u[Z[zSet].pos[]]		
+			ycorr .-= Z[zSet].data*u[Z[zSet].pos']		
 			varU[zSet] = sampleVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
        		end
 		
