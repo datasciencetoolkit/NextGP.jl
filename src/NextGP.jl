@@ -25,6 +25,7 @@ include("runTime.jl")
 include("MCMC.jl")
 include("misc.jl")
 include("outFiles.jl")
+include("GRN.jl")
 
 using .MCMC
 export runLMEM
