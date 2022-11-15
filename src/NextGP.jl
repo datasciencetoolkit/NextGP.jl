@@ -7,7 +7,6 @@ export BayesPR
 export Random
 export BayesPRType
 export SummaryStatistics
-export estGRN_MHGibbs 
 
 
 #
@@ -33,6 +32,8 @@ using .IO
 export summaryMCMC
 using .prepMatVec
 export prep
+using .GRN
+export estGRN_MHGibbs 
 
 
 end
