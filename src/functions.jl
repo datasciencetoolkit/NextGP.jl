@@ -34,56 +34,54 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 end
 
 #sample random effects
-function sampleU(zSet::Union{Expr,Symbol},iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
-	uVec = deepcopy(uVector)
-	λz = varE/varUComp
-	Yi = ZpComp*ycorr #computation of Z'ycorr for ALL  rhsU
-	nCol = length(zpzComp)
+function sampleU(zSet::Union{Expr,Symbol},varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
+	uVec = deepcopy(u[Z[zSet].pos])
+	λz = varE/varU[:zSet]
+	Yi = Z[zSet].Zp*ycorr #computation of Z'ycorr for ALL  rhsU
+	nCol = length(uVec)
 	for i in 1:nCol
         	uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
-		rhsU = Yi[i] - λz*dot(iMat[:,i],uVec)
-                lhsU = zpzComp[i] + (iMat[i,i]*λz)[1]
+		rhsU = Yi[i] - λz*dot(view(Z[zSet].iVarStr,:,i),uVec)
+                lhsU = getindex(Z[zSet].zpz,i) + (view(Z[zSet].iVarStr,i,i)*λz)[1]
 		invLhsU = 1.0/lhsU
                 meanU = invLhsU*rhsU
-                uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
+#                uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
+		uVec[i] = rand(Normal(meanU,sqrt(invLhsU)))
         end
 	return uVec
 end
 
 
-#sample random effects
-function sampleU(zSet::Tuple,iMat,pos,ZComp,ZpComp,zpzComp,varE,varUComp,uVector,ycorr)
-        uVec = deepcopy(uVector)
-        λz = varE./varUComp
-        Yi = ZpComp*ycorr #computation of Z'ycorr for ALL  rhsU
-        nCol = length(zpzComp)
+function sampleU(zSet::Tuple,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
+	uVec = deepcopy(u[Z[zSet].pos])
+	λz = varE ./ varU[:zSet]
+	Yi = Z[zSet].Zp .* ycorr #computation of Z'ycorr for ALL  rhsU
+	nCol = length(uVec[1])
 	for i in 1:nCol
-                uVec[:,i] .= 0.0 #also excludes individual from iMat! Nice trick.
-                rhsU = Yi[:,i] .- λz*dot(iMat[:,i],uVec)
-                lhsU = zpzComp[i] + (iMat[i,i]*λz)[1]
-                invLhsU = inv(lhsU)
+		setindex!.(uVec[Z[zSet].pos],[0;0],i)
+		rhsU = Yi[i] .- λz*vcat(uVec...)*(view(Z[zSet].iVarStr,:,i)
+                lhsU = getindex(Z[zSet].zpz,i) .+ (view(Z[zSet].iVarStr,i,i).*λz)[1]
+		invLhsU = inv(lhsU)
                 meanU = invLhsU*rhsU
-                uVec[:,i] = rand(MvNormal(meanU,invLhsU*varE))
+		setindex!.(uVec[Z[zSet].pos],rand(MvNormal(meanU,invLhsU)),i)
         end
-        return uVec
+	return uVec
 end
 
 
-function sampleZandZVar!(iStrMat,ZMat,ZpMat,u,zpzMat,keyU,nCols,ycorr,varE,varU,scaleZ,dfZ)
+function sampleZandZVar!(Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
         #for each random effect
-        for zSet in keys(zpzMat)
+        for zSet in keys(Z)
 		if isa(zSet,Tuple)
-			uPos = keyU[zSet]
-			ycorr .+= ZMat[zSet]*u[uPos,1:nCols[zSet]]
-			u[uPos,1:nCols[zSet]]  .= sampleU(zSet,iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,1:nCols[zSet]],ycorr)
-			ycorr .-= ZMat[zSet]*u[uPos,1:nCols[zSet]]
-                        varU[zSet] = sampleVarCoVarU(iStrMat[zSet],scaleZ[zSet],dfZ[zSet],u[uPos,1:nCols[zSet]])
+			ycorr .+= Z[mSet].data*u[Z[zSet].pos]
+			u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
+			ycorr .-= Z[mSet].data*u[Z[zSet].pos]
+                        varU[zSet] = sampleVarCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
 		elseif isa(zSet,Symbol) || isa(zSet,Expr)
-                	uPos = keyU[zSet]
-			ycorr .+= ZMat[zSet]*u[uPos,1:nCols[zSet]]
-                	u[uPos,1:nCols[zSet]]  .= sampleU(zSet,iStrMat[zSet],uPos,ZMat[zSet],ZpMat[zSet],zpzMat[zSet],varE,varU[zSet],u[uPos,1:nCols[zSet]],ycorr)
-			ycorr .-= ZMat[zSet]*u[uPos,1:nCols[zSet]]		
-			varU[zSet] = sampleVarU(iStrMat[zSet],scaleZ[zSet],dfZ[zSet],u[uPos,1:nCols[zSet]])
+			ycorr .+= Z[zSet].data*u[Z[zSet].pos]
+                	u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
+			ycorr .-= Z[zSet].data*u[Z[zSet].pos]		
+			varU[zSet] = sampleVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
        		end
 		
 	 end
