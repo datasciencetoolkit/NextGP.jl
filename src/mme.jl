@@ -153,7 +153,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
                                 summaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsZ[pSet] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                         end
 			Z[pSet][:Zp]  = transpose(Z[pSet][:data])
-			u = push!(u,zeros(Float64,1,Z[pSet][:dims][2]))
+			u = push!(u,zeros(Float64,1,size(Z[pSet][:data],2)))
 		#tuple of symbols (:ID,:Dam)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(Z)))) #if all elements are available # all([pSet .in Ref(keys(Z))])
 			Z[pSet] = Dict{Symbol, Any}()
@@ -162,7 +162,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), pSet),:data))...)
 			Z[pSet][:data] = tempZ
 			for d in corEffects
-				u = push!(u,zeros(Float64,1,Z[d][:dims][2]))
+				u = push!(u,zeros(Float64,1,size(Z[d][:data],2)))
                        		delete!(Z,d)
                		end
 			Z[pSet][:zpz] = MatByMat.(tempZ)
