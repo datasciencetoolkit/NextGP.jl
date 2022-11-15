@@ -63,8 +63,8 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,BayesX,c
 				end
                         end
 
-			for pSet in keys(Z)
-				IO.outMCMC(outPut,"varU$(Z[zSet].pos)",hcat(reduce(hcat,varU[pSet])...))
+			for zSet in keys(Z)
+				IO.outMCMC(outPut,"varU$(Z[zSet].pos)",hcat(reduce(hcat,varU[zSet])...))
 			end
 			
 
