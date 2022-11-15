@@ -45,8 +45,7 @@ function sampleU(zSet::Union{Expr,Symbol},Z::Dict,varE::Float64,varU::Dict,u::Ve
                 lhsU = getindex(Z[zSet].zpz,i) + (view(Z[zSet].iVarStr,i,i)*λz)[1]
 		invLhsU = 1.0/lhsU
                 meanU = invLhsU*rhsU
-#                uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
-		uVec[i] = rand(Normal(meanU,sqrt(invLhsU)))
+                uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
         end
 	return uVec
 end
@@ -63,7 +62,7 @@ function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{
                 lhsU = getindex(Z[zSet].zpz,i) .+ (view(Z[zSet].iVarStr,i,i).*λz)[1]
 		invLhsU = inv(lhsU)
                 meanU = invLhsU*rhsU
-		setindex!.(uVec[Z[zSet].pos],rand(MvNormal(meanU,invLhsU)),i)
+		setindex!.(uVec[Z[zSet].pos],rand(MvNormal(meanU,invLhsU.*varE)),i)
         end
 	return uVec
 end
