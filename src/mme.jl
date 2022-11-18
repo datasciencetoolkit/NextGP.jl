@@ -171,7 +171,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				# push!(tempzpz,BLAS.dot(c,c))
 			end						
 			Z[zSet][:zpz] = tempzpz
-			println("$zSet size: $(size(Z[zSet][:data],2))")
 			Z[zSet][:rhs] = zeros(size(Z[zSet][:data],2))
                         if zSet in keys(summaryStat)
                                 summaryStat[zSet].v == Array{Float64,1} ? zpz[zSet] .+= inv.(summaryStat[zSet].v) : zpz[zSet] .+= inv.(diag(summaryStat[zSet].v))
@@ -182,7 +181,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		#tuple of symbols (:ID,:Dam)
 		elseif (isa(zSet,Tuple{Vararg{Symbol}})) && all((in).(zSet,Ref(keys(Z)))) #if all elements are available # all([zSet .in Ref(keys(Z))])
 			Z[zSet] = Dict{Symbol, Any}()
-			Z[zSet][:pos] = vcat(getindex.(getindex.(Ref(Z), zSet),:pos)...)	
+			Z[zSet][:pos] = vcat(getindex.(getindex.(Ref(Z), zSet),:pos)...)
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
 			Z[zSet][:data] = tempZ
@@ -190,9 +189,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			Z[zSet][:str] = Z[zSet[1]][:str] 
 			for d in zSet
 				u = push!(u,zeros(Float64,1,size(Z[d][:data],2)))
-				println("$zSet size: $(size(Z[d][:data],2))")
                        		delete!(Z,d)
                		end
+			println("pos $zSet: $(getindex.(Ref(Z),:pos))")			
 			Z[zSet][:zpz] = MatByMat.(tempZ)
 			#lhs is already zero as only mpm + "nothing" is  given
 			#rhs is for now only for convenience
@@ -206,7 +205,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			tempZ = 0
 		end
 	end
-
+				
+	println("$(size.(u))")
 
 	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
 		printstyled("No prior was provided for $pSet, but it was not included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
