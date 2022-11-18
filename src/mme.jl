@@ -185,9 +185,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			u = push!(u,zeros(Float64,1,size(Z[zSet][:data],2)))
 		#tuple of symbols (:ID,:Dam)
 		elseif (isa(zSet,Tuple{Vararg{Symbol}})) && all((in).(zSet,Ref(keys(Z)))) #if all elements are available # all([zSet .in Ref(keys(Z))])
+			Z[zSet] = Dict{Symbol, Any}()
 			Z[zSet][:pos] = collect((posZcounter+1):(posZcounter+length(zSet)))
 			posZcounter += length(zSet)
-			Z[zSet] = Dict{Symbol, Any}()
 			Z[zSet][:pos] = vcat(getindex.(getindex.(Ref(Z), zSet),:pos)...)
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
@@ -219,6 +219,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	println("$(size.(u))")
 
 	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
+		posZcounter += 1
+		Z[zSet][:pos] = posZcounter
 		printstyled("No prior was provided for $pSet, but it was not included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
 		tempzpz = []
 		nowZ = Z[zSet][:data]
@@ -258,18 +260,20 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	############priorVCV cannot be empty for markers, currently!!																	
 
 	#key positions for each effect in beta, for speed. Order of matrices in M are preserved here.
-        for mSet in keys(M)
-                pos = findall(mSet.==collect(keys(M)))[]
-                M[mSet][:pos] = pos
-        end
+#        for mSet in keys(M)
+#                pos = findall(mSet.==collect(keys(M)))[]
+#                M[mSet][:pos] = pos
+#        end
 
 	beta = []
 
 	#make mpm
-										
+	posMcounter = 0
 	for pSet in keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
 		#symbol :M1 or expression
 		if isa(pSet,Symbol) && in(pSet,keys(M))
+			posMcounter += 1
+			M[pSet][:pos] = posMcounter
 			tempmpm = []
 			nowM = M[pSet][:data]
 			for c in eachcol(nowM)
@@ -289,6 +293,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
 			M[pSet] = Dict{Symbol, Any}()
+			M[pSet][:pos] = collect((posMcounter+1):(posMcounter+length(pSet)))
+			posMcounter += length(pSet)
 			maps = getindex.(getindex.(Ref(M),pSet),:map)
 			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[pSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
 			M[pSet][:pos] = vcat(getindex.(getindex.(Ref(M), pSet),:pos)...)
@@ -316,6 +322,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	end
 	
 	for pSet in collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]
+		posMcounter += 1
+		M[pSet][:pos] = posMcounter
 		printstyled("No prior was provided for $pSet, but it was included in the data. It will be made uncorrelated with default priors and region size 9999 (WG)\n"; color = :green)		
 		tempmpm = []
 		nowM = M[pSet][:data]
