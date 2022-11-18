@@ -57,9 +57,12 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,BayesX,c
 				if isa(zSet,Union{Expr,Symbol})
 					IO.outMCMC(outPut,"u$(Z[zSet].pos)",u[Z[zSet].pos])
 				elseif isa(zSet,Tuple)
-					for p in Z[zSet].pos
+					pCounter = 1
+					for p in zSet
 						#zSet2print = zSet[p]
-						IO.outMCMC(outPut,"u$p",u[p])	
+						println("printing $p to $(Z[zSet].pos) and $pCounter")
+						IO.outMCMC(outPut,"u$(String(p))",u[Z[zSet].pos][pCounter])
+						pCounter += 1
 					end
 				end
                         end
