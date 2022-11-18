@@ -194,7 +194,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			#lhs is already zero as only mpm + "nothing" is  given
 			#rhs is for now only for convenience
 			Z[zSet][:rhs] = [zeros(length(zSet)) for i in 1:length(Z[zSet][:levels])]
-			if pSet in keys(summaryStat)
+			if zSet in keys(summaryStat)
 				error("Not available to use summary statistics in correlated effects")
                         	#SummaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(SummaryStat[pSet].v) : zpz[pSet] += inv.(diag(SummaryStat[pSet].v))
                         	#SummaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(SummaryStat[pSet].v) .* (SummaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(SummaryStat[pSet].v)) .* (SummaryStat[pSet].m)
