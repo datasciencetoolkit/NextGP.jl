@@ -186,16 +186,18 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		#tuple of symbols (:ID,:Dam)
 		elseif (isa(zSet,Tuple{Vararg{Symbol}})) && all((in).(zSet,Ref(keys(Z)))) #if all elements are available # all([zSet .in Ref(keys(Z))])
 			Z[zSet] = Dict{Symbol, Any}()
-			Z[zSet][:pos] = collect((posZcounter+1):(posZcounter+length(zSet)))
-			posZcounter += length(zSet)
-#			Z[zSet][:pos] = vcat(getindex.(getindex.(Ref(Z), zSet),:pos)...)
+			posZcounter += 1
+			Z[zSet][:pos] = posZcounter
+			u = push!(u,zeros(Float64,length(zSet),size(Z[d][:data],2)))
+#			Z[zSet][:pos] = collect((posZcounter+1):(posZcounter+length(zSet)))
+#			posZcounter += length(zSet)
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
 			Z[zSet][:data] = tempZ
 			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 			Z[zSet][:str] = Z[zSet[1]][:str] 
 			for d in zSet
-				u = push!(u,zeros(Float64,1,size(Z[d][:data],2)))
+#				u = push!(u,zeros(Float64,1,size(Z[d][:data],2)))
                        		delete!(Z,d)
                		end
 			Z[zSet][:zpz] = MatByMat.(tempZ)
@@ -404,20 +406,22 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
         for zSet in keys(Z)
 		if isa(zSet, Symbol)
 			println("$zSet is a Symbol")
-			IO.outMCMC(outPut,"u$(Z[zSet][:pos])",[Z[zSet][:levels]])
 			nameRE_VCV = String(zSet)
+			IO.outMCMC(outPut,"u$(Z[zSet][:pos])",[Z[zSet][:levels]])
+			IO.outMCMC(outPut,"varU$(Z[zSet][:pos])",[nameRE_VCV]) #[] to have it as one row
 		elseif isa(zSet, Expr)
 			println("$zSet is an Expr")
-			IO.outMCMC(outPut,"u$(Z[zSet][:pos])",[Z[zSet][:levels]])
 			nameRE_VCV = join(zSet.args)[2:end]
+			IO.outMCMC(outPut,"u$(Z[zSet][:pos])",[Z[zSet][:levels]])
+			IO.outMCMC(outPut,"varU$(Z[zSet][:pos])",[nameRE_VCV]) #[] to have it as one row
 		elseif isa(zSet, Tuple)
 			println("$zSet is a Tuple")
-			for z in zSet
-   				IO.outMCMC(outPut,"u$(Z[zSet][:pos])",[Z[zSet][:levels]])
-			end
 			nameRE_VCV =  join(String.(vcat(zSet...)),"_").*hcat(["_$i" for i in 1:(length(zSet)^2)]...)
+			for z in zSet
+   				IO.outMCMC(outPut,"u$(String(z))",[Z[zSet][:levels]])
+				IO.outMCMC(outPut,"varU$(String(z))",[nameRE_VCV]) #[] to have it as one row
+			end
 		end
-		IO.outMCMC(outPut,"varU$(Z[zSet][:pos])",[nameRE_VCV]) #[] to have it as one row
 	end	
 		
 	#arbitrary marker names
