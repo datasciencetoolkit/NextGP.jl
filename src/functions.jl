@@ -57,6 +57,11 @@ function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{
 	Yi = Z[zSet].Zp .* ycorr #computation of Z'ycorr for ALL  rhsU
 	nCol = length(uVec[1])
 	for i in 1:nCol
+		println("size Yi: $(size(Yi[i]))")
+		println("size vcatUvec: $(size(vcat(uVec...)))")
+		println("size iVar[i]: $(view(Z[zSet].iVarStr,:,i))")
+		println("size varU: $(varU[zSet])")
+
 		setindex!.(uVec[Z[zSet].pos],[0;0],i)
 		rhsU = Yi[i] .- λz*vcat(uVec...)*(view(Z[zSet].iVarStr,:,i))
                 lhsU = getindex(Z[zSet].zpz,i) .+ (view(Z[zSet].iVarStr,i,i).*λz)[1]
