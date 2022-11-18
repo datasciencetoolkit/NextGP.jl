@@ -151,19 +151,23 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	
 	#key positions for each effect in u, for speed. Order of matrices in Z are preserved here.
 					
-        for zSet in keys(Z)
-		pos = findall(x->x==zSet, collect(keys(Z)))[]
-                Z[zSet][:pos] = pos
-		println("$zSet : $pos")
-        end
+#        for zSet in keys(Z)
+#		pos = findall(x->x==zSet, collect(keys(Z)))[]
+#                Z[zSet][:pos] = pos
+#		println("$zSet : $pos")
+#        end
 	
 	u = []
 	varU_prior = Dict{Any,Any}()
+
 	#matrices are ready
-									
-	for zSet in keys(Z) 
+	
+	posZcounter = 0
+	for zSet in keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
 		#symbol :ID or expression :(1|ID)
 		if (isa(zSet,Symbol) || isa(zSet,Expr)) && in(zSet,keys(Z))
+			posZcounter += 1
+			Z[zSet][:pos] = posZcounter
 			tempzpz = []
 			nowZ = Z[zSet][:data]
 			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
@@ -181,6 +185,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			u = push!(u,zeros(Float64,1,size(Z[zSet][:data],2)))
 		#tuple of symbols (:ID,:Dam)
 		elseif (isa(zSet,Tuple{Vararg{Symbol}})) && all((in).(zSet,Ref(keys(Z)))) #if all elements are available # all([zSet .in Ref(keys(Z))])
+			Z[zSet][:pos] = collect((posZcounter+1):(posZcounter+length(zSet)))
+			posZcounter += length(zSet)
 			Z[zSet] = Dict{Symbol, Any}()
 			Z[zSet][:pos] = vcat(getindex.(getindex.(Ref(Z), zSet),:pos)...)
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
@@ -260,8 +266,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	beta = []
 
 	#make mpm
-	
-	for pSet in keys(M)
+										
+	for pSet in keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
 		#symbol :M1 or expression
 		if isa(pSet,Symbol) && in(pSet,keys(M))
 			tempmpm = []
