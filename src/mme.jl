@@ -161,7 +161,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			Z[pSet][:levels] = first(getindex.(getindex.(Ref(Z),pSet),:levels))
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), pSet),:data))...)
 			Z[pSet][:data] = tempZ
-			for d in corEffects
+			for d in pSet
 				u = push!(u,zeros(Float64,1,size(Z[d][:data],2)))
                        		delete!(Z,d)
                		end
