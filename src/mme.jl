@@ -382,15 +382,19 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	
 	#check for correlated RE
         for zSet in keys(Z)
-		IO.outMCMC(outPut,"u$(Z[zSet][:pos])",[Z[zSet][:levels]])
 		if isa(zSet, Symbol)
 			println("$zSet is a Symbol")
+			IO.outMCMC(outPut,"u$(Z[zSet][:pos])",[Z[zSet][:levels]])
 			nameRE_VCV = String(zSet)
 		elseif isa(zSet, Expr)
 			println("$zSet is an Expr")
+			IO.outMCMC(outPut,"u$(Z[zSet][:pos])",[Z[zSet][:levels]])
 			nameRE_VCV = join(zSet.args)[2:end]
 		elseif isa(zSet, Tuple)
 			println("$zSet is a Tuple")
+			for z in zSet
+   				IO.outMCMC(outPut,"u$(Z[zSet][:pos])",[Z[zSet][:levels]])
+			end
 			nameRE_VCV =  join(String.(vcat(zSet...)),"_").*hcat(["_$i" for i in 1:(length(zSet)^2)]...)
 		end
 		IO.outMCMC(outPut,"varU$(Z[zSet][:pos])",[nameRE_VCV]) #[] to have it as one row
@@ -398,7 +402,11 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		
 	#arbitrary marker names
 	for mSet in keys(M)
-   		IO.outMCMC(outPut,"beta$mSet",hcat(M[mSet][:levels]...))
+		if isa(mSet,Tuple)
+			for m in mSet
+   				IO.outMCMC(outPut,"beta$m",hcat(M[mSet][:levels]...))
+			end
+		end
         end
 	
 	for mSet in keys(varBeta)
