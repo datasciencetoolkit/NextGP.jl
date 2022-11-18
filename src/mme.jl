@@ -197,7 +197,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	end
 																		
 	##get priors per effect
-	##some part already in prepMatVec								
 	varU_prior = Dict{Any,Any}()
         for zSet in keys(Z)
 		#var structures and priors
