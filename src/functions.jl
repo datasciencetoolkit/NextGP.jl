@@ -69,7 +69,6 @@ end
 
 
 function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
-	println("$zSet Union")
         #for each random effect
 	ycorr .+= Z[zSet].data*u[Z[zSet].pos]'
         u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
@@ -78,7 +77,6 @@ function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float
 end
 
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
-	println("$zSet Tuple")
         #for each random effect
 	ycorr .+= Z[mSet].data*u[Z[zSet].pos]
 	u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
