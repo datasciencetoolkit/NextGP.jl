@@ -169,7 +169,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			for c in eachcol(nowZ)
 				push!(tempzpz,c'c)					
 				# push!(tempzpz,BLAS.dot(c,c))
-			end						
+			end
+			println("pos $zSet: $(getindex.(getindex.(Ref(Z),zSet),:pos))")			
 			Z[zSet][:zpz] = tempzpz
 			Z[zSet][:rhs] = zeros(size(Z[zSet][:data],2))
                         if zSet in keys(summaryStat)
@@ -191,7 +192,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				u = push!(u,zeros(Float64,1,size(Z[d][:data],2)))
                        		delete!(Z,d)
                		end
-			println("pos $zSet: $(getindex.(Ref(Z),:pos))")			
+			println("pos $zSet: $(getindex.(getindex.(Ref(Z),zSet),:pos))")			
 			Z[zSet][:zpz] = MatByMat.(tempZ)
 			#lhs is already zero as only mpm + "nothing" is  given
 			#rhs is for now only for convenience
