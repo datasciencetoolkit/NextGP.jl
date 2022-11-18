@@ -137,66 +137,69 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	varU_prior = Dict{Any,Any}()
 	#matrices are ready
 									
-	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV) 
+	for zSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV) 
 		#symbol :ID or expression :(1|ID)
-		if (isa(pSet,Symbol) || isa(pSet,Expr)) && in(pSet,keys(Z))
+		if (isa(zSet,Symbol) || isa(zSet,Expr)) && in(zSet,keys(Z))
 			tempzpz = []
-			nowZ = Z[pSet][:data]
+			nowZ = Z[zSet][:data]
+			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 			for c in eachcol(nowZ)
 				push!(tempzpz,c'c)					
 				# push!(tempzpz,BLAS.dot(c,c))
 			end						
-			Z[pSet][:zpz] = tempzpz
-			Z[pSet][:rhs] = zeros(size(Z[pSet][:data],2))
+			Z[zSet][:zpz] = tempzpz
+			Z[zSet][:rhs] = zeros(size(Z[zSet][:data],2))
                         if pSet in keys(summaryStat)
-                                summaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] .+= inv.(summaryStat[pSet].v) : zpz[pSet] .+= inv.(diag(summaryStat[pSet].v))
-                                summaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsZ[pSet] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+                                summaryStat[zSet].v == Array{Float64,1} ? zpz[zSet] .+= inv.(summaryStat[zSet].v) : zpz[zSet] .+= inv.(diag(summaryStat[zSet].v))
+                                summaryStat[zSet].v == Array{Float64,1} ? rhsZ[zSet] .= inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : rhsZ[zSet] .= inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
                         end
-			Z[pSet][:Zp]  = transpose(Z[pSet][:data])
-			u = push!(u,zeros(Float64,1,size(Z[pSet][:data],2)))
+			Z[zSet][:Zp]  = transpose(Z[zSet][:data])
+			u = push!(u,zeros(Float64,1,size(Z[zSet][:data],2)))
 		#tuple of symbols (:ID,:Dam)
-		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(Z)))) #if all elements are available # all([pSet .in Ref(keys(Z))])
-			Z[pSet] = Dict{Symbol, Any}()
-			Z[pSet][:pos] = vcat(getindex.(getindex.(Ref(Z), pSet),:pos)...)	
-			Z[pSet][:levels] = first(getindex.(getindex.(Ref(Z),pSet),:levels))
-			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), pSet),:data))...)
-			Z[pSet][:data] = tempZ
-			for d in pSet
+		elseif (isa(zSet,Tuple{Vararg{Symbol}})) && all((in).(zSet,Ref(keys(Z)))) #if all elements are available # all([zSet .in Ref(keys(Z))])
+			Z[zSet] = Dict{Symbol, Any}()
+			Z[zSet][:pos] = vcat(getindex.(getindex.(Ref(Z), zSet),:pos)...)	
+			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
+			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
+			Z[zSet][:data] = tempZ
+			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
+			for d in zSet
 				u = push!(u,zeros(Float64,1,size(Z[d][:data],2)))
                        		delete!(Z,d)
                		end
-			Z[pSet][:zpz] = MatByMat.(tempZ)
+			Z[zSet][:zpz] = MatByMat.(tempZ)
 			#lhs is already zero as only mpm + "nothing" is  given
 			#rhs is for now only for convenience
-			Z[pSet][:rhs] = [zeros(length(pSet)) for i in 1:length(Z[pSet][:levels])]
+			Z[zSet][:rhs] = [zeros(length(zSet)) for i in 1:length(Z[zSet][:levels])]
 			if pSet in keys(summaryStat)
 				error("Not available to use summary statistics in correlated effects")
                         	#SummaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(SummaryStat[pSet].v) : zpz[pSet] += inv.(diag(SummaryStat[pSet].v))
                         	#SummaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(SummaryStat[pSet].v) .* (SummaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(SummaryStat[pSet].v)) .* (SummaryStat[pSet].m)
                 	end
-			Z[pSet][:Zp]  = transpose.(tempZ)
+			Z[zSet][:Zp]  = transpose.(tempZ)
 			tempZ = 0
 		end
 	end
 
 
-	for pSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
+	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
 		printstyled("No prior was provided for $pSet, but it was not included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
 		tempzpz = []
-		nowZ = Z[pSet][:data]
+		nowZ = Z[zSet][:data]
 		for c in eachcol(nowZ)
 			push!(tempzpz,c'c)					
 		end
-		Z[pSet][:Zp]  = transpose(Z[pSet])						
-		Z[pSet][:zpz] = tempzpz
-		Z[pSet][:rhs] = zeros(size(Z[pSet][:dims],2))
-		if pSet in keys(summaryStat)
-                	summaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] .+= inv.(summaryStat[pSet].v) : zpz[pSet] .+= inv.(diag(summaryStat[pSet].v))
-                        summaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : rhsZ[pSet] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+		Z[zSet][:Zp]  = transpose(Z[zSet])						
+		Z[zSet][:zpz] = tempzpz
+		Z[zSet][:rhs] = zeros(size(Z[zSet][:dims],2))
+		if zSet in keys(summaryStat)
+                	summaryStat[zSet].v == Array{Float64,1} ? zpz[zSet] .+= inv.(summaryStat[zSet].v) : zpz[zSet] .+= inv.(diag(summaryStat[zSet].v))
+                        summaryStat[zSet].v == Array{Float64,1} ? rhsZ[zSet] .= inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : rhsZ[zSet] .= inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
                 end
+		setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 	end
 																		
-function setVarCovStr(zSet::ExprOrSymbol,Z::Dict,priorVCV)
+function setVarCovStr!(zSet::ExprOrSymbol,Z::Dict,priorVCV)
 	if haskey(priorVCV,zSet)	
 		if ismissing(priorVCV[zSet].str) || priorVCV[zSet].str=="I" 
 			printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
