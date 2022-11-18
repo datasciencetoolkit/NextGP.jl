@@ -78,9 +78,9 @@ end
 
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
         #for each random effect
-	ycorr .+= Z[mSet].data*u[Z[zSet].pos]
+	ycorr .+= Z[zSet].data*u[Z[zSet].pos]
 	u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
-	ycorr .-= Z[mSet].data*u[Z[zSet].pos]
+	ycorr .-= Z[zSet].data*u[Z[zSet].pos]
         varU[zSet] = sampleVarCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
 end
 
