@@ -47,8 +47,6 @@ end
 
 #main sampler
 function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
-	
-	println("dims: $(getindex.(Ref(Z),:dims))")
 		
         #some info
 	nRand = length(Z)
@@ -173,6 +171,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				# push!(tempzpz,BLAS.dot(c,c))
 			end						
 			Z[zSet][:zpz] = tempzpz
+			println("$zSet size: $(size(Z[zSet][:data],2))")
 			Z[zSet][:rhs] = zeros(size(Z[zSet][:data],2))
                         if zSet in keys(summaryStat)
                                 summaryStat[zSet].v == Array{Float64,1} ? zpz[zSet] .+= inv.(summaryStat[zSet].v) : zpz[zSet] .+= inv.(diag(summaryStat[zSet].v))
@@ -191,6 +190,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			Z[zSet][:str] = Z[zSet[1]][:str] 
 			for d in zSet
 				u = push!(u,zeros(Float64,1,size(Z[d][:data],2)))
+				println("$zSet size: $(size(Z[d][:data],2))")
                        		delete!(Z,d)
                		end
 			Z[zSet][:zpz] = MatByMat.(tempZ)
