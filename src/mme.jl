@@ -391,7 +391,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			nameRE_VCV = join(zSet.args)[2:end]
 		elseif isa(zSet, Tuple)
 			println("$zSet is a Tuple")
-			nameRE_VCV =  join(String.(vcat(zSet)),"_").*hcat(["_$i" for i in 1:(length(zSet)^2)]...)
+			nameRE_VCV =  join(String.(vcat(zSet...)),"_").*hcat(["_$i" for i in 1:(length(zSet)^2)]...)
 		end
 		IO.outMCMC(outPut,"varU$(Z[zSet][:pos])",[nameRE_VCV]) #[] to have it as one row
 	end	
