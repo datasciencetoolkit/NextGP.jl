@@ -188,7 +188,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			Z[zSet] = Dict{Symbol, Any}()
 			posZcounter += 1
 			Z[zSet][:pos] = posZcounter
-			u = push!(u,zeros(Float64,length(zSet),size(Z[d][:data],2)))
+			u = push!(u,zeros(Float64,length(zSet),size(Z[zSet[1]][:data],2)))
 #			Z[zSet][:pos] = collect((posZcounter+1):(posZcounter+length(zSet)))
 #			posZcounter += length(zSet)
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
