@@ -22,7 +22,7 @@ export getMME!
 ExprOrSymbol = Union{Expr,Symbol,Tuple}
 
 #set up (co)variance structures
-function setVarCovStr!(zSet::ExprOrSymbol,Z::Dict,priorVCV)
+function setVarCovStr!(zSet::ExprOrSymbol,Z::Dict,priorVCV,varU_prior::Dict)
 	if haskey(priorVCV,zSet)	
 		if ismissing(priorVCV[zSet].str) || priorVCV[zSet].str=="I" 
 			printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
