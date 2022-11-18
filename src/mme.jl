@@ -47,6 +47,8 @@ end
 
 #main sampler
 function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
+	
+	println("dims: $(getindex.(Ref(Z),:dims))")
 		
         #some info
 	nRand = length(Z)
