@@ -154,6 +154,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
         for zSet in keys(Z)
 		pos = findall(x->x==zSet, collect(keys(Z)))[]
                 Z[zSet][:pos] = pos
+		println("$zSet : $pos")
         end
 	
 	u = []
@@ -191,7 +192,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				u = push!(u,zeros(Float64,1,size(Z[d][:data],2)))
                        		delete!(Z,d)
                		end
-			println("pos $zSet: $(getindex.(getindex(Ref(Z),zSet),:pos))")			
 			Z[zSet][:zpz] = MatByMat.(tempZ)
 			#lhs is already zero as only mpm + "nothing" is  given
 			#rhs is for now only for convenience
@@ -205,7 +205,11 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			tempZ = 0
 		end
 	end
-				
+	
+	for k in keys(Z)
+		println("$k : $(Z[k][:pos])")
+	end				
+					
 	println("$(size.(u))")
 
 	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
