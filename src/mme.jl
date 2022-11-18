@@ -172,7 +172,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			end						
 			Z[zSet][:zpz] = tempzpz
 			Z[zSet][:rhs] = zeros(size(Z[zSet][:data],2))
-                        if pSet in keys(summaryStat)
+                        if zSet in keys(summaryStat)
                                 summaryStat[zSet].v == Array{Float64,1} ? zpz[zSet] .+= inv.(summaryStat[zSet].v) : zpz[zSet] .+= inv.(diag(summaryStat[zSet].v))
                                 summaryStat[zSet].v == Array{Float64,1} ? rhsZ[zSet] .= inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : rhsZ[zSet] .= inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
                         end
