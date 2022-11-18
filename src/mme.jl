@@ -191,6 +191,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				u = push!(u,zeros(Float64,1,size(Z[d][:data],2)))
                        		delete!(Z,d)
                		end
+			println("zSet keys: $(keys(zSet))")
 			println("pos $zSet: $(getindex.(getindex.(Ref(Z),zSet),:pos))")			
 			Z[zSet][:zpz] = MatByMat.(tempZ)
 			#lhs is already zero as only mpm + "nothing" is  given
