@@ -39,7 +39,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,BayesX,c
 	
 		#sample random effects and variances
 		for zSet in keys(Z)
-	        	sampleZ!(zSet,Z,u,ycorr,varE,varU)	
+	        	functions.sampleZ!(zSet,Z,u,ycorr,varE,varU)	
 		end
 		
 	
