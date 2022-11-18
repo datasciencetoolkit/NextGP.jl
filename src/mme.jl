@@ -383,7 +383,12 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	#check for correlated RE
         for zSet in keys(Z)
 		IO.outMCMC(outPut,"u$(Z[zSet][:pos])",[Z[zSet][:levels]])
-		isa(collect(keys(Z))[Z[zSet][:pos]], Symbol) ? nameRE_VCV = String(collect(keys(Z))[Z[zSet][:pos]]) : nameRE_VCV = join(collect(keys(Z))[Z[zSet][:pos]].args)[2:end]
+		if isa(collect(keys(Z))[Z[zSet][:pos]], Symbol)
+			nameRE_VCV = String(collect(keys(Z))[Z[zSet][:pos]])
+		elseif isa(collect(keys(Z))[Z[zSet][:pos]], Expr)
+			nameRE_VCV = join(collect(keys(Z))[Z[zSet][:pos]].args)[2:end]
+		elseif isa(collect(keys(Z))[Z[zSet][:pos]], Tuple)
+			nameRE_VCV = String(collect(keys(Z))[Z[zSet][:pos]])
 		IO.outMCMC(outPut,"varU$(Z[zSet][:pos])",[nameRE_VCV]) #[] to have it as one row
 	end	
 		
