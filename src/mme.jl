@@ -170,7 +170,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				push!(tempzpz,c'c)					
 				# push!(tempzpz,BLAS.dot(c,c))
 			end
-			println("pos $zSet: $(getindex.(getindex.(Ref(Z),zSet),:pos))")			
 			Z[zSet][:zpz] = tempzpz
 			Z[zSet][:rhs] = zeros(size(Z[zSet][:data],2))
                         if zSet in keys(summaryStat)
