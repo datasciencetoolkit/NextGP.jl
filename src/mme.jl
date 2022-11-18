@@ -186,6 +186,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
 			Z[zSet][:data] = tempZ
 			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
+			Z[zSet][:str] = Z[zSet[1]][:str] 
 			for d in zSet
 				u = push!(u,zeros(Float64,1,size(Z[d][:data],2)))
                        		delete!(Z,d)
