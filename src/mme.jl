@@ -207,10 +207,10 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				Z[zSet][:iVarStr] = Matrix(1.0I,Z[zSet][:dims][2],Z[zSet][:dims][2])
 			elseif priorVCV[zSet].str=="A"
 				printstyled("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used\n"; color = :green)
-				Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
+				isa(zSet,Tuple) ? Z[zSet][:iVarStr] = Z[zSet[1]][:iVarStr] : Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
 			elseif priorVCV[zSet].str=="G"
                                 printstyled("prior var-cov structure for $zSet is G. Computed G matrix will be used\n"; color = :green)
-                                Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
+				isa(zSet,Tuple) ? Z[zSet][:iVarStr] = Z[zSet[1]][:iVarStr] : Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
 			else 	Z[zSet][:iVarStr] = inv(priorVCV[zSet].str)
 			end
 			varU_prior[zSet] = priorVCV[zSet].v
