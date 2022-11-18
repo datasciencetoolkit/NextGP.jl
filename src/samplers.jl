@@ -37,12 +37,13 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,BayesX,c
 			sampleX!(xSet,X,b,ycorr,varE)
 		end
 	
-		#sample random effects
-	        sampleZandZVar!(Z,u,ycorr,varE,varU)	
-
-		#sample marker effects and variances
-	
+		#sample random effects and variances
+		for zSet in keys(Z)
+	        	sampleZ!(zSet,Z,u,ycorr,varE,varU)	
+		end
 		
+	
+		#sample marker effects and variances
 		for mSet in keys(M)
 			BayesX[mSet](mSet,M,beta,ycorr,varE,varBeta)
 		end
