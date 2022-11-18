@@ -161,7 +161,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	varU_prior = Dict{Any,Any}()
 	#matrices are ready
 									
-	for zSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV) 
+	for zSet in keys(Z) 
 		#symbol :ID or expression :(1|ID)
 		if (isa(zSet,Symbol) || isa(zSet,Expr)) && in(zSet,keys(Z))
 			tempzpz = []
@@ -261,7 +261,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 	#make mpm
 	
-	for pSet ∈ keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
+	for pSet in keys(M)
 		#symbol :M1 or expression
 		if isa(pSet,Symbol) && in(pSet,keys(M))
 			tempmpm = []
