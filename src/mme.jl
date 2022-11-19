@@ -422,7 +422,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			for z in zSet
    				IO.outMCMC(outPut,"u$z",[Z[zSet][:levels]])
 			end
-			IO.outMCMC(outPut,"varU$z",[nameRE_VCV]) #[] to have it as one row
+			IO.outMCMC(outPut,"varU$zSet",[nameRE_VCV]) #[] to have it as one row
 		end
 	end	
 		
