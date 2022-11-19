@@ -58,6 +58,7 @@ function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{
 	println("size Yi: $(size(Yi))")
 	nCol = length(uVec[1])
 	for i in 1:nCol
+		println("size uVec: $(size(uVec))")
 		setindex!(uVec,[0;0],i,:)
 		println("size view: $(size(view(Z[zSet].iVarStr,:,i)))")
 		println("size view: $(kron((view(Z[zSet].iVarStr,:,i)),varU[zSet]))")
