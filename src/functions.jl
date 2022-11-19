@@ -62,8 +62,8 @@ function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{
 		println("size uVec: $(size(uVec))")
 		setindex!(uVec,[0;0],:,i)
 		println("size view: $(size(view(Z[zSet].iVarStr,:,i)))")
-		println("size view: $(kron((view(Z[zSet].iVarStr,[i],:)),varU[zSet]))")
-		rhsU = (Yi[i,:]./varE) - kron((view(Z[zSet].iVarStr,[i],:])),varU[zSet])*vcat(uVec...)
+		println("kron view: $(kron(view(Z[zSet].iVarStr,[i],:),varU[zSet]))")
+		rhsU = (Yi[i,:]./varE) - kron(view(Z[zSet].iVarStr,[i],:),varU[zSet])*vcat(uVec...)
 		println("rhsU: $(rhsU)")
                 lhsU = getindex(Z[zSet].zpz,i) .+ (view(Z[zSet].iVarStr,i,i).*λz)[1]
 		invLhsU = inv(lhsU)
