@@ -64,7 +64,7 @@ function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{
 		rhsU = (Yi[i,:]./varE) - kron(view(Z[zSet].iVarStr,[i],:),iVarU)*vcat(uVec...)
                 invLhsU = inv((getindex(Z[zSet].zpz,i)./varE) + (view(Z[zSet].iVarStr,i,i).*iVarU))
                 meanU = invLhsU*rhsU
-		setindex!(uVec,rand(MvNormal(meanU,invLhsU.*varE)),:,i)
+		setindex!(uVec,rand(MvNormal(meanU,convert(Array,Symmetric(invLhsU)))),:,i)
         end
 	println("Y: $ycorr")
 	println("U: $uVec")
