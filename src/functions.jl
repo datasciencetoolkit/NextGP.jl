@@ -54,7 +54,7 @@ end
 function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
 	λz = varE ./ varU[zSet]
-	Yi = Z[zSet].Zp .* ycorr #computation of Z'ycorr for ALL  rhsU
+	Yi = [Z[zSet].Zp[z] * ycorr for z in 1:length(zSet)] #computation of Z'ycorr for ALL  rhsU
 	nCol = length(uVec[1])
 	for i in 1:nCol
 		println("size Yi: $(size(Yi[i]))")
