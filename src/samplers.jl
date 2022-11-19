@@ -60,7 +60,6 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,BayesX,c
 					pCounter = 1
 					for p in zSet
 						#zSet2print = zSet[p]
-						println("printing $p to $(Z[zSet].pos) and $pCounter")
 						IO.outMCMC(outPut,"u$p",u[Z[zSet].pos][[pCounter],:])
 						pCounter += 1
 					end
