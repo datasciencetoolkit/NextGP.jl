@@ -52,20 +52,22 @@ end
 
 
 function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
+	println("U: $uVec")
+	println("Y: $ycorr")
 	uVec = deepcopy(u[Z[zSet].pos])
 	Yi = hcat([Z[zSet].Zp[z] * ycorr for z in 1:length(zSet)]...) #n*nComp, but each col already returns matrix below
 #	Yi = vcat([Z[zSet].Zp[z] * ycorr for z in 1:length(zSet)]...)
-	println("Yi: $(Yi)")
-	println("size Yi: $(size(Yi))")
 	nCol = length(uVec[1])
 	iVarU = inv(varU[zSet])
 	for i in 1:nCol
 		setindex!(uVec,[0;0],:,i)
 		rhsU = (Yi[i,:]./varE) - kron(view(Z[zSet].iVarStr,[i],:),iVarU)*vcat(uVec...)
-                invLhsU = inv((getindex(Z[zSet].zpz,i)./varE) .+ (view(Z[zSet].iVarStr,i,i).*iVarU))
+                invLhsU = inv((getindex(Z[zSet].zpz,i)./varE) + (view(Z[zSet].iVarStr,i,i).*iVarU))
                 meanU = invLhsU*rhsU
 		setindex!(uVec,rand(MvNormal(meanU,invLhsU.*varE)),:,i)
         end
+	println("Y: $ycorr")
+	println("U: $uVec")
 	return uVec
 end
 
