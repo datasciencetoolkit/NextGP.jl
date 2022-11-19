@@ -53,8 +53,8 @@ end
 
 function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
-#	Yi = hcat([Z[zSet].Zp[z] * ycorr for z in 1:length(zSet)]...) #n*nComp, but each col already returns matrix below
-	Yi = vcat([Z[zSet].Zp[z] * ycorr for z in 1:length(zSet)]...) #n*nComp, but each col already returns matrix below
+	Yi = hcat([Z[zSet].Zp[z] * ycorr for z in 1:length(zSet)]...) #n*nComp, but each col already returns matrix below
+#	Yi = vcat([Z[zSet].Zp[z] * ycorr for z in 1:length(zSet)]...)
 	println("Yi: $(Yi)")
 	println("size Yi: $(size(Yi))")
 	nCol = length(uVec[1])
@@ -62,8 +62,8 @@ function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{
 		println("size uVec: $(size(uVec))")
 		setindex!(uVec,[0;0],:,i)
 		println("size view: $(size(view(Z[zSet].iVarStr,:,i)))")
-		println("size view: $(kron((view(Z[zSet].iVarStr,:,i)),varU[zSet]))")
-		rhsU = (Yi[i,:]./varE) - kron((view(Z[zSet].iVarStr,:,i)),varU[zSet])*vcat(uVec...)
+		println("size view: $(kron((view(Z[zSet].iVarStr,[i],:)),varU[zSet]))")
+		rhsU = (Yi[i,:]./varE) - kron((view(Z[zSet].iVarStr,[i],:])),varU[zSet])*vcat(uVec...)
 		println("rhsU: $(rhsU)")
                 lhsU = getindex(Z[zSet].zpz,i) .+ (view(Z[zSet].iVarStr,i,i).*λz)[1]
 		invLhsU = inv(lhsU)
