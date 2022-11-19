@@ -58,14 +58,16 @@ function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{
 	println("Yi: $(Yi)")
 	println("size Yi: $(size(Yi))")
 	nCol = length(uVec[1])
+	iVarU = inv(varU[zSet])
 	for i in 1:nCol
 		println("size uVec: $(size(uVec))")
 		setindex!(uVec,[0;0],:,i)
 		println("size view: $(size(view(Z[zSet].iVarStr,:,i)))")
-		println("kron view: $(kron(view(Z[zSet].iVarStr,[i],:),varU[zSet]))")
-		rhsU = (Yi[i,:]./varE) - kron(view(Z[zSet].iVarStr,[i],:),varU[zSet])*vcat(uVec...)
+		println("kron view: $(kron(view(Z[zSet].iVarStr,[i],:),iVarU))")
+		rhsU = (Yi[i,:]./varE) - kron(view(Z[zSet].iVarStr,[i],:),iVarU)*vcat(uVec...)
 		println("rhsU: $(rhsU)")
-                lhsU = getindex(Z[zSet].zpz,i) .+ (view(Z[zSet].iVarStr,i,i).*λz)[1]
+                lhsU = (getindex(Z[zSet].zpz,i)./varE) .+ (view(Z[zSet].iVarStr,i,i).*iVarU)
+		println("lhsU: $(lhsU)")
 		invLhsU = inv(lhsU)
                 meanU = invLhsU*rhsU
 		setindex!(uVec,rand(MvNormal(meanU,invLhsU.*varE)),:,i)
