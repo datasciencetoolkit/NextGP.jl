@@ -189,17 +189,19 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			posZcounter += 1
 			Z[zSet][:pos] = posZcounter
 			u = push!(u,zeros(Float64,length(zSet),size(Z[zSet[1]][:data],2)))
-#			Z[zSet][:pos] = collect((posZcounter+1):(posZcounter+length(zSet)))
-#			posZcounter += length(zSet)
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
-			Z[zSet][:data] = tempZ
+#			Z[zSet][:data] = tempZ
 			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 			Z[zSet][:str] = Z[zSet[1]][:str] 
+			tempZZ = []
 			for d in zSet
-#				u = push!(u,zeros(Float64,1,size(Z[d][:data],2)))
+				push!(tempZZ,Z[d][:data])
                        		delete!(Z,d)
                		end
+			Z[zSet][:data] = tempZZ
+			Z[zSet][:Zp]   = transpose.(tempZZ)
+			tempZZ = 0
 			Z[zSet][:zpz] = MatByMat.(tempZ)
 			#lhs is already zero as only mpm + "nothing" is  given
 			#rhs is for now only for convenience
@@ -209,7 +211,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
                         	#SummaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(SummaryStat[pSet].v) : zpz[pSet] += inv.(diag(SummaryStat[pSet].v))
                         	#SummaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(SummaryStat[pSet].v) .* (SummaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(SummaryStat[pSet].v)) .* (SummaryStat[pSet].m)
                 	end
-			Z[zSet][:Zp]  = transpose.(tempZ)
+#			Z[zSet][:Zp]  = transpose.(tempZ)
 			tempZ = 0
 		end
 	end
