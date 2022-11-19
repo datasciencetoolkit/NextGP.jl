@@ -216,12 +216,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		end
 	end
 	
-	for k in keys(Z)
-		println("$k : $(Z[k][:pos])")
-	end				
-					
-	println("$(size.(u))")
-
 	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
 		posZcounter += 1
 		Z[zSet][:pos] = posZcounter
