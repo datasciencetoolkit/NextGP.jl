@@ -59,7 +59,7 @@ function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{
 	nCol = length(uVec[1])
 	for i in 1:nCol
 		println("size uVec: $(size(uVec))")
-		setindex!(uVec,[0;0],i,:)
+		setindex!(uVec,[0;0],:,i)
 		println("size view: $(size(view(Z[zSet].iVarStr,:,i)))")
 		println("size view: $(kron((view(Z[zSet].iVarStr,:,i)),varU[zSet]))")
 		rhsU = (Yi[i,:]./varE) - kron((view(Z[zSet].iVarStr,:,i)),varU[zSet])*uVec
@@ -67,7 +67,7 @@ function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{
                 lhsU = getindex(Z[zSet].zpz,i) .+ (view(Z[zSet].iVarStr,i,i).*λz)[1]
 		invLhsU = inv(lhsU)
                 meanU = invLhsU*rhsU
-		setindex!(uVec,rand(MvNormal(meanU,invLhsU.*varE)),i)
+		setindex!(uVec,rand(MvNormal(meanU,invLhsU.*varE)),:,i)
         end
 	return uVec
 end
