@@ -409,13 +409,13 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		if isa(zSet, Symbol)
 			println("$zSet is a Symbol")
 			nameRE_VCV = String(zSet)
-			IO.outMCMC(outPut,"u$(Z[zSet][:pos])",[Z[zSet][:levels]])
-			IO.outMCMC(outPut,"varU$(Z[zSet][:pos])",[nameRE_VCV]) #[] to have it as one row
+			IO.outMCMC(outPut,"u$(Z[zSet])",[Z[zSet][:levels]])
+			IO.outMCMC(outPut,"varU$(Z[zSet])",[nameRE_VCV]) #[] to have it as one row
 		elseif isa(zSet, Expr)
 			println("$zSet is an Expr")
 			nameRE_VCV = join(zSet.args)[2:end]
-			IO.outMCMC(outPut,"u$(Z[zSet][:pos])",[Z[zSet][:levels]])
-			IO.outMCMC(outPut,"varU$(Z[zSet][:pos])",[nameRE_VCV]) #[] to have it as one row
+			IO.outMCMC(outPut,"u$(Z[zSet])",[Z[zSet][:levels]])
+			IO.outMCMC(outPut,"varU$(Z[zSet])",[nameRE_VCV]) #[] to have it as one row
 		elseif isa(zSet, Tuple)
 			println("$zSet is a Tuple")
 			nameRE_VCV =  join(String.(vcat(zSet...)),"_").*hcat(["_$i" for i in 1:(length(zSet)^2)]...)
