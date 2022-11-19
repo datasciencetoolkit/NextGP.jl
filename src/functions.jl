@@ -84,9 +84,10 @@ end
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
         #for each random effect
 	println("sizes: $(size.(Z[zSet].data)) $(size(u[Z[zSet].pos]))")
-	println("sizes: $(size.(vcat(Z[zSet].data.*collect(eachcol(u[Z[zSet].pos]))...)))")
-	println(vcat(Z[zSet].data.*collect(eachcol(u[Z[zSet].pos]))...))
-	ycorr .+= Z[zSet].data*u[Z[zSet].pos]
+	for z in length(zSet)
+		println("sizes: $(size.(Z[zSet].data[z])) $(size(u[Z[zSet].pos][z]))")
+		ycorr .+= Z[zSet].data[z]*u[Z[zSet].pos][z]
+	end
 	u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
 	ycorr .-= Z[zSet].data*u[Z[zSet].pos]
         varU[zSet] = sampleVarCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
