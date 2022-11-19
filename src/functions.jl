@@ -60,15 +60,9 @@ function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{
 	nCol = length(uVec[1])
 	iVarU = inv(varU[zSet])
 	for i in 1:nCol
-		println("size uVec: $(size(uVec))")
 		setindex!(uVec,[0;0],:,i)
-		println("size view: $(size(view(Z[zSet].iVarStr,:,i)))")
-		println("kron view: $(kron(view(Z[zSet].iVarStr,[i],:),iVarU))")
 		rhsU = (Yi[i,:]./varE) - kron(view(Z[zSet].iVarStr,[i],:),iVarU)*vcat(uVec...)
-		println("rhsU: $(rhsU)")
-                lhsU = (getindex(Z[zSet].zpz,i)./varE) .+ (view(Z[zSet].iVarStr,i,i).*iVarU)
-		println("lhsU: $(lhsU)")
-		invLhsU = inv(lhsU)
+                invLhsU = inv((getindex(Z[zSet].zpz,i)./varE) .+ (view(Z[zSet].iVarStr,i,i).*iVarU))
                 meanU = invLhsU*rhsU
 		setindex!(uVec,rand(MvNormal(meanU,invLhsU.*varE)),:,i)
         end
@@ -87,16 +81,13 @@ end
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
         #for each random effect
 	for z in 1:length(zSet)
-		println("size: $(size(Z[zSet].data[z])) $(size(u[Z[zSet].pos][z,:]))")
 		ycorr .+= Z[zSet].data[z]*u[Z[zSet].pos][z,:]
 	end
-	println("MULTIPLIED")
 	u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
 	for z in 1:length(zSet)
-		println("size: $(size(Z[zSet].data[z])) $(size(u[Z[zSet].pos][z,:]))")
 		ycorr .-= Z[zSet].data[z]*u[Z[zSet].pos][z,:]
 	end
-	varU[zSet] = sampleVarCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
+	varU[zSet] = sampleCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
 end
 
 
