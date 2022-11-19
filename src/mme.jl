@@ -421,8 +421,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			nameRE_VCV =  join(String.(vcat(zSet...)),"_").*hcat(["_$i" for i in 1:(length(zSet)^2)]...)
 			for z in zSet
    				IO.outMCMC(outPut,"u$z",[Z[zSet][:levels]])
-				IO.outMCMC(outPut,"varU$z",[nameRE_VCV]) #[] to have it as one row
 			end
+			IO.outMCMC(outPut,"varU$z",[nameRE_VCV]) #[] to have it as one row
 		end
 	end	
 		
