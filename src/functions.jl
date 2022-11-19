@@ -57,7 +57,7 @@ function sampleU(zSet::Tuple,Z,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{
 	println("U: $uVec")
 	Yi = hcat([Z[zSet].Zp[z] * ycorr for z in 1:length(zSet)]...) #n*nComp, but each col already returns matrix below
 #	Yi = vcat([Z[zSet].Zp[z] * ycorr for z in 1:length(zSet)]...)
-	nCol = length(uVec[1])
+	nCol = size(uVec,2)
 	iVarU = inv(varU[zSet])
 	for i in 1:nCol
 		setindex!(uVec,[0;0],:,i)
