@@ -92,8 +92,11 @@ function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Flo
 	end
 	println("MULTIPLIED")
 	u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
-	ycorr .-= Z[zSet].data*u[Z[zSet].pos]
-        varU[zSet] = sampleVarCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
+	for z in 1:length(zSet)
+		println("size: $(size(Z[zSet].data[z])) $(size(u[Z[zSet].pos][z,:]))")
+		ycorr .-= Z[zSet].data[z]*u[Z[zSet].pos][z,:]
+	end
+	varU[zSet] = sampleVarCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
 end
 
 
