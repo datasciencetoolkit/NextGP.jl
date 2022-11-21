@@ -69,6 +69,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	#Positions of parameters for each variable and blocks for speed. b is a column vector.
 	countXCol = 0
 	for xSet in keys(X)
+		println("dealing with $xSet")
 		nCol = X[xSet][:nCol]
                 X[xSet][:pos] = (countXCol+1):(countXCol+nCol)
 		countXCol += nCol
@@ -77,6 +78,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	
 	for blk in blocks
 #		getThese = intersect(collect(keys(X)), blk)
+		println("adding to block: $blk")
 		X[blk] = Dict{Symbol, Any}()
 		X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
 		X[blk][:levels] = hcat(vcat(getindex.(getindex.(Ref(X), blk),:levels)...)...)
@@ -395,6 +397,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	#########make MCMC output files.
 	
 	levelsX = hcat([value[:levels] for (key, value) in X]...)
+	println("dealing levelsX")
+	[println(key, value[:levels]) for (key, value) in X]
 			
 	IO.outMCMC(outPut,"b",levelsX)
 	
