@@ -57,9 +57,22 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 	priorVCV = convert(Dict{ExprOrSymbol, Any},priorVCV)	
 	
-	### X and b
+	### X and b	
 	
-	
+	for blk in blocks
+#		getThese = intersect(collect(keys(X)), blk)
+		println("adding to block: $blk")
+		X[blk] = Dict{Symbol, Any}()
+		X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
+		X[blk][:levels] = hcat(vcat(getindex.(getindex.(Ref(X), blk),:levels)...)...)
+		X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
+		X[blk][:pos] = vcat(getindex.(getindex.(Ref(X), blk),:pos)...)
+		X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
+		for d in blk
+			delete!(X,d)
+		end
+	end
+
 	#==BLOCK FIXED EFFECTS.
 	Order of blocks is as definde by the user
 	Order of variables within blocks is always the same as in the model definition, not defined by the user in each block.
@@ -75,20 +88,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		countXCol += nCol
         end
 	countXCol = 0
-	
-	for blk in blocks
-#		getThese = intersect(collect(keys(X)), blk)
-		println("adding to block: $blk")
-		X[blk] = Dict{Symbol, Any}()
-		X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
-		X[blk][:levels] = hcat(vcat(getindex.(getindex.(Ref(X), blk),:levels)...)...)
-		X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
-		X[blk][:pos] = vcat(getindex.(getindex.(Ref(X), blk),:pos)...)
-		X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
-		for d in blk
-			delete!(X,d)
-		end
-	end
 
 
 #	b = zeros(getindex.(getindex.(Ref(X), keys(X)),:nCol)[])
