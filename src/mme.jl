@@ -66,7 +66,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
 		X[blk][:levels] = hcat(vcat(getindex.(getindex.(Ref(X), blk),:levels)...)...)
 		X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
-		X[blk][:pos] = vcat(getindex.(getindex.(Ref(X), blk),:pos)...)
+#		X[blk][:pos] = vcat(getindex.(getindex.(Ref(X), blk),:pos)...)
 		X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
 		for d in blk
 			delete!(X,d)
