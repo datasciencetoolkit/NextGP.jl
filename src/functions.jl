@@ -57,9 +57,9 @@ function sampleU(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::V
 	iVarU = inv(varU[zSet])
 	println("size Ycorr: $(size(ycorr))")
 	for i in 1:nCol
-		println("size u: $(size(getindex.(u[Z[zSet].pos],i)))")
+		println("size u: $(size(getindex(u[Z[zSet].pos],:,i)))")
 		println("size data: $(size(Z[zSet].data[i]))")
-		ycorr .+= Z[zSet].data[i]*getindex.(u[Z[zSet].pos],i)
+		ycorr .+= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
 		setindex!(uVec,[0;0],:,i)
 		println("size Zp$i: $(size(Z[zSet].Zp[i]))")
 		Yi = Z[zSet].Zp[i]*ycorr
@@ -67,7 +67,7 @@ function sampleU(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::V
                 invLhsU = inv((getindex(Z[zSet].zpz,i)./varE) + (view(Z[zSet].iVarStr,i,i).*iVarU))
                 meanU = invLhsU*rhsU
 		setindex!(uVec,rand(MvNormal(meanU,convert(Array,Symmetric(invLhsU)))),:,i)
-		ycorr .-= Z[zSet].data[i]*getindex.(u[Z[zSet].pos],i)
+		ycorr .-= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
         end
 	return uVec
 end
