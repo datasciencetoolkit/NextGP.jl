@@ -188,18 +188,15 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			u = push!(u,zeros(Float64,length(zSet),size(Z[zSet[1]][:data],2)))
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
-#			Z[zSet][:data] = tempZ
+			Z[zSet][:data] = tempZ
 			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 			Z[zSet][:str] = Z[zSet[1]][:str] 
-			tempZZ = []
 			for d in zSet
-				push!(tempZZ,Z[d][:data])
                        		delete!(Z,d)
                		end
-			Z[zSet][:data] = tempZZ
-			Z[zSet][:Zp]   = transpose.(tempZZ)
-			tempZZ = 0
-			Z[zSet][:zpz] = MatByMat.(tempZ)
+			Z[zSet][:zpz]  = MatByMat.(tempZ)
+			Z[zSet][:Zp]   = transpose.(tempZ)
+			tempZ = 0
 			#lhs is already zero as only mpm + "nothing" is  given
 			#rhs is for now only for convenience
 			Z[zSet][:rhs] = [zeros(length(zSet)) for i in 1:length(Z[zSet][:levels])]
@@ -254,12 +251,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 																		
 	############priorVCV cannot be empty for markers, currently!!																	
 
-	#key positions for each effect in beta, for speed. Order of matrices in M are preserved here.
-#        for mSet in keys(M)
-#                pos = findall(mSet.==collect(keys(M)))[]
-#                M[mSet][:pos] = pos
-#        end
-
 	beta = []
 
 	#make mpm
@@ -301,6 +292,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
                        		delete!(M,d)
                		end
 			M[pSet][:mpm] = MatByMat.(tempM)
+			M[pSet][:Mp]  = transpose.(tempM)
+			tempM = 0
 			#lhs is already zero as only mpm + "nothing" is  given
 			#rhs is for now only for convenience
 			M[pSet][:rhs] = [zeros(length(pSet)) for i in 1:length(M[pSet][:levels])]
@@ -308,8 +301,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				error("Not available to use summary statistics in correlated effects")
                                 #SummaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += (1.0 ./ SummaryStat[pSet].v) : mpm[pSet] += inv.(diag(SummaryStat[pSet].v))
  	                end
-			M[pSet][:Mp]  = transpose.(tempM)
-			tempM = 0
 			theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
 			M[pSet][:regionArray] = theseRegions
 			M[pSet][:nRegions] = length(theseRegions)
