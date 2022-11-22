@@ -60,13 +60,11 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	### X and b	
 	
 	for blk in blocks
-#		getThese = intersect(collect(keys(X)), blk)
 		println("adding to block: $blk")
 		X[blk] = Dict{Symbol, Any}()
 		X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
 		X[blk][:levels] = hcat(vcat(getindex.(getindex.(Ref(X), blk),:levels)...)...)
 		X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
-#		X[blk][:pos] = vcat(getindex.(getindex.(Ref(X), blk),:pos)...)
 		X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
 		for d in blk
 			delete!(X,d)
@@ -82,7 +80,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	#Positions of parameters for each variable and blocks for speed. b is a column vector.
 	countXCol = 0
 	for xSet in keys(X)
-		println("dealing with $xSet")
 		nCol = X[xSet][:nCol]
                 X[xSet][:pos] = (countXCol+1):(countXCol+nCol)
 		countXCol += nCol
@@ -90,7 +87,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	countXCol = 0
 
 
-#	b = zeros(getindex.(getindex.(Ref(X), keys(X)),:nCol)[])
 	b = zeros(sum(getindex.(getindex.(Ref(X), keys(X)),:nCol)))
 
 
