@@ -116,7 +116,9 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
                         arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
+			println("$(f.rhs[i]): $arg")
 			IDs,thisZ = ranMat(arg, :ID, userData, pedigree)
+			println("$(f.rhs[i]) thisZ: $thisZ")
 			ids = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
 			Z[arg] = Dict(:data=>thisZ,:method=>"BLUP",:str=>"A",:iVarStr=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
 			thisZ = 0
