@@ -60,7 +60,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	### X and b	
 	
 	for blk in blocks
-		println("adding to block: $blk")
 		X[blk] = Dict{Symbol, Any}()
 		X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
 		X[blk][:levels] = hcat(vcat(getindex.(getindex.(Ref(X), blk),:levels)...)...)
