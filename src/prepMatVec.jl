@@ -119,8 +119,8 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			IDs,thisZ = ranMat(arg, :ID, userData4ran, pedigree)
 			ids = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
 			Z[arg] = Dict(:data=>thisZ,:method=>"BLUP",:str=>"A",:iVarStr=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
-			thisZ = 0
 			push!(summarize,[arg,"PED",typeof(thisZ),size(thisZ,2)])
+			thisZ = 0
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
                         my_sch = schema(userData, userHints) #work on userData and userHints
 			
@@ -133,8 +133,8 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			ids = unique(userData[!,arg2])
 			strI = Matrix(1.0*I,size(thisZ,2),size(thisZ,2))
 			Z[arg] = Dict(:data=>thisZ,:method=>"|",:str=>"I",:iVarStr=>strI,:dims=>size(strI),:levels=>ids) 	
-			thisZ = 0
 			push!(summarize,[arg,"|",typeof(thisZ),size(thisZ,2)])
+			thisZ = 0
                 else
 			my_sch = schema(userData, userHints)
 			my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
@@ -142,9 +142,8 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			thisX = modelcols(my_ApplySch, userData)
 			isa(thisX,Vector) ? nCol = 1 : nCol = size(thisX,2)
 			X[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:nCol=>nCol,:levels=>levelX) 
-		
-			thisX = 0
 			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(thisX),nCol])
+			thisX = 0
                 end
         end
 
