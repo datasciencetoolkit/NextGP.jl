@@ -187,7 +187,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			Z[zSet][:pos] = posZcounter
 			u = push!(u,zeros(Float64,length(zSet),size(Z[zSet[1]][:data],2)))
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
-			println("Z: Z")
+			println("Z: $Z")
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
 			#same Z for all components in a single-trait model get only first column! Z[zSet][:data] = tempZ
 			println("tempZ: $tempZ")
