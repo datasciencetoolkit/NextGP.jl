@@ -189,7 +189,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
 			#same Z for all components in a single-trait model get only first column! Z[zSet][:data] = tempZ
+			println("tempZ: $tempZ")
 			Z[zSet][:data] = tempZ[:,1]
+			println("data: $(Z[zSet][:data])")
 			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 			Z[zSet][:str] = Z[zSet[1]][:str] 
 			for d in zSet
