@@ -22,6 +22,8 @@ end
 
 """
 function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
+	println("x1: $x1")
+	println("x2: $x2")
 #        isa(x1, CategoricalArray) ||
 #                       throw(ArgumentError("ran() only works with CategoricalArrays (got $(typeof(2)))"))
 #        isa(x2, CategoricalArray) ||
