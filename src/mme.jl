@@ -188,8 +188,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			u = push!(u,zeros(Float64,length(zSet),size(Z[zSet[1]][:data],2)))
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
-			#same Z for all components in a single-trait model get only first column! Z[zSet][:data] = tempZ
-			Z[zSet][:data] = getindex.(tempZ,:,1)
+			#same Z for all components in a single-trait model get only first column! Z[zSet][:data] = getindex.(tempZ,:,1)
+			Z[zSet][:data] = tempZ
 			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 			Z[zSet][:str] = Z[zSet[1]][:str] 
 			for d in zSet
