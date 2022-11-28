@@ -384,8 +384,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	#########make MCMC output files.
 	
 	levelsX = hcat([value[:levels] for (key, value) in X]...)
-	println("dealing levelsX")
-	[println(key, value[:levels]) for (key, value) in X]
+#	[println(key, value[:levels]) for (key, value) in X]
 			
 	IO.outMCMC(outPut,"b",levelsX)
 	
