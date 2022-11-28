@@ -58,7 +58,7 @@ function sampleU!(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::
 	for i in 1:nCol
 		ycorr .+= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
 		setindex!(uVec,[0;0],:,i)
-		Yi = Z[zSet].Zp[i]*ycorr
+		Yi = Z[zSet].Zp[i]*ycorr[i]
 		rhsU = (Yi./varE) - kron(view(Z[zSet].iVarStr,[i],:),iVarU)*vcat(uVec...)
                 invLhsU = inv((getindex(Z[zSet].zpz,i)./varE) + (view(Z[zSet].iVarStr,i,i).*iVarU))
                 meanU = invLhsU*rhsU
