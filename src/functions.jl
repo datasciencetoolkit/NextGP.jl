@@ -51,7 +51,7 @@ function sampleU(zSet::Union{Expr,Symbol},Z::Dict,varE::Float64,varU::Dict,u::Ve
 end
 
 
-function sampleU(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
+function sampleU!(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
 	nCol = size(uVec,2)
 	iVarU = inv(varU[zSet])
@@ -78,7 +78,7 @@ function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float
 end
 
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
-	u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
+	u[Z[zSet].pos] .= sampleU!(zSet,Z,varE,varU,u,ycorr)
 	varU[zSet] = sampleCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
 end
 
