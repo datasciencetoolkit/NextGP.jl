@@ -81,7 +81,7 @@ function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float
 end
 
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
-	println("$sizeU= $(length(u))")
+	println("sizeU= $(length(u))")
 	println("u zSet: $(u[Z[zSet].pos])")
 	u[Z[zSet].pos] .= sampleU!(zSet,Z,varE,varU,u,ycorr)
 	varU[zSet] = sampleCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
