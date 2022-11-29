@@ -182,8 +182,10 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		#tuple of symbols (:ID,:Dam)
 		elseif (isa(zSet,Tuple{Vararg{Symbol}})) && all((in).(zSet,Ref(keys(Z)))) #if all elements are available # all([zSet .in Ref(keys(Z))])
 			Z[zSet] = Dict{Symbol, Any}()
-			posZcounter += 1
-			Z[zSet][:pos] = posZcounter
+			Z[pSet][:pos] = collect((posZcounter+1):(posZcounter+length(pSet)))
+			posZcounter += length(pSet)
+			#posZcounter += 1
+			#Z[zSet][:pos] = posZcounter
 			u = push!(u,zeros(Float64,length(zSet),size(Z[zSet[1]][:data],2)))
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
 			println("Z: $Z")
