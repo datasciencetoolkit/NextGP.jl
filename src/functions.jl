@@ -53,22 +53,17 @@ end
 
 function sampleU!(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
-	println("size: $(size(uVec,2))")
 	nCol = size(uVec,2)
 	iVarU = inv(varU[zSet])
-	println("data: $(Z[zSet].data)")
 	for i in 1:nCol
-		println("at $i, added $(Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i))")
 		ycorr .+= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
 		setindex!(uVec,[0;0],:,i)
 		Yi = Z[zSet].Zp[i]*ycorr
-		println("Yi: $Yi")
 		rhsU = (Yi./varE) - kron(view(Z[zSet].iVarStr,[i],:),iVarU)*vec(uVec)
                 invLhsU = inv((getindex(Z[zSet].zpz,i)./varE) + (view(Z[zSet].iVarStr,i,i).*iVarU))
                 meanU = invLhsU*rhsU
 		setindex!(uVec,rand(MvNormal(meanU,convert(Array,Symmetric(invLhsU)))),:,i)
 		ycorr .-= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
-		println("uVec: $uVec")
         end
 	return uVec
 end
@@ -83,9 +78,6 @@ function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float
 end
 
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
-	println("sizeU= $(length(u))")
-	println("u zSet: $(u[Z[zSet].pos])")
-	println("sampler: $(sampleU!(zSet,Z,varE,varU,u,ycorr))")
 	u[Z[zSet].pos] .= sampleU!(zSet,Z,varE,varU,u,ycorr)
 	varU[zSet] = sampleCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
 end
