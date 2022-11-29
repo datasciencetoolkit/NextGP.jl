@@ -53,6 +53,7 @@ end
 
 function sampleU!(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
+	println("size: $(size(uVec,2))")
 	nCol = size(uVec,2)
 	iVarU = inv(varU[zSet])
 	for i in 1:nCol
