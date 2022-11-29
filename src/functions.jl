@@ -76,7 +76,7 @@ function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float
 end
 
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
-	nCol = size(uVec,2)
+	nCol = size(u[Z[zSet].pos],2)
 	for i in 1:nCol
 		ycorr .+= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
 	end
