@@ -60,7 +60,7 @@ function sampleU(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::V
 		Yi = Z[zSet].Zp[i]*ycorr
 
 		a = hcat(Matrix(deepcopy(Z[zSet].iVarStr[[i],:]))...)
-		a = deleteat!(a,i)
+		a = a[:,1:end .!=i]
 		uTemp = deepcopy(uVec)
 		uTemp = uTemp[:,1:end .!=i]
 		rhsU = (Yi./varE) - kron(a,iVarU)*vec(uTemp)
