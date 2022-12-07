@@ -59,7 +59,7 @@ function sampleU(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::V
 		setindex!(uVec,[0;0],:,i)
 		Yi = Z[zSet].Zp[i]*ycorr
 
-		a = hcat(Vector(deepcopy(Z[zSet].iVarStr[[i],:]))...)
+		a = hcat(Matrix(deepcopy(Z[zSet].iVarStr[[i],:]))...)
 		a = deleteat!(a,i)
 		uTemp = deepcopy(uVec)
 		uTemp = uTemp[:,1:end .!=i]
