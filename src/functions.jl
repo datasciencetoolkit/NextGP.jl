@@ -81,11 +81,13 @@ function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Flo
 		println("Y for $i $(Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i))")
 		ycorr .+= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
 	end
+	println("Y: $ycorr")
 	u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
 	varU[zSet] = sampleCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
 	for i in 1:nCol
 		ycorr .-= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
 	end
+	println("Y: $ycorr")
 end
 
 
