@@ -198,7 +198,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
                		end
 			Z[zSet][:zpz]  = MatByMat.(tempZ)
 			Z[zSet][:Zp]   = transpose.(tempZ)
-			tempZ = 0
 			#lhs is already zero as only mpm + "nothing" is  given
 			#rhs is for now only for convenience
 			Z[zSet][:rhs] = [zeros(length(zSet)) for i in 1:length(Z[zSet][:levels])]
@@ -207,7 +206,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
                         	#SummaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(SummaryStat[pSet].v) : zpz[pSet] += inv.(diag(SummaryStat[pSet].v))
                         	#SummaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(SummaryStat[pSet].v) .* (SummaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(SummaryStat[pSet].v)) .* (SummaryStat[pSet].m)
                 	end
-#			Z[zSet][:Zp]  = transpose.(tempZ)
 			tempZ = 0
 		end
 	end
