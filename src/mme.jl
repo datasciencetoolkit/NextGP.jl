@@ -303,7 +303,13 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				error("Not available to use summary statistics in correlated effects")
                                 #SummaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += (1.0 ./ SummaryStat[pSet].v) : mpm[pSet] += inv.(diag(SummaryStat[pSet].v))
  	                end
-			theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
+																
+			println("map: $(M[pSet][:map])")
+			if isempty(M[pSet][:map])
+				println("No map was provided. Running Bayesian Random Regression (BRR)")
+			else
+				theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
+			end
 			M[pSet][:regionArray] = theseRegions
 			M[pSet][:nRegions] = length(theseRegions)
 		end
