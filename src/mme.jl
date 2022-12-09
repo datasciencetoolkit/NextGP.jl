@@ -286,7 +286,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
 					theseRegions = [1:r for r in size(nowM,2)]
 					M[pSet][:regionArray] = theseRegions
-				else error("Please enter a valid region size (1 or 9999)"; color = :green)
+				else error("Please enter a valid region size (1 or 9999)")
 				end
 			else
 				theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
