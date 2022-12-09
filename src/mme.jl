@@ -282,7 +282,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					M[pSet][:regionArray] = theseRegions
 				elseif priorVCV[pSet].r == 9999
 					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
-					theseRegions = 1:size(nowM,2)
+					theseRegions = [1:r for r in size(nowM,2)]
 					M[pSet][:regionArray] = theseRegions
 				else error("Please enter a valid region size (1 or 9999)"; color = :green)
 				end
@@ -326,7 +326,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					M[pSet][:regionArray] = theseRegions
 				elseif priorVCV[pSet].r == 9999
 					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
-					theseRegions = 1:size(nowM,2)
+					theseRegions = [1:r for r in size(nowM,2)]
 					M[pSet][:regionArray] = theseRegions
 				else error("Please enter a valid region size (1 or 9999)"; color = :green)
 				end
@@ -361,7 +361,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:regionArray] = theseRegions
 			elseif priorVCV[pSet].r == 9999
 				printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
-				theseRegions = 1:size(nowM,2)
+				theseRegions = [1:r for r in size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
 			else error("Please enter a valid region size (1 or 9999)"; color = :green)
 			end
