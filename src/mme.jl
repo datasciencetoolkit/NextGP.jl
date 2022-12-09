@@ -47,6 +47,8 @@ end
 
 #main sampler
 function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
+	
+	println("X: $X")
 		
         #some info
 	nRand = length(Z)
