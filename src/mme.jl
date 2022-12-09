@@ -60,12 +60,14 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	### X and b	
 	
 	for blk in blocks
+		println("levels in $blk: $(hcat(vcat(getindex.(getindex.(Ref(X), blk),:levels)...)...))")
 		X[blk] = Dict{Symbol, Any}()
 		X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
 		X[blk][:levels] = hcat(vcat(getindex.(getindex.(Ref(X), blk),:levels)...)...)
 		X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
 		X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
 		for d in blk
+			println("levels in $d: $(hcat(vcat(getindex.(getindex.(Ref(X), d),:levels)...)...))")
 			delete!(X,d)
 		end
 	end
