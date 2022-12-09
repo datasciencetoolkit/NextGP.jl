@@ -275,21 +275,21 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			end
 			M[pSet][:Mp] = []
 												
-			println("map: $(M[pSet][:map])")
 			if isempty(M[pSet][:map])		
 				if priorVCV[pSet].r == 1
 					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
-					M[pSet][:regionArray] = collect(1:size(nowM,2))
+					theseRegions = collect(1:size(nowM,2))
+					M[pSet][:regionArray] = theseRegions
 				elseif priorVCV[pSet].r == 9999
 					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
-					M[pSet][:regionArray] = 1:size(nowM,2)
+					theseRegions = 1:size(nowM,2)
+					M[pSet][:regionArray] = theseRegions
 				else error("Please enter a valid region size (1 or 9999)"; color = :green)
 				end
 			else
 				theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
 				M[pSet][:regionArray] = theseRegions
-			end
-			
+			end	
 			M[pSet][:nRegions] = length(theseRegions)
 			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
 			nowM = 0
@@ -319,14 +319,21 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
                                 #SummaryStat[pSet].v == Array{Float64,1} ? mpm[pSet] += (1.0 ./ SummaryStat[pSet].v) : mpm[pSet] += inv.(diag(SummaryStat[pSet].v))
  	                end
 																
-			println("map: $(M[pSet][:map])")
-			if isempty(M[pSet][:map])
-				println("No map was provided. Running Bayesian Random Regression (BRR)")
+			if isempty(M[pSet][:map])		
+				if priorVCV[pSet].r == 1
+					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
+					theseRegions = collect(1:size(nowM,2))
+					M[pSet][:regionArray] = theseRegions
+				elseif priorVCV[pSet].r == 9999
+					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
+					theseRegions = 1:size(nowM,2)
+					M[pSet][:regionArray] = theseRegions
+				else error("Please enter a valid region size (1 or 9999)"; color = :green)
+				end
 			else
 				theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
+				M[pSet][:regionArray] = theseRegions
 			end
-																	
-			M[pSet][:regionArray] = theseRegions
 			M[pSet][:nRegions] = length(theseRegions)
 		end
 	end
@@ -346,8 +353,22 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
                         summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                 end
-		theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],9999)
-		M[pSet][:regionArray] = theseRegions
+		
+		if isempty(M[pSet][:map])		
+			if priorVCV[pSet].r == 1
+				printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
+				theseRegions = collect(1:size(nowM,2))
+				M[pSet][:regionArray] = theseRegions
+			elseif priorVCV[pSet].r == 9999
+				printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
+				theseRegions = 1:size(nowM,2)
+				M[pSet][:regionArray] = theseRegions
+			else error("Please enter a valid region size (1 or 9999)"; color = :green)
+			end
+		else
+			theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],9999)
+			M[pSet][:regionArray] = theseRegions
+		end
 		M[pSet][:nRegions] = length(theseRegions)
 	end
 
