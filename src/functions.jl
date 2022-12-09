@@ -153,6 +153,7 @@ end
 
 #sample marker variances
 function sampleVarBetaPR(scalem,dfm,whichLoci,regionSize)::Float64
+	println("regionSize: $(regionSize) , scale: $scalem , df: $dfm ")
 	return (scalem*dfm + BLAS.dot(whichLoci,whichLoci)) / rand(Chisq(dfm + regionSize))
 end
 
