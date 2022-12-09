@@ -274,7 +274,14 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
 			end
 			M[pSet][:Mp] = []
-			theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
+												
+			println("map: $(M[pSet][:map])")
+			if isempty(M[pSet][:map])
+				println("No map was provided. Running Bayesian Random Regression (BRR)")
+			else
+				theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
+			end
+			
 		        M[pSet][:regionArray] = theseRegions
 			M[pSet][:nRegions] = length(theseRegions)
 			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))	
@@ -310,6 +317,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			else
 				theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
 			end
+																	
 			M[pSet][:regionArray] = theseRegions
 			M[pSet][:nRegions] = length(theseRegions)
 		end
