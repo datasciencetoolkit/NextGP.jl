@@ -276,15 +276,23 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			M[pSet][:Mp] = []
 												
 			println("map: $(M[pSet][:map])")
-			if isempty(M[pSet][:map])
-				println("No map was provided. Running Bayesian Random Regression (BRR)")
+			if isempty(M[pSet][:map])		
+				if priorVCV[pSet].r == 1
+					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
+					M[pSet][:regionArray] = collect(1:size(nowM,2))
+				elseif priorVCV[pSet].r == 9999
+					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
+					M[pSet][:regionArray] = 1:size(nowM,2)
+				else error("Please enter a valid region size (1 or 9999)"; color = :green)
+				end
 			else
 				theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
+				M[pSet][:regionArray] = theseRegions
 			end
 			
-		        M[pSet][:regionArray] = theseRegions
 			M[pSet][:nRegions] = length(theseRegions)
-			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))	
+			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
+			nowM = 0
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
 			M[pSet] = Dict{Symbol, Any}()
