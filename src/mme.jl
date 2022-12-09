@@ -278,7 +278,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			if isempty(M[pSet][:map])		
 				if priorVCV[pSet].r == 1
 					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
-					theseRegions = collect(1:size(nowM,2))
+					theseRegions = [r:r for r in 1:size(nowM,2)]
 					M[pSet][:regionArray] = theseRegions
 				elseif priorVCV[pSet].r == 9999
 					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
@@ -322,7 +322,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			if isempty(M[pSet][:map])		
 				if priorVCV[pSet].r == 1
 					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
-					theseRegions = collect(1:size(nowM,2))
+					theseRegions = [r:r for r in 1:size(nowM,2)]
 					M[pSet][:regionArray] = theseRegions
 				elseif priorVCV[pSet].r == 9999
 					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
@@ -357,7 +357,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		if isempty(M[pSet][:map])		
 			if priorVCV[pSet].r == 1
 				printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
-				theseRegions = collect(1:size(nowM,2))
+				theseRegions = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
 			elseif priorVCV[pSet].r == 9999
 				printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
