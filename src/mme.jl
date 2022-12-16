@@ -431,6 +431,12 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 	#########make MCMC output files.
 	
+		println("X LEVELS nothing: $([value[:levels] for (key, value) in X])")
+		println("X LEVELS vcat: $(hcat(vcat([value[:levels] for (key, value) in X]...)...))")
+		println("X LEVELS hcat vcat: $(hcat(vcat([value[:levels] for (key, value) in X]...)...))")
+		println("X LEVELS vcat hcat: $(vcat(hcat([value[:levels] for (key, value) in X]...)...))")
+
+	
 #	levelsX = hcat([value[:levels] for (key, value) in X]...) #works with blocking
 	levelsX = hcat(vcat([value[:levels] for (key, value) in X]...)...) #works with no blocking
 			
