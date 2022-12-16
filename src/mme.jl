@@ -116,7 +116,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 						
 	#no inverse implemented yet!
 	if haskey(priorVCV,:e)	
-		if ismissing(priorVCV[:e].str) || priorVCV[:e].str=="I" 
+		if isempty(priorVCV[:e].str) || priorVCV[:e].str=="I" 
 				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
 				strE = Matrix(1.0I,nData,nData)
 				priorVCV[:e] = Random("I",priorVCV[:e].m,priorVCV[:e].v)
