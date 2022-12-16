@@ -19,7 +19,7 @@ struct BayesPRType
     name::String
 end
 
-BayesPR(r::Int,Float64},v::Union{Matrix{Float64},Float64};name="BayesPR") = BayesPRType(r,v,name)
+BayesPR(r::Int,v::Union{Matrix{Float64},Float64};name="BayesPR") = BayesPRType(r,v,name)
 
 
 struct RandomEffectType
