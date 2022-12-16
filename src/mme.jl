@@ -119,7 +119,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		if isempty(priorVCV[:e].str) || priorVCV[:e].str=="I" 
 				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
 				strE = Matrix(1.0I,nData,nData)
-				priorVCV[:e] = Random("I",priorVCV[:e].m,priorVCV[:e].v)
+				priorVCV[:e] = Random("I",priorVCV[:e].v)
 		elseif priorVCV[:e].str=="D"
 				strE = D ##no inverse  yet
 				error("var-cov structure \"D\" has not been implemented yet")
@@ -131,7 +131,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		printstyled("prior var-cov for \"e\" is fully  empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
 		strE = Matrix(1.0I,nData,nData)
 		#just add to priors
-		priorVCV[:e] = Random("I",0,100)
+		priorVCV[:e] = Random("I",100)
 	end
 								
 	#parameters for priors
