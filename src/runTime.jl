@@ -1,6 +1,5 @@
-using StatsModels: AbstractTerm
 
-struct RandTerm <: AbstractTerm
+struct RandTerm
     var::Char
 end
 
@@ -16,22 +15,20 @@ SNP(name::Char,path::String;map::String="") = GenomicTerm(name,path,map)
 
 struct BayesPRType
     r::Int
-    m::Union{Vector{Float64},Float64}
     v::Union{Matrix{Float64},Float64}
     name::String
 end
 
-BayesPR(r::Int,m::Union{Vector{Float64},Float64},v::Union{Matrix{Float64},Float64};name="BayesPR") = BayesPRType(r,m,v,name)
+BayesPR(r::Int,Float64},v::Union{Matrix{Float64},Float64};name="BayesPR") = BayesPRType(r,v,name)
 
 
 struct RandomEffectType
     str::Any
-    m::Union{Vector{Float64},Float64}
     v::Union{Matrix{Float64},Float64}
     type::Int
 end
 
-Random(str::Any,m::Union{Vector{Float64},Float64},v::Union{Matrix{Float64},Float64};type=1) = RandomEffectType(str,m,v,type)
+Random(str::Any,v::Union{Matrix{Float64},Float64};type=1) = RandomEffectType(str,v,type)
 
 
 struct SummaryStatistics
