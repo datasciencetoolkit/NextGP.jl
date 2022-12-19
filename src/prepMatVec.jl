@@ -70,6 +70,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 	else
 
 		pedigree,Ainv = makePed(path2ped,userData.ID)
+		Ainv = Symmetric(Ainv)
 		
 		#sort data by pedigree. Needs to be carefully checked
 		userData.origID = userData.ID
@@ -103,7 +104,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict,p
 			
 			#str field can only be in GBLUP for marker related analysis
 			if haskey(priorVCV,arg1) && in(:str,fieldnames(typeof(priorVCV[arg1])))
-				iGRel = inv(makeG(thisM;method=priorVCV[arg1].type))
+				iGRel = Symmetric(inv(makeG(thisM;method=priorVCV[arg1].type)))
 				push!(summarize,[arg1,"GBLUP",typeof(iGRel),size(iGRel,2)])
 				Z[arg1] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>arg3[1],:method=>"GBLUP",:str=>"G",:iVarStr=>iGRel,:dims=>size(iGRel),:levels=>["Ind$i" for i in 1:size(thisM,2)]) 	
 		
