@@ -39,7 +39,7 @@ function setVarCovStr!(zSet::ExprOrSymbol,Z::Dict,priorVCV,varU_prior::Dict)
 	else	
 		printstyled("prior var-cov for $zSet is empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
 		varU_prior[zSet] = 100
-		priorVCV[zSet] = Random("I",0,100)
+		priorVCV[zSet] = Random("I",100)
 		Z[zSet][:iVarStr] = Matrix(1.0I,Z[zSet][:dims][2],Z[zSet][:dims][2])
 	end
 end
