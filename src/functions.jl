@@ -147,8 +147,8 @@ end
 function sampleCoVarU(iMat,scale_ranVar,df_ranVar,effVec)
 	n = size(iMat,2)
 #	return rand(InverseWishart(df_ranVar + n, effVec*iMat*effVec' + scale_ranVar))
-	return rand(InverseWishart(df_ranVar + n, convert(Array,Symmetric(effVec*effVec')) + scale_ranVar))
-#        return rand(InverseWishart(df_ranVar + n, convert(Array,Symmetric(effVec*iMat*effVec')) + scale_ranVar))
+#	return rand(InverseWishart(df_ranVar + n, convert(Array,Symmetric(effVec*effVec')) + scale_ranVar))
+        return rand(InverseWishart(df_ranVar + n, convert(Array,Symmetric(effVec*iMat*effVec')) + scale_ranVar))
 end
 
 #sample marker variances
