@@ -67,7 +67,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		println("X levels blocked vcat: $(vcat(getindex.(getindex.(Ref(X), blk),:levels)...))")
 #		println("X levels blocked hcat vcat: $(hcat(vcat(getindex.(getindex.(Ref(X), blk),:levels)...)...))")
 #		X[blk][:levels] = hcat(vcat(getindex.(getindex.(Ref(X), blk),:levels)...)...)
-		X[blk][:levels] = getindex.(getindex.(Ref(X), blk),:levels)
+		X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels))
 		X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
 		X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
 		for d in blk
