@@ -66,7 +66,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		println("X levels blocked nothing: $(getindex.(getindex.(Ref(X), blk),:levels))")
 		println("X levels blocked vcat: $(vcat(getindex.(getindex.(Ref(X), blk),:levels)...))")
 #		println("X levels blocked hcat vcat: $(hcat(vcat(getindex.(getindex.(Ref(X), blk),:levels)...)...))")
-#		X[blk][:levels] = hcat(vcat(getindex.(getindex.(Ref(X), blk),:levels)...)...)
 		X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
 		X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
 		X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
@@ -432,13 +431,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 	#########make MCMC output files.
 	
-#		println("X LEVELS nothing: $([value[:levels] for (key, value) in X])")
-#		println("X LEVELS hcat: $(hcat([value[:levels] for (key, value) in X]...))")
-#		println("X LEVELS hcat vcat: $(hcat(vcat([value[:levels] for (key, value) in X]...)...))")
-#		println("X LEVELS vcat hcat: $(vcat(hcat([value[:levels] for (key, value) in X]...)...))")
-
-
-#	isempty(blocks) ? levelsX = hcat(vcat([value[:levels] for (key, value) in X]...)...) : levelsX = hcat([value[:levels] for (key, value) in X]...)
 	isempty(blocks) ? levelsX = hcat(vcat([value[:levels] for (key, value) in X]...)...) : levelsX = hcat(vcat([vcat(value[:levels]) for (key, value) in X]...)...)
 
 	IO.outMCMC(outPut,"b",levelsX)
