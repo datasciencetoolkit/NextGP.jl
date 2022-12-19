@@ -387,13 +387,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	#storage
 
 	varU = deepcopy(varU_prior) #for storage
-	println("varU: $varU")
-	for(keys,values) in varU
-    		if isa(values,Matrix)
-        	varU[keys] = Matrix(Diagonal(varU[keys]))
-    		end
-	end
-	println("varU: $varU")
 
 	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
         for mSet in keys(M)
