@@ -81,7 +81,7 @@ function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Flo
 		ycorr .+= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
 	end
 	u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
-#	varU[zSet] = sampleCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
+	varU[zSet] = sampleCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
 	for i in 1:nCol
 		ycorr .-= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
 	end
@@ -146,8 +146,11 @@ end
 
 function sampleCoVarU(iMat,scale_ranVar,df_ranVar,effVec)
 	n = size(iMat,2)
-#	return rand(InverseWishart(df_ranVar + n, effVec*iMat*effVec' + scale_ranVar))
-#	return rand(InverseWishart(df_ranVar + n, convert(Array,Symmetric(effVec*effVec')) + scale_ranVar))
+	println(df_ranVar)
+	println(n)
+	println(effVec*iMat*effVec')
+	println(scale_ranVar)
+	println(inv(effVec*iMat*effVec'))
         return rand(InverseWishart(df_ranVar + n, convert(Array,Symmetric(effVec*iMat*effVec' + scale_ranVar))))
 end
 
