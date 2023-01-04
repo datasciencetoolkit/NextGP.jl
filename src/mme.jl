@@ -414,7 +414,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	end
 
 	for mSet in keys(M)
-		str = "$(M[mSet][:nRegions]) block(s)"
+		M[mSet][:method] == "BayesPR" ? str = "$(M[mSet][:method]) $(M[mSet][:nRegions]) block(s)" : str = "$(M[mSet][:method])"
 		push!(summarize,[mSet,"Random (Marker)",str,M[mSet][:df],M[mSet][:scale]])
 	end
 	
