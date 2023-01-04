@@ -465,7 +465,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			for m in mSet
    				IO.outMCMC(outPut,"beta$m",hcat(M[mSet][:levels]...))
 				IO.outMCMC(outPut,"delta$m",hcat(M[mSet][:levels]...))
-				IO.outMCMC(outPut,"pi$m",hcat(M[mSet][:levels]...))
 			end
 		end
         end
