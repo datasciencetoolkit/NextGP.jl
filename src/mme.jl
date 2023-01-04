@@ -276,7 +276,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			M[pSet][:Mp] = []
 			
 			if priorVCV[pSet].name == "BayesPR"
-				printstyled("Running BayesPR for $pSet \n"; color = :black)
 				M[pSet][:method] = "BayesPR"
 				M[pSet][:funct] = sampleBayesPR!
 				if isempty(M[pSet][:map])		
