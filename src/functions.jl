@@ -161,7 +161,7 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			end
 		end
 	end
-	println("fitted=$nLoci")
+	println("pi=$(nLoci/M[:mSet].dim")
 end
 
 #####
