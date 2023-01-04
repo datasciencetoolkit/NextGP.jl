@@ -160,8 +160,8 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 				varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),0)
 			end
 		end
-		println("fitted=$nLoci")
 	end
+	println("fitted=$nLoci")
 end
 
 #####
