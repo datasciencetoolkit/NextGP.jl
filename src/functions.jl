@@ -12,8 +12,8 @@ include("outFiles.jl")
 
 export sampleVarE
 export sampleX!
-export sampleBayesPR!
-export BayesPR
+export sampleBayesPR!,sampleBayesB!
+export BayesPR,BayesB
 export sampleZandZVar!
 
 #Sampling fixed effects
