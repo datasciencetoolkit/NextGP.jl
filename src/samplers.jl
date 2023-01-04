@@ -75,6 +75,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,chainLen
 			for mSet in keys(M)
 				if isa(mSet,Symbol)
 					IO.outMCMC(outPut,"beta$mSet",beta[M[mSet].pos])
+					IO.outMCMC(outPut,"delta$mSet",delta[M[mSet].pos])
 				elseif isa(mSet,Tuple)
 					for p in M[mSet].pos
 						mSet2print = mSet[p]
