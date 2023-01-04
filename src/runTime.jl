@@ -27,12 +27,12 @@ BayesPR(r::Int,v::Union{Matrix{Float64},Float64};name="BayesPR") = BayesPRType(r
 
 
 struct BayesBType
-    π::PiTypes
+    pi::PiTypes
     v::VarCovarTypes
     name::String
 end
 
-BayesB(π::PiTypes,v::VarCovarTypes;name="BayesB") = BayesBType(π,v,name)
+BayesB(pi::PiTypes,v::VarCovarTypes;name="BayesB") = BayesBType(pi,v,name)
 
 
 struct RandomEffectType
