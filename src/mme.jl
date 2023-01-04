@@ -274,23 +274,36 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
 			end
 			M[pSet][:Mp] = []
-												
-			if isempty(M[pSet][:map])		
-				if priorVCV[pSet].r == 1
-					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
-					theseRegions = [r:r for r in 1:size(nowM,2)]
+			
+			if priorVCV[pSet].name == "BayesPR"
+				printstyled("Running BayesPR for $pSet \n"; color = :black)
+				M[pSet][:method] = sampleBayesPR!
+				if isempty(M[pSet][:map])		
+					if priorVCV[pSet].r == 1
+						printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
+						theseRegions = [r:r for r in 1:size(nowM,2)]
+						M[pSet][:regionArray] = theseRegions
+					elseif priorVCV[pSet].r == 9999
+						printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
+						theseRegions = [1:r for r in size(nowM,2)]
+						M[pSet][:regionArray] = theseRegions
+					else throw(ArgumentError("Please enter a valid region size (1 or 9999)"))
+					end
+				else
+					theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
 					M[pSet][:regionArray] = theseRegions
-				elseif priorVCV[pSet].r == 9999
-					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
-					theseRegions = [1:r for r in size(nowM,2)]
-					M[pSet][:regionArray] = theseRegions
-				else throw(ArgumentError("Please enter a valid region size (1 or 9999)"))
-				end
-			else
-				theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
-				M[pSet][:regionArray] = theseRegions
-			end	
-			M[pSet][:nRegions] = length(theseRegions)
+				end	
+				M[pSet][:nRegions] = length(theseRegions)
+			elseif priorVCV[mSet].name == "BayesB"
+				printstyled("Running BayesB for $pSet \n"; color = :black)
+				M[pSet][:method] = sampleBayesB!
+			elseif priorVCV[mSet].name == "BayesC"
+				printstyled("Running BayesC for $pSet \n"; color = :black)
+				M[pSet][:method] = sampleBayesC!
+			elseif priorVCV[mSet].name == "BayesR"
+				printstyled("Running BayesR for $pSet \n"; color = :black)
+				M[pSet][:method] = sampleBayesR!
+			end
 			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
 			nowM = 0
 		#tuple of symbols (:M1,:M2)
@@ -402,20 +415,25 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 
 	###Bayesian Alphabet methods
-	BayesX = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
+#	BayesX = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
+
+#	for mSet in keys(M)
+#		if mSet ∈ keys(priorVCV)
+			##priorVCV[mSet].name == "BayesPR" ? BayesX[mSet] = sampleBayesPR! : nothing
+#			priorVCV[mSet].name == "BayesPR" ? M[mSet][:method] = sampleBayesPR! : nothing
+#			priorVCV[mSet].name == "BayesB" ? M[mSet][:method] = sampleBayesB! : nothing
+#			str = "$(M[mSet][:nRegions]) block(s)"
+#		else #### later, handel this above, when dealing with priorVCV is allowed to be empty
+#			BayesX[mSet] = BayesPR #with region size 9999
+#			str = "WG(I)"
+		     	#value = 0.001
+#		end
+	push!(summarize,[mSet,"Random (Marker)",str,M[mSet][:df],M[mSet][:scale]])
+#	end
 
 	for mSet in keys(M)
-		if mSet ∈ keys(priorVCV)
-			##priorVCV[mSet].name == "BayesPR" ? BayesX[mSet] = sampleBayesPR! : nothing
-			priorVCV[mSet].name == "BayesPR" ? M[mSet][:method] = sampleBayesPR! : nothing
-			priorVCV[mSet].name == "BayesB" ? M[mSet][:method] = sampleBayesB! : nothing
-			str = "$(M[mSet][:nRegions]) block(s)"
-		else #### later, handel this above, when dealing with priorVCV is allowed to be empty
-			BayesX[mSet] = BayesPR #with region size 9999
-			str = "WG(I)"
-		     	#value = 0.001
-		end
-	push!(summarize,[mSet,"Random (Marker)",str,M[mSet][:df],M[mSet][:scale]])
+		str = "$(M[mSet][:nRegions]) block(s)"
+		push!(summarize,[mSet,"Random (Marker)",str,M[mSet][:df],M[mSet][:scale]])
 	end
 	
 
