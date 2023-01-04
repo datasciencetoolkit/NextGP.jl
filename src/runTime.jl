@@ -1,6 +1,6 @@
 
-DiffOrSameπ = Union{Vector{Float64},Float64}
-DiffOrSamePriorCoVar = Union{Vector{Matrix{Float64}},Vector{Float64},Matrix{Float64}
+PiTypes = Union{Vector{Float64},Float64} #pi can be different (vector) or same per SNP (NO COR BayesB YET)
+VarCovarTypes = Union{Vector{Matrix{Float64}},Vector{Float64},Matrix{Float64},Float64} #prior for (co)var can be different (vector) or same per SNP
 
 
 struct RandTerm
@@ -27,12 +27,12 @@ BayesPR(r::Int,v::Union{Matrix{Float64},Float64};name="BayesPR") = BayesPRType(r
 
 
 struct BayesBType
-    π::DiffOrSameπ          #pi can be different (vector) or same per SNP
-    v::DiffOrSamePriorCoVar #(co)var can be different (vector) or same per SNP
+    π::PiTypes
+    v::VarCovarTypes
     name::String
 end
 
-BayesB(π::DiffOrSameπ,v::DiffOrSamePriorCoVar;name="BayesB") = BayesBType(π,v,name)
+BayesB(π::PiTypes,v::VarCovarTypes;name="BayesB") = BayesBType(π,v,name)
 
 
 struct RandomEffectType
