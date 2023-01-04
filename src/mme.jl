@@ -413,24 +413,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		push!(summarize,[zSet,"Random",Z[zSet][:str],Z[zSet][:df],Z[zSet][:scale]])
 	end
 
-
-	###Bayesian Alphabet methods
-#	BayesX = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
-
-#	for mSet in keys(M)
-#		if mSet ∈ keys(priorVCV)
-			##priorVCV[mSet].name == "BayesPR" ? BayesX[mSet] = sampleBayesPR! : nothing
-#			priorVCV[mSet].name == "BayesPR" ? M[mSet][:method] = sampleBayesPR! : nothing
-#			priorVCV[mSet].name == "BayesB" ? M[mSet][:method] = sampleBayesB! : nothing
-#			str = "$(M[mSet][:nRegions]) block(s)"
-#		else #### later, handel this above, when dealing with priorVCV is allowed to be empty
-#			BayesX[mSet] = BayesPR #with region size 9999
-#			str = "WG(I)"
-		     	#value = 0.001
-#		end
-	push!(summarize,[mSet,"Random (Marker)",str,M[mSet][:df],M[mSet][:scale]])
-#	end
-
 	for mSet in keys(M)
 		str = "$(M[mSet][:nRegions]) block(s)"
 		push!(summarize,[mSet,"Random (Marker)",str,M[mSet][:df],M[mSet][:scale]])
