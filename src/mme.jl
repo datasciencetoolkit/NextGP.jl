@@ -19,10 +19,11 @@ using .functions
 export getMME!
 
 #define type for priorVCV to include Expression :(1|Dam)  or Symbol (:Dam)
-ExprOrSymbol = Union{Expr,Symbol,Tuple}
+ExprOrSymbol = Union{Expr,Symbol}
+ExprOrSymbolOrTuple = Union{Expr,Symbol,Tuple}
 
 #set up (co)variance structures
-function setVarCovStr!(zSet::ExprOrSymbol,Z::Dict,priorVCV,varU_prior::Dict)
+function setVarCovStr!(zSet::ExprOrSymbolOrTuple,Z::Dict,priorVCV,varU_prior::Dict)
 	if haskey(priorVCV,zSet)	
 		if ismissing(priorVCV[zSet].str) || priorVCV[zSet].str=="I" 
 			printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
@@ -55,7 +56,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
         #initial computations and settings
 	ycorr = deepcopy(Y)
 
-	priorVCV = convert(Dict{ExprOrSymbol, Any},priorVCV)	
+	priorVCV = convert(Dict{ExprOrSymbolOrTuple, Any},priorVCV)	
 	
 	### X and b	
 	
@@ -461,7 +462,10 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		
 	#arbitrary marker names
 	for mSet in keys(M)
-		if isa(mSet,Tuple)
+		if isa(mSet,Symbol)
+			IO.outMCMC(outPut,"beta$m",hcat(M[mSet][:levels]...))
+			IO.outMCMC(outPut,"delta$m",hcat(M[mSet][:levels]...))
+		elseif isa(mSet,Tuple)
 			for m in mSet
    				IO.outMCMC(outPut,"beta$m",hcat(M[mSet][:levels]...))
 				IO.outMCMC(outPut,"delta$m",hcat(M[mSet][:levels]...))
