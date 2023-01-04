@@ -254,6 +254,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	############priorVCV cannot be empty for markers, currently!!																	
 
 	beta = []
+	delta = []
 
 	#make mpm
 	posMcounter = 0
@@ -311,7 +312,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:method]   = "BayesR"
 				M[pSet][:funct] = sampleBayesR!
 			end
-			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
+			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
+			delta = push!(delta,zeros(Float64,1,M[pSet][:dims][2]))
 			nowM = 0
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
