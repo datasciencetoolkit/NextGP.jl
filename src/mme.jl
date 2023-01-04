@@ -406,10 +406,10 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 	for mSet in keys(M)
 		if mSet ∈ keys(priorVCV)
-			priorVCV[mSet].name == "BayesPR" ? BayesX[mSet] = sampleBayesPR! : nothing
-			#BayesX[mSet] = typeof(priorVCV[mSet])
+			##priorVCV[mSet].name == "BayesPR" ? BayesX[mSet] = sampleBayesPR! : nothing
+			priorVCV[mSet].name == "BayesPR" ? M[mSet][:method] = sampleBayesPR! : nothing
+			priorVCV[mSet].name == "BayesB" ? M[mSet][:method] = sampleBayesB! : nothing
 			str = "$(M[mSet][:nRegions]) block(s)"
-			#value = priorVCV[mSet].v
 		else #### later, handel this above, when dealing with priorVCV is allowed to be empty
 			BayesX[mSet] = BayesPR #with region size 9999
 			str = "WG(I)"
