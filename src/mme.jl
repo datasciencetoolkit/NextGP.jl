@@ -472,7 +472,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	Z  = myUnzip(Z)
 	M  = myUnzip(M)	
 	
-	return ycorr, nData, dfE, scaleE, X, b, Z, u, varU, M,  beta, varBeta, BayesX
+	return ycorr, nData, dfE, scaleE, X, b, Z, u, varU, M,  beta, varBeta
 	
 end
 
