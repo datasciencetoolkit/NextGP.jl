@@ -143,8 +143,8 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) + getindex(M[mSet].rhs,locus)
 			v0 = getindex(M[mSet].mpm,locus)*varE
 			v1 = (getindex(M[mSet].mpm,locus)^2)*varBeta[mSet][r] + v0
-        		logDelta0 = -0.5*(log(v0) + rhs^2/v0) + M[mSet].logPiOut            # this locus not fitted
-			logDelta1 = -0.5*(log(v1) + rhs^2/v1) + M[mSet].logPiIn             # this locus fitted       
+        		logDelta0 = -0.5*(log(v0) + (rhs^2)/v0) + M[mSet].logPiOut            # this locus not fitted
+			logDelta1 = -0.5*(log(v1) + (rhs^2)/v1) + M[mSet].logPiIn             # this locus fitted       
         		probDelta1 = 1.0/(1.0 + exp(logDelta0-logDelta1))
 			if rand() < probDelta1
 				setindex!(delta[M[mSet].pos],1,locus)
