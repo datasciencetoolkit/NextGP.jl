@@ -463,8 +463,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	#arbitrary marker names
 	for mSet in keys(M)
 		if isa(mSet,Symbol)
-			IO.outMCMC(outPut,"beta$m",hcat(M[mSet][:levels]...))
-			IO.outMCMC(outPut,"delta$m",hcat(M[mSet][:levels]...))
+			IO.outMCMC(outPut,"beta$mSet",hcat(M[mSet][:levels]...))
+			IO.outMCMC(outPut,"delta$mSet",hcat(M[mSet][:levels]...))
 		elseif isa(mSet,Tuple)
 			for m in mSet
    				IO.outMCMC(outPut,"beta$m",hcat(M[mSet][:levels]...))
