@@ -277,7 +277,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			
 			if priorVCV[pSet].name == "BayesPR"
 				printstyled("Running BayesPR for $pSet \n"; color = :black)
-				M[pSet][:method] = sampleBayesPR!
+				M[pSet][:method] = "BayesPR"
+				M[pSet][:function] = sampleBayesPR!
 				if isempty(M[pSet][:map])		
 					if priorVCV[pSet].r == 1
 						printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
@@ -296,13 +297,16 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:nRegions] = length(theseRegions)
 			elseif priorVCV[mSet].name == "BayesB"
 				printstyled("Running BayesB for $pSet \n"; color = :black)
-				M[pSet][:method] = sampleBayesB!
+				M[pSet][:method]   = "BayesB"
+				M[pSet][:function] = sampleBayesB!
 			elseif priorVCV[mSet].name == "BayesC"
 				printstyled("Running BayesC for $pSet \n"; color = :black)
-				M[pSet][:method] = sampleBayesC!
+				M[pSet][:method]   = "BayesC"
+				M[pSet][:function] = sampleBayesC!
 			elseif priorVCV[mSet].name == "BayesR"
 				printstyled("Running BayesR for $pSet \n"; color = :black)
-				M[pSet][:method] = sampleBayesR!
+				M[pSet][:method]   = "BayesR"
+				M[pSet][:function] = sampleBayesR!
 			end
 			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
 			nowM = 0
