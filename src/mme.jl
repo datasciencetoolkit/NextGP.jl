@@ -313,7 +313,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:funct] = sampleBayesR!
 			end
 			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
-			delta = push!(delta,zeros(Float64,1,M[pSet][:dims][2]))
+			delta = push!(delta,ones(Float64,1,M[pSet][:dims][2]))
 			nowM = 0
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
@@ -482,7 +482,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	Z  = myUnzip(Z)
 	M  = myUnzip(M)	
 	
-	return ycorr, nData, dfE, scaleE, X, b, Z, u, varU, M,  beta, varBeta
+	return ycorr, nData, dfE, scaleE, X, b, Z, u, varU, M,  beta, varBeta, delta
 	
 end
 
