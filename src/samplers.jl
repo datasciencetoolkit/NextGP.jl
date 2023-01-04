@@ -45,7 +45,9 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,BayesX,c
 	
 		#sample marker effects and variances
 		for mSet in keys(M)
-			BayesX[mSet](mSet,M,beta,ycorr,varE,varBeta)
+			#BayesX[mSet](mSet,M,beta,ycorr,varE,varBeta)
+			println("running $(M[mSet].method) for $mSet")
+			M[mSet].method(mSet,M,beta,ycorr,varE,varBeta)
 		end
 				               		
         	#print
