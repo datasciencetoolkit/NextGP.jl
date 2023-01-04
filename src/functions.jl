@@ -92,7 +92,7 @@ end
 
 ##### Component-wise, seperated functions for symbol and tuple
 
-function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -113,7 +113,7 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,ycorr::Vector{Float64}
 end
 	
 ##### Component-wise, seperated functions for symbol and tuple
-function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	for (r,theseLoci) in enumerate(M[mSet].regionArray)
 		regionSize = length(theseLoci)
 		invB = inv(varBeta[mSet][r])
@@ -130,7 +130,7 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,ycorr::Vector{Float64},
 end
 
 
-function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
