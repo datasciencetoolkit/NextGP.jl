@@ -294,7 +294,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
 					M[pSet][:regionArray] = theseRegions
 				end	
-				M[pSet][:nRegions] = length(theseRegions)
 			elseif priorVCV[pSet].name == "BayesB"
 				printstyled("Running BayesB for $pSet \n"; color = :black)
 				M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
@@ -314,6 +313,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			end
 			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
 			delta = push!(delta,ones(Float64,1,M[pSet][:dims][2]))
+			M[pSet][:nRegions] = length(theseRegions)
 			nowM = 0
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
