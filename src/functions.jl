@@ -153,15 +153,15 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 				meanBeta = lhs\rhs
 				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-				varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),1)
+				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),1)
 			else 
 				setindex!(beta[M[mSet].pos],0.0,locus)
 				setindex!(delta[M[mSet].pos],0,locus)
-				varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),0)
+				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),0)
 			end
 		end
 	end
-	println("pi=$(nLoci/M[mSet].dims[2])")
+#	println("pi=$(nLoci/M[mSet].dims[2])")
 end
 
 #####
