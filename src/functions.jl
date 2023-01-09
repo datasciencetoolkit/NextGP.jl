@@ -171,8 +171,6 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	local lambda::Float64
 	nLoci = 0
 	lambda = varE/(varBeta[mSet][1])
-	println("varBeta[mSet]: $(varBeta[mSet])")
-	println("varBeta[mSet][1]: $(varBeta[mSet][1])")
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
