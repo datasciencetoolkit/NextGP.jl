@@ -294,7 +294,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				else
 					theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
 					M[pSet][:regionArray] = theseRegions
-				end	
+				end
+				M[pSet][:nVarCov] = length(theseRegions)
 			elseif priorVCV[pSet].name == "BayesB"
 				M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
 				M[pSet][:logPiOut]    = log(1.0 .- priorVCV[pSet].pi)
@@ -302,10 +303,16 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:funct]       = sampleBayesB!
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
+				M[pSet][:nVarCov] = length(theseRegions)
 			elseif priorVCV[pSet].name == "BayesC"
 				printstyled("Running BayesC for $pSet \n"; color = :black)
+				M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
+				M[pSet][:logPiOut]    = log(1.0 .- priorVCV[pSet].pi)
 				M[pSet][:method]   = "BayesC"
 				M[pSet][:funct] = sampleBayesC!
+				theseRegions          = [r:r for r in 1:size(nowM,2)]
+				M[pSet][:regionArray] = theseRegions
+				M[pSet][:nVarCov] = 1
 			elseif priorVCV[pSet].name == "BayesR"
 				printstyled("Running BayesR for $pSet \n"; color = :black)
 				M[pSet][:method]   = "BayesR"
@@ -313,7 +320,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			end
 			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
 			delta = push!(delta,ones(Float64,1,M[pSet][:dims][2]))
-			M[pSet][:nRegions] = length(theseRegions)
 			nowM = 0
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
@@ -356,7 +362,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
 				M[pSet][:regionArray] = theseRegions
 			end
-			M[pSet][:nRegions] = length(theseRegions)
+			M[pSet][:nVarCov] = length(theseRegions)
 		end
 	end
 	
@@ -376,6 +382,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
                         summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                 end
 		
+		#wheenn no prior was given, the below code should include only 9999 case. Delete the rest!
 		if isempty(M[pSet][:map])		
 			if priorVCV[pSet].r == 1
 				printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
@@ -391,7 +398,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],9999)
 			M[pSet][:regionArray] = theseRegions
 		end
-		M[pSet][:nRegions] = length(theseRegions)
+		M[pSet][:nVarCov] = length(theseRegions)
 	end
 
 	
@@ -412,7 +419,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
         for mSet in keys(M)
-                varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nRegions]] #later, direct reference to key when varM_prior is a dictionary
+                varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]] #later, direct reference to key when varM_prior is a dictionary
         end
 
 	#summarize analysis
@@ -423,7 +430,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	end
 
 	for mSet in keys(M)
-		M[mSet][:method] == "BayesPR" ? str = "$(M[mSet][:method]) $(M[mSet][:nRegions]) block(s)" : str = "$(M[mSet][:method])"
+		M[mSet][:method] == "BayesPR" ? str = "$(M[mSet][:method]) $(M[mSet][:nVarCov]) block(s)" : str = "$(M[mSet][:method])"
 		push!(summarize,[mSet,"Random (Marker)",str,M[mSet][:df],M[mSet][:scale]])
 	end
 	
@@ -473,7 +480,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
         end
 	
 	for mSet in keys(varBeta)
-		isa(mSet, Symbol) ? nameM_VCV = ["reg_$r" for r in 1:M[mSet][:nRegions]] : nameM_VCV = vcat([["reg_$(i)_$j" for j in 1:size(M[mSet][:scale],2)^2] for i in 1:M[mSet][:nRegions]]...)
+		isa(mSet, Symbol) ? nameM_VCV = ["reg_$r" for r in 1:M[mSet][:nVarCov]] : nameM_VCV = vcat([["reg_$(i)_$j" for j in 1:size(M[mSet][:scale],2)^2] for i in 1:M[mSet][:nRegions]]...)
 		IO.outMCMC(outPut,"var$mSet",[nameM_VCV]) #[] to have it as one row
         end
 	
