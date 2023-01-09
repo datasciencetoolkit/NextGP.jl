@@ -34,6 +34,14 @@ end
 
 BayesB(pi::PiTypes,v::VarCovarTypes;name="BayesB") = BayesBType(pi,v,name)
 
+struct BayesCType
+    pi::PiTypes
+    v::VarCovarTypes
+    name::String
+end
+
+BayesC(pi::PiTypes,v::VarCovarTypes;name="BayesC") = BayesCType(pi,v,name)
+
 
 struct RandomEffectType
     str::Any
