@@ -192,7 +192,7 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 				setindex!(delta[M[mSet].pos],0,locus)
 			end
 		end
-		@inbounds varBeta[mSet][1] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:),nLoci)
+		@inbounds varBeta[mSet][1] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,beta[M[mSet].pos],nLoci)
 	end
 	println("pi=$(nLoci/M[mSet].dims[2])")
 end
