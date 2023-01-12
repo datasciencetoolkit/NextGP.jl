@@ -3,7 +3,7 @@ module NextGP
 #exporting run-time equivalent of functions
 export PED
 export SNP
-export BayesPR,BayesB,BayesC
+export BayesPR,BayesB,BayesC,BayesR
 export Random
 export BayesPRType
 export SummaryStatistics
