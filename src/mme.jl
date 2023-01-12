@@ -305,7 +305,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:regionArray] = theseRegions
 				M[pSet][:nVarCov] = length(theseRegions)
 			elseif priorVCV[pSet].name == "BayesC"
-				printstyled("Running BayesC for $pSet \n"; color = :black)
 				M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
 				M[pSet][:logPiOut]    = log(1.0 .- priorVCV[pSet].pi)
 				M[pSet][:method]   = "BayesC"
@@ -315,8 +314,14 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:nVarCov] = 1
 			elseif priorVCV[pSet].name == "BayesR"
 				printstyled("Running BayesR for $pSet \n"; color = :black)
+				M[pSet][:logPiIn]     = log.(priorVCV[pSet].pi)
+#				M[pSet][:logPiOut]    = log(1.0 .- priorVCV[pSet].pi)
 				M[pSet][:method]   = "BayesR"
 				M[pSet][:funct] = sampleBayesR!
+				theseRegions          = [r:r for r in 1:size(nowM,2)]
+				M[pSet][:regionArray] = theseRegions
+				M[pSet][:nVarCov] = length(priorVCV[pSet].pi)
+				printstyled("Number of variance groups= $(M[pSet][:nVarCov]) \n"; color = :black)
 			end
 			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
 			delta = push!(delta,ones(Float64,1,M[pSet][:dims][2]))
