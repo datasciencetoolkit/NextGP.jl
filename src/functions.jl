@@ -139,7 +139,7 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) + getindex(M[mSet].rhs,locus)
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
 			v0 = getindex(M[mSet].mpm,locus)*varE
 			v1 = (getindex(M[mSet].mpm,locus)^2)*varBeta[mSet][r] + v0
         		logDelta0 = -0.5*(log(v0) + (rhs^2)/v0) + M[mSet].logPiOut            # this locus not fitted
@@ -173,7 +173,7 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) + getindex(M[mSet].rhs,locus)
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
 			v0 = getindex(M[mSet].mpm,locus)*varE
 			v1 = (getindex(M[mSet].mpm,locus)^2)*varBeta[mSet][1] + v0
         		logDelta0 = -0.5*(log(v0) + (rhs^2)/v0) + M[mSet].logPiOut            # this locus not fitted
@@ -207,7 +207,7 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) + getindex(M[mSet].rhs,locus)
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
 			v0 = getindex(M[mSet].mpm,locus)*varE
 			v1 = (getindex(M[mSet].mpm,locus)^2)*varBeta[mSet][r] + v0
         		logDelta0 = -0.5*(log(v0) + (rhs^2)/v0) + M[mSet].logPiOut            # this locus not fitted
