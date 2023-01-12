@@ -12,8 +12,7 @@ include("outFiles.jl")
 
 export sampleVarE
 export sampleX!
-export sampleBayesPR!,sampleBayesB!,sampleBayesC!
-#export BayesPR,BayesB,BayesC
+export sampleBayesPR!,sampleBayesB!,sampleBayesC!,sampleBayesR!
 export sampleZandZVar!
 
 #Sampling fixed effects
@@ -194,7 +193,41 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		end
 		@inbounds varBeta[mSet][1] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,beta[M[mSet].pos],nLoci)
 	end
-	println("pi=$(nLoci/M[mSet].dims[2])")
+#	println("pi=$(nLoci/M[mSet].dims[2])")
+end
+
+function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+	local rhs::Float64
+	local lhs::Float64
+	local meanBeta::Float64
+	local lambda::Float64
+	nLoci = zeros(length(M[mSet].logPiIn))
+	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
+		lambda = varE/(varBeta[mSet][r])
+		for locus in theseLoci::UnitRange{Int64}
+			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) + getindex(M[mSet].rhs,locus)
+			v0 = getindex(M[mSet].mpm,locus)*varE
+			v1 = (getindex(M[mSet].mpm,locus)^2)*varBeta[mSet][r] + v0
+        		logDelta0 = -0.5*(log(v0) + (rhs^2)/v0) + M[mSet].logPiOut            # this locus not fitted
+			logDelta1 = -0.5*(log(v1) + (rhs^2)/v1) + M[mSet].logPiIn             # this locus fitted       
+        		probDelta1 = 1.0/(1.0 + exp(logDelta0-logDelta1))
+			if rand() < probDelta1
+				setindex!(delta[M[mSet].pos],1,locus)
+				nLoci += 1
+				lhs = getindex(M[mSet].mpm,locus) + lambda
+				meanBeta = lhs\rhs
+				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
+				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),1)
+			else 
+				setindex!(beta[M[mSet].pos],0.0,locus)
+				setindex!(delta[M[mSet].pos],0,locus)
+				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),0)
+			end
+		end
+	end
+#	println("pi=$(nLoci/M[mSet].dims[2])")
 end
 
 #####
