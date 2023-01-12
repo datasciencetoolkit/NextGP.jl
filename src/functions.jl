@@ -201,8 +201,9 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	local lhs::Float64
 	local meanBeta::Float64
 	local lambda::Float64
-	nLoci = zeros(length(M[mSet].logPiIn))
-	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
+	nLoci = zeros(length(M[mSet].nVarCov))
+	println("nLoci: $nLoci")
+	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesR
 		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
