@@ -198,9 +198,7 @@ end
 
 function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
-	local lhs::Float64
 	local meanBeta::Float64
-	local lambda::Float64
 	nLoci = zeros(M[mSet].nVarCov)
 	varc = varBeta[mSet][1].*M[mSet].vClass
 	sumS = 0
