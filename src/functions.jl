@@ -214,6 +214,7 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 				println("v: $v")
 				println("mpm: $(getindex(M[mSet].mpm,locus))")
 				lhs[v] = getindex(M[mSet].mpm,locus) + varE/varc[v]
+				println("lhs[v]: $(lhs[v])")
 				logLc = -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
 				ExpLogL[v] = exp(logLc)
 			end
@@ -231,7 +232,7 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			sumS += (beta^2)/M[mSet].vClass[classSNP]
 		end
-		@inbounds varBeta[mSet][1] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS,nLoci)
+		@inbounds varBeta[mSet][1] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS,sum(nLoci))
 	end
 	println("pi=$(nLoci./M[mSet].dims[2])")
 	println("var=$(varBeta[mSet][1].*M[mSet].vClass)")
