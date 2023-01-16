@@ -324,8 +324,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				printstyled("Number of variance groups= $(M[pSet][:nVarCov]) \n"; color = :black)
 			end
 			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
-			println("M[pSet][:dims][2]: $(M[pSet][:dims][2])")
-			println("typeof: $(typeof(ones(Int64,1,M[pSet][:dims][2])))")
 			delta = push!(delta,ones(Int64,1,M[pSet][:dims][2]))
 			nowM = 0
 		#tuple of symbols (:M1,:M2)
@@ -373,10 +371,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		end
 	end
 	
-	println("DELTA TYPE: $(typeof.(delta))")
-	println("DELTA1 TYPE: $(typeof(delta[1]))")
-
-
 	for pSet in collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]
 		posMcounter += 1
 		M[pSet][:pos] = posMcounter
