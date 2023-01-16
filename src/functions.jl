@@ -209,9 +209,9 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			lhs = zeros(M[mSet].nVarCov)
 			ExpLogL = zeros(M[mSet].nVarCov)
 			for v in 1:M[mSet].nVarCov
-				lhs[v] = varc[v]==0.0 ? getindex(M[mSet].mpm,locus) : getindex(M[mSet].mpm,locus) + varE/varc[v]
-#				lhs[v] = getindex(M[mSet].mpm,locus) + varE/varc[v]
-				logLc = -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
+				lhs[v] = getindex(M[mSet].mpm,locus) + varE/varc[v]
+				logLc = varc[v]==0.0 ? -0.5 + M[mSet].logPi[v] : -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
+#				logLc = -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
 				ExpLogL[v] = exp(logLc)
 			end
 			
