@@ -371,6 +371,10 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		end
 	end
 	
+	println("DELTA TYPE: $(typeof.(delta))")
+	println("DELTA1 TYPE: $(typeof(delta[1]))")
+
+
 	for pSet in collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]
 		posMcounter += 1
 		M[pSet][:pos] = posMcounter
