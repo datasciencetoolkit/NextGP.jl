@@ -44,11 +44,12 @@ BayesC(pi::PiTypes,v::VarCovarTypes;name="BayesC") = BayesCType(pi,v,name)
 
 struct BayesRType
     pi::PiTypes
+    class::Vector{Float64}
     v::VarCovarTypes
     name::String
 end
 
-BayesR(pi::PiTypes,v::VarCovarTypes;name="BayesR") = BayesRType(pi,v,name)
+BayesR(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes;name="BayesR") = BayesRType(pi,class,v,name)
 
 
 struct RandomEffectType
