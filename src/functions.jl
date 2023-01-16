@@ -228,7 +228,7 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	end
 	varSNP = getindex.(Ref(M[mSet].vClass),delta[M[mSet].pos][1,:])
 	nonZeroSNPs = findall(!iszero, varSNP)
-	println("nonZeroSNP: $(nonZeroSNPs)")
+	println("nonZeroSNP: $(length(nonZeroSNPs))")
 	@inbounds varBeta[mSet][1] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS,sum(nLoci))
 	println("pi=$(nLoci./M[mSet].dims[2])")
 	println("var=$(varBeta[mSet][1].*M[mSet].vClass)")
