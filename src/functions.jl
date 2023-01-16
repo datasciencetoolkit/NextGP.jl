@@ -208,10 +208,13 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
-			
+			println("nvc: $(M[mSet].nVarCov)")
 			lhs = zeros(M[mSet].nVarCov)
+			println("lhs: $lhs")
 			ExpLogL = zeros(M[mSet].nVarCov)
 			for v in 1:M[mSet].nVarCov
+				println("v: $v")
+				println("mpm: $(getindex(M[mSet].mpm,locus))")
 				lhs[v] = getindex(M[mSet].mpm,locus) + varE/varc[v]
 				logLc = -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
 				ExpLogL[v] = exp(logLc)
