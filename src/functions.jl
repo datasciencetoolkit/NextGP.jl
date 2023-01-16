@@ -216,7 +216,7 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			
 			probs = ExpLogL./sum(ExpLogL)
 			cumProbs = cumsum(probs)
-			classSNP = findlast(x->x>=rand(), cumProbs) #position
+			classSNP = findfirst(x->x>=rand(), cumProbs) #position
 			setindex!(delta[M[mSet].pos],classSNP,locus)
 			nLoci[classSNP] += 1
 			meanBeta = lhs[classSNP]\rhs
