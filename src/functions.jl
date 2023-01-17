@@ -232,7 +232,7 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	nonZeroBeta = getindex.(Ref(beta[M[mSet].pos]),nonZeroPos)
 	sumS = sum((nonZeroBeta.^2)./varSNP[nonZeroPos])
 	
-	@inbounds varBeta[mSet][1] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS,sum(nLoci))
+	@inbounds varBeta[mSet][1] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS,length(nonZeroPos))
 	println("pi=$(nLoci./M[mSet].dims[2])")
 	println("var=$(varBeta[mSet][1].*M[mSet].vClass)")
 end
