@@ -276,7 +276,6 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			rbound = exp(var_mui+temp)
 			exp((-2/3)*log(c1)) < rbound ? rbound=exp((-2/3)*log(c1)) : nothing
 			-0.5*bi*bi/log(c2) > lbound ? lbound=-0.5*bi*bi/log(c2) : nothing
-			println("l: $lbound r: $rbound")
 			if lbound >= rbound
 				trapped +=1
 			else
