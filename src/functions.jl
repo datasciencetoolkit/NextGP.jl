@@ -12,7 +12,7 @@ include("outFiles.jl")
 
 export sampleVarE
 export sampleX!
-export sampleBayesPR!,sampleBayesB!,sampleBayesC!,sampleBayesR!
+export sampleBayesPR!,sampleBayesB!,sampleBayesC!,sampleBayesR!,sampleBayesLV!
 export sampleZandZVar!
 
 #Sampling fixed effects
@@ -238,7 +238,9 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 #	println("var=$(varBeta[mSet][1].*M[mSet].vClass)")
 end
 
-
+function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+	println("running BayesLV")
+end
 
 #####
 
