@@ -257,7 +257,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	end
 	
 	# model variance
-	var_var = 0.001
+	var_var = 0.1
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
 		for locus in theseLoci::UnitRange{Int64}
 			vari = varBeta[mSet][locus]
