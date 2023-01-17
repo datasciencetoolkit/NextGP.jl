@@ -258,6 +258,8 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	
 	# model variance
 	var_var = 0.1
+	trapped = 0
+	notTrapped = 0
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
 		for locus in theseLoci::UnitRange{Int64}
 			vari = varBeta[mSet][locus]
@@ -276,15 +278,16 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			-0.5*bi*bi/log(c2) > lbound ? lbound=-0.5*bi*bi/log(c2) : nothing
 			println("l: $lbound r: $rbound")
 			if lbound >= rbound
-				println("Trap in sampling!!")
+				trapped +=1
 			else
-				println("I feel good!!")
+				notTrapped +=1
 				varBeta[mSet][locus] = lbound+rand()*(rbound-lbound)
 				log_vari = log(varBeta[mSet][locus])
 				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
 			end
 		end
 	end
+	println("trapped: $trapped notTrapped: $notTrapped")
 	M[mSet].SNPVARRESID .+= M[mSet].covariates*M[mSet].c			
 	rhsC = transpose(M[mSet].covariates)*M[mSet].SNPVARRESID
 	meanC   = M[mSet].iCpC*rhsC
