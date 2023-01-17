@@ -199,16 +199,17 @@ end
 function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local meanBeta::Float64
-	nLoci = zeros(M[mSet].nVarCov)
+	nVarComp = length(M[mSet].vClass)
+	nLoci = zeros(nVarComp)
 	varc = varBeta[mSet][1].*M[mSet].vClass
 	sumS = 0
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
-			lhs = zeros(M[mSet].nVarCov)
-			ExpLogL = zeros(M[mSet].nVarCov)
-			for v in 1:M[mSet].nVarCov
+			lhs = zeros(nVarComp)
+			ExpLogL = zeros(nVarComp)
+			for v in 1:nVarComp
 				lhs[v] = getindex(M[mSet].mpm,locus) + varE/varc[v]
 				logLc = varc[v]==0.0 ? M[mSet].logPi[v] : -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
 #				logLc = -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
@@ -233,6 +234,7 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	sumS = sum((nonZeroBeta.^2)./varSNP[nonZeroPos])
 	
 	@inbounds varBeta[mSet][1] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS,length(nonZeroPos))
+	println("length nonzero: $(length(nonZeroPos))")
 	println("pi=$(nLoci./M[mSet].dims[2])")
 	println("var=$(varBeta[mSet][1].*M[mSet].vClass)")
 end
