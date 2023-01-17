@@ -282,11 +282,11 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
 			end
 			
-			M[mSet].SNPVARRESID[locus] .+= M[mSet].covariates*c			
+			M[mSet].SNPVARRESID[locus] .+= M[mSet].covariates*M[mSet].c			
 			rhsC = transpose(M[mSet].covariates)*ycorr
 			meanC   = M[mSet].iCpC*rhsC
-			c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*var_var))))
-			M[mSet].SNPVARRESID[locus] .-= M[mSet].covariates*c
+			M[mSet].c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*var_var))))
+			M[mSet].SNPVARRESID[locus] .-= M[mSet].covariates*M[mSet].c
 		end
 	end
 end
