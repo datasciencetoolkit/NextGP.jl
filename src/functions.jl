@@ -240,12 +240,14 @@ end
 
 function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	println("running BayesLV")
+	println("$(M[mSet].iCpC)")
+	println("$(M[mSet].covariates[1:10,1:end])")
 		#model variance
-		ycorr    .+= X[xSet].data*b[X[xSet].pos]
-                rhs      = X[xSet].data'*ycorr .+ X[xSet].rhs
-                meanMu   = X[xSet].ixpx*rhs
-		b[X[xSet].pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(X[xSet].ixpx*varE))))
-		ycorr    .-= X[xSet].data*b[X[xSet].pos]
+#		ycorr    .+= X[xSet].data*b[X[xSet].pos]
+#                rhs      = X[xSet].data'*ycorr .+ X[xSet].rhs
+#                meanMu   = X[xSet].ixpx*rhs
+#		b[X[xSet].pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(X[xSet].ixpx*varE))))
+#		ycorr    .-= X[xSet].data*b[X[xSet].pos]
 
 end
 
