@@ -272,12 +272,13 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			temp = sqrt(-2*var_var*log(c3))
 			lbound = exp(var_mui-temp)
 			rbound = exp(var_mui+temp)
-			exp((-2/3)*log(c1)) < rbound ? rbound=temp : nothing
-			-0.5*bi*bi/log(c2) > lbound ? lbound=temp : nothing
+			exp((-2/3)*log(c1)) < rbound ? rbound=exp((-2/3)*log(c1)) : nothing
+			-0.5*bi*bi/log(c2) > lbound ? lbound=-0.5*bi*bi/log(c2) : nothing
 			println("l: $lbound r: $rbound")
 			if lbound >= rbound
 				println("Trap in sampling!!")
 			else
+				println("I feel good!!")
 				varBeta[mSet][locus] = lbound+rand()*(rbound-lbound)
 				log_vari = log(varBeta[mSet][locus])
 				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
