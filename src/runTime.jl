@@ -53,6 +53,7 @@ BayesR(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes;name="BayesR") = Baye
 
 struct BayesLogVarType
     v::Union{Matrix{Float64},Float64}
+    f::
     covariates::String
     name::String
 end
