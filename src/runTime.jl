@@ -1,5 +1,3 @@
-using StatsModels
-
 PiTypes = Union{Vector{Float64},Float64} #pi can be different (vector) or same per SNP (NO COR BayesB YET). BayesR also takes a vector of pi
 VarCovarTypes = Union{Vector{Matrix{Float64}},Vector{Float64},Matrix{Float64},Float64} #prior for (co)var can be different (vector) or same per SNP
 
@@ -55,11 +53,11 @@ BayesR(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes;name="BayesR") = Baye
 struct BayesLogVarType
     v::Union{Matrix{Float64},Float64}
     f::StatsModels.TermOrTerms
-    covariates::String
+    covariates::DataFrame
     name::String
 end
 
-BayesLV(v::Float64,f::StatsModels.TermOrTerms,covariates::String;name="BayesLV") = BayesLogVarType(v,f,covariates,name)
+BayesLV(v::Float64,f::StatsModels.TermOrTerms,covariates::DataFrame;name="BayesLV") = BayesLogVarType(v,f,covariates,name)
 
 struct RandomEffectType
     str::Any
