@@ -40,7 +40,7 @@ end
     * `99`: SNPs on the same chromosome has the same (co)variance
     * `9999`: All SNPs have the same (co)variance
     * One can define any other region size, for example, 30, 40 or 100.
-* `v` is the prior variance of SNP. A common choice is $\sigma^{2}_{a}/\sum{2pq}$
+* `v` is the variance for the prior distribution of SNPs.
 """
 BayesPR(r::Int,v::Union{Matrix{Float64},Float64};name="BayesPR") = BayesPRType(r,v,name)
 
