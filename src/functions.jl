@@ -256,13 +256,39 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 		end
 	end
 	
-#		model variance
-#		ycorr    .+= X[xSet].data*b[X[xSet].pos]
-#                rhs      = X[xSet].data'*ycorr .+ X[xSet].rhs
-#                meanMu   = X[xSet].ixpx*rhs
-#		b[X[xSet].pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(X[xSet].ixpx*varE))))
-#		ycorr    .-= X[xSet].data*b[X[xSet].pos]
-
+	# model variance
+	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
+		varResidual = 0.001
+		for locus in theseLoci::UnitRange{Int64}
+			vari = varBeta[mSet][locus]
+			bi = getindex(beta[M[mSet].pos],locus)
+			log_vari = log(vari)
+			var_resid = M.SNPVARRESID[locus]
+			var_mui = log_vari - var_resid
+			
+			c1 = ^(vari,-1.51)
+			c2 = exp(-0.5*bi*bi/vari)*rand()
+			c3 = exp(-0.5*var_resid*var_resid/var_var)*rand()
+			temp = sqrt(-2*var_var*log(c3))
+			lbound = exp(mu_var-temp)
+			ubound = exp(mu_var+temp)
+			(temp=exp((-2/3)*log(c1))) < rbound ? rbound=temp : nothing
+			(temp= -0.5*bi*bi/log(c2)) > lbound ? lbound=temp : nothing
+			if lboundd >= rbound
+				println("Trap in sampling!!")
+			else
+				varBeta[mSet][locus] = lbound+rand()*(rbound-lbound)
+				log_vari = log(varBeta[mSet][locus])
+				M.SNPVARRESID[locus] = log_vari - mu_var
+			end
+			
+			M.SNPVARRESID[locus] .+= M[mSet].covariates*c			
+			rhsC = transpose(M[mSet].covariates)*ycorr
+			meanC   = M[mSet].iCpC*rhsC
+			c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*varResidual))))
+			M.SNPVARRESID[locus] .-= M[mSet].covariates*c
+		end
+	end
 end
 
 #####
