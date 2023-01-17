@@ -11,7 +11,7 @@ export prep
 
 
 """
-	function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict{Symbol,Any}(),path2ped=[],priorVCV=[])
+	function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Symbol,Any}(),path2ped=[],priorVCV=[])
 
 * `NextGP` relies on `StatsModels.jl` package for model expression (`f`), and fixed effect design matrix generation.
 * Details for the model expression (`f`), and fixed effects coding specifications (e.g., effect or dummy coding) can be found at [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/).
@@ -23,7 +23,7 @@ export prep
     * all `String` rhs variables (also those made `Categorical`) are dummy coded, except those defined by the user in `userHints`, 
     * all `Float` rhs variables are centered.
 """
-function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict(),path2ped=[],priorVCV=[])
+function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Symbol,Any}(),path2ped=[],priorVCV=[])
 	
 #	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
 	
