@@ -255,7 +255,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 		end
 	end
-	println("varBeta[mSet]: $(varBeta[mSet])")
+	
 #		model variance
 #		ycorr    .+= X[xSet].data*b[X[xSet].pos]
 #                rhs      = X[xSet].data'*ycorr .+ X[xSet].rhs
