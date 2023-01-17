@@ -51,6 +51,13 @@ end
 
 BayesR(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes;name="BayesR") = BayesRType(pi,class,v,name)
 
+struct BayesLogVarType
+    v::Union{Matrix{Float64},Float64}
+    covariates::String
+    name::String
+end
+
+BayesLogVar(v::Union{Matrix{Float64},covariates::String,Float64};name="BayesLogVar") = BayesLogVarType(v,covariates,name)
 
 struct RandomEffectType
     str::Any
