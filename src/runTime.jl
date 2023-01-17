@@ -16,6 +16,15 @@ struct GenomicTerm
     map::String
 end
 
+"""
+        structure SNP(name::Char,path::String;map::String="")
+* Defines SNP information for further analysis.
+* `path` is the path for the marker file.
+* Marker files are currently expected to be ordered as the phenotype data.
+* The method to be applied to the data, `GBLUP`, `BayesB`, `BayesR` etc, is defined in the prior setting.
+* Map file is optional. If not provided, a Bayesian Regression model with common variance for all SNPs will be applied. If provided, shoul match the order in the genotype file.
+* One most avoid overlapping marker sets by using different `name`s.
+"""
 SNP(name::Char,path::String;map::String="") = GenomicTerm(name,path,map)
 
 struct BayesPRType
@@ -24,6 +33,15 @@ struct BayesPRType
     name::String
 end
 
+"""
+        structure BayesPR(r::Int,v::Union{Matrix{Float64},Float64};name="BayesPR")
+* `r` is the region size. In other words, the number of SNPs that share a common variance.
+    * `1`: each SNP has its own (co)variance
+    * `99`: SNPs on the same chromosome has the same (co)variance
+    * `9999`: All SNPs have the same (co)variance
+    * One can define any other region size, for example, 30, 40 or 100.
+* `v` is the prior variance of SNP. A common choice is $\sigma^{2}_{a}/\sum{2pq}$
+"""
 BayesPR(r::Int,v::Union{Matrix{Float64},Float64};name="BayesPR") = BayesPRType(r,v,name)
 
 
