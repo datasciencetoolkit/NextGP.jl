@@ -270,8 +270,8 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			c2 = exp(-0.5*bi*bi/vari)*rand()
 			c3 = exp(-0.5*var_resid*var_resid/var_var)*rand()
 			temp = sqrt(-2*var_var*log(c3))
-			lbound = exp(mu_var-temp)
-			ubound = exp(mu_var+temp)
+			lbound = exp(var_mui-temp)
+			ubound = exp(var_mui+temp)
 			(temp=exp((-2/3)*log(c1))) < rbound ? rbound=temp : nothing
 			(temp= -0.5*bi*bi/log(c2)) > lbound ? lbound=temp : nothing
 			if lboundd >= rbound
@@ -279,7 +279,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			else
 				varBeta[mSet][locus] = lbound+rand()*(rbound-lbound)
 				log_vari = log(varBeta[mSet][locus])
-				M[mSet].SNPVARRESID[locus] = log_vari - mu_var
+				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
 			end
 			
 			M[mSet].SNPVARRESID[locus] .+= M[mSet].covariates*c			
