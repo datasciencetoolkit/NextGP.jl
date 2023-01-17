@@ -57,7 +57,7 @@ struct BayesLogVarType
     name::String
 end
 
-BayesLV(v::Union{Matrix{Float64},covariates::String,Float64};name="BayesLV") = BayesLogVarType(v,covariates,name)
+BayesLV(v::Float64,covariates::String;name="BayesLV") = BayesLogVarType(v,covariates,name)
 
 struct RandomEffectType
     str::Any
