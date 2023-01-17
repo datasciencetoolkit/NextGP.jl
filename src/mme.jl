@@ -426,8 +426,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
         for mSet in keys(M)
                 varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]] #later, direct reference to key when varM_prior is a dictionary
         end
-	
-	println("varBeta: $varBeta")
 
 	#summarize analysis
 	summarize = DataFrame(Effect=Any[],Type=Any[],Str=Any[],df=Any[],scale=Any[])
