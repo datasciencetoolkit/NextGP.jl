@@ -331,6 +331,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				
 				designMat = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
 				M[pSet][:covariates] = designMat
+				M[pSet][:c] = zeros(size(designMat,2))
 				#iCpC inverse taken later
 				M[pSet][:iCpC] = designMat'designMat
 				if isa(M[pSet][:iCpC],Matrix{Float64}) 
