@@ -23,7 +23,7 @@ export prep
     * all `String` rhs variables (also those made `Categorical`) are dummy coded, except those defined by the user in `userHints`, 
     * all `Float` rhs variables are centered.
 """
-function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict{Symbol,Any}(),path2ped=[],priorVCV=[])
+function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints::Dict(),path2ped=[],priorVCV=[])
 	
 #	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
 	
