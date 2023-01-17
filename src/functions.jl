@@ -263,7 +263,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			vari = varBeta[mSet][locus]
 			bi = getindex(beta[M[mSet].pos],locus)
 			log_vari = log(vari)
-			var_resid = M.SNPVARRESID[locus]
+			var_resid = M[mSet].SNPVARRESID[locus]
 			var_mui = log_vari - var_resid
 			
 			c1 = ^(vari,-1.51)
@@ -279,14 +279,14 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			else
 				varBeta[mSet][locus] = lbound+rand()*(rbound-lbound)
 				log_vari = log(varBeta[mSet][locus])
-				M.SNPVARRESID[locus] = log_vari - mu_var
+				M[mSet].SNPVARRESID[locus] = log_vari - mu_var
 			end
 			
-			M.SNPVARRESID[locus] .+= M[mSet].covariates*c			
+			M[mSet].SNPVARRESID[locus] .+= M[mSet].covariates*c			
 			rhsC = transpose(M[mSet].covariates)*ycorr
 			meanC   = M[mSet].iCpC*rhsC
 			c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*var_var))))
-			M.SNPVARRESID[locus] .-= M[mSet].covariates*c
+			M[mSet].SNPVARRESID[locus] .-= M[mSet].covariates*c
 		end
 	end
 end
