@@ -239,9 +239,6 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 end
 
 function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
-	println("running BayesLV")
-	println("$(M[mSet].iCpC)")
-	println("$(M[mSet].covariates[1:10,1:end])")
 		#model variance
 #		ycorr    .+= X[xSet].data*b[X[xSet].pos]
 #                rhs      = X[xSet].data'*ycorr .+ X[xSet].rhs
