@@ -329,7 +329,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:regionArray] = theseRegions
 				M[pSet][:nVarCov] = length(theseRegions)
 				M[pSet][:covariates] = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
-				println("M[pSet][:covariates]: $(M[pSet][:covariates])")
 			end
 			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
 			delta = push!(delta,ones(Int64,1,M[pSet][:dims][2]))
