@@ -320,8 +320,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:funct] = sampleBayesR!
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nVarCov] = length(priorVCV[pSet].pi)
-				printstyled("Number of variance groups= $(M[pSet][:nVarCov]) \n"; color = :black)
+				M[pSet][:nVarCov] = 1 #length(priorVCV[pSet].pi)
+				printstyled("Number of variance groups= $(length(M[pSet][:vClass])) \n"; color = :black)
 			end
 			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
 			delta = push!(delta,ones(Int64,1,M[pSet][:dims][2]))
@@ -426,6 +426,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
         for mSet in keys(M)
                 varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]] #later, direct reference to key when varM_prior is a dictionary
         end
+	
+	println("varBeta: $varBeta")
 
 	#summarize analysis
 	summarize = DataFrame(Effect=Any[],Type=Any[],Str=Any[],df=Any[],scale=Any[])
