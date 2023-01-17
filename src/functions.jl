@@ -257,8 +257,8 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	end
 	
 	# model variance
+	var_var = 0.001
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
-		varResidual = 0.001
 		for locus in theseLoci::UnitRange{Int64}
 			vari = varBeta[mSet][locus]
 			bi = getindex(beta[M[mSet].pos],locus)
@@ -285,7 +285,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			M.SNPVARRESID[locus] .+= M[mSet].covariates*c			
 			rhsC = transpose(M[mSet].covariates)*ycorr
 			meanC   = M[mSet].iCpC*rhsC
-			c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*varResidual))))
+			c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*var_var))))
 			M.SNPVARRESID[locus] .-= M[mSet].covariates*c
 		end
 	end
