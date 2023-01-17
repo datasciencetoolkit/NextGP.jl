@@ -327,8 +327,17 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:funct]       = sampleBayesLV!
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nVarCov] = length(theseRegions)
-				M[pSet][:covariates] = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
+				M[pSet][:nVarCov] = length(theseRegions) 
+				
+				designMat = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
+				M[pSet][:covariates] = designMat
+				#iCpC inverse taken later
+				M[pSet][:iCpC] = designMat'designMat
+				if isa(M[pSet][:iCpC],Matrix{Float64}) 
+					M[pSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[pSet][:iCpC])./10000)),size(M[pSet][:iCpC]))
+				end
+ 		              	M[pSet][:iCpC] = inv(M[pSet][:iCpC])
+				designMat = 0
 			end
 			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
 			delta = push!(delta,ones(Int64,1,M[pSet][:dims][2]))
