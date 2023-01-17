@@ -239,7 +239,24 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 end
 
 function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
-		#model variance
+	local rhs::Float64
+	local lhs::Float64
+	local meanBeta::Float64
+	local lambda::Float64
+	nLoci = 0
+	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
+		lambda = varE/(varBeta[mSet][r])
+		for locus in theseLoci::UnitRange{Int64}
+			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)
+			lhs = getindex(M[mSet].mpm,locus) + lambda
+			meanBeta = lhs\rhs
+			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
+			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+		end
+	end
+	println("varBeta[mSet]")
+#		model variance
 #		ycorr    .+= X[xSet].data*b[X[xSet].pos]
 #                rhs      = X[xSet].data'*ycorr .+ X[xSet].rhs
 #                meanMu   = X[xSet].ixpx*rhs
