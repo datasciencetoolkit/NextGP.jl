@@ -313,7 +313,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:regionArray] = theseRegions
 				M[pSet][:nVarCov] = 1
 			elseif priorVCV[pSet].name == "BayesR"
-				printstyled("Running BayesR for $pSet \n"; color = :black)
 				M[pSet][:logPi]     = log.(priorVCV[pSet].pi)
 				M[pSet][:vClass]     = priorVCV[pSet].class
 				M[pSet][:method]   = "BayesR"
@@ -321,7 +320,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
 				M[pSet][:nVarCov] = 1 #length(priorVCV[pSet].pi)
-				printstyled("Number of variance groups= $(length(M[pSet][:vClass])) \n"; color = :black)
 			elseif priorVCV[pSet].name == "BayesLV"
 				M[pSet][:method]      = "BayesLV"
 				M[pSet][:funct]       = sampleBayesLV!
