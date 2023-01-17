@@ -322,6 +322,12 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:regionArray] = theseRegions
 				M[pSet][:nVarCov] = 1 #length(priorVCV[pSet].pi)
 				printstyled("Number of variance groups= $(length(M[pSet][:vClass])) \n"; color = :black)
+			elseif priorVCV[pSet].name == "BayesLV"
+				M[pSet][:method]      = "BayesLV"
+				M[pSet][:funct]       = sampleBayesLV!
+				theseRegions          = [r:r for r in 1:size(nowM,2)]
+				M[pSet][:regionArray] = theseRegions
+				M[pSet][:nVarCov] = length(theseRegions)				
 			end
 			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
 			delta = push!(delta,ones(Int64,1,M[pSet][:dims][2]))
