@@ -11,9 +11,9 @@ makedocs(
          pages = [
             "Home" => "home.md",
 	    "Modules" => "index.md",
-	    "Examples" => ["Example1" => "example1/example1.md",
-			   "Example2" => "example2/example2.md",
-			   "Example3" => "example3/example3.md",	
+	    "Examples" => ["Example" => "Example/Example.md",
+			   "PBLUP" => "PBLUP/PBLUP.md",
+			   "BWGR" => "BWGR/BWGR.md",	
 			],
 	    "Citation" => "citation.md",
          ],

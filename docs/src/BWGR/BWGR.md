@@ -1,5 +1,5 @@
 
-# Exercise 2
+# Bayesian whole genome regression
 
 
 ```julia
@@ -11,35 +11,30 @@ using DataFrames, CSV, StatsModels, StatsBase, NextGP
 ```
 
 ```julia
-pheno = CSV.read(path2Data*"phenotypes",DataFrame)
+path2Data = "../data/"
+```
+
+```julia
+pheno = CSV.read(path2Data*"pheno$(Pop)_ref",DataFrame)
 ```
 
 
 ```julia
-f = @formula(y ~ 1 + PR(M,9999))
+f = @formula(y ~ 1 + SNP(M,"../data/pureGenoHOL_ref","../data/map.txt"))
 ```
+
 
     FormulaTerm
     Response:
       y(unknown)
     Predictors:
       1
-      (M)->PR(M, 9999)
+      (M)->SNP(M, "../data/pureGenoHOL_ref", "../data/map.txt")
 
 
 ```julia
-M = path2Data*"SNP$(Population)"
-```
-
-
-```julia
-myMap = Dict(:M => path2Data*"map.txt")
-```
-
-
-```julia
-priorVar = Dict(:M => 0.001,
-                :e => ([],150))
+priorVar = Dict(:M => BayesPR(9999,0.001),
+                :e => Random("I",150.0));
 ```
 
 ```julia
@@ -53,7 +48,7 @@ runLMEM(f,pheno,50000,10000,10;outFolder="Population",VCV=priorVar,map=myMap,M)
     |Variable   Term                  Type              Levels  |
     |----------|---------------------|-----------------|--------|
     | 1        | ConstantTerm{Int64} | Vector{Float64} | 1      |
-    | M        | BayesPR             | Matrix{Float64} | 12414  |
+    | M        | Marker Effect              | Matrix{Float64} | 12414  |
     
     prior var-cov structure for "e" is either empty or "I" was given. An identity matrix will be used
     

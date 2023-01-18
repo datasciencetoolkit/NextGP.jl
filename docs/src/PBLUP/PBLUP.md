@@ -1,4 +1,5 @@
 
+#PBLUP
 
 ```julia
 using CSV, StatsModels, DataFrames, NextGP
@@ -48,7 +49,7 @@ QGG14 QGG3 QGG6
 ```
 
 ```julia
-f = @formula(BW ~ Herds + Pen + ran(ID) + ran(Dam) + (1|Dam))
+f = @formula(BW ~ Herds + Pen + PED(ID) + PED(Dam) + (1|Dam))
 ```
 
 
@@ -58,8 +59,8 @@ f = @formula(BW ~ Herds + Pen + ran(ID) + ran(Dam) + (1|Dam))
     Predictors:
       Herds(unknown)
       Pen(unknown)
-      (ID)->ran(ID)
-      (Dam)->ran(Dam)
+      (ID)->PED(ID)
+      (Dam)->PED(Dam)
       (Dam)->1 | Dam
 
 
@@ -78,15 +79,15 @@ blk = [(:Herds,:Pen)]
 
 
 ```julia
-priorVar = Dict(:ID => ("A",150),
-                :Dam => ("A",90),
-                :(1|Dam) => ("I",40),
-                :e => ([],350))
+priorVar = Dict(:ID      => Random("A",150.0),
+                :Dam     => Random("A",90.0),
+                :(1|Dam) => Random("I",40.0),
+                :e       => Random("I",350.0));
 ```
 
 
 ```julia
-runLMEM(f,data,100000,20000,10;myHints=myHints,blockThese=blk,VCV=priorVar,userPedData=pedigree)
+@time runLMEM(f,data,100000,10000,10;myHints=myHints,blockThese=blk,VCV=priorVar,userPedData=pedigree)
 ```
 
     Output folder outMCMC exists. Removing its content
@@ -97,8 +98,8 @@ runLMEM(f,data,100000,20000,10;myHints=myHints,blockThese=blk,VCV=priorVar,userP
     |----------|------|-----------------|--------|
     | Herds    | Term | Matrix{Float64} | 2      |
     | Pen      | Term | Matrix{Float64} | 2      |
-    | ID       | ran  | Matrix{Bool}    | 14     |
-    | Dam      | ran  | Matrix{Bool}    | 14     |
+    | ID       | PED  | Matrix{Bool}    | 14     |
+    | Dam      | PED  | Matrix{Bool}    | 14     |
     | 1 | Dam  | |    | Matrix{Float64} | 4      |
     
     prior var-cov structure for "e" is either empty or "I" was given. An identity matrix will be used
@@ -120,7 +121,7 @@ runLMEM(f,data,100000,20000,10;myHints=myHints,blockThese=blk,VCV=priorVar,userP
 
 
 ```julia
-postMCMC_b = postMCMC_u = summaryMCMC("b",summary=true,plots=true)
+summaryMCMC("b",summary=true,plots=true)
 ```
 
 

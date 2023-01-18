@@ -1,4 +1,6 @@
 
+# Simple example
+
 Original source for the example data and code from [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/formula/#Fitting-a-model-from-a-formula)
 
 ```julia
