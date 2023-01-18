@@ -34,7 +34,7 @@ struct BayesPRType
 end
 
 """
-        function BayesPR(r::Int,v::Union{Matrix{Float64},Float64};name="BayesPR")
+        function BayesPR(r::Int,v::Union{Matrix{Float64},Float64})
 * `r` is the region size. In other words, the number of SNPs that share a common variance.
     * `1`: each SNP has its own (co)variance
     * `99`: SNPs on the same chromosome has the same (co)variance
@@ -51,6 +51,11 @@ struct BayesBType
     name::String
 end
 
+"""
+        function BayesB(pi::PiTypes,v::VarCovarTypes)
+* `pi` is the proportion of SNPs to be included in the model at each MCMC cycel. 
+* `v` is the variance for the prior distribution of SNPs.
+"""
 BayesB(pi::PiTypes,v::VarCovarTypes;name="BayesB") = BayesBType(pi,v,name)
 
 struct BayesCType
@@ -59,6 +64,11 @@ struct BayesCType
     name::String
 end
 
+"""
+        function BayesC(pi::PiTypes,v::VarCovarTypes)
+* `pi` is the proportion of SNPs to be included in the model at each MCMC cycel. 
+* `v` is the variance for the prior distribution of SNPs.
+"""
 BayesC(pi::PiTypes,v::VarCovarTypes;name="BayesC") = BayesCType(pi,v,name)
 
 struct BayesRType
@@ -68,6 +78,12 @@ struct BayesRType
     name::String
 end
 
+"""
+        function BayesR(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes)
+* `pi` is the vector of proportion of SNPs for each variance class.
+* `class` is the vector of scales of common SPN variance for each variance class. The scales should be in the increasing order. For example, [0.0,0.0001,0.001,0.01].
+* `v` is the variance for the prior distribution of SNPs.
+"""
 BayesR(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes;name="BayesR") = BayesRType(pi,class,v,name)
 
 struct BayesLogVarType
@@ -77,6 +93,12 @@ struct BayesLogVarType
     name::String
 end
 
+"""
+        function BayesLV(v::Float64,f::StatsModels.TermOrTerms,covariates::DataFrame)
+* `v` is the variance for the prior distribution of SNPs.
+* `f` is the model formula for the variance
+* `covariates`is the `DataFrame` that includes explanatory varibles for the variance of each SNP. 
+"""
 BayesLV(v::Float64,f::StatsModels.TermOrTerms,covariates::DataFrame;name="BayesLV") = BayesLogVarType(v,f,covariates,name)
 
 struct RandomEffectType

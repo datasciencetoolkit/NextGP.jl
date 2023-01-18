@@ -9,7 +9,13 @@
   - Additive genetic effects
   - Maternal effects
   - Permanent environmental effects
-* Correlated marker effects for multi-breed analysis
+* Bayesian whole-genome regression methods
+  - BayesPR (BayesA<->BRR)
+  - BayesB
+  - BayesC
+  - BayesR
+  - BayesLV
+* Correlated marker effects (only for BayesPR)
 * Unknown (co)variance components (e.g., marker,additive genetic,residual...)
 * It is users responsibility to make sure that the order of the individuals in the data sets aligns
 

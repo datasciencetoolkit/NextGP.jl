@@ -43,6 +43,10 @@ makePed
 makeG
 SNP
 BayesPR
+BayesB
+BayesC
+BayesR
+BayesLV
 ```
 
 ## Internals
