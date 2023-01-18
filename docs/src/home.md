@@ -4,7 +4,7 @@
 ## What is available
 
 * Currently, only univariate analysis are implemented
-* Rely on StatsModels.jl package for model formulation and fixed effects definitions
+* Rely on [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/) package for model formulation and fixed effects definitions
 * Any kind of random effects including random marker effects                                 
   - Additive genetic effects
   - Maternal effects
@@ -25,7 +25,7 @@ To install the latest official version, please use the following standard Julia 
 
 ```@example
 using Pkg
-Pkg.add("NextGP")
+pkg> Pkg.add("NextGP")
 ```
 ## Unstable
 

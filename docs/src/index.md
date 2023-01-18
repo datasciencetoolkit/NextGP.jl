@@ -37,7 +37,7 @@ Public functions of NextGP are documented here
 
 
 ```@docs
-prep
+runLMEM
 makeA
 makePed
 makeG
@@ -52,3 +52,7 @@ BayesLV
 ## Internals
 
 Functions that are used internally are documented here
+
+```@docs
+prep
+```
