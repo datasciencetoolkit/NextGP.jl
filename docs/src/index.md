@@ -13,17 +13,21 @@
 
 
 $$
-\mathbf{y}= \mathbf{X}\mathbf{b} + \sum_{i}\mathbf{Z}_{i}\mathbf{u}_{i}  + \sum_{j}\mathbf{M}_{j}\boldsymbol{\beta}_{j} + \mathbf{e}
+\mathbf{y}=\mathbf{X}\mathbf{b}+\sum{\mathbf{Zu}}+\sum{\mathbf{M\beta}}+\mathbf{e}
 $$
 
-$\mathbf{y}$ is a vector of phenotypes corrected
-$\mathbf{X}$ is a matrix of fixed effects
-$\mathbf{b}$ is a vector of fixed effects
-$\mathbf{Z}_i$ are matrices of random effects
-$\mathbf{u}_i$ are vectors of random effects
-$\mathbf{M}_{j}$ are matrices of random effects
-$\boldsymbol{\beta}_j$ are vectors of random marker effects
-$\mathbf{e}$ is the vector of random environmental effects
+**b** is a vector of fixed effects 
+
+**u** is a vector of polygenic effects in the model with a covariance
+structure $\mathbf{u}\sim N\left(0,\mathbf{A}\sigma_{a}^{2}\right)$
+
+**A** is a relationship matrix from the pedigree
+
+**Z** is a design matrix allocating animals to records
+
+**M** are matrices of genotypes
+
+$\mathbf{\beta}$ are vectors  of marker effects
 
 ---
 
