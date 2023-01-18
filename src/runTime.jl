@@ -17,7 +17,7 @@ struct GenomicTerm
 end
 
 """
-        SNP(name::Char,path::String;map::String="")
+        function SNP(name::Char,path::String;map::String="")
 * Defines SNP information for further analysis.
 * `path` is the path for the marker file.
 * Marker files are currently expected to be ordered as the phenotype data.
@@ -34,7 +34,7 @@ struct BayesPRType
 end
 
 """
-        BayesPR(r::Int,v::Union{Matrix{Float64},Float64};name="BayesPR")
+        function BayesPR(r::Int,v::Union{Matrix{Float64},Float64};name="BayesPR")
 * `r` is the region size. In other words, the number of SNPs that share a common variance.
     * `1`: each SNP has its own (co)variance
     * `99`: SNPs on the same chromosome has the same (co)variance
