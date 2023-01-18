@@ -23,10 +23,10 @@ Pkg.add("NextGP")
 ```
 ## Unstable
 
-To install the latest unofficial version (1.0.0), please use the following.
+To install the latest unofficial version (0.2.0), please use the following.
 
 ```@example
 using Pkg
-pkg> Pkg.add(url = "https://github.com/datasciencetoolkit/NextGP.jl", rev="dev_1.0.0")
+pkg> Pkg.add(url = "https://github.com/datasciencetoolkit/NextGP.jl", rev="dev_0.2.0")
 ```
 

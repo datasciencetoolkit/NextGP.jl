@@ -37,6 +37,8 @@ prep
 makeA
 makePed
 makeG
+SNP
+BayesPR
 ```
 
 ## Internals
