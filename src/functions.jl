@@ -265,8 +265,8 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			vari = varBeta[mSet][locus]
 			bi = getindex(beta[M[mSet].pos],locus)
 			log_vari = log(vari)
-			var_resid = M[mSet].SNPVARRESID[locus]
-			var_mui = log_vari - var_resid
+			var_resid = M[mSet].SNPVARRESID[locus]	#variance of residual for linear model
+			var_mui = log_vari - var_resid 		#mean of variance at log scale
 			
 			c1 = ^(vari,-1.51)*rand()
 			c2 = exp(-0.5*bi*bi/vari)*rand()
@@ -280,8 +280,9 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 				trapped +=1
 			else
 				notTrapped +=1
-				varBeta[mSet][locus] = lbound+rand()*(rbound-lbound)
-				log_vari = log(varBeta[mSet][locus])
+				varianceBeta = lbound+rand()*(rbound-lbound)
+				varBeta[mSet][locus] = varianceBeta
+				log_vari = log(varianceBeta)
 				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
 			end
 		end
