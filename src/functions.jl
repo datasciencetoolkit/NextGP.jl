@@ -268,7 +268,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			var_resid = M[mSet].SNPVARRESID[locus]
 			var_mui = log_vari - var_resid
 			
-			c1 = ^(vari,-1.51)
+			c1 = ^(vari,-1.51)*rand()
 			c2 = exp(-0.5*bi*bi/vari)*rand()
 			c3 = exp(-0.5*var_resid*var_resid/var_var)*rand()
 			temp = sqrt(-2*var_var*log(c3))
