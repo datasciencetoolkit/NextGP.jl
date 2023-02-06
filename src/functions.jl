@@ -257,7 +257,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	end
 	
 	# model variance
-	var_var = 0.0001
+	var_var = 0.01
 	trapped = 0
 	notTrapped = 0
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
