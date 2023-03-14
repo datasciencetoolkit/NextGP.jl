@@ -99,8 +99,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		X[xSet][:rhs] = zeros(X[xSet][:nCol])
 
                 if xSet in keys(summaryStat)
-	  		summaryStat[xSet].v == Array{Float64,1} ? X[xSet][:ixpx] .+= inv.(summaryStat[xSet].v) : X[xSet][:ixpx] .+= inv.(diag(summaryStat[xSet].v))
-			summaryStat[xSet].v == Array{Float64,1} ? X[xSet][:rhs] .= inv.(summaryStat[xSet].v) .* (summaryStat[xSet].m)  : X[xSet][:rhs] .= inv.(diag(summaryStat[xSet].v)) .* (summaryStat[xSet].m)
+	  		isa(summaryStat[xSet].v,Array{Float64,1}) ? X[xSet][:ixpx] .+= inv.(summaryStat[xSet].v) : X[xSet][:ixpx] .+= inv.(diag(summaryStat[xSet].v))
+			isa(summaryStat[xSet].v,Array{Float64,1}) ? X[xSet][:rhs] .= inv.(summaryStat[xSet].v) .* (summaryStat[xSet].m)  : X[xSet][:rhs] .= inv.(diag(summaryStat[xSet].v)) .* (summaryStat[xSet].m)
                 end
 
 		if isa(X[xSet][:ixpx],Matrix{Float64}) 
@@ -175,8 +175,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			Z[zSet][:zpz] = tempzpz
 			Z[zSet][:rhs] = zeros(size(nowZ,2))
                         if zSet in keys(summaryStat)
-                                summaryStat[zSet].v == Array{Float64,1} ? zpz[zSet] .+= inv.(summaryStat[zSet].v) : zpz[zSet] .+= inv.(diag(summaryStat[zSet].v))
-                                summaryStat[zSet].v == Array{Float64,1} ? rhsZ[zSet] .= inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : rhsZ[zSet] .= inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
+                                isa(summaryStat[zSet].v,Array{Float64,1}) ? zpz[zSet] .+= inv.(summaryStat[zSet].v) : zpz[zSet] .+= inv.(diag(summaryStat[zSet].v))
+                                isa(summaryStat[zSet].v,Array{Float64,1}) ? rhsZ[zSet] .= inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : rhsZ[zSet] .= inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
                         end
 			Z[zSet][:Zp]  = transpose(nowZ)
 			u = push!(u,zeros(Float64,1,size(nowZ,2)))
@@ -226,8 +226,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		Z[zSet][:zpz] = tempzpz
 		Z[zSet][:rhs] = zeros(size(nowZ,2))
 		if zSet in keys(summaryStat)
-                	summaryStat[zSet].v == Array{Float64,1} ? zpz[zSet] .+= inv.(summaryStat[zSet].v) : zpz[zSet] .+= inv.(diag(summaryStat[zSet].v))
-                        summaryStat[zSet].v == Array{Float64,1} ? rhsZ[zSet] .= inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : rhsZ[zSet] .= inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
+                	isa(summaryStat[zSet].v,Array{Float64,1}) ? zpz[zSet] .+= inv.(summaryStat[zSet].v) : zpz[zSet] .+= inv.(diag(summaryStat[zSet].v))
+                        isa(summaryStat[zSet].v,Array{Float64,1}) ? rhsZ[zSet] .= inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : rhsZ[zSet] .= inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
                 end
 		setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 	end
@@ -272,8 +272,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			M[pSet][:mpm] = tempmpm
 			M[pSet][:rhs] = zeros(M[pSet][:dims][2])
 			if pSet in keys(summaryStat)
-                       		summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
-				summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+                       		isa(summaryStat[pSet].v,Array{Float64,1}) ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
+				isa(summaryStat[pSet].v,Array{Float64,1}) ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
 			end
 			M[pSet][:Mp] = []
 			
@@ -400,8 +400,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		M[pSet][:mpm] = tempmpm
 		M[pSet][:rhs] = zeros(M[pSet][:dims][2])
                 if pSet in keys(summaryStat)
-			summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
-                        summaryStat[pSet].v == Array{Float64,1} ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+			isa(summaryStat[pSet].v,Array{Float64,1}) ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
+                        isa(summaryStat[pSet].v,Array{Float64,1}) ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                 end
 		
 		#wheenn no prior was given, the below code should include only 9999 case. Delete the rest!
