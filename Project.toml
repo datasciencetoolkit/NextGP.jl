@@ -31,7 +31,7 @@ MixedModels = "4.6.0"
 PedigreeBase = "0.1"
 ProgressMeter = "1"
 StatsBase = "0.33"
-StatsModels = "0.6.3"
+StatsModels = "0.6.3, 0.7"
 StatsPlots = "0.14, 0.15"
 julia = "1"
 
