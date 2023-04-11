@@ -197,13 +197,13 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		end
 	end
 	@inbounds varBeta[mSet][1] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,beta[M[mSet].pos],nLoci)
-	println("pi=$(nLoci/M[mSet].dims[2])")
+#	println("pi=$(nLoci/M[mSet].dims[2])")
 	if M[mSet].estPi == true 
 		piIn = samplePi(nLoci,M[mSet].dims[2]) #probability of in
 		M[mSet].piHat .= [piIn 1.0-piIn]
 		M[mSet].logPi .= log.([piIn 1.0-piIn])
-	println("piHat=$(M[mSet].piHat)")
-	println("LOGpiHat=$(M[mSet].logPi)")
+#	println("piHat=$(M[mSet].piHat)")
+#	println("LOGpiHat=$(M[mSet].logPi)")
 	end
 end
 
