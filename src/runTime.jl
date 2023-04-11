@@ -67,7 +67,7 @@ end
 
 """
         function BayesC(pi::PiTypes,v::VarCovarTypes)
-* `pi` is the proportion of SNPs to be included in the model at each MCMC cycel. 
+* `pi` is the proportion of SNPs to be included in the model at each MCMC cycel. If `estimatePi=true`, it is only used as a starting value.
 * `v` is the variance for the prior distribution of SNPs.
 * `estimatePi` is `true`if `pi` is estimated. By default it is ´false´
 """
