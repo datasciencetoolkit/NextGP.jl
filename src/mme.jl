@@ -303,20 +303,22 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:funct]       = sampleBayesB!
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nVarCov] = length(theseRegions)
+				M[pSet][:nVarCov]     = length(theseRegions)
 			elseif priorVCV[pSet].name == "BayesC"
 				M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
 				M[pSet][:logPiOut]    = log(1.0 .- priorVCV[pSet].pi)
-				M[pSet][:method]   = "BayesC"
+				M[pSet][:method]      = "BayesC"
 				M[pSet][:funct] = sampleBayesC!
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nVarCov] = 1
+				M[pSet][:nVarCov]     = 1
+				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
+				println("pi is estimated: $(priorVCV[pSet].estimatePi)")
 			elseif priorVCV[pSet].name == "BayesR"
-				M[pSet][:logPi]     = log.(priorVCV[pSet].pi)
-				M[pSet][:vClass]     = priorVCV[pSet].class
-				M[pSet][:method]   = "BayesR"
-				M[pSet][:funct] = sampleBayesR!
+				M[pSet][:logPi]       = log.(priorVCV[pSet].pi)
+				M[pSet][:vClass]      = priorVCV[pSet].class
+				M[pSet][:method]      = "BayesR"
+				M[pSet][:funct]       = sampleBayesR!
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
 				M[pSet][:nVarCov] = 1 #length(priorVCV[pSet].pi)
@@ -325,7 +327,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:funct]       = sampleBayesLV!
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nVarCov] = length(theseRegions) 
+				M[pSet][:nVarCov]     = length(theseRegions) 
 				
 				designMat = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
 				M[pSet][:covariates] = designMat
