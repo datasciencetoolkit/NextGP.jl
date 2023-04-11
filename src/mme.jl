@@ -305,7 +305,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:regionArray] = theseRegions
 				M[pSet][:nVarCov]     = length(theseRegions)
 			elseif priorVCV[pSet].name == "BayesC"
-				M[pSet][:logPi]       = [log(priorVCV[pSet].pi) log(1.0 .- priorVCV[pSet].pi)] #in, out
+				M[pSet][:logPi]       = [log(1.0 .- priorVCV[pSet].pi) log(priorVCV[pSet].pi)] #not fitted, fitted
 #				M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
 #				M[pSet][:logPiOut]    = log(1.0 .- priorVCV[pSet].pi)
 				M[pSet][:method]      = "BayesC"
@@ -314,9 +314,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:regionArray] = theseRegions
 				M[pSet][:nVarCov]     = 1
 				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
-				M[pSet][:piHat]       = [priorVCV[pSet].pi 1.0 .- priorVCV[pSet].pi]
-				M[pSet][:vClass]      = [1 0] #2 variance class, one with common, one with null
-				println("pi is estimated: $(priorVCV[pSet].estimatePi)")
+				M[pSet][:piHat]       = [1.0 .- priorVCV[pSet].pi priorVCV[pSet].pi] #not fitted, fitted
+				M[pSet][:vClass]      = [0 1] #2 variance class, one with common, one with null
 			elseif priorVCV[pSet].name == "BayesR"
 				M[pSet][:logPi]       = log.(priorVCV[pSet].pi)
 				M[pSet][:vClass]      = priorVCV[pSet].class
