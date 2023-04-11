@@ -193,7 +193,8 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		end
 	end
 	@inbounds varBeta[mSet][1] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,beta[M[mSet].pos],nLoci)
-	println("pi=$(nLoci/M[mSet].dims[2])")
+#	println("pi=$(nLoci/M[mSet].dims[2])")
+	M[mSet].estPi == true ? M[mSet].piHat = samplePi(nLoci,M[mSet].dims[2]) : nothing
 end
 
 function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
@@ -331,7 +332,12 @@ end
 
 #Sample residual variance
 function sampleVarE(df_e,S_e,yCorVec,nRecords)
-    return (df_e*S_e + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords))
+	return (df_e*S_e + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords))
+end
+					
+# +1 is for beta(1,1 prior)
+function samplePi(nIn::Int, nTotal::Int)
+	return rand(Beta(nIn+1,nTotal-nIn+1))
 end
 
 
