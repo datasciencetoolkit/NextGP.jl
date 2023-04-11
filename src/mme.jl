@@ -495,6 +495,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		if isa(mSet,Symbol)
 			IO.outMCMC(outPut,"beta$mSet",hcat(M[mSet][:levels]...))
 			IO.outMCMC(outPut,"delta$mSet",hcat(M[mSet][:levels]...))
+			IO.outMCMC(outPut,"pi$mSet",[1:length(M[mSet][:vClass])]) #[] to have it as one row
 		elseif isa(mSet,Tuple)
 			for m in mSet
    				IO.outMCMC(outPut,"beta$m",hcat(M[mSet][:levels]...))
