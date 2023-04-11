@@ -198,7 +198,11 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	end
 	@inbounds varBeta[mSet][1] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,beta[M[mSet].pos],nLoci)
 #	println("pi=$(nLoci/M[mSet].dims[2])")
-	M[mSet].estPi == true ? M[mSet].piHat = samplePi(nLoci,M[mSet].dims[2]) : nothing
+	if M[mSet].estPi == true 
+		piIn = samplePi(nLoci,M[mSet].dims[2]) #probability of in
+		M[mSet].piHat .= [piIn 1.0-piIn]
+		M[mSet].logPi .= log.([piIn 1.0-piIn])
+	end
 end
 
 function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
