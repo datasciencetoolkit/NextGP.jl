@@ -69,13 +69,14 @@ end
 * `pi` is the proportion of SNPs to be included in the model at each MCMC cycel. 
 * `v` is the variance for the prior distribution of SNPs.
 """
-BayesC(pi::PiTypes,v::VarCovarTypes;name="BayesC") = BayesCType(pi,v,name)
+BayesC(pi::PiTypes,v::VarCovarTypes;name="BayesC",estimatePi::Bool=false) = BayesCType(pi,v,name,estPi)
 
 struct BayesRType
     pi::PiTypes
     class::Vector{Float64}
     v::VarCovarTypes
     name::String
+    estPi::Bool
 end
 
 """
