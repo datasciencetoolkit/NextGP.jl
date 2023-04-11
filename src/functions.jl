@@ -177,8 +177,8 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			v0 = getindex(M[mSet].mpm,locus)*varE
 			v1 = (getindex(M[mSet].mpm,locus)^2)*varBeta[mSet][1] + v0
 
-			logDelta0 = -0.5*(log(v0) + (rhs^2)/v0) + M[mSet].logPi[2]            # this locus not fitted
-			logDelta1 = -0.5*(log(v1) + (rhs^2)/v1) + M[mSet].logPi[1]             # this locus fitted       
+			logDelta0 = -0.5*(log(v0) + (rhs^2)/v0) + M[mSet].logPi[1]            # this locus not fitted
+			logDelta1 = -0.5*(log(v1) + (rhs^2)/v1) + M[mSet].logPi[2]             # this locus fitted       
 
 #        		logDelta0 = -0.5*(log(v0) + (rhs^2)/v0) + M[mSet].logPiOut            # this locus not fitted
 #			logDelta1 = -0.5*(log(v1) + (rhs^2)/v1) + M[mSet].logPiIn             # this locus fitted       
@@ -200,8 +200,8 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 #	println("pi=$(nLoci/M[mSet].dims[2])")
 	if M[mSet].estPi == true 
 		piIn = samplePi(nLoci,M[mSet].dims[2]) #probability of in
-		M[mSet].piHat .= [piIn 1.0-piIn]
-		M[mSet].logPi .= log.([piIn 1.0-piIn])
+		M[mSet].piHat .= [1.0-piIn piIn]
+		M[mSet].logPi .= log.([1.0-piIn piIn])
 #	println("piHat=$(M[mSet].piHat)")
 #	println("LOGpiHat=$(M[mSet].logPi)")
 	end
