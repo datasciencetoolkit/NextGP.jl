@@ -62,6 +62,7 @@ struct BayesCType
     pi::PiTypes
     v::VarCovarTypes
     name::String
+    estPi::Bool
 end
 
 """
@@ -76,7 +77,6 @@ struct BayesRType
     class::Vector{Float64}
     v::VarCovarTypes
     name::String
-    estPi::Bool
 end
 
 """
