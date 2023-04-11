@@ -498,7 +498,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		if isa(mSet,Symbol)
 			IO.outMCMC(outPut,"beta$mSet",hcat(M[mSet][:levels]...))
 			IO.outMCMC(outPut,"delta$mSet",hcat(M[mSet][:levels]...))
-			if in(M[:mSet][:method],["BayesC","BayesR"])
+			if in(M[mSet][:method],["BayesC","BayesR"])
 				IO.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:length(M[mSet][:vClass])]]) #[] to have it as one row
 			end
 		elseif isa(mSet,Tuple)
