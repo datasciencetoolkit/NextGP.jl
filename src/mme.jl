@@ -315,6 +315,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:regionArray] = theseRegions
 				M[pSet][:nVarCov]     = 1
 				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
+				M[pSet][:piHat]       = [priorVCV[pSet].pi 1.0 .- priorVCV[pSet].pi]
 				println("pi is estimated: $(priorVCV[pSet].estimatePi)")
 			elseif priorVCV[pSet].name == "BayesR"
 				M[pSet][:logPi]       = log.(priorVCV[pSet].pi)
