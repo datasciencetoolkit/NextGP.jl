@@ -307,7 +307,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			elseif priorVCV[pSet].name == "BayesC"
 				M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
 				M[pSet][:logPiOut]    = log(1.0 .- priorVCV[pSet].pi)
-				M[pSet][:vClass]      = priorVCV[pSet].class
+				M[pSet][:vClass]      = 1:2 #2 variance class, one with null, one with common
 				M[pSet][:method]      = "BayesC"
 				M[pSet][:funct] = sampleBayesC!
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
