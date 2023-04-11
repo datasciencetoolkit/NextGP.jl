@@ -160,7 +160,7 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			end
 		end
 	end
-	println("pi=$(nLoci/M[mSet].dims[2])")
+#	println("pi=$(nLoci/M[mSet].dims[2])")
 end
 
 function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
@@ -193,7 +193,7 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		end
 	end
 	@inbounds varBeta[mSet][1] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,beta[M[mSet].pos],nLoci)
-#	println("pi=$(nLoci/M[mSet].dims[2])")
+	println("pi=$(nLoci/M[mSet].dims[2])")
 end
 
 function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
