@@ -76,7 +76,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,delta,ch
 				if isa(mSet,Symbol)
 					IO.outMCMC(outPut,"beta$mSet",beta[M[mSet].pos])
 					IO.outMCMC(outPut,"delta$mSet",delta[M[mSet].pos])
-					if in(M[mSet].method,["BayesB","BayesC"])
+					if in(M[mSet].method,["BayesB","BayesC","BayesR"])
 						IO.outMCMC(outPut,"pi$mSet",M[mSet].piHat)	
 					end
 				elseif isa(mSet,Tuple)
