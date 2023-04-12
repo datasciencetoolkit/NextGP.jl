@@ -252,8 +252,15 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	sumS = sum((nonZeroBeta.^2)./varSNP[nonZeroPos])
 	
 	@inbounds varBeta[mSet][1] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS,length(nonZeroPos))
-#	println("pi=$(nLoci./M[mSet].dims[2])")
-#	println("var=$(varBeta[mSet][1].*M[mSet].vClass)")
+	if M[mSet].estPi == true 
+		piHat = samplePi(nLoci)
+		M[mSet].piHat .= piHat
+		M[mSet].logPi .= log.(piHat)
+	println("pi=$(nLoci./M[mSet].dims[2])")
+	println("piHat=$(M[mSet].piHat)")
+	println("LOGpiHat=$(M[mSet].logPi)")
+	println("var=$(varBeta[mSet][1].*M[mSet].vClass)")
+	end
 end
 
 function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
@@ -352,9 +359,14 @@ function sampleVarE(df_e,S_e,yCorVec,nRecords)
 	return (df_e*S_e + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords))
 end
 					
-# +1 is for beta(1,1 prior)
+# +1 is for beta(1,1) prior
 function samplePi(nIn::Int, nTotal::Int)
 	return rand(Beta(nIn+1,nTotal-nIn+1))
+end
+
+# +1 is for Dirichlet(1,1,1,1) prior						
+function samplePi(nLoci::Vector{Int})
+	return rand(Dirichlet(nLoci.+1))
 end
 
 
