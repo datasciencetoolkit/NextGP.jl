@@ -17,7 +17,7 @@ struct GenomicTerm
 end
 
 """
-        function SNP(name::Char,path::String;map::String="")
+        function SNP(name,path;map="")
 * Defines SNP information for further analysis.
 * `path` is the path for the marker file.
 * Marker files are currently expected to be ordered as the phenotype data.
@@ -34,7 +34,7 @@ struct BayesPRType
 end
 
 """
-        function BayesPR(r::Int,v::Union{Matrix{Float64},Float64})
+        function BayesPR(r,v)
 * `r` is the region size. In other words, the number of SNPs that share a common variance.
     * `1`: each SNP has its own (co)variance
     * `99`: SNPs on the same chromosome has the same (co)variance
@@ -49,14 +49,16 @@ struct BayesBType
     pi::PiTypes
     v::VarCovarTypes
     name::String
+    estimatePi::Bool
 end
 
 """
-        function BayesB(pi::PiTypes,v::VarCovarTypes)
-* `pi` is the proportion of SNPs to be included in the model at each MCMC cycel. 
+        function BayesB(pi,v;estimatePi=false)
+* `pi` is the proportion of SNPs to be included in the model at each McMC cycel. If `estimatePi=true`, it is only used as a starting value.
 * `v` is the variance for the prior distribution of SNPs.
+* `estimatePi` is `true`if `pi` is estimated. By default it is ´false´
 """
-BayesB(pi::PiTypes,v::VarCovarTypes;name="BayesB") = BayesBType(pi,v,name)
+BayesB(pi::PiTypes,v::VarCovarTypes;name="BayesB",estimatePi::Bool=false) = BayesBType(pi,v,name,estimatePi)
 
 struct BayesCType
     pi::PiTypes
@@ -66,8 +68,8 @@ struct BayesCType
 end
 
 """
-        function BayesC(pi::PiTypes,v::VarCovarTypes)
-* `pi` is the proportion of SNPs to be included in the model at each MCMC cycel. If `estimatePi=true`, it is only used as a starting value.
+        function BayesC(pi,v;estimatePi=false)
+* `pi` is the proportion of SNPs to be included in the model at each McMC cycel. If `estimatePi=true`, it is only used as a starting value.
 * `v` is the variance for the prior distribution of SNPs.
 * `estimatePi` is `true`if `pi` is estimated. By default it is ´false´
 """
@@ -81,7 +83,7 @@ struct BayesRType
 end
 
 """
-        function BayesR(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes)
+        function BayesR(pi,class,v)
 * `pi` is the vector of proportion of SNPs for each variance class.
 * `class` is the vector of scales of common SPN variance for each variance class. The scales should be in the increasing order. For example, [0.0,0.0001,0.001,0.01].
 * `v` is the variance for the prior distribution of SNPs.
@@ -96,7 +98,7 @@ struct BayesLogVarType
 end
 
 """
-        function BayesLV(v::Float64,f::StatsModels.TermOrTerms,covariates::DataFrame)
+        function BayesLV(v,f,covariates)
 * `v` is the variance for the prior distribution of SNPs.
 * `f` is the model formula for the variance
 * `covariates`is the `DataFrame` that includes explanatory varibles for the variance of each SNP. 
