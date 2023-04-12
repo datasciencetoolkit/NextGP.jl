@@ -160,13 +160,13 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			end
 		end
 	end
-	println("pi=$(nLoci/M[mSet].dims[2])")
+#	println("pi=$(nLoci/M[mSet].dims[2])")
 	if M[mSet].estPi == true 
 		piIn = samplePi(nLoci,M[mSet].dims[2]) #probability of in
 		M[mSet].piHat .= [1.0-piIn piIn]
 		M[mSet].logPi .= log.([1.0-piIn piIn])
-	println("piHat=$(M[mSet].piHat)")
-	println("LOGpiHat=$(M[mSet].logPi)")
+#	println("piHat=$(M[mSet].piHat)")
+#	println("LOGpiHat=$(M[mSet].logPi)")
 	end
 end
 
