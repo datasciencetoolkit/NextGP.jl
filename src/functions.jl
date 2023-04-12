@@ -247,6 +247,8 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		end
 	end
 	varSNP = getindex.(Ref(M[mSet].vClass),delta[M[mSet].pos][1,:])
+	println("varSNP: $varSNP")
+	##SNP ESTIMATE CAN BE ZERO, NOT NECESSARILY BECAUSE WE SET TO ZERO AS IN BAYESB! FIND ANOTHER WAY for the BELOW!!
 	nonZeroPos = findall(!iszero, varSNP)
 	nonZeroBeta = getindex.(Ref(beta[M[mSet].pos]),nonZeroPos)
 	sumS = sum((nonZeroBeta.^2)./varSNP[nonZeroPos])
