@@ -297,13 +297,17 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				end
 				M[pSet][:nVarCov] = length(theseRegions)
 			elseif priorVCV[pSet].name == "BayesB"
-				M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
-				M[pSet][:logPiOut]    = log(1.0 .- priorVCV[pSet].pi)
+				M[pSet][:logPi]       = [log(1.0 .- priorVCV[pSet].pi) log(priorVCV[pSet].pi)] #not fitted, fitted
+#				M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
+#				M[pSet][:logPiOut]    = log(1.0 .- priorVCV[pSet].pi)
 				M[pSet][:method]      = "BayesB"
 				M[pSet][:funct]       = sampleBayesB!
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
 				M[pSet][:nVarCov]     = length(theseRegions)
+				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
+				M[pSet][:piHat]       = [1.0 .- priorVCV[pSet].pi priorVCV[pSet].pi] #not fitted, fitted
+				M[pSet][:vClass]      = [0 1] #2 variance class, one with own, one with null
 			elseif priorVCV[pSet].name == "BayesC"
 				M[pSet][:logPi]       = [log(1.0 .- priorVCV[pSet].pi) log(priorVCV[pSet].pi)] #not fitted, fitted
 #				M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
@@ -497,7 +501,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		if isa(mSet,Symbol)
 			IO.outMCMC(outPut,"beta$mSet",hcat(M[mSet][:levels]...))
 			IO.outMCMC(outPut,"delta$mSet",hcat(M[mSet][:levels]...))
-			if in(M[mSet][:method],["BayesC","BayesR"])
+			if in(M[mSet][:method],["BayesB","BayesC"])
 				IO.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:length(M[mSet][:vClass])]]) #[] to have it as one row
 			end
 		elseif isa(mSet,Tuple)
