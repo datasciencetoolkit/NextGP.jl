@@ -167,6 +167,7 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		M[mSet].logPi .= log.([1.0-piIn piIn])
 	println("piHat=$(M[mSet].piHat)")
 	println("LOGpiHat=$(M[mSet].logPi)")
+	end
 end
 
 function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
