@@ -328,6 +328,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
 				M[pSet][:nVarCov] = 1 #length(priorVCV[pSet].pi)
+				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
+				M[pSet][:piHat]       = deepcopy(priorVCV[pSet].pi)
 			elseif priorVCV[pSet].name == "BayesLV"
 				M[pSet][:method]      = "BayesLV"
 				M[pSet][:funct]       = sampleBayesLV!
@@ -501,7 +503,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		if isa(mSet,Symbol)
 			IO.outMCMC(outPut,"beta$mSet",hcat(M[mSet][:levels]...))
 			IO.outMCMC(outPut,"delta$mSet",hcat(M[mSet][:levels]...))
-			if in(M[mSet][:method],["BayesB","BayesC"])
+			if in(M[mSet][:method],["BayesB","BayesC","BayesR"])
 				IO.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:length(M[mSet][:vClass])]]) #[] to have it as one row
 			end
 		elseif isa(mSet,Tuple)
