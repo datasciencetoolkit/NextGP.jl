@@ -218,7 +218,7 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	local rhs::Float64
 	local meanBeta::Float64
 	nVarComp = length(M[mSet].vClass)
-	nLoci = zeros(nVarComp)
+	nLoci = zeros(Int64,nVarComp)
 	varc = varBeta[mSet][1].*M[mSet].vClass
 	sumS = 0
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
