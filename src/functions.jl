@@ -221,6 +221,7 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	nVarComp = length(M[mSet].vClass)
 	nLoci = zeros(Int64,nVarComp)
 	varc = varBeta[mSet][1].*M[mSet].vClass
+	println("varc: $varc")
 	sumS = 0
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
 		for locus in theseLoci::UnitRange{Int64}
@@ -241,6 +242,7 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			setindex!(delta[M[mSet].pos],classSNP,locus)
 			nLoci[classSNP] += 1
 			###sample only non-zero class SNPs
+			println("vClass $locus: $(M[mSet].vClass[classSNP])")
 			if M[mSet].vClass[classSNP]!= 0.0
 				meanBeta = lhs[classSNP]\rhs
 				betaSample = sampleBeta(meanBeta, lhs[classSNP], varE)
