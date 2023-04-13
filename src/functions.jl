@@ -229,9 +229,9 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			lhs = zeros(nVarComp)
 			ExpLogL = zeros(nVarComp)
 			for v in 1:nVarComp
-				lhs[v] = getindex(M[mSet].mpm,locus) + varE/varc[v]
+				lhs[v] = varc[v]==0.0 ? getindex(M[mSet].mpm,locus) : getindex(M[mSet].mpm,locus) + varE/varc[v]
+#				lhs[v] = getindex(M[mSet].mpm,locus) + varE/varc[v]
 				logLc = varc[v]==0.0 ? M[mSet].logPi[v] : -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
-#				logLc = -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
 				ExpLogL[v] = exp(logLc)
 			end
 			
@@ -266,10 +266,10 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		piHat = samplePi(nLoci)
 		M[mSet].piHat .= piHat
 		M[mSet].logPi .= log.(piHat)
-	println("pi=$(nLoci./M[mSet].dims[2])")
-	println("piHat=$(M[mSet].piHat)")
-	println("LOGpiHat=$(M[mSet].logPi)")
-	println("var=$(varBeta[mSet][1].*M[mSet].vClass)")
+#	println("pi=$(nLoci./M[mSet].dims[2])")
+#	println("piHat=$(M[mSet].piHat)")
+#	println("LOGpiHat=$(M[mSet].logPi)")
+#	println("var=$(varBeta[mSet][1].*M[mSet].vClass)")
 	end
 end
 
