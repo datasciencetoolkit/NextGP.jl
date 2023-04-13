@@ -156,7 +156,8 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			else 
 				setindex!(beta[M[mSet].pos],0.0,locus)
 				setindex!(delta[M[mSet].pos],0,locus)
-				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),0)
+				@inbounds varBeta[mSet][r] = 0.0
+#				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),0)*0.0
 			end
 		end
 	end
@@ -243,11 +244,9 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			betaSample = sampleBeta(meanBeta, lhs[classSNP], varE)
 			setindex!(beta[M[mSet].pos],betaSample,locus)
 			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-#			sumS += (betaSample^2)/M[mSet].vClass[classSNP]
 		end
 	end
 	varSNP = getindex.(Ref(M[mSet].vClass),delta[M[mSet].pos][1,:])
-	##SNP ESTIMATE CAN BE ZERO, NOT NECESSARILY BECAUSE WE SET TO ZERO AS IN BAYESB! FIND ANOTHER WAY for the BELOW!!
 	nonZeroPos = findall(!iszero, varSNP)
 	nonZeroBeta = getindex.(Ref(beta[M[mSet].pos]),nonZeroPos)
 	sumS = sum((nonZeroBeta.^2)./varSNP[nonZeroPos])
