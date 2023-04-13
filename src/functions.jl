@@ -240,10 +240,20 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			classSNP = findfirst(x->x>=rand(), cumProbs) #position
 			setindex!(delta[M[mSet].pos],classSNP,locus)
 			nLoci[classSNP] += 1
-			meanBeta = lhs[classSNP]\rhs
-			betaSample = sampleBeta(meanBeta, lhs[classSNP], varE)
-			setindex!(beta[M[mSet].pos],betaSample,locus)
-			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+			###sample only non-zero class SNPs
+			if M[mSet].vClass[classSNP]!= 0.0
+				meanBeta = lhs[classSNP]\rhs
+				betaSample = sampleBeta(meanBeta, lhs[classSNP], varE)
+				setindex!(beta[M[mSet].pos],betaSample,locus)
+				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+			else setindex!(beta[M[mSet].pos],0.0,locus)
+			end
+			####
+#			meanBeta = lhs[classSNP]\rhs
+#			betaSample = sampleBeta(meanBeta, lhs[classSNP], varE)
+#			setindex!(beta[M[mSet].pos],betaSample,locus)
+#			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+			####
 		end
 	end
 	varSNP = getindex.(Ref(M[mSet].vClass),delta[M[mSet].pos][1,:])
