@@ -242,7 +242,6 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			setindex!(delta[M[mSet].pos],classSNP,locus)
 			nLoci[classSNP] += 1
 			###sample only non-zero class SNPs
-			println("vClass $locus: $(M[mSet].vClass[classSNP])")
 			if M[mSet].vClass[classSNP]!= 0.0
 				meanBeta = lhs[classSNP]\rhs
 				betaSample = sampleBeta(meanBeta, lhs[classSNP], varE)
@@ -258,6 +257,7 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			####
 		end
 	end
+	println("nLoci: $nLoci")
 	varSNP = getindex.(Ref(M[mSet].vClass),delta[M[mSet].pos][1,:])
 	nonZeroPos = findall(!iszero, varSNP)
 	nonZeroBeta = getindex.(Ref(beta[M[mSet].pos]),nonZeroPos)
