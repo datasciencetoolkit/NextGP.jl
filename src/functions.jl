@@ -299,7 +299,12 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			probAnnot = vec(sum(ExpLogL,dims=1)./sum(ExpLogL))
 			println("probAnnot: $(probAnnot)")
 			probAnnot .*= M[mSet].annotProb[locus,:]
-			println("probAnnot2: $(probAnnot)")
+			println("probAnnot: $(probAnnot)")
+			
+			probAnnot1 = M[mSet].annotProb[locus,:] .* vec(sum(ExpLogL,dims=1)
+			probAnnot2 = sum(probAnnot1)
+			probAnnot = probAnnot1 ./ probAnnot2
+			println("probAnnot: $(probAnnot)")
 
 			AnnnotClassSNP = rand(Categorical(probAnnot))  #position
 			
