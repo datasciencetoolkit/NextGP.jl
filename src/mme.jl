@@ -337,7 +337,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:funct]       = sampleBayesRCπ!
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nVarCov] = 1 #length(priorVCV[pSet].pi)
+				M[pSet][:nVarCov]     = size(priorVCV[pSet].annot,2)
 				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
 				M[pSet][:piHat]       = deepcopy(priorVCV[pSet].pi)
 				M[pSet][:annotProb]   = priorVCV[pSet].annot./sum(priorVCV[pSet].annot,dims=2)				
@@ -452,7 +452,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
         for mSet in keys(M)
                 nMComp = size(priorVCV[mSet].v,1)
-                nMComp > 1 ? M[mSet][:scale] = priorVCV[mSet].v .* (M[mSet][:df]-nMComp-1.0)  : M[mSet][:scale] = priorVCV[mSet].v * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make float and array of float
+                M[mSet][:scale] = nMComp>1 ? priorVCV[mSet].v .* (M[mSet][:df]-nMComp-1.0)  : priorVCV[mSet].v * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make float and array of float
         end
 	
 	
@@ -462,7 +462,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
         for mSet in keys(M)
-                varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]] #later, direct reference to key when varM_prior is a dictionary
+                varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]]
         end
 
 	#summarize analysis
