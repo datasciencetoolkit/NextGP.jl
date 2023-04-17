@@ -278,23 +278,27 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	nAnnot    = nVarCov = M[mSet].nVarCov
 	nVarClass = length(M[mSet].vClass)
 	nLoci     = zeros(Int64,nVarClass)
-	println("varBeta: $(varBeta) ")
 	varc      = [v.*M[mSet].vClass for v in varBeta[mSet]]
-	println("nAnnot: $(nAnnot) ")
-	println("nVarClass: $(nVarClass) ")
-	println("varc: $(varc) ")
 	sumS = 0
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
-			lhs = zeros(nVarClass)
-			ExpLogL = zeros(nVarClass)
-			for v in 1:nVarClass
-				lhs[v] = varc[v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[v]
-				logLc  = varc[v]==0.0 ? M[mSet].logPi[v] : -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
-				ExpLogL[v] = exp(logLc)
+			lhs = zeros(nVarClass,nAnnot)
+			ExpLogL = zeros(nVarClass,nAnnot)
+			for a in 1:nAnnot
+				for v in 1:nVarClass
+					lhs[v,a] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[v]
+					logLc    = varc[a][v]==0.0 ? M[mSet].logPi[v] : -0.5*(log(varc[a][v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v,a]))) + M[mSet].logPi[v]
+					ExpLogL[v,a] = exp(logLc)
+				end
 			end
+			
+			println("ExpLogL: $(ExpLogL)")
+			
+			probAnnot = ExpLogL./sum(ExpLogL)
+			cumProbsAnnot = cumsum(probs)
+			AnnnotClassSNP = findfirst(x->x>=rand(), cumProbs) #position
 			
 			probs = ExpLogL./sum(ExpLogL)
 			cumProbs = cumsum(probs)
