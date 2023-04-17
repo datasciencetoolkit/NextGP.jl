@@ -297,6 +297,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			println("ExpLogL: $(ExpLogL)")
 			
 			probAnnot = sum(ExpLogL,dims=1)./sum(ExpLogL)
+			println("probAnnot: $(probAnnot)")
 			AnnnotClassSNP = Categorical(probAnnot)  #position
 			
 			println("ExpLogL: $(ExpLogL)")
