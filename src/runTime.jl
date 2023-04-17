@@ -96,6 +96,7 @@ struct BayesRCType
     pi::PiTypes
     class::Vector{Float64}
     v::VarCovarTypes
+    annot::Matrix{Int64}
     name::String
     estimatePi::Bool
 end
