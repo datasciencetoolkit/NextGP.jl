@@ -293,7 +293,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 					ExpLogL[v,a] = exp(logLv)
 				end
 			end
-			println("probFROM ANNNOTATION: $(M[mSet].annotProb)")
+			println("probFROM ANNNOTATION: $(M[mSet].annotProb[locus,:])")
 
 			println("ExpLogL: $(ExpLogL)")
 			
