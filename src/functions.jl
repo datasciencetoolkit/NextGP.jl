@@ -218,17 +218,17 @@ end
 function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local meanBeta::Float64
-	nVarComp = length(M[mSet].vClass)
-	nLoci = zeros(Int64,nVarComp)
-	varc = varBeta[mSet][1].*M[mSet].vClass
-	sumS = 0
+	nVarClass = length(M[mSet].vClass)
+	nLoci     = zeros(Int64,nVarClass)
+	varc      = varBeta[mSet][1].*M[mSet].vClass
+	sumS      = 0
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
-			lhs = zeros(nVarComp)
-			ExpLogL = zeros(nVarComp)
-			for v in 1:nVarComp
+			lhs = zeros(nVarClass)
+			ExpLogL = zeros(nVarClass)
+			for v in 1:nVarClass
 				lhs[v] = varc[v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[v]
 				logLc  = varc[v]==0.0 ? M[mSet].logPi[v] : -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
 				ExpLogL[v] = exp(logLc)
@@ -275,18 +275,21 @@ end
 function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local meanBeta::Float64
-	nAnnot   = M[mSet].nAnnot
-	nVarComp = length(M[mSet].vClass)
-	nLoci = zeros(Int64,nVarComp)
-	varc = varBeta[mSet][1].*M[mSet].vClass
+	nAnnot    = nVarCov = M[mSet].nVarCov
+	nVarClass = length(M[mSet].vClass)
+	nLoci     = zeros(Int64,nVarClass)
+	varc      = varBeta[mSet].*M[mSet].vClass
+	println("nAnnot: $(nAnnot) ")
+	println("nVarClass: $(nVarClass) ")
+	println("varc: $(varc) ")
 	sumS = 0
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
-			lhs = zeros(nVarComp)
-			ExpLogL = zeros(nVarComp)
-			for v in 1:nVarComp
+			lhs = zeros(nVarClass)
+			ExpLogL = zeros(nVarClass)
+			for v in 1:nVarClass
 				lhs[v] = varc[v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[v]
 				logLc  = varc[v]==0.0 ? M[mSet].logPi[v] : -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
 				ExpLogL[v] = exp(logLc)
