@@ -307,21 +307,17 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			setindex!(delta[M[mSet].pos],classSNP,locus)
 			nLoci[classSNP,AnnnotClassSNP] += 1
 			###sample only non-zero class SNPs
-			if varc[classSNP]!= 0.0
-				meanBeta = lhs[classSNP]\rhs
-				betaSample = sampleBeta(meanBeta, lhs[classSNP], varE)
+			if varc[AnnnotClassSNP][classSNP]!= 0.0
+				meanBeta = lhs[classSNP,AnnnotClassSNP]\rhs
+				betaSample = sampleBeta(meanBeta, lhs[classSNP,AnnnotClassSNP], varE)
 				setindex!(beta[M[mSet].pos],betaSample,locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			else setindex!(beta[M[mSet].pos],0.0,locus)
 			end
-			####
-#			meanBeta = lhs[classSNP]\rhs
-#			betaSample = sampleBeta(meanBeta, lhs[classSNP], varE)
-#			setindex!(beta[M[mSet].pos],betaSample,locus)
-#			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			####
 		end
 	end
+	
+	##Per ANNOTATION?????
 	varSNP = getindex.(Ref(M[mSet].vClass),delta[M[mSet].pos][1,:])
 	nonZeroPos = findall(!iszero, varSNP)
 	nonZeroBeta = getindex.(Ref(beta[M[mSet].pos]),nonZeroPos)
