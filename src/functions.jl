@@ -280,6 +280,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	nLoci     = zeros(Int64,nVarClass)
 	varc      = [v.*M[mSet].vClass for v in varBeta[mSet]]
 	sumS = 0
+	println("probFROM ANNNOTATION: $(M[mSet].annotProb)")
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
@@ -289,8 +290,8 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			for a in 1:nAnnot
 				for v in 1:nVarClass
 					lhs[v,a] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[a][v]
-					logLc    = varc[a][v]==0.0 ? M[mSet].logPi[v] : -0.5*(log(varc[a][v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v,a]))) + M[mSet].logPi[v]
-					ExpLogL[v,a] = exp(logLc)
+					logLv    = varc[a][v]==0.0 ? M[mSet].logPi[v] : -0.5*(log(varc[a][v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v,a]))) + M[mSet].logPi[v]
+					ExpLogL[v,a] = exp(logLv)
 				end
 			end
 			
