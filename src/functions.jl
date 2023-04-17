@@ -302,9 +302,12 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			
 			println("AnnnotClassSNP: $(AnnnotClassSNP)")
 			
-			probs = ExpLogL./sum(ExpLogL)
+			probs = ExpLogL[:,AnnnotClassSNP]./sum(ExpLogL[:,AnnnotClassSNP])
 			cumProbs = cumsum(probs)
 			classSNP = findfirst(x->x>=rand(), cumProbs) #position
+			
+			println("classSNP: $(classSNP)")
+
 			setindex!(delta[M[mSet].pos],classSNP,locus)
 			nLoci[classSNP] += 1
 			###sample only non-zero class SNPs
