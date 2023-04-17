@@ -272,6 +272,63 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	end
 end
 
+function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+	local rhs::Float64
+	local meanBeta::Float64
+	nVarComp = length(M[mSet].vClass)
+	nLoci = zeros(Int64,nVarComp)
+	varc = varBeta[mSet][1].*M[mSet].vClass
+	sumS = 0
+	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
+		for locus in theseLoci::UnitRange{Int64}
+			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
+			lhs = zeros(nVarComp)
+			ExpLogL = zeros(nVarComp)
+			for v in 1:nVarComp
+				lhs[v] = varc[v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[v]
+				logLc  = varc[v]==0.0 ? M[mSet].logPi[v] : -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
+				ExpLogL[v] = exp(logLc)
+			end
+			
+			probs = ExpLogL./sum(ExpLogL)
+			cumProbs = cumsum(probs)
+			classSNP = findfirst(x->x>=rand(), cumProbs) #position
+			setindex!(delta[M[mSet].pos],classSNP,locus)
+			nLoci[classSNP] += 1
+			###sample only non-zero class SNPs
+			if varc[classSNP]!= 0.0
+				meanBeta = lhs[classSNP]\rhs
+				betaSample = sampleBeta(meanBeta, lhs[classSNP], varE)
+				setindex!(beta[M[mSet].pos],betaSample,locus)
+				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+			else setindex!(beta[M[mSet].pos],0.0,locus)
+			end
+			####
+#			meanBeta = lhs[classSNP]\rhs
+#			betaSample = sampleBeta(meanBeta, lhs[classSNP], varE)
+#			setindex!(beta[M[mSet].pos],betaSample,locus)
+#			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+			####
+		end
+	end
+	varSNP = getindex.(Ref(M[mSet].vClass),delta[M[mSet].pos][1,:])
+	nonZeroPos = findall(!iszero, varSNP)
+	nonZeroBeta = getindex.(Ref(beta[M[mSet].pos]),nonZeroPos)
+	sumS = sum((nonZeroBeta.^2)./varSNP[nonZeroPos])
+	
+	@inbounds varBeta[mSet][1] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS,length(nonZeroPos))
+	if M[mSet].estPi == true 
+		piHat = samplePi(nLoci)
+		M[mSet].piHat .= piHat
+		M[mSet].logPi .= log.(piHat)
+#	println("pi=$(nLoci./M[mSet].dims[2])")
+#	println("piHat=$(M[mSet].piHat)")
+#	println("LOGpiHat=$(M[mSet].logPi)")
+#	println("var=$(varBeta[mSet][1].*M[mSet].vClass)")
+	end
+end
+
 function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local lhs::Float64
