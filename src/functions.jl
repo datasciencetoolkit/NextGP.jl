@@ -278,6 +278,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	nAnnot    = nVarCov = M[mSet].nVarCov
 	nVarClass = length(M[mSet].vClass)
 	nLoci     = zeros(Int64,nVarClass)
+	println("varBeta: $(varBeta) ")
 	varc      = varBeta[mSet].*M[mSet].vClass
 	println("nAnnot: $(nAnnot) ")
 	println("nVarClass: $(nVarClass) ")
