@@ -275,6 +275,7 @@ end
 function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local meanBeta::Float64
+	nAnnot   = M[mSet].nAnnot
 	nVarComp = length(M[mSet].vClass)
 	nLoci = zeros(Int64,nVarComp)
 	varc = varBeta[mSet][1].*M[mSet].vClass
