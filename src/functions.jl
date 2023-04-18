@@ -331,8 +331,8 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			println("nLoci a: $(nLoci[:,a])")
 			piHat = samplePi(nLoci[:,a])
 			println("piHat a: $(piHat)")		
-			M[mSet].piHat[a] .= piHat
-			M[mSet].logPi[a] .= log.(piHat)
+			M[mSet].piHat[a] = piHat
+			M[mSet].logPi[a] = log.(piHat)
 			println("piHat=$(M[mSet].piHat[a])")
 			println("LOGpiHat=$(M[mSet].logPi[a])")
 		end
