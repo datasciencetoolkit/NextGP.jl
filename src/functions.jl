@@ -336,8 +336,9 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			println("piHat=$(M[mSet].piHat[a])")
 			println("LOGpiHat=$(M[mSet].logPi[a])")
 		end
-
 	end
+	println("COMMON Pi Hat    =$(M[mSet].piHat)")
+	println("COMMON LogPi Hat =$(M[mSet].logPi)")
 end
 
 function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
