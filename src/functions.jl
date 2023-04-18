@@ -315,10 +315,10 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			else setindex!(beta[M[mSet].pos],0.0,locus)
 			end
-			println("varBeta: $(varBeta)")
-			println("getindex(Ref(varBeta[mSet],AnnnotClassSNP)): $(getindex(Ref(varBeta[mSet]),AnnnotClassSNP))")
-			println("getindex(Ref(M[mSet].vClass),classSNP): $(getindex(Ref(M[mSet].vClass),classSNP))")
-@time			varSNP = getindex(Ref(M[mSet].vClass),classSNP)*getindex(Ref(varBeta[mSet]),AnnnotClassSNP)
+			println("varc: $(varc)")
+			println("getindex.(Ref(varBeta[mSet],AnnnotClassSNP)): $(getindex.(Ref(varBeta[mSet]),AnnnotClassSNP))")
+			println("getindex.(Ref(M[mSet].vClass),classSNP): $(getindex.(Ref(M[mSet].vClass),classSNP))")
+@time			varSNP = getindex.(Ref(M[mSet].vClass),classSNP)*getindex.(Ref(varBeta[mSet]),AnnnotClassSNP)
 			println("varSNP: $(varSNP)")
 @time			varSNP = M[mSet].vClass[classSNP]*varBeta[mSet][AnnnotClassSNP]
 			println("varSNP: $(varSNP)")
