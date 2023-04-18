@@ -327,17 +327,15 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	
 	if M[mSet].estPi == true
 		for a in 1:nAnnot
-			println("a: a")
+			println("a: $a")
 			println("nLoci a: $(nLoci[:,a])")
 			piHat = samplePi(nLoci[:,a])
-			println("piHat a: $(piHat)")
-				
-#			M[mSet].piHat .= piHat
-#			M[mSet].logPi .= log.(piHat)
-#			println("pi=$(nLoci./M[mSet].dims[2])")
-#			println("piHat=$(M[mSet].piHat)")
-#			println("LOGpiHat=$(M[mSet].logPi)")
-#			println("var=$(varBeta[mSet][1].*M[mSet].vClass)")
+			println("piHat a: $(piHat)")		
+			M[mSet].piHat[a] .= piHat
+			M[mSet].logPi[a] .= log.(piHat)
+			println("pi=$(nLoci[:,a]./M[mSet].dims[2])")
+			println("piHat=$(M[mSet].piHat[a])")
+			println("LOGpiHat=$(M[mSet].logPi[a])")
 		end
 
 	end
