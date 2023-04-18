@@ -325,8 +325,8 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	## Assumes same variant classes, v for all!
 	for a in 1:nAnnot
 		println("sumS[a]: $(sumS[a])")
-		println("sum(nLoci[:,AnnnotClassSNP]): $(sum(nLoci[:,AnnnotClassSNP]))")
-		@inbounds varBeta[mSet] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS[a],sum(nLoci[:,AnnnotClassSNP]))
+		println("sum(nLoci[:,a]): $(sum(nLoci[:,a]))")
+		@inbounds varBeta[mSet] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS[a],sum(nLoci[:,a]))
 	end
 	
 	if M[mSet].estPi == true 
