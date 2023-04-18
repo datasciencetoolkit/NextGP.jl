@@ -80,7 +80,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,delta,ch
 						IO.outMCMC(outPut,"pi$mSet",[M[mSet].piHat])	
 					end
 					if in(M[mSet].method,["BayesRCπ"])
-						IO.outMCMC(outPut,"pi$mSet",[vcat(M[mSet].piHat]...)])
+						IO.outMCMC(outPut,"pi$mSet",[vcat(M[mSet].piHat...)])
 						IO.outMCMC(outPut,"annot$mSet",[M[mSet].annotCat])	
 					end
 				elseif isa(mSet,Tuple)
