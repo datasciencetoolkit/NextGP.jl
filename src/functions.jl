@@ -319,24 +319,27 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			end
 		end
 	end
-	
-	println("nLoci: $nLoci")
-	
+		
 	## Assumes same variant classes, v for all!
 	for a in 1:nAnnot
-		println("sumS[a]: $(sumS[a])")
-		println("sum(nLoci[:,a]): $(sum(nLoci[:,a]))")
 		@inbounds varBeta[mSet][a] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS[a],sum(nLoci[:,a]))
 	end
 	
-	if M[mSet].estPi == true 
-		piHat = samplePi(nLoci)
-		M[mSet].piHat .= piHat
-		M[mSet].logPi .= log.(piHat)
-#	println("pi=$(nLoci./M[mSet].dims[2])")
-#	println("piHat=$(M[mSet].piHat)")
-#	println("LOGpiHat=$(M[mSet].logPi)")
-#	println("var=$(varBeta[mSet][1].*M[mSet].vClass)")
+	if M[mSet].estPi == true
+		for a in 1:nAnnot
+			println("a: a")
+			println("nLoci a: $(nLoci[:,a])")
+			piHat = samplePi(nLoci[:,a])
+			println("piHat a: $(piHat)")
+				
+#			M[mSet].piHat .= piHat
+#			M[mSet].logPi .= log.(piHat)
+#			println("pi=$(nLoci./M[mSet].dims[2])")
+#			println("piHat=$(M[mSet].piHat)")
+#			println("LOGpiHat=$(M[mSet].logPi)")
+#			println("var=$(varBeta[mSet][1].*M[mSet].vClass)")
+		end
+
 	end
 end
 
