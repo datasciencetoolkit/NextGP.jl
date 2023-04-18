@@ -337,9 +337,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
 				M[pSet][:nVarCov]     = size(priorVCV[pSet].annot,2)
-				M[pSet][:logPi]       = [log.(priorVar[:M].pi) for i in 1:M[pSet][:nVarCov]]
+				M[pSet][:logPi]       = [log.(priorVCV[pSet].pi) for i in 1:M[pSet][:nVarCov]]
 				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
-				M[pSet][:piHat]       = [priorVar[:M].pi for i in 1:M[pSet][:nVarCov]]
+				M[pSet][:piHat]       = [priorVCV[pSet].pi for i in 1:M[pSet][:nVarCov]]
 				M[pSet][:annotProb]   = priorVCV[pSet].annot./sum(priorVCV[pSet].annot,dims=2)
 				M[pSet][:annotCat]    = zeros(Int64,1,M[pSet][:dims][2])
 			elseif priorVCV[pSet].name == "BayesLV"
