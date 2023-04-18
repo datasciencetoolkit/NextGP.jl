@@ -520,6 +520,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			elseif in(M[mSet][:method],["BayesRCπ"])
 				npis = length(M[mSet][:vClass])*M[mSet][:nVarCov]
 				IO.outMCMC(outPut,"pi$mSet",[["annot$v" for v in 1:npis]]) #[] to have it as one row
+				IO.outMCMC(outPut,"annot$mSet",hcat(M[mSet][:levels]...))
 			end
 		elseif isa(mSet,Tuple)
 			for m in mSet
