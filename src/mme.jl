@@ -517,10 +517,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			IO.outMCMC(outPut,"delta$mSet",hcat(M[mSet][:levels]...))
 			if in(M[mSet][:method],["BayesB","BayesC","BayesR"])
 				IO.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:length(M[mSet][:vClass])]]) #[] to have it as one row
-			end
-			if in(M[mSet][:method],["BayesRCπ"])
+			elseif in(M[mSet][:method],["BayesRCπ"])
 				npis = length(M[mSet][:vClass])*M[mSet][:nVarCov]
-				IO.outMCMC(outPut,"annot$mSet",[["annot$v" for v in 1:npis]]) #[] to have it as one row
+				IO.outMCMC(outPut,"pi$mSet",[["annot$v" for v in 1:npis]]) #[] to have it as one row
 			end
 		elseif isa(mSet,Tuple)
 			for m in mSet
