@@ -314,7 +314,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 				setindex!(beta[M[mSet].pos],betaSample,locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 				varSNP = varc[AnnnotClassSNP][classSNP]
-				sumS[AnnnotClassSNP] +=  betaSample^2 * varSNP  
+				sumS[AnnnotClassSNP] +=  betaSample^2 / varSNP  
 			else setindex!(beta[M[mSet].pos],0.0,locus)
 			end
 		end
