@@ -289,7 +289,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			for a in 1:nAnnot
 				for v in 1:nVarClass
 					lhs[v,a] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[a][v]
-					logLv    = varc[a][v]==0.0 ? M[mSet].logPi[v] : -0.5*(log(varc[a][v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v,a]))) + M[mSet].logPi[v]
+					logLv    = varc[a][v]==0.0 ? M[mSet].logPi[a][v] : -0.5*(log(varc[a][v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v,a]))) + M[mSet].logPi[a][v]
 					ExpLogL[v,a] = exp(logLv)
 				end
 			end
