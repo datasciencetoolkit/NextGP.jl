@@ -326,7 +326,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	for a in 1:nAnnot
 		println("sumS[a]: $(sumS[a])")
 		println("sum(nLoci[:,a]): $(sum(nLoci[:,a]))")
-		@inbounds varBeta[mSet] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS[a],sum(nLoci[:,a]))
+		@inbounds varBeta[mSet][a] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS[a],sum(nLoci[:,a]))
 	end
 	
 	if M[mSet].estPi == true 
