@@ -279,7 +279,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	nVarClass = length(M[mSet].vClass)
 	nLoci     = zeros(Int64,nVarClass,nAnnot)
 	varc      = [v.*M[mSet].vClass for v in varBeta[mSet]]
-	sumS = 0
+	sumS 	  = zeros(Float64,nAnnot)
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
@@ -313,29 +313,22 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 				betaSample = sampleBeta(meanBeta, lhs[classSNP,AnnnotClassSNP], varE)
 				setindex!(beta[M[mSet].pos],betaSample,locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+				varSNP = varc[AnnnotClassSNP][classSNP]
+				sumS[AnnnotClassSNP] +=  betaSample^2 * varSNP  
 			else setindex!(beta[M[mSet].pos],0.0,locus)
 			end
-			println("varc: $(varc)")
-			println("getindex.(Ref(varBeta[mSet],AnnnotClassSNP)): $(getindex.(Ref(varBeta[mSet]),AnnnotClassSNP))")
-			println("getindex.(Ref(M[mSet].vClass),classSNP): $(getindex.(Ref(M[mSet].vClass),classSNP))")
-@time			varSNP = getindex.(Ref(M[mSet].vClass),classSNP)*getindex.(Ref(varBeta[mSet]),AnnnotClassSNP)
-			println("varSNP: $(varSNP)")
-@time			varSNP = M[mSet].vClass[classSNP]*varBeta[mSet][AnnnotClassSNP]
-			println("varSNP: $(varSNP)")
-@time			varSNP = varc[AnnnotClassSNP][classSNP]
-			println("varSNP: $(varSNP)")
 		end
 	end
 	
+	println("nLoci: $nLoci")
 	
-	## Assumes same variant classes!
-	varSNP = getindex.(Ref(M[mSet].vClass),delta[M[mSet].pos][1,:])
-	##
-	nonZeroPos = findall(!iszero, varSNP)
-	nonZeroBeta = getindex.(Ref(beta[M[mSet].pos]),nonZeroPos)
-	sumS = sum((nonZeroBeta.^2)./varSNP[nonZeroPos])
+	## Assumes same variant classes, v for all!
+	for a in 1:nAnnot
+		println("sumS[a]: $(sumS[a])")
+		println("sum(nLoci[:,AnnnotClassSNP]): $(sum(nLoci[:,AnnnotClassSNP]))")
+		@inbounds varBeta[mSet] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS[a],sum(nLoci[:,AnnnotClassSNP]))
+	end
 	
-	@inbounds varBeta[mSet][1] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS,length(nonZeroPos))
 	if M[mSet].estPi == true 
 		piHat = samplePi(nLoci)
 		M[mSet].piHat .= piHat
