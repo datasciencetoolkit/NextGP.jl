@@ -445,8 +445,8 @@ function samplePi(nIn::Int, nTotal::Int)
 end
 
 # +1 is for Dirichlet(1,1,1,1) prior						
-function samplePi(nLoci::Vector{Int})
-	return rand(Dirichlet(nLoci.+1))
+function samplePi(nSNPs::Vector{Int})
+	return rand(Dirichlet(nSNPs.+1))
 end
 
 
