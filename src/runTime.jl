@@ -96,7 +96,7 @@ struct BayesRCType
     pi::PiTypes
     class::Vector{Float64}
     v::VarCovarTypes
-    annot::Vector{Int64}
+    annot::Matrix{Int64}
     name::String
     estimatePi::Bool
 end
@@ -109,7 +109,7 @@ end
 * `annnot` is a matrix of annottations. Rows are SNPs, columnns are annnotation classes. Entries are binary coded, 0/1.
 * `estimatePi` is `true`if `pi` is estimated. By default it is ´false´
 """
-BayesRCπ(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Vector{Int64};name="BayesRCπ",estimatePi::Bool=false) = BayesRCType(pi,class,v,annot,name,estimatePi)
+BayesRCπ(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Matrix{Int64};name="BayesRCπ",estimatePi::Bool=false) = BayesRCType(pi,class,v,annot,name,estimatePi)
 
 struct BayesLogVarType
     v::Union{Matrix{Float64},Float64}
