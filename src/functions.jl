@@ -284,6 +284,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	nAnnot    = nVarCov = M[mSet].nVarCov
 	nVarClass = length(M[mSet].vClass)
 	nLoci     = zeros(Int64,nAnnot,nVarClass)
+	nNoneZero = zeros(Int64,nAnnot)
 	varc      = [v.*M[mSet].vClass for v in varBeta[mSet]]
 	sumS 	  = zeros(Float64,nAnnot)
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB
@@ -315,6 +316,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			nLoci[AnnnotClassSNP,classSNP] += 1
 			###sample only non-zero class SNPs
 			if varc[AnnnotClassSNP][classSNP]!= 0.0
+				nNonZero[AnnnotClassSNP] += 1
 				meanBeta = lhs[AnnnotClassSNP,classSNP]\rhs
 				betaSample = sampleBeta(meanBeta, lhs[AnnnotClassSNP,classSNP], varE)
 				setindex!(beta[M[mSet].pos],betaSample,locus)
@@ -329,7 +331,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 		
 	## Assumes same variant classes, v for all!
 	for a in 1:nAnnot
-		@inbounds varBeta[mSet][a] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS[a],sum(nLoci[a,:]))
+		@inbounds varBeta[mSet][a] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS[a],nNonZero[a])
 	end
 	
 	if M[mSet].estPi == true
