@@ -246,7 +246,8 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 				setindex!(beta[M[mSet].pos],betaSample,locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 				##
-				varSNP = varc[classSNP]
+#				varSNP = varc[classSNP]
+				varSNP = M[mSet].vClass[classSNP]
 				sumS +=  betaSample^2 / varSNP  
 				##
 			else setindex!(beta[M[mSet].pos],0.0,locus)
