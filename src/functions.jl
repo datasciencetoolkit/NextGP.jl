@@ -317,7 +317,8 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 				betaSample = sampleBeta(meanBeta, lhs[AnnnotClassSNP,classSNP], varE)
 				setindex!(beta[M[mSet].pos],betaSample,locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-				varSNP = varc[AnnnotClassSNP][classSNP]
+#				varSNP = varc[AnnnotClassSNP][classSNP]
+				varSNP = M[mSet].vClass[classSNP] #Same variant classes for all annotations
 				sumS[AnnnotClassSNP] +=  betaSample^2 / varSNP  
 			else setindex!(beta[M[mSet].pos],0.0,locus)
 			end
