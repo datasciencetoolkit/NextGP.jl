@@ -340,9 +340,10 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:logPi]       = [log.(priorVCV[pSet].pi) for i in 1:M[pSet][:nVarCov]]
 				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
 				M[pSet][:piHat]       = [priorVCV[pSet].pi for i in 1:M[pSet][:nVarCov]]
+				M[pSet][:annotInput]  = deepcopy(priorVCV[pSet].annot)
 				M[pSet][:annotProb]   = priorVCV[pSet].annot./sum(priorVCV[pSet].annot,dims=2)
 				M[pSet][:annotNonZeroPos]   = [findall(!iszero, row) for row in eachrow(priorVCV[pSet].annot)]
-				M[pSet][:annotNonZero]= getindex.(Ref(annMat),annotNonZeroPos)
+				M[pSet][:annotNonZero]= getindex.(Ref(priorVCV[pSet].annot),annotNonZeroPos)
 				M[pSet][:annotCat]    = zeros(Int64,1,M[pSet][:dims][2])
 			elseif priorVCV[pSet].name == "BayesLV"
 				M[pSet][:method]      = "BayesLV"
