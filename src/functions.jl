@@ -293,7 +293,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
 			lhs = zeros(nAnnot,nVarClass)
 			ExpLogL = zeros(nAnnot,nVarClass)
-			printl("for SNP $locus, M[mSet].annotNonZero[locus]")
+			println("for SNP $locus, M[mSet].annotNonZero[locus]")
 			for a in M[mSet].annotNonZero[locus] #1:nAnnot
 				for v in 1:nVarClass
 					lhs[a,v] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[a][v]
