@@ -282,7 +282,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	local rhs::Float64
 	local meanBeta::Float64
 	nAnnot    = nVarCov = M[mSet].nVarCov
-	nAnnotSNP = M[mSet].annotNonZero[locus]
+	nAnnotSNP = M[mSet].annotNonZero
 	nVarClass = length(M[mSet].vClass)
 	nLoci     = zeros(Int64,nAnnot,nVarClass)
 	nNonZero = zeros(Int64,nAnnot)
