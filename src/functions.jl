@@ -282,7 +282,6 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	local rhs::Float64
 	local meanBeta::Float64
 	nAnnot    = nVarCov = M[mSet].nVarCov
-	nAnnotSNP = M[mSet].annotNonZero
 	nVarClass = length(M[mSet].vClass)
 	nLoci     = zeros(Int64,nAnnot,nVarClass)
 	nNonZero = zeros(Int64,nAnnot)
@@ -294,15 +293,8 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
 			lhs = zeros(nAnnot,nVarClass)
 			ExpLogL = zeros(nAnnot,nVarClass)
-@time			for a in M[mSet].annotNonZero[locus] #1:nAnnot
-				for v in 1:nVarClass
-					lhs[a,v] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[a][v]
-					logLv    = varc[a][v]==0.0 ? M[mSet].logPi[a][v] : -0.5*(log(varc[a][v]*lhs[a,v]/varE)-((rhs^2)/(varE*lhs[a,v]))) + M[mSet].logPi[a][v]
-					ExpLogL[a,v] = exp(logLv)
-				end
-			end
 
-@time			for a in nAnnotSNP[locus] #1:nAnnot
+			for a in M[mSet].annotNonZero[locus] #1:nAnnot
 				for v in 1:nVarClass
 					lhs[a,v] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[a][v]
 					logLv    = varc[a][v]==0.0 ? M[mSet].logPi[a][v] : -0.5*(log(varc[a][v]*lhs[a,v]/varE)-((rhs^2)/(varE*lhs[a,v]))) + M[mSet].logPi[a][v]
@@ -310,7 +302,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 				end
 			end
 			
-			probAnnot1 = M[mSet].annotProb[locus,:] .* vec(sum(ExpLogL,dims=2))
+			probAnnot1 = M[mSet].annotProb[locus,M[mSet].annotNonZero[locus]] .* vec(sum(ExpLogL[M[mSet].annotNonZero[locus],:],dims=2))
 			probAnnot2 = sum(probAnnot1)
 			probAnnot = probAnnot1 ./ probAnnot2
 			##########
