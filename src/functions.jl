@@ -309,8 +309,8 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 #			AnnnotClassSNP = rand(Categorical(probAnnot))  #position
 			##########
 			
-			
-			
+			println("SNP: $(locus)")
+			println("prob ExpLogL: $(ExpLogL)")
 			probAnnot1 = M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]] .* vec(sum(ExpLogL[M[mSet].annotNonZeroPos[locus],:],dims=2))
 			println("prob annot1: $(probAnnot1)")
 			probAnnot2 = sum(probAnnot1)
@@ -318,7 +318,9 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			println("prob annot: $(probAnnot)")
 			AnnnotClassSNP = rand(Categorical(probAnnot))  #position in nonZero
 			println("snp $locus AnnnotClassSNP $AnnnotClassSNP, TRUE CLASS $(M[mSet].annotNonZeroPos[locus][AnnnotClassSNP])")
-						
+			println("prob ExpLogL AnnnotClass: $(ExpLogL[AnnnotClassSNP,:])")
+			println("prob ExpLogL True AnnnotClass: $(M[mSet].annotNonZeroPos[locus][AnnnotClassSNP])")
+	
 			probsV = ExpLogL[AnnnotClassSNP,:]./sum(ExpLogL[AnnnotClassSNP,:])
 			cumProbsV = cumsum(probsV)
 			classSNP = findfirst(x->x>=rand(), cumProbsV) #position
