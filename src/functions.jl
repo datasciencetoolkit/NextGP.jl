@@ -310,7 +310,8 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			AnnnotClassSNP = rand(Categorical(probAnnot))  #position
 			println("AnnnotClassSNP: $AnnnotClassSNP")
 			println("M[mSet].annotNonZeroPos[locus]: $(M[mSet].annotNonZeroPos[locus])")
-			M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]] = sampleProb(M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]],M[mSet].annotInput[locus,M[mSet].annotNonZeroPos[locus]])
+			posAnnotInNonZero = findfirst(isequal(AnnnotClassSNP), M[mSet].annotNonZeroPos[locus])
+			M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]] = sampleProb(posAnnotInNonZero,M[mSet].annotInput[locus,M[mSet].annotNonZeroPos[locus]])
 			println("M[mSet].annotProb[locus,:]: $(M[mSet].annotProb[locus,:])")	
 			##########
 				
@@ -461,9 +462,11 @@ function samplePi(nSNPs::Vector{Int})
 	return rand(Dirichlet(nSNPs.+1))
 end
 
-# +1 already comes from the inputProb
-function sampleProb(currentProb,inputProb)
-	return rand.(Dirichlet.(currentProb.+inputProb))
+# +1 already comes from the inputProb, posAnnotInNonZero comes from random sampling
+function sampleProb(posAnnotInNonZero,inputProb)
+	tempVec = inputProb[posAnnotInNonZero]+1
+	println("tempVec: $tempVec")
+	return rand.(Dirichlet.(tempVec))
 end
 
 							
