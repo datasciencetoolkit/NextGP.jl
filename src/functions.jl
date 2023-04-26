@@ -464,9 +464,10 @@ end
 
 # +1 already comes from the inputProb, posAnnotInNonZero comes from random sampling
 function sampleProb(posAnnotInNonZero,inputProb)
-	tempVec = inputProb[posAnnotInNonZero]+1
-	println("tempVec: $tempVec")
-	return rand.(Dirichlet.(tempVec))
+	println("inputProb: $inputProb")
+	inputProb[posAnnotInNonZero]+=1
+	println("inputProb: $inputProb")
+	return rand.(Dirichlet.(inputProb))
 end
 
 							
