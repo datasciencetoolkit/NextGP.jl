@@ -300,29 +300,28 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 					ExpLogL[a,v] = exp(logLv)
 				end
 			end
+			if locus<=10
 			println("locus $locus")
-			println("M[mSet].annotProb[locus,:]: $(M[mSet].annotProb[locus,:])")	
+			println("M[mSet].annotProb[locus,:]: $(M[mSet].annotProb[locus,:])")
+			end
 			probAnnot1 = M[mSet].annotProb[locus,:] .* vec(sum(ExpLogL,dims=2))			
 			probAnnot2 = sum(probAnnot1)
 			probAnnot = probAnnot1 ./ probAnnot2
+			if locus<=10
 			println("probAnnot: $probAnnot")
+			end
 			##########
 			AnnnotClassSNP = rand(Categorical(probAnnot))  #position
+			if locus<=10
 			println("AnnnotClassSNP: $AnnnotClassSNP")
-			println("M[mSet].annotNonZeroPos[locus]: $(M[mSet].annotNonZeroPos[locus])")
+			end
 			posAnnotInNonZero = findfirst(isequal(AnnnotClassSNP), M[mSet].annotNonZeroPos[locus])
-			println("locus: $locus, input: $(M[mSet].annotInput[locus,M[mSet].annotNonZeroPos[locus]])")
 			M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]] = sampleProb(posAnnotInNonZero,M[mSet].annotInput[locus,M[mSet].annotNonZeroPos[locus]])
-			println("locus: $locus, input: $(M[mSet].annotInput[locus,M[mSet].annotNonZeroPos[locus]])")
-			println("M[mSet].annotProb[locus,:]: $(M[mSet].annotProb[locus,:])")	
 			##########
 				
 			probsV = ExpLogL[AnnnotClassSNP,:]./sum(ExpLogL[AnnnotClassSNP,:])
-			println("probsV: $probsV")
 			cumProbsV = cumsum(probsV)
-			println("cumProbsV: $cumProbsV")
 			classSNP = findfirst(x->x>=rand(), cumProbsV) #position
-			println("classSNP: $classSNP")
 			
 			setindex!(delta[M[mSet].pos],classSNP,locus)
 			setindex!(M[mSet].annotCat,AnnnotClassSNP,locus)
@@ -466,9 +465,7 @@ end
 
 # +1 already comes from the inputProb, posAnnotInNonZero comes from random sampling
 function sampleProb(posAnnotInNonZero,input)
-	println("input $input")
 	input[posAnnotInNonZero]+=1
-	println("input $input")
 	return rand(Dirichlet(input))
 end
 
