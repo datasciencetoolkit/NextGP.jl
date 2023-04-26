@@ -327,7 +327,9 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			println("probsV: $probsV")
 			cumProbsV = cumsum(probsV)
 			println("cumProbsV: $cumProbsV")
-			classSNP = findfirst(x->x>=rand(), cumProbsV) #position
+			rValue = rand()
+			println("rValue: $rValue")
+			classSNP = findfirst(x->x>=rValue, cumProbsV) #position
 			println("classSNP: $classSNP")
 			
 			setindex!(delta[M[mSet].pos],classSNP,locus)
