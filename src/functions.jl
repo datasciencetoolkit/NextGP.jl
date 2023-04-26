@@ -465,9 +465,11 @@ function samplePi(nSNPs::Vector{Int})
 end
 
 # +1 already comes from the inputProb, posAnnotInNonZero comes from random sampling
-function sampleProb(posAnnotInNonZero,inputProb)
-	inputProb[posAnnotInNonZero]+=1
-	return rand(Dirichlet(inputProb))
+function sampleProb(posAnnotInNonZero,input)
+	println("input $input")
+	input[posAnnotInNonZero]+=1
+	println("input $input")
+	return rand(Dirichlet(input))
 end
 
 							
