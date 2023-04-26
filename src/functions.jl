@@ -309,6 +309,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			##########
 			AnnnotClassSNP = rand(Categorical(probAnnot))  #position
 			println("AnnnotClassSNP: $AnnnotClassSNP")
+			println("M[mSet].annotNonZeroPos[locus,:]: $(M[mSet].annotNonZeroPos[locus,:])")	
 			##########
 				
 			probsV = ExpLogL[AnnnotClassSNP,:]./sum(ExpLogL[AnnnotClassSNP,:])
