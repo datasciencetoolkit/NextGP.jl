@@ -311,7 +311,9 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			println("AnnnotClassSNP: $AnnnotClassSNP")
 			println("M[mSet].annotNonZeroPos[locus]: $(M[mSet].annotNonZeroPos[locus])")
 			posAnnotInNonZero = findfirst(isequal(AnnnotClassSNP), M[mSet].annotNonZeroPos[locus])
+			println("locus: $locus, inputProb: $inputProb")
 			M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]] = sampleProb(posAnnotInNonZero,M[mSet].annotInput[locus,M[mSet].annotNonZeroPos[locus]])
+			println("locus: $locus, inputProb: $inputProb")
 			println("M[mSet].annotProb[locus,:]: $(M[mSet].annotProb[locus,:])")	
 			##########
 				
@@ -464,9 +466,7 @@ end
 
 # +1 already comes from the inputProb, posAnnotInNonZero comes from random sampling
 function sampleProb(posAnnotInNonZero,inputProb)
-	println("inputProb: $inputProb")
 	inputProb[posAnnotInNonZero]+=1
-	println("inputProb: $inputProb")
 	return rand(Dirichlet(inputProb))
 end
 
