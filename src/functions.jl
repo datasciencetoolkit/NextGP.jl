@@ -295,6 +295,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			lhs = zeros(nAnnot,nVarClass)
 			ExpLogL = zeros(nAnnot,nVarClass)
 			println("SNP: $(locus) ExpLogL: $(ExpLogL)")
+			println("M[mSet].annotNonZeroPos[locus]: $(M[mSet].annotNonZeroPos[locus])")
 			for a in M[mSet].annotNonZeroPos[locus]
 				println("SNP: $(locus) annotation: $a")
 				for v in 1:nVarClass
