@@ -289,12 +289,14 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	sumS 	  = zeros(Float64,nAnnot)
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesR
 		for locus in theseLoci::UnitRange{Int64}
+			println("SNP: $(locus)")
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
 			lhs = zeros(nAnnot,nVarClass)
 			ExpLogL = zeros(nAnnot,nVarClass)
 
 			for a in M[mSet].annotNonZeroPos[locus]
+				println("SNP: $(locus) annotation: $a")
 				for v in 1:nVarClass
 					lhs[a,v] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[a][v]
 					logLv    = varc[a][v]==0.0 ? M[mSet].logPi[a][v] : -0.5*(log(varc[a][v]*lhs[a,v]/varE)-((rhs^2)/(varE*lhs[a,v]))) + M[mSet].logPi[a][v]
@@ -308,9 +310,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			##########
 #			AnnnotClassSNP = rand(Categorical(probAnnot))  #position
 			##########
-			
-			println("SNP: $(locus)")
-			println("prob ExpLogL: $(ExpLogL)")
+			println("SNP: $(locus) ExpLogL: $(ExpLogL)")
 			println("annotNonZeroPos[locus]]: $(M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]])")
 			println("vec(...): $(vec(sum(ExpLogL[M[mSet].annotNonZeroPos[locus],:],dims=2)))")
 			probAnnot1 = M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]] .* vec(sum(ExpLogL[M[mSet].annotNonZeroPos[locus],:],dims=2))
