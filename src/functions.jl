@@ -300,21 +300,11 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 					ExpLogL[a,v] = exp(logLv)
 				end
 			end
-			if locus<=10
-			println("locus $locus")
-			println("M[mSet].annotProb[locus,:]: $(M[mSet].annotProb[locus,:])")
-			end
 			probAnnot1 = M[mSet].annotProb[locus,:] .* vec(sum(ExpLogL,dims=2))			
 			probAnnot2 = sum(probAnnot1)
 			probAnnot = probAnnot1 ./ probAnnot2
-			if locus<=10
-			println("probAnnot: $probAnnot")
-			end
 			##########
 			AnnnotClassSNP = rand(Categorical(probAnnot))  #position
-			if locus<=10
-			println("AnnnotClassSNP: $AnnnotClassSNP")
-			end
 			posAnnotInNonZero = findfirst(isequal(AnnnotClassSNP), M[mSet].annotNonZeroPos[locus])
 			M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]] = sampleProb(posAnnotInNonZero,M[mSet].annotInput[locus,M[mSet].annotNonZeroPos[locus]])
 			##########
