@@ -467,7 +467,7 @@ function sampleProb(posAnnotInNonZero,inputProb)
 	println("inputProb: $inputProb")
 	inputProb[posAnnotInNonZero]+=1
 	println("inputProb: $inputProb")
-	return rand.(Dirichlet.(inputProb))
+	return rand(Dirichlet(inputProb))
 end
 
 							
