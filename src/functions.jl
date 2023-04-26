@@ -310,11 +310,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			AnnnotClassSNP = rand(Categorical(probAnnot))  #position
 			println("AnnnotClassSNP: $AnnnotClassSNP")
 			println("M[mSet].annotNonZeroPos[locus]: $(M[mSet].annotNonZeroPos[locus])")
-@time			AnnotSNP = M[mSet].annotInput[locus,M[mSet].annotNonZeroPos[locus]]
-			println("AnnotSNP: $AnnotSNP")
-@time			AnnotSNP = getindex(M[mSet].annotInput,locus,M[mSet].annotNonZeroPos[locus])
-			println("AnnotSNP: $AnnotSNP")
-
+			M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]] = sampleProb(,M[mSet].annotInput[locus,M[mSet].annotNonZeroPos[locus]])
 			##########
 				
 			probsV = ExpLogL[AnnnotClassSNP,:]./sum(ExpLogL[AnnnotClassSNP,:])
@@ -459,13 +455,14 @@ function samplePi(nIn::Int, nTotal::Int)
 	return rand(Beta(nIn+1,nTotal-nIn+1))
 end
 
-# +1 is for Dirichlet(1,1,1,1) prior						
+# +1 is for Dirichlet(1,1,...,) prior						
 function samplePi(nSNPs::Vector{Int})
 	return rand(Dirichlet(nSNPs.+1))
 end
-								
-function sampleProb(currentProb,priorProb)
-	return rand.(Dirichlet.(currentProb.+priorAnnot))
+
+# +1 already comes from the inputProb
+function sampleProb(currentProb,inputProb)
+	return rand.(Dirichlet.(currentProb.+inputProb))
 end
 
 							
