@@ -96,15 +96,16 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	local lhs::Float64
 	local meanBeta::Float64
 	local lambda::Float64
+	iVarE = 1/varE
 	for (r,theseLoci) in enumerate(M[mSet].regionArray)
 		regionSize::Int64 = length(theseLoci)
-		lambda = varE/(varBeta[mSet][r])
+		iVarBeta = 1/varBeta[mSet][r]
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) + getindex(M[mSet].rhs,locus)
-			lhs = getindex(M[mSet].mpm,locus) + lambda
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr).*iVarE + getindex(M[mSet].rhs,locus)
+			lhs = getindex(M[mSet].mpm,locus)*iVarE + iVarBeta
 			meanBeta = lhs\rhs
-			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
+			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 		end
 		@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),regionSize)
@@ -409,8 +410,8 @@ end
 
 
 #sample marker effects
-function sampleBeta(meanBeta, lhs, varE)
-    return rand(Normal(meanBeta,sqrt(lhs\varE)))
+function sampleBeta(meanBeta, lhs)
+    return rand(Normal(meanBeta,sqrt(1/lhs)))
 end
 
 #sample random effects' variances (new U)
