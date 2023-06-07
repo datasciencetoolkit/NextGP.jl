@@ -292,16 +292,20 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	nNonZero = zeros(Int64,nAnnot)
 	varc      = [v.*M[mSet].vClass for v in varBeta[mSet]]
 	sumS 	  = zeros(Float64,nAnnot)
+	iVarE = 1/varE
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesR
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)*iVarE #+ getindex(M[mSet].rhs,locus)
+#			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
 			lhs = zeros(nAnnot,nVarClass)
 			ExpLogL = zeros(nAnnot,nVarClass)
 			for a in M[mSet].annotNonZeroPos[locus]
 				for v in 1:nVarClass
-					lhs[a,v] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[a][v]
-					logLv    = varc[a][v]==0.0 ? M[mSet].logPi[a][v] : -0.5*(log(varc[a][v]*lhs[a,v]/varE)-((rhs^2)/(varE*lhs[a,v]))) + M[mSet].logPi[a][v]
+#					lhs[a,v] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[a][v]
+#					logLv    = varc[a][v]==0.0 ? M[mSet].logPi[a][v] : -0.5*(log(varc[a][v]*lhs[a,v]/varE)-((rhs^2)/(varE*lhs[a,v]))) + M[mSet].logPi[a][v]
+					lhs[a,v] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus)*iVarE + 1/varc[v]
+					logLv    = varc[a][v]==0.0 ? M[mSet].logPi[a][v] : -0.5*(log(varc[a][v]*lhs[a,v])-((rhs^2)/lhs[a,v])) + M[mSet].logPi[a][v]
 					ExpLogL[a,v] = exp(logLv)
 				end
 			end
@@ -325,7 +329,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			if varc[AnnnotClassSNP][classSNP]!= 0.0
 				nNonZero[AnnnotClassSNP] += 1
 				meanBeta = lhs[AnnnotClassSNP,classSNP]\rhs
-				betaSample = sampleBeta(meanBeta, lhs[AnnnotClassSNP,classSNP], varE)
+				betaSample = sampleBeta(meanBeta, lhs[AnnnotClassSNP,classSNP])
 				setindex!(beta[M[mSet].pos],betaSample,locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 #				varSNP = varc[AnnnotClassSNP][classSNP]
