@@ -362,14 +362,16 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	local meanBeta::Float64
 	local lambda::Float64
 	nLoci = 0
+	iVarE = 1/varE
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
-		lambda = varE/(varBeta[mSet][r])
+#		lambda = varE/(varBeta[mSet][r])
+		iVarBeta = 1/varBeta[mSet][r] ################################# snp-specific variance missing!!!!
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)
-			lhs = getindex(M[mSet].mpm,locus) + lambda
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)*iVarE
+			lhs = getindex(M[mSet].mpm,locus)*iVarE + iVarBeta
 			meanBeta = lhs\rhs
-			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
+			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 		end
 	end
