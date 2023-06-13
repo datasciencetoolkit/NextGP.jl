@@ -423,6 +423,11 @@ function sampleBeta(meanBeta, lhs)
     return rand(Normal(meanBeta,sqrt(1/lhs)))
 end
 
+#sample marker effects
+function sampleBeta(meanBeta, lhs, varE)
+    return rand(Normal(meanBeta,sqrt(lhs\varE)))
+end
+
 #sample random effects' variances (new U)
 function sampleVarU(iMat,scale_ranVar,df_ranVar,effVec)
 	n = size(iMat,2)
