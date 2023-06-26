@@ -21,7 +21,7 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 	if length(b[X[xSet].pos])==1
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
 		rhs      = (X[xSet].data'*ycorr).*iVarE .+ X[xSet].rhs
-		lhs      = X[xSet].xpx *iVarE + X[xSet].lhs
+		lhs      = X[xSet].xpx .*iVarE + X[xSet].lhs
 		println("lhs: $lhs , rhs: $rhs")
 		meanMu   = lhs\rhs			
                 b[X[xSet].pos] .= rand(Normal(meanMu[],sqrt(inv(lhs[]))))
