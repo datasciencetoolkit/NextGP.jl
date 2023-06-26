@@ -547,7 +547,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	
 	X  = myUnzip(X)
 	Z  = myUnzip(Z)
-	M  = myUnzip(M)	
+	M  = myUnzip(M)
+	E  = myUnzip(E)
 	
 	return ycorr, nData, E, X, b, Z, u, varU, M,  beta, varBeta, delta
 	
