@@ -181,26 +181,29 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	local meanBeta::Float64
 	local lambda::Float64
 	nLoci = 0
-	lambda = varE/(varBeta[mSet][1])
+#	lambda = varE/(varBeta[mSet][1])
+	iVarE = 1/varE
+	iVarBeta = 1/varBeta[mSet][r]
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesC, so r=locus
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
+			rrr = BLAS.dot(view(M[mSet].data,:,locus),ycorr)
 			v0 = getindex(M[mSet].mpm,locus)*varE
 			v1 = (getindex(M[mSet].mpm,locus)^2)*varBeta[mSet][1] + v0
 
-			logDelta0 = -0.5*(log(v0) + (rhs^2)/v0) + M[mSet].logPi[1]            # this locus not fitted
-			logDelta1 = -0.5*(log(v1) + (rhs^2)/v1) + M[mSet].logPi[2]             # this locus fitted       
+			logDelta0 = -0.5*(log(v0) + (rrr^2)/v0) + M[mSet].logPi[1]            # this locus not fitted
+			logDelta1 = -0.5*(log(v1) + (rrr^2)/v1) + M[mSet].logPi[2]             # this locus fitted       
 
-#        		logDelta0 = -0.5*(log(v0) + (rhs^2)/v0) + M[mSet].logPiOut            # this locus not fitted
-#			logDelta1 = -0.5*(log(v1) + (rhs^2)/v1) + M[mSet].logPiIn             # this locus fitted       
+#        		logDelta0 = -0.5*(log(v0) + (rrr^2)/v0) + M[mSet].logPiOut            # this locus not fitted
+#			logDelta1 = -0.5*(log(v1) + (rrr^2)/v1) + M[mSet].logPiIn             # this locus fitted       
         		probDelta1 = 1.0/(1.0 + exp(logDelta0-logDelta1))
 			if rand() < probDelta1
 				setindex!(delta[M[mSet].pos],1,locus)
 				nLoci += 1
-				lhs = getindex(M[mSet].mpm,locus) + lambda
+				rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)*iVarE #+ getindex(M[mSet].rhs,locus)
+				lhs = getindex(M[mSet].mpm,locus)*iVarE + iVarBeta
 				meanBeta = lhs\rhs
-				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
+				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			else 
 				setindex!(beta[M[mSet].pos],0.0,locus)
