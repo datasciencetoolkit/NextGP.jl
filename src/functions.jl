@@ -17,17 +17,20 @@ export sampleZandZVar!
 
 #Sampling fixed effects
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Float64)
+	iVarE = inv(varE)
 	if length(b[X[xSet].pos])==1
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
-		rhs      = X[xSet].data'*ycorr .+ X[xSet].rhs
-		meanMu   = X[xSet].ixpx*rhs			
-                b[X[xSet].pos] .= rand(Normal(meanMu[],sqrt((X[xSet].ixpx*varE))[]))
+		rhs      = (X[xSet].data'*ycorr).*iVarE .+ X[xSet].rhs
+		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
+		meanMu   = lhs\rhs			
+                b[X[xSet].pos] .= rand(Normal(meanMu[],sqrt(inv(lhs))[]))
 		ycorr    .-= X[xSet].data .* b[X[xSet].pos]
 	else
 		ycorr    .+= X[xSet].data*b[X[xSet].pos]
-                rhs      = X[xSet].data'*ycorr .+ X[xSet].rhs
-                meanMu   = X[xSet].ixpx*rhs
-		b[X[xSet].pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(X[xSet].ixpx*varE))))
+                rhs      = (X[xSet].data'*ycorr).*iVarE .+ X[xSet].rhs
+		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
+		meanMu   = lhs\rhs			
+		b[X[xSet].pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(inv(lhs)))))
 		ycorr    .-= X[xSet].data*b[X[xSet].pos]
 	end
 end
