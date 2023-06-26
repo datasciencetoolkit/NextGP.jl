@@ -20,7 +20,7 @@ using .functions
 export runSampler!
 
 #main sampler
-function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength,burnIn,outputFreq,outPut)
+function runSampler!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength,burnIn,outputFreq,outPut)
 		
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
@@ -29,7 +29,7 @@ function runSampler!(ycorr,nData,dfE,scaleE,X,b,Z,u,varU,M,beta,varBeta,delta,ch
 @showprogress 1 "MCMC progress..." for iter in 1:chainLength
 	
 		#sample residual variance
-	       	varE = sampleVarE(dfE,scaleE,ycorr,nData)
+	       	varE = sampleVarE(E[:df],E[:scale],ycorr,nData)
 		
 		#sample fixed effects
 
