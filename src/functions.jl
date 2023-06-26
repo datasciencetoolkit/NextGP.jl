@@ -137,21 +137,24 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	local lambda::Float64
 	nLoci = 0
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
-		lambda = varE/(varBeta[mSet][r])
+#		lambda = varE/(varBeta[mSet][r])
+		iVarE = 1/varE
+		iVarBeta = 1/varBeta[mSet][r]
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
+			rrr = BLAS.dot(view(M[mSet].data,:,locus),ycorr) 
 			v0 = getindex(M[mSet].mpm,locus)*varE
 			v1 = (getindex(M[mSet].mpm,locus)^2)*varBeta[mSet][r] + v0
-        		logDelta0 = -0.5*(log(v0) + (rhs^2)/v0) + M[mSet].logPi[1]            # this locus not fitted
-			logDelta1 = -0.5*(log(v1) + (rhs^2)/v1) + M[mSet].logPi[2]             # this locus fitted       
+        		logDelta0 = -0.5*(log(v0) + (rrr^2)/v0) + M[mSet].logPi[1]            # this locus not fitted
+			logDelta1 = -0.5*(log(v1) + (rrr^2)/v1) + M[mSet].logPi[2]             # this locus fitted       
         		probDelta1 = 1.0/(1.0 + exp(logDelta0-logDelta1))
 			if rand() < probDelta1
 				setindex!(delta[M[mSet].pos],1,locus)
 				nLoci += 1
-				lhs = getindex(M[mSet].mpm,locus) + lambda
+				rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)*iVarE #+ getindex(M[mSet].rhs,locus)
+				lhs = getindex(M[mSet].mpm,locus)*iVarE + iVarBeta
 				meanBeta = lhs\rhs
-				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs, varE),locus)
+				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),1)
 			else 
