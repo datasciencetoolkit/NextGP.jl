@@ -94,19 +94,17 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
         nFix  = length(X)
 	
         for xSet in keys(X)
-#		ixpx inverse taken later
-		X[xSet][:ixpx] = X[xSet][:data]'X[xSet][:data]
+		X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
 		X[xSet][:rhs] = zeros(X[xSet][:nCol])
 
                 if xSet in keys(summaryStat)
-	  		isa(summaryStat[xSet].v,Array{Float64,1}) ? X[xSet][:ixpx] .+= inv.(summaryStat[xSet].v) : X[xSet][:ixpx] .+= inv.(diag(summaryStat[xSet].v))
-			isa(summaryStat[xSet].v,Array{Float64,1}) ? X[xSet][:rhs] .= inv.(summaryStat[xSet].v) .* (summaryStat[xSet].m)  : X[xSet][:rhs] .= inv.(diag(summaryStat[xSet].v)) .* (summaryStat[xSet].m)
+	  		X[xSet][:lhs] .= isa(summaryStat[xSet].v,Array{Float64,1}) ? inv.(summaryStat[xSet].v) : inv.(diag(summaryStat[xSet].v))
+			X[xSet][:rhs] .= isa(summaryStat[xSet].v,Array{Float64,1}) ? inv.(summaryStat[xSet].v) .* (summaryStat[xSet].m)  : inv.(diag(summaryStat[xSet].v)) .* (summaryStat[xSet].m)
                 end
 
-		if isa(X[xSet][:ixpx],Matrix{Float64}) 
-			X[xSet][:ixpx] += Matrix(I*minimum(abs.(diag(X[xSet][:ixpx])./10000)),size(X[xSet][:ixpx]))
+		if isa(X[xSet][:xpx],Matrix{Float64}) 
+			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
 		end
-               	X[xSet][:ixpx] = inv(X[xSet][:ixpx])
         end
 	        
       
@@ -270,10 +268,11 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				push!(tempmpm,BLAS.dot(c,c))
 			end
 			M[pSet][:mpm] = tempmpm
+			M[pSet][:lhs] = zeros(M[pSet][:dims][2])
 			M[pSet][:rhs] = zeros(M[pSet][:dims][2])
 			if pSet in keys(summaryStat)
-                       		isa(summaryStat[pSet].v,Array{Float64,1}) ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
-				isa(summaryStat[pSet].v,Array{Float64,1}) ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+                       		M[pSet][:lhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) : inv.(diag(summaryStat[pSet].v))
+				M[pSet][:rhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
 			end
 			M[pSet][:Mp] = []
 			
@@ -423,10 +422,11 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			push!(tempmpm,BLAS.dot(c,c))
 		end
 		M[pSet][:mpm] = tempmpm
+		M[pSet][:lhs] = zeros(M[pSet][:dims][2])
 		M[pSet][:rhs] = zeros(M[pSet][:dims][2])
                 if pSet in keys(summaryStat)
-			isa(summaryStat[pSet].v,Array{Float64,1}) ? M[pSet][:mpm] .+= inv.(summaryStat[pSet].v) : M[pSet][:mpm] .+= inv.(diag(summaryStat[pSet].v))
-                        isa(summaryStat[pSet].v,Array{Float64,1}) ? M[pSet][:rhs] .= inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : M[pSet][:rhs] .= inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+			M[pSet][:lhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) : inv.(diag(summaryStat[pSet].v))
+                        M[pSet][:rhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                 end
 		
 		#wheenn no prior was given, the below code should include only 9999 case. Delete the rest!
