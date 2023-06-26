@@ -106,7 +106,7 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr).*iVarE + getindex(M[mSet].rhs,locus)
-			lhs = getindex(M[mSet].mpm,locus)*iVarE + iVarBeta
+			lhs = getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + iVarBeta
 			meanBeta = lhs\rhs
 			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
@@ -122,7 +122,7 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		invB = inv(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			ycorr .+= M[mSet].data[locus]*getindex.(beta[M[mSet].pos],locus)
-			RHS = ((getindex(M[mSet].Mp,locus)*ycorr)./varE) .+ getindex(M[mSet].rhs,locus)
+			RHS = ((getindex(M[mSet].Mp,locus)*ycorr)./varE)
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus)./varE) .+ invB)
 			meanBETA::Array{Float64,1} = invLHS*RHS
 			setindex!.(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
@@ -153,8 +153,8 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 			if rand() < probDelta1
 				setindex!(delta[M[mSet].pos],1,locus)
 				nLoci += 1
-				rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)*iVarE #+ getindex(M[mSet].rhs,locus)
-				lhs = getindex(M[mSet].mpm,locus)*iVarE + iVarBeta
+				rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)*iVarE + getindex(M[mSet].rhs,locus)
+				lhs = getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + iVarBeta
 				meanBeta = lhs\rhs
 				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
@@ -199,7 +199,7 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 				setindex!(delta[M[mSet].pos],1,locus)
 				nLoci += 1
 				rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)*iVarE #+ getindex(M[mSet].rhs,locus)
-				lhs = getindex(M[mSet].mpm,locus)*iVarE + iVarBeta
+				lhs = getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + iVarBeta
 				meanBeta = lhs\rhs
 				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
@@ -233,11 +233,11 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 #			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
-			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)*iVarE #+ getindex(M[mSet].rhs,locus)
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)*iVarE + getindex(M[mSet].rhs,locus)
 			lhs = zeros(nVarClass)
 			ExpLogL = zeros(nVarClass)
 			for v in 1:nVarClass
-				lhs[v] = varc[v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus)*iVarE + 1/varc[v]
+				lhs[v] = varc[v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + 1/varc[v]
 				logLc  = varc[v]==0.0 ? M[mSet].logPi[v] : -0.5*(log(varc[v]*lhs[v])-((rhs^2)/lhs[v])) + M[mSet].logPi[v]
 #				lhs[v] = varc[v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[v]
 #				logLc  = varc[v]==0.0 ? M[mSet].logPi[v] : -0.5*(log(varc[v]*lhs[v]/varE)-((rhs^2)/(varE*lhs[v]))) + M[mSet].logPi[v]
@@ -300,7 +300,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesR
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)*iVarE #+ getindex(M[mSet].rhs,locus)
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)*iVarE + getindex(M[mSet].rhs,locus)
 #			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
 			lhs = zeros(nAnnot,nVarClass)
 			ExpLogL = zeros(nAnnot,nVarClass)
@@ -308,7 +308,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 				for v in 1:nVarClass
 #					lhs[a,v] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[a][v]
 #					logLv    = varc[a][v]==0.0 ? M[mSet].logPi[a][v] : -0.5*(log(varc[a][v]*lhs[a,v]/varE)-((rhs^2)/(varE*lhs[a,v]))) + M[mSet].logPi[a][v]
-					lhs[a,v] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus)*iVarE + 1/varc[a][v]
+					lhs[a,v] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + 1/varc[a][v]
 					logLv    = varc[a][v]==0.0 ? M[mSet].logPi[a][v] : -0.5*(log(varc[a][v]*lhs[a,v])-((rhs^2)/lhs[a,v])) + M[mSet].logPi[a][v]
 					ExpLogL[a,v] = exp(logLv)
 				end
@@ -371,8 +371,8 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 #		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)*iVarE
-			lhs = getindex(M[mSet].mpm,locus)*iVarE + 1/varBeta[mSet][locus]
+			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr)*iVarE + getindex(M[mSet].rhs,locus)  
+			lhs = getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + 1/varBeta[mSet][locus]
 			meanBeta = lhs\rhs
 			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
@@ -425,11 +425,6 @@ end
 #sample marker effects
 function sampleBeta(meanBeta, lhs)
     return rand(Normal(meanBeta,sqrt(1/lhs)))
-end
-
-#sample marker effects
-function sampleBeta(meanBeta, lhs, varE)
-    return rand(Normal(meanBeta,sqrt(lhs\varE)))
 end
 
 #sample random effects' variances (new U)
