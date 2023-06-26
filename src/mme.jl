@@ -119,6 +119,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				E[:iVarStr] = Matrix(1.0I,nData,nData)
 				priorVCV[:e] = Random("I",priorVCV[:e].v)
 		elseif isa(priorVCV[:e].str,Matrix) # D
+				E[:str] = "D"
 				E[:iVarStr] = inv(priorVCV[:e].str)
 #				error("var-cov structure \"D\" has not been implemented yet")
 				printstyled("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used\n"; color = :green)
