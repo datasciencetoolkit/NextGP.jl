@@ -172,10 +172,11 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				# push!(tempzpz,BLAS.dot(c,c))
 			end
 			Z[zSet][:zpz] = tempzpz
+			Z[zSet][:lhs] = zeros(size(nowZ,2))
 			Z[zSet][:rhs] = zeros(size(nowZ,2))
                         if zSet in keys(summaryStat)
-                                isa(summaryStat[zSet].v,Array{Float64,1}) ? zpz[zSet] .+= inv.(summaryStat[zSet].v) : zpz[zSet] .+= inv.(diag(summaryStat[zSet].v))
-                                isa(summaryStat[zSet].v,Array{Float64,1}) ? rhsZ[zSet] .= inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : rhsZ[zSet] .= inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
+                                Z[zSet][:lhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) : inv.(diag(summaryStat[zSet].v))
+                                Z[zSet][:rhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
                         end
 			Z[zSet][:Zp]  = transpose(nowZ)
 			u = push!(u,zeros(Float64,1,size(nowZ,2)))
@@ -223,10 +224,11 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		end
 		Z[zSet][:Zp]  = transpose(nowZ)						
 		Z[zSet][:zpz] = tempzpz
+		Z[zSet][:lhs] = zeros(size(nowZ,2))
 		Z[zSet][:rhs] = zeros(size(nowZ,2))
 		if zSet in keys(summaryStat)
-                	isa(summaryStat[zSet].v,Array{Float64,1}) ? zpz[zSet] .+= inv.(summaryStat[zSet].v) : zpz[zSet] .+= inv.(diag(summaryStat[zSet].v))
-                        isa(summaryStat[zSet].v,Array{Float64,1}) ? rhsZ[zSet] .= inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : rhsZ[zSet] .= inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
+                	Z[zSet][:lhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) : inv.(diag(summaryStat[zSet].v))
+                        Z[zSet][:rhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
                 end
 		setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 	end
