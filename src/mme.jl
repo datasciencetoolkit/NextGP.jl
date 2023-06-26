@@ -95,6 +95,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	
         for xSet in keys(X)
 		X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
+		X[xSet][:lhs] = zeros(X[xSet][:nCol])
 		X[xSet][:rhs] = zeros(X[xSet][:nCol])
 
                 if xSet in keys(summaryStat)
