@@ -67,7 +67,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
 				E[:iVarStr] = Matrix(1.0I,nData,nData)
 				priorVCV[:e] = Random("I",priorVCV[:e].v)
-		elseif isa(priorVCV[:e].str,Matrix) # D
+		elseif isa(priorVCV[:e].str,Vector) # D
 				E[:str] = "D"
 				E[:iVarStr] = inv(Diagonal(priorVCV[:e].str))
 #				error("var-cov structure \"D\" has not been implemented yet")
