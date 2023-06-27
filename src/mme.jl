@@ -173,7 +173,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 			for c in eachcol(nowZ)
 				#push!(tempzpz,c'c)					
-				push!(tempzpz,BLAS.dot(c,c))
+				push!(tempzpz,dot(c,c))
 			end
 			Z[zSet][:zpz] = tempzpz
 			Z[zSet][:lhs] = zeros(size(nowZ,2))
