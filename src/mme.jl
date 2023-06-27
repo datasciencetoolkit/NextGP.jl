@@ -129,10 +129,10 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	
         for xSet in keys(X)
 		if E[:str] == "D"
-			println("weighted residuals")
+			println("weighted residuals in XpX")
 			X[xSet][:xpx] = X[xSet][:data]'*E[:iVarStr]*X[xSet][:data]
 		else X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
-			println("NOT weighted residuals")
+			println("NOT weighted residuals in XpX")
 		end
 		X[xSet][:lhs] = zeros(X[xSet][:nCol])
 		X[xSet][:rhs] = zeros(X[xSet][:nCol])
@@ -172,8 +172,14 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			nowZ = Z[zSet][:data]
 			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 			for c in eachcol(nowZ)
-				#push!(tempzpz,c'c)					
-				push!(tempzpz,dot(c,c))
+				#push!(tempzpz,c'c)
+				if E[:str] == "D"
+					println("weighted residuals in Z")
+					push!(tempzpz,dot(c,E[:iVarStr],c))
+				else
+					println("NOT weighted residuals in Z")
+					push!(tempzpz,dot(c,c))
+				end
 			end
 			Z[zSet][:zpz] = tempzpz
 			Z[zSet][:lhs] = zeros(size(nowZ,2))
@@ -203,8 +209,13 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			for d in zSet
                        		delete!(Z,d)
                		end
+
+			###WEIGHTED SHOULD BE ADAAPTED HERE#################
 			Z[zSet][:zpz]  = MatByMat.(tempZ)
 			Z[zSet][:Zp]   = transpose.(tempZ)
+
+
+			
 			#lhs is already zero as only mpm + "nothing" is  given
 			#rhs is for now only for convenience
 			Z[zSet][:rhs] = [zeros(length(zSet)) for i in 1:length(Z[zSet][:levels])]
