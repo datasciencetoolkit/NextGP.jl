@@ -33,7 +33,7 @@ function make_ran_matrix(x1::AbstractVector,x2::AbstractVector)
         for i in eachindex(u)
                 @. Z[:, i] = x1 .== u[i]
         end
-           return u,Z
+           return u,Matrix(Z)
        end
 
 
