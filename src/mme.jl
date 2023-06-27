@@ -489,7 +489,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	end
 	
 
-	push!(summarize,["e","Random",priorVCV[:e].str,E[:df],E[:scale]])						
+	push!(summarize,["e","Random",E[:str],E[:df],E[:scale]])						
 
 	println("\n ---------------- Summary of analysis ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
