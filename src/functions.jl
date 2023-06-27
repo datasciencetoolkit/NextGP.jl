@@ -476,7 +476,6 @@ function sampleVarE(df_e,S_e,yCorVec,nRecords)
 	return (df_e*S_e + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords))
 end
 function sampleVarE(df_e,S_e,iD,yCorVec,nRecords)
-	println("sampling weighted e")
 	return (df_e*S_e + dot(yCorVec,iD,yCorVec))/rand(Chisq(df_e + nRecords))
 end
 					
