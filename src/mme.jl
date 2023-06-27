@@ -65,6 +65,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	if haskey(priorVCV,:e)	
 		if isempty(priorVCV[:e].str) || priorVCV[:e].str=="I" 
 				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
+				E[:str] = "I"
 				E[:iVarStr] = Matrix(1.0I,nData,nData)
 				priorVCV[:e] = Random("I",priorVCV[:e].v)
 		elseif isa(priorVCV[:e].str,Vector) # D
@@ -171,13 +172,15 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			tempzpz = []
 			nowZ = Z[zSet][:data]
 			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
-			for c in eachcol(nowZ)
-				#push!(tempzpz,c'c)
-				if E[:str] == "D"
-					println("weighted residuals in Z")
+			
+			if E[:str] == "D"
+				println("weighted residuals in Z")
+				for c in eachcol(nowZ)
 					push!(tempzpz,dot(c,E[:iVarStr],c))
-				else
-					println("NOT weighted residuals in Z")
+				end
+			else
+				println("NOT weighted residuals in Z")
+				for c in eachcol(nowZ)
 					push!(tempzpz,dot(c,c))
 				end
 			end
