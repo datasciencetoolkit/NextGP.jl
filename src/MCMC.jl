@@ -38,8 +38,10 @@ runLMEM = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}(
 
 	if E.str == "D"
 		samplers.runSampler_D!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,nChain,nBurn,nThin,outFolder)
+		println("weighted model selected")
 	else
 		samplers.runSampler!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,nChain,nBurn,nThin,outFolder)
+		println("NOT weighted model selected")
 	end
 	
 end
