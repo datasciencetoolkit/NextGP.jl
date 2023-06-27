@@ -128,7 +128,7 @@ BayesLV(v::Float64,f::StatsModels.TermOrTerms,covariates::DataFrame;name="BayesL
 
 struct RandomEffectType
     str::Any
-    v::Union{Matrix{Float64},Float64}
+    v::Union{Matrix{Float64},Vector{Float64},Float64}
     type::Int
 end
 
