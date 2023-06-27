@@ -178,23 +178,27 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				for c in eachcol(nowZ)
 					push!(tempzpz,dot(c,E[:iVarStr],c))
 				end
+				Z[zSet][:Zp]  = transpose(nowZ)*E[:iVarStr]
 			else
 				println("NOT weighted residuals in Z")
 				for c in eachcol(nowZ)
 					push!(tempzpz,dot(c,c))
 				end
+				Z[zSet][:Zp]  = transpose(nowZ)
 			end
 			Z[zSet][:zpz] = tempzpz
+			u = push!(u,zeros(Float64,1,size(nowZ,2)))
+			nowZ = 0
+			tempzpz = 0
+
+			#summary statistics
 			Z[zSet][:lhs] = zeros(size(nowZ,2))
 			Z[zSet][:rhs] = zeros(size(nowZ,2))
                         if zSet in keys(summaryStat)
                                 Z[zSet][:lhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) : inv.(diag(summaryStat[zSet].v))
                                 Z[zSet][:rhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
                         end
-			Z[zSet][:Zp]  = transpose(nowZ)
-			u = push!(u,zeros(Float64,1,size(nowZ,2)))
-			nowZ = 0
-			tempzpz = 0
+			
 		#tuple of symbols (:ID,:Dam)
 		elseif (isa(zSet,Tuple{Vararg{Symbol}})) && all((in).(zSet,Ref(keys(Z)))) #if all elements are available # all([zSet .in Ref(keys(Z))])
 			Z[zSet] = Dict{Symbol, Any}()
