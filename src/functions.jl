@@ -146,7 +146,8 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 		iVarBeta = 1/varBeta[mSet][r]
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = dot(view(M[mSet].data,:,locus),iD,ycorr).*iVarE + getindex(M[mSet].rhs,locus)
+@time			rhs = dot(view(M[mSet].data,:,locus),iD,ycorr).*iVarE + getindex(M[mSet].rhs,locus)
+@time			rhs = M[mSet].Mp[locus]*ycorr.*iVarE + getindex(M[mSet].rhs,locus)
 			lhs = getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + iVarBeta
 			meanBeta = lhs\rhs
 			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
