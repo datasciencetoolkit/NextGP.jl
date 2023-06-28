@@ -149,7 +149,7 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 #			rhs = dot(view(M[mSet].data,:,locus),iD,ycorr).*iVarE + getindex(M[mSet].rhs,locus)
 @time			rhs = M[mSet].Mp[locus]*ycorr.*iVarE + getindex(M[mSet].rhs,locus)
 			println("lhs from orig: $rhs")
-@time			rhs = dot(getindex(M[mSet].Mp,locus)*ycorr).*iVarE + getindex(M[mSet].rhs,locus)
+@time			rhs = getindex(M[mSet].Mp,locus)*ycorr.*iVarE + getindex(M[mSet].rhs,locus)
 			println("lhs from getindex: $rhs")
 			lhs = getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + iVarBeta
 			meanBeta = lhs\rhs
