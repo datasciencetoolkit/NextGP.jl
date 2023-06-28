@@ -290,7 +290,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			tempmpm = []
 			nowM = M[pSet][:data]
 
-
 			if E[:str] == "D"
 				println("weighted residuals in M")
 				for c in eachcol(nowM)
@@ -303,7 +302,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				end
 			end			
 			M[pSet][:mpm] = tempmpm
-			
+			M[pSet][:Mp] = transpose.(eachcol(nowM)).*E[:iVarStr]
+
 			#summary statistics
 			M[pSet][:lhs] = zeros(M[pSet][:dims][2])
 			M[pSet][:rhs] = zeros(M[pSet][:dims][2])
@@ -311,7 +311,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
                        		M[pSet][:lhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) : inv.(diag(summaryStat[pSet].v))
 				M[pSet][:rhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
 			end
-			M[pSet][:Mp] = []
 			
 			if priorVCV[pSet].name == "BayesPR"
 				M[pSet][:method] = "BayesPR"
