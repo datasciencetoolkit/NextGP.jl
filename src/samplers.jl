@@ -108,7 +108,7 @@ function runSampler_D!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLeng
 @showprogress 1 "MCMC progress..." for iter in 1:chainLength
 	
 		#sample residual variance
-	       	varE = sampleVarE(E[:df],E[:scale],E[:iVarStr],ycorr,nData)
+	       	varE = sampleVarE(E,ycorr,nData)
 		
 		#sample fixed effects
 
@@ -125,7 +125,7 @@ function runSampler_D!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLeng
 		#sample marker effects and variances
 		for mSet in keys(M)
 #			println("running $(M[mSet].method) for $mSet")
-			M[mSet].funct(mSet,M,beta,delta,ycorr,varE,varBeta)
+			M[mSet].funct(mSet,M,beta,delta,ycorr,E,varE,varBeta)
 		end
 				               		
         	#print
