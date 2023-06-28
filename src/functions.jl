@@ -497,8 +497,8 @@ end
 function sampleVarE(df_e,S_e,yCorVec,nRecords)
 	return (df_e*S_e + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords))
 end
-function sampleVarE(df_e,S_e,iD,yCorVec,nRecords)
-	return (df_e*S_e + dot(yCorVec,iD,yCorVec))/rand(Chisq(df_e + nRecords))
+function sampleVarE(E,yCorVec,nRecords)
+	return (E[:df]*E[:scale] + dot(yCorVec,E[:iVarStr],yCorVec))/rand(Chisq(E[:df] + nRecords))
 end
 					
 # +1 is for beta(1,1) prior
