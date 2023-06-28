@@ -295,7 +295,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				for c in eachcol(nowM)
 					push!(tempmpm,dot(c,E[:iVarStr],c))
 				end
-				M[pSet][:Mp] = eachcol(nowM).*E[:iVarStr]
+				M[pSet][:Mp] = map(i -> (M[:,i]'*E[:iVarStr]), axes(M, 2))
 			else
 				println("NOT weighted residuals in M")
 				for c in eachcol(nowM)
@@ -303,9 +303,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				end
 				M[pSet][:Mp] = []
 			end			
+
 			M[pSet][:mpm] = tempmpm
-			println("$(eachcol(nowM))")
-			M[pSet][:Mp] = eachcol(nowM).*E[:iVarStr]
 			println("sizeMp: $(size(M[pSet][:Mp]))")
 			println("sizeMp: $(size.(M[pSet][:Mp])[1:3])")	
 			
