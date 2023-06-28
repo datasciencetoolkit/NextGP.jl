@@ -302,7 +302,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				end
 			end			
 			M[pSet][:mpm] = tempmpm
-			M[pSet][:Mp] = (eachcol(nowM)).*E[:iVarStr]
+			println("$(eachcol(nowM))")
+			M[pSet][:Mp] = eachcol(nowM).*E[:iVarStr]
 			println("sizeMp: $(size(M[pSet][:Mp]))")
 			println("sizeMp: $(size.(M[pSet][:Mp])[1:3])")	
 			
