@@ -29,7 +29,8 @@ function runSampler!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength
 @showprogress 1 "MCMC progress..." for iter in 1:chainLength
 	
 		#sample residual variance
-	       	varE = sampleVarE(E[:df],E[:scale],ycorr,nData)
+@time	       	varE = sampleVarE(E[:df],E[:scale],ycorr,nData)
+@time		varE = sampleVarE(E,ycorr,nData)
 		
 		#sample fixed effects
 
