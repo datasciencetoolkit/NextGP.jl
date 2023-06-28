@@ -35,18 +35,18 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 	end
 end
 
-function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,E::Dict,varE::Float64)
+function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,E::Tuple,varE::Float64)
 	iVarE = inv(varE)
 	if length(b[X[xSet].pos])==1
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
-		rhs      = (X[xSet].data'*E[:iVarStr]*ycorr).*iVarE .+ X[xSet].rhs
+		rhs      = (X[xSet].data'*E.iVarStr*ycorr).*iVarE .+ X[xSet].rhs
 		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
 		meanMu   = lhs\rhs			
                 b[X[xSet].pos] .= rand(Normal(meanMu[],sqrt(inv(lhs[]))))
 		ycorr    .-= X[xSet].data .* b[X[xSet].pos]
 	else
 		ycorr    .+= X[xSet].data*b[X[xSet].pos]
-                rhs      = (X[xSet].data'*E[:iVarStr]*ycorr).*iVarE .+ X[xSet].rhs
+                rhs      = (X[xSet].data'*E.iVarStr*ycorr).*iVarE .+ X[xSet].rhs
 		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
 		meanMu   = lhs\rhs			
 		b[X[xSet].pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(inv(lhs)))))
@@ -134,13 +134,13 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	end
 end
 
-function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},E::Dict,varE::Float64,varBeta::Dict)
+function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},E::Tuple,varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
 	local lambda::Float64
 	iVarE = 1/varE
-	iD = E[:iVarStr]
+	iD = E.iVarStr
 	for (r,theseLoci) in enumerate(M[mSet].regionArray)
 		regionSize::Int64 = length(theseLoci)
 		iVarBeta = 1/varBeta[mSet][r]
@@ -497,8 +497,8 @@ end
 function sampleVarE(df_e,S_e,yCorVec,nRecords)
 	return (df_e*S_e + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords))
 end
-function sampleVarE(E,yCorVec,nRecords)
-	return (E[:df]*E[:scale] + dot(yCorVec,E[:iVarStr],yCorVec))/rand(Chisq(E[:df] + nRecords))
+function sampleVarE(E::Tuple,yCorVec,nRecords)
+	return (E.df*E.scale] + dot(yCorVec,E.iVarStr,yCorVec))/rand(Chisq(E.df + nRecords))
 end
 					
 # +1 is for beta(1,1) prior
