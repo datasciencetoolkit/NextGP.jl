@@ -66,11 +66,11 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		if isempty(priorVCV[:e].str) || priorVCV[:e].str=="I" 
 				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
 				E[:str] = "I"
-				E[:iVarStr] = Matrix(1.0I,nData,nData)
+				E[:iVarStr] = [] #Matrix(1.0I,nData,nData)
 				priorVCV[:e] = Random("I",priorVCV[:e].v)
 		elseif isa(priorVCV[:e].str,Vector) # D
 				E[:str] = "D"
-				E[:iVarStr] = inv(Diagonal(priorVCV[:e].str))
+				E[:iVarStr] = priorVCV[:e].str #inv(Diagonal(priorVCV[:e].str))
 #				error("var-cov structure \"D\" has not been implemented yet")
 				printstyled("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used\n"; color = :green)
 		else 
@@ -78,7 +78,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		end
 	else	
 		printstyled("prior var-cov for \"e\" is fully  empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
-		E[:iVarStr] = Matrix(1.0I,nData,nData)
+		E[:iVarStr] = [] #Matrix(1.0I,nData,nData)
 		#just add to priors
 		priorVCV[:e] = Random("I",100)
 	end
@@ -131,7 +131,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
         for xSet in keys(X)
 		if E[:str] == "D"
 			println("weighted residuals in XpX")
-			X[xSet][:xpx] = X[xSet][:data]'*E[:iVarStr]*X[xSet][:data]
+#			X[xSet][:xpx] = X[xSet][:data]'*E[:iVarStr]*X[xSet][:data]
+			X[xSet][:xpx] = X[xSet][:data]'*(E[:iVarStr].*X[xSet][:data])
 		else X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
 			println("NOT weighted residuals in XpX")
 		end
