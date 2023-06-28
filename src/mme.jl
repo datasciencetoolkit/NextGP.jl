@@ -295,11 +295,13 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				for c in eachcol(nowM)
 					push!(tempmpm,dot(c,E[:iVarStr],c))
 				end
+				M[pSet][:Mp] = eachcol(nowM).*E[:iVarStr]
 			else
 				println("NOT weighted residuals in M")
 				for c in eachcol(nowM)
 					push!(tempmpm,dot(c,c))
 				end
+				M[pSet][:Mp] = []
 			end			
 			M[pSet][:mpm] = tempmpm
 			println("$(eachcol(nowM))")
