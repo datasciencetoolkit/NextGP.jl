@@ -294,7 +294,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			if E[:str] == "D"
 				println("weighted residuals in M")
 				for c in eachcol(nowM)
-					push!(tempzpz,dot(c,E[:iVarStr],c))
+					push!(tempmpm,dot(c,E[:iVarStr],c))
 				end
 			else
 				println("NOT weighted residuals in M")
