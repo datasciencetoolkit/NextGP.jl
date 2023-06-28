@@ -289,10 +289,22 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			M[pSet][:pos] = posMcounter
 			tempmpm = []
 			nowM = M[pSet][:data]
-			for c in eachcol(nowM)
-				push!(tempmpm,BLAS.dot(c,c))
-			end
+
+
+			if E[:str] == "D"
+				println("weighted residuals in M")
+				for c in eachcol(nowM)
+					push!(tempzpz,dot(c,E[:iVarStr],c))
+				end
+			else
+				println("NOT weighted residuals in M")
+				for c in eachcol(nowM)
+					push!(tempmpm,dot(c,c))
+				end
+			end			
 			M[pSet][:mpm] = tempmpm
+			
+			#summary statistics
 			M[pSet][:lhs] = zeros(M[pSet][:dims][2])
 			M[pSet][:rhs] = zeros(M[pSet][:dims][2])
 			if pSet in keys(summaryStat)
