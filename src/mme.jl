@@ -302,8 +302,10 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				end
 			end			
 			M[pSet][:mpm] = tempmpm
-			M[pSet][:Mp] = transpose.(eachcol(nowM)).*E[:iVarStr]
-
+			M[pSet][:Mp] = (eachcol(nowM)).*E[:iVarStr]
+			println("sizeMp: $(size(M[pSet][:Mp]))")
+			println("sizeMp: $(size.(M[pSet][:Mp])[1:3])")	
+			
 			#summary statistics
 			M[pSet][:lhs] = zeros(M[pSet][:dims][2])
 			M[pSet][:rhs] = zeros(M[pSet][:dims][2])
