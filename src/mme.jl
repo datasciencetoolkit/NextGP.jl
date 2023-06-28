@@ -181,7 +181,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					push!(tempzpz,sum(c.*E[:iVarStr].*c))
 				end
 #				Z[zSet][:Zp]  = transpose(nowZ)*E[:iVarStr]
-				Z[zSet][:Zp]  = transpose(nowZ)*Diagonal(E[:iVarStr])
+				Z[zSet][:Zp]  = transpose(nowZ.*E[:iVarStr])
 			else
 				println("NOT weighted residuals in Z")
 				for c in eachcol(nowZ)
