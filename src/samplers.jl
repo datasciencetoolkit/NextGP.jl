@@ -113,7 +113,7 @@ function runSampler_D!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLeng
 		#sample fixed effects
 
 		for xSet in keys(X)
-			sampleX!(xSet,X,b,ycorr,varE)
+			sampleX!(xSet,X,b,ycorr,E,varE)
 		end
 	
 		#sample random effects and variances
