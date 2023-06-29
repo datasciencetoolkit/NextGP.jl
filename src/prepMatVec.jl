@@ -100,12 +100,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Sy
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "SNP")
 			(arg1,arg2,arg3...) = f.rhs[i].args_parsed
 			arg1 = Symbol(repr(arg1))
-			if isa(arg2,String)
-				thisM = CSV.read(arg2,CSV.Tables.matrix,header=false)
-			else
-				global thisM = eval(Meta.parse("$arg2")) #can be very dangerous
-			end
-#			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false)
+			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false)
 			
 			#str field can only be in GBLUP for marker related analysis
 			if haskey(priorVCV,arg1) && in(:str,fieldnames(typeof(priorVCV[arg1])))
