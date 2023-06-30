@@ -16,7 +16,9 @@ export sampleBayesPR!,sampleBayesB!,sampleBayesC!,sampleBayesR!,sampleBayesRCπ!
 export sampleZandZVar!
 
 #Sampling fixed effects
-function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Float64)
+
+#Old no D, MV sampling, and will be removed
+function sampleX_OLD!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Float64)
 	iVarE = inv(varE)
 	if length(b[X[xSet].pos])==1
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
@@ -35,6 +37,7 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 	end
 end
 
+#Old with D, MV sampling, and will be removed
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,E::NamedTuple,varE::Float64)
 	iVarE = inv(varE)
 	if length(b[X[xSet].pos])==1
@@ -54,8 +57,63 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,E::N
 	end
 end
 
+### NEW, Wang's trick
+
+function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Float64)
+	iVarE = inv(varE)
+	bVec = deepcopy(b[X[xSet].pos])
+	Yi = X[xSet].Xp*ycorr*iVarE #computation of X'ycorr*iVarE for ALL  rhsb
+	nCol = length(bVec)
+	for i in 1:nCol
+        	bVec[i] = 0.0 #also excludes the effect from iMat! Nice trick.
+		rhsb = Yi[i] - view(X[xSet].Xp,i,:)*(view(X[xSet].data,:,:)*bVec)*iVarE
+                lhsb = getindex(X[xSet].xpx,i)*iVarE
+		invLhsb = 1.0/lhsb
+                meanb = invLhsb*rhsb
+                bVec[i] = rand(Normal(meanb,sqrt(invLhsb)))
+        end
+	return bVec
+end
+
+#NEW no D, and with Wang's Trick
+function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Float64)
+	iVarE = inv(varE)
+	if length(b[X[xSet].pos])==1
+		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
+		rhs      = (X[xSet].data'*ycorr).*iVarE .+ X[xSet].rhs
+		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
+		meanMu   = lhs\rhs			
+                b[X[xSet].pos] .= rand(Normal(meanMu[],sqrt(inv(lhs[]))))
+		ycorr    .-= X[xSet].data .* b[X[xSet].pos]
+	else
+		ycorr    .+= X[xSet].data*b[X[xSet].pos]
+		b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,varE)
+		ycorr    .-= X[xSet].data*b[X[xSet].pos]
+	end
+end
+
+# NEW with D and with Wang's Trick
+function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Float64)
+	iVarE = inv(varE)
+	if length(b[X[xSet].pos])==1
+		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
+		rhs      = (X[xSet].data'*ycorr).*iVarE .+ X[xSet].rhs
+		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
+		meanMu   = lhs\rhs			
+                b[X[xSet].pos] .= rand(Normal(meanMu[],sqrt(inv(lhs[]))))
+		ycorr    .-= X[xSet].data .* b[X[xSet].pos]
+	else
+		ycorr    .+= X[xSet].data*b[X[xSet].pos]
+                rhs      = (X[xSet].data'*ycorr).*iVarE .+ X[xSet].rhs
+		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
+		meanMu   = lhs\rhs
+		b[X[xSet].pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(inv(lhs)))))
+		ycorr    .-= X[xSet].data*b[X[xSet].pos]
+	end
+end
+
 #sample random effects
-#Uni u
+#Uni u REMOVE LAMBDA VERSION
 function sampleU(zSet::Union{Expr,Symbol},Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
 	λz = varE/varU[zSet]
