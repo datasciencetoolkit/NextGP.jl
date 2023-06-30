@@ -133,10 +133,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			println("weighted residuals in XpX")
 #			X[xSet][:xpx] = X[xSet][:data]'*E[:iVarStr]*X[xSet][:data]
 			X[xSet][:xpx] = X[xSet][:data]'*(E[:iVarStr].*X[xSet][:data])
-			println("xpx with D: $(X[xSet][:xpx])")
 		else X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
 			println("NOT weighted residuals in XpX")
-			println("xpx no D: $(X[xSet][:xpx])")
 		end
 		X[xSet][:lhs] = zeros(X[xSet][:nCol])
 		X[xSet][:rhs] = zeros(X[xSet][:nCol])
@@ -147,8 +145,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
                 end
 
 		if isa(X[xSet][:xpx],Matrix{Float64}) 
-			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
-			println("xpx with added tiny value: $(X[xSet][:xpx])")
+			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./100000)),size(X[xSet][:xpx]))
 		end
         end
 
