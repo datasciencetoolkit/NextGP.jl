@@ -29,7 +29,8 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 		ycorr    .+= X[xSet].data*b[X[xSet].pos]
                 rhs      = (X[xSet].data'*ycorr).*iVarE .+ X[xSet].rhs
 		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
-		meanMu   = lhs\rhs			
+		meanMu   = lhs\rhs
+		println("lhs no D: $lhs")
 		b[X[xSet].pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(inv(lhs)))))
 		ycorr    .-= X[xSet].data*b[X[xSet].pos]
 	end
@@ -48,7 +49,8 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,E::N
 		ycorr    .+= X[xSet].data*b[X[xSet].pos]
                 rhs      = (X[xSet].data'*(E.iVarStr.*ycorr)).*iVarE .+ X[xSet].rhs
 		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
-		meanMu   = lhs\rhs			
+		meanMu   = lhs\rhs
+		println("lhs with D: $lhs")
 		b[X[xSet].pos] .= rand(MvNormal(vec(meanMu),convert(Array,Symmetric(inv(lhs)))))
 		ycorr    .-= X[xSet].data*b[X[xSet].pos]
 	end
