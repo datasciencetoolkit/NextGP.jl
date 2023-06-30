@@ -55,6 +55,7 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,E::N
 end
 
 #sample random effects
+#Uni
 function sampleU(zSet::Union{Expr,Symbol},Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
 	λz = varE/varU[zSet]
@@ -71,7 +72,7 @@ function sampleU(zSet::Union{Expr,Symbol},Z::Dict,varE::Float64,varU::Dict,u::Ve
 	return uVec
 end
 
-#D
+#Uni D u
 function sampleU(zSet::Union{Expr,Symbol},Z::Dict,E::NamedTuple,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
 	iVarE = 1/varE
@@ -89,7 +90,7 @@ function sampleU(zSet::Union{Expr,Symbol},Z::Dict,E::NamedTuple,varE::Float64,va
 	return uVec
 end
 
-
+#Mul u
 function sampleU(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
 	nCol = size(uVec,2)
@@ -105,15 +106,16 @@ function sampleU(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::V
 	return uVec
 end
 
-
-function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
+#Uni D Main
+function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float64},E::NamedTuple,varE::Float64,varU::Dict)
         #for each random effect
 	ycorr .+= Z[zSet].data*u[Z[zSet].pos]'
-        u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
+        u[Z[zSet].pos] .= sampleU(zSet,Z,E,varE,varU,u,ycorr)
 	ycorr .-= Z[zSet].data*u[Z[zSet].pos]'		
 	varU[zSet] = sampleVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])		
 end
 
+#Mul Main
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
 	nCol = size(u[Z[zSet].pos],2)
 	for i in 1:nCol
@@ -126,18 +128,6 @@ function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Flo
 	end
 end
 
-#D
-function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},E::NamedTuple,varE::Float64,varU::Dict)
-	nCol = size(u[Z[zSet].pos],2)
-	for i in 1:nCol
-		ycorr .+= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
-	end
-	u[Z[zSet].pos] .= sampleU(zSet,Z,E,varE,varU,u,ycorr)
-	varU[zSet] = sampleCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
-	for i in 1:nCol
-		ycorr .-= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
-	end
-end
 
 
 #sample random marker effects
