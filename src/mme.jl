@@ -133,8 +133,11 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			println("weighted residuals in XpX")
 #			X[xSet][:xpx] = X[xSet][:data]'*E[:iVarStr]*X[xSet][:data]
 			X[xSet][:xpx] = X[xSet][:data]'*(E[:iVarStr].*X[xSet][:data])
-		else X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
+			X[xSet][:Xp] = transpose(X[xSet][:data].*E[:iVarStr])
+		else 
 			println("NOT weighted residuals in XpX")
+			X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
+			X[xSet][:Xp] = transpose(X[xSet][:data])
 		end
 		X[xSet][:lhs] = zeros(X[xSet][:nCol])
 		X[xSet][:rhs] = zeros(X[xSet][:nCol])
