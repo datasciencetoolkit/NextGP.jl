@@ -55,7 +55,7 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,E::N
 end
 
 #sample random effects
-#Uni
+#Uni u
 function sampleU(zSet::Union{Expr,Symbol},Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
 	λz = varE/varU[zSet]
@@ -104,6 +104,15 @@ function sampleU(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::V
 		setindex!(uVec,rand(MvNormal(meanU,convert(Array,Symmetric(invLhsU)))),:,i)
         end
 	return uVec
+end
+
+#Uni Main
+function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
+        #for each random effect
+	ycorr .+= Z[zSet].data*u[Z[zSet].pos]'
+        u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
+	ycorr .-= Z[zSet].data*u[Z[zSet].pos]'		
+	varU[zSet] = sampleVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])		
 end
 
 #Uni D Main
