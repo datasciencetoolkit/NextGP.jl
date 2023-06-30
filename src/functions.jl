@@ -79,7 +79,7 @@ function sampleU(zSet::Union{Expr,Symbol},Z::Dict,E::NamedTuple,varE::Float64,va
 	uVec = deepcopy(u[Z[zSet].pos])
 	iVarE = 1/varE
 	iVarU = 1/varU[zSet]
-	Yi = Z[zSet].Zp*ycorr #computation of Z'*D^-1*ycorr*iVarE for ALL  rhsU
+	Yi = Z[zSet].Zp*ycorr*iVarE #computation of Z'*D^-1*ycorr*iVarE for ALL  rhsU
 	nCol = length(uVec)
 	for i in 1:nCol
         	uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
