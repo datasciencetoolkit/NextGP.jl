@@ -60,12 +60,14 @@ end
 ### NEW, Wang's trick
 
 function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Float64)
+	println("sampling in samplb")
 	iVarE = inv(varE)
 	bVec = deepcopy(b[X[xSet].pos])
 	Yi = X[xSet].Xp*ycorr*iVarE #computation of X'ycorr*iVarE for ALL  rhsb
 	nCol = length(bVec)
 	for i in 1:nCol
         	bVec[i] = 0.0 #also excludes the effect from iMat! Nice trick.
+		println("view(X[xSet].Xp,i,:) $(view(X[xSet].Xp,i,:))")
 		rhsb = Yi[i] - view(X[xSet].Xp,i,:)*(view(X[xSet].data,:,:)*bVec)*iVarE
                 lhsb = getindex(X[xSet].xpx,i)*iVarE
 		invLhsb = 1.0/lhsb
@@ -77,6 +79,7 @@ end
 
 #NEW no D, and with Wang's Trick
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Float64)
+	println("sampling in NEW sampleX")
 	iVarE = inv(varE)
 	if length(b[X[xSet].pos])==1
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
@@ -87,6 +90,7 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 		ycorr    .-= X[xSet].data .* b[X[xSet].pos]
 	else
 		ycorr    .+= X[xSet].data*b[X[xSet].pos]
+		println("sampling $xSet")
 		b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,varE)
 		ycorr    .-= X[xSet].data*b[X[xSet].pos]
 	end
