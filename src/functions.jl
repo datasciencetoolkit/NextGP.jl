@@ -69,7 +69,7 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
         	bVec[i] = 0.0 #also excludes the effect from iMat! Nice trick.
 		println("view(X[xSet].Xp,i,:) $(view(X[xSet].Xp,i,:))")
 		rhsb = Yi[i] - dot(view(X[xSet].Xp,i,:),(view(X[xSet].data,:,:)*bVec))*iVarE
-                lhsb = getindex(X[xSet].xpx,i)*iVarE
+                lhsb = view(X[xSet].xpx,i,i)*iVarE
 		invLhsb = 1.0/lhsb
                 meanb = invLhsb*rhsb
                 bVec[i] = rand(Normal(meanb,sqrt(invLhsb)))
