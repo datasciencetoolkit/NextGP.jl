@@ -60,7 +60,6 @@ end
 ### NEW, Wang's trick
 
 function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Float64)
-	println("sampling in samplb")
 	iVarE = inv(varE)
 	bVec = deepcopy(b[X[xSet].pos])
 	Yi = X[xSet].Xp*ycorr*iVarE #computation of X'ycorr*iVarE for ALL  rhsb
@@ -89,7 +88,6 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 		ycorr    .-= X[xSet].data .* b[X[xSet].pos]
 	else
 		ycorr    .+= X[xSet].data*b[X[xSet].pos]
-		println("sampling $xSet")
 		b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,varE)
 		ycorr    .-= X[xSet].data*b[X[xSet].pos]
 	end
