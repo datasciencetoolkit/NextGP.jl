@@ -125,7 +125,8 @@ function runSampler_D!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLeng
 		#sample marker effects and variances
 		for mSet in keys(M)
 #			println("running $(M[mSet].method) for $mSet")
-			M[mSet].funct(mSet,M,beta,delta,ycorr,E,varE,varBeta)
+@time			M[mSet].funct(mSet,M,beta,delta,ycorr,E,varE,varBeta)
+@time			M[mSet].funct(mSet,M,beta,delta,ycorr,varE,varBeta)
 		end
 				               		
         	#print
