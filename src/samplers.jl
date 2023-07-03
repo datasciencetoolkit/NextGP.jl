@@ -113,12 +113,12 @@ function runSampler_D!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLeng
 		#sample fixed effects
 
 		for xSet in keys(X)
-			sampleX!(xSet,X,b,ycorr,E,varE)
+			sampleX!(xSet,X,b,ycorr,varE)
 		end
 	
 		#sample random effects and variances
 		for zSet in keys(Z)
-	        	functions.sampleZ!(zSet,Z,u,ycorr,E,varE,varU)	
+	        	functions.sampleZ!(zSet,Z,u,ycorr,varE,varU)	
 		end
 		
 	
