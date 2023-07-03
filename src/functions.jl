@@ -39,7 +39,6 @@ end
 
 # NEW with D and with Wang's Trick
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Float64)
-	println("sampling in NEW sampleX")
 	iVarE = inv(varE)
 	if length(b[X[xSet].pos])==1
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
