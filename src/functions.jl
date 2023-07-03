@@ -128,27 +128,6 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 		iVarBeta = 1/varBeta[mSet][r]
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr).*iVarE + getindex(M[mSet].rhs,locus)
-			lhs = getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + iVarBeta
-			meanBeta = lhs\rhs
-			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
-			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-		end
-		@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),regionSize)
-	end
-end
-
-function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},E::NamedTuple,varE::Float64,varBeta::Dict)
-	local rhs::Float64
-	local lhs::Float64
-	local meanBeta::Float64
-	local lambda::Float64
-	iVarE = 1/varE
-	for (r,theseLoci) in enumerate(M[mSet].regionArray)
-		regionSize::Int64 = length(theseLoci)
-		iVarBeta = 1/varBeta[mSet][r]
-		for locus in theseLoci::UnitRange{Int64}
-			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			rhs = getindex(M[mSet].Mp,locus)*ycorr.*iVarE + getindex(M[mSet].rhs,locus)
 			lhs = getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + iVarBeta
 			meanBeta = lhs\rhs
