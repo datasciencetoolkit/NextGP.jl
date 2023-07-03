@@ -130,12 +130,10 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	
         for xSet in keys(X)
 		if E[:str] == "D"
-			println("weighted residuals in XpX")
 #			X[xSet][:xpx] = X[xSet][:data]'*E[:iVarStr]*X[xSet][:data]
 			X[xSet][:xpx] = X[xSet][:data]'*(E[:iVarStr].*X[xSet][:data])
 			X[xSet][:Xp] = transpose(X[xSet][:data].*E[:iVarStr])
 		else 
-			println("NOT weighted residuals in XpX")
 			X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
 			X[xSet][:Xp] = transpose(X[xSet][:data])
 		end
@@ -178,7 +176,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 			
 			if E[:str] == "D"
-				println("weighted residuals in Z")
 				for c in eachcol(nowZ)
 #					push!(tempzpz,dot(c,E[:iVarStr],c))
 					push!(tempzpz,sum(c.*E[:iVarStr].*c))
@@ -186,7 +183,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 #				Z[zSet][:Zp]  = transpose(nowZ)*E[:iVarStr]
 				Z[zSet][:Zp]  = transpose(nowZ.*E[:iVarStr])
 			else
-				println("NOT weighted residuals in Z")
 				for c in eachcol(nowZ)
 					push!(tempzpz,dot(c,c))
 				end
@@ -297,13 +293,11 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			nowM = M[pSet][:data]
 
 			if E[:str] == "D"
-				println("weighted residuals in M")
 				for c in eachcol(nowM)
 					push!(tempmpm,sum(c.*E[:iVarStr].*c))
 				end
 				M[pSet][:Mp] = map(i -> transpose(nowM[:,i].*E[:iVarStr]), axes(nowM, 2))
 			else
-				println("NOT weighted residuals in M")
 				for c in eachcol(nowM)
 					push!(tempmpm,dot(c,c))
 				end
