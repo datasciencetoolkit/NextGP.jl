@@ -28,7 +28,7 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
         	bVec[i] = 0.0 #also excludes the effect from iMat! Nice trick.
 		rhsb = Yi[i] - dot(view(X[xSet].Xp,i,:),(view(X[xSet].data,:,:)*bVec))*iVarE
 		println("rhsb old: $rhsb")
-		rhsb = Yi[i] - dot(view(X[xSet].xpx,i,:),bVec))*iVarE
+		rhsb = Yi[i] - dot(view(X[xSet].xpx,i,:),bVec)*iVarE
 		println("rhsb new: $rhsb")
                 lhsb = getindex(X[xSet].xpx,i,i)*iVarE
 		invLhsb = 1.0/lhsb
