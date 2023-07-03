@@ -37,26 +37,8 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 	return bVec
 end
 
-#NEW no D, and with Wang's Trick
-function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Float64)
-	println("sampling in NEW sampleX")
-	iVarE = inv(varE)
-	if length(b[X[xSet].pos])==1
-		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
-		rhs      = (X[xSet].data'*ycorr).*iVarE .+ X[xSet].rhs
-		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
-		meanMu   = lhs\rhs			
-                b[X[xSet].pos] .= rand(Normal(meanMu[],sqrt(inv(lhs[]))))
-		ycorr    .-= X[xSet].data .* b[X[xSet].pos]
-	else
-		ycorr    .+= X[xSet].data*b[X[xSet].pos]
-		b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,varE)
-		ycorr    .-= X[xSet].data*b[X[xSet].pos]
-	end
-end
-
 # NEW with D and with Wang's Trick
-function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,E::NamedTuple,varE::Float64)
+function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Float64)
 	println("sampling in NEW sampleX")
 	iVarE = inv(varE)
 	if length(b[X[xSet].pos])==1
@@ -74,25 +56,8 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,E::N
 end
 
 #sample random effects
-#Uni u REMOVE LAMBDA VERSION
-function sampleU(zSet::Union{Expr,Symbol},Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
-	uVec = deepcopy(u[Z[zSet].pos])
-	λz = varE/varU[zSet]
-	Yi = Z[zSet].Zp*ycorr #computation of Z'ycorr for ALL  rhsU
-	nCol = length(uVec)
-	for i in 1:nCol
-        	uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
-		rhsU = Yi[i] - λz*dot(view(Z[zSet].iVarStr,:,i),uVec)
-                lhsU = getindex(Z[zSet].zpz,i) + (view(Z[zSet].iVarStr,i,i)*λz)[1]
-		invLhsU = 1.0/lhsU
-                meanU = invLhsU*rhsU
-                uVec[i] = rand(Normal(meanU,sqrt(invLhsU*varE)))
-        end
-	return uVec
-end
-
 #Uni D u
-function sampleU(zSet::Union{Expr,Symbol},Z::Dict,E::NamedTuple,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
+function sampleU(zSet::Union{Expr,Symbol},Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
 	iVarE = 1/varE
 	iVarU = 1/varU[zSet]
@@ -109,7 +74,7 @@ function sampleU(zSet::Union{Expr,Symbol},Z::Dict,E::NamedTuple,varE::Float64,va
 	return uVec
 end
 
-#Mul u
+#Mul u no D
 function sampleU(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
 	nCol = size(uVec,2)
@@ -134,16 +99,7 @@ function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float
 	varU[zSet] = sampleVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])		
 end
 
-#Uni D Main
-function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float64},E::NamedTuple,varE::Float64,varU::Dict)
-        #for each random effect
-	ycorr .+= Z[zSet].data*u[Z[zSet].pos]'
-        u[Z[zSet].pos] .= sampleU(zSet,Z,E,varE,varU,u,ycorr)
-	ycorr .-= Z[zSet].data*u[Z[zSet].pos]'		
-	varU[zSet] = sampleVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])		
-end
-
-#Mul Main
+#Mul Main no D
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
 	nCol = size(u[Z[zSet].pos],2)
 	for i in 1:nCol
