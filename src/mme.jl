@@ -307,7 +307,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				for c in eachcol(nowM)
 					push!(tempmpm,dot(c,c))
 				end
-				M[pSet][:Mp] = []
+				M[pSet][:Mp] = transpose(nowM)
 			end			
 
 			M[pSet][:mpm] = tempmpm
