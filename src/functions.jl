@@ -26,10 +26,9 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 	nCol = length(bVec)
 	for i in 1:nCol
         	bVec[i] = 0.0 #also excludes the effect from iMat! Nice trick.
-@time		rhsb = Yi[i] - dot(view(X[xSet].Xp,i,:),(view(X[xSet].data,:,:)*bVec))*iVarE
-		println("rhsb old: $rhsb")
-@time		rhsb = Yi[i] - dot(view(X[xSet].xpx,i,:),bVec)*iVarE
-		println("rhsb new: $rhsb")
+#		rhsb = Yi[i] - dot(view(X[xSet].Xp,i,:),(view(X[xSet].data,:,:)*bVec))*iVarE
+#		println("rhsb old: $rhsb")
+		rhsb = Yi[i] - dot(view(X[xSet].xpx,i,:),bVec)*iVarE
                 lhsb = getindex(X[xSet].xpx,i,i)*iVarE
 		invLhsb = 1.0/lhsb
                 meanb = invLhsb*rhsb
