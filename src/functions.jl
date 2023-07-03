@@ -126,9 +126,9 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	for (r,theseLoci) in enumerate(M[mSet].regionArray)
 		regionSize::Int64 = length(theseLoci)
 		iVarBeta = 1/varBeta[mSet][r]
-		println("Mp: $M[mSet].Mp")
-		println("Mp: $M[mSet].mpm")
-		println("Mp: $(size(M[mSet].Mp))")
+		println("Mp: $(M[mSet].Mp)")
+		println("mpm: $(M[mSet].mpm)")
+		println("size Mp: $(size(M[mSet].Mp))")
 		for locus in theseLoci::UnitRange{Int64}
 			println("getindex(M[mSet].Mp,locus): $(getindex(M[mSet].Mp,locus))")
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
