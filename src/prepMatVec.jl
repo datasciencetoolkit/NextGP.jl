@@ -138,7 +138,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Sy
 			push!(summarize,[arg,"|",typeof(thisZ),size(thisZ,2)])
 			thisZ = 0
                 else
-			my_sch = schema(userData[!,intersect(Symbol.(names(userData)),getTerms(f))]) #can be done only once above
+			my_sch = schema(userData[!,intersect(Symbol.(names(userData)),terms4StatsModels)]) #can be done only once above
 #			my_sch = schema(userData[!,[Symbol(f.rhs[i])]]) #will crash for general mean
 #			my_sch = schema(userData, userHints)
 			my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
