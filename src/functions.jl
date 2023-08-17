@@ -379,7 +379,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			M[mSet].piHat[a] = piHat
 			M[mSet].logPi[a] = log.(piHat)
 		end
-		sampleProb()
+#		sampleProb()
 	end
 end
 
