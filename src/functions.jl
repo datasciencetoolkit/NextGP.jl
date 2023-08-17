@@ -342,6 +342,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			##########
 			AnnnotClassSNP = rand(Categorical(probAnnot))  #position
 			posAnnotInNonZero = findfirst(isequal(AnnnotClassSNP), M[mSet].annotNonZeroPos[locus])
+			##pi sampled here
 			M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]] = sampleProb(posAnnotInNonZero,M[mSet].annotInput[locus,M[mSet].annotNonZeroPos[locus]])
 			##########
 				
