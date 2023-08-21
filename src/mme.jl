@@ -312,6 +312,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			if pSet in keys(summaryStat)
                        		M[pSet][:lhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) : inv.(diag(summaryStat[pSet].v))
 				M[pSet][:rhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+				####Deal with N(0,0)
+				M[pSet][:lhs][isinf.(M[pSet][:lhs])].= 0.0
+				M[pSet][:rhs][isinf.(M[pSet][:rhs])].= 0.0
 			end
 			
 			if priorVCV[pSet].name == "BayesPR"
