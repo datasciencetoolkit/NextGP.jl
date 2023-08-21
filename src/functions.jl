@@ -123,17 +123,19 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	local meanBeta::Float64
 	local lambda::Float64
 	iVarE = 1/varE
-	println("iVarE $iVarE")
 	for (r,theseLoci) in enumerate(M[mSet].regionArray)
 		regionSize::Int64 = length(theseLoci)
 		iVarBeta = 1/varBeta[mSet][r]
-		println("iVarBeta $iVarBeta")
 		for locus in theseLoci::UnitRange{Int64}
 			println("locus $locus")
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			rhs = getindex(M[mSet].Mp,locus)*ycorr.*iVarE + getindex(M[mSet].rhs,locus)
-			println("rhs $rhs")
 			lhs = getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + iVarBeta
+			println("SUM(getindex(M[mSet].Mp,locus)): $(sum(getindex(M[mSet].Mp,locus)))")
+			println("getindex(M[mSet].Mp,locus): $getindex(M[mSet].Mp,locus)")
+			println("getindex(M[mSet].Mp,locus)*ycorr.*iVarE: $(getindex(M[mSet].Mp,locus)*ycorr.*iVarE)")
+			println("getindex(M[mSet].rhs,locus): $(getindex(M[mSet].rhs,locus))")
+			println("rhs $rhs")
 			println("mpm $(getindex(M[mSet].mpm,locus))")
 			println("summaryLhs $(getindex(M[mSet].lhs,locus))")
 			println("lhs $lhs")
