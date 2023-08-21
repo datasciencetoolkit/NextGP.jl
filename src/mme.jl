@@ -121,8 +121,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
         end
 	countXCol = 0
 
-
-	b = zeros(sum(getindex.(getindex.(Ref(X), keys(X)),:nCol)))
+	###Allow no fixed effects
+	isempty(keys(X)) ? b = [] : b = zeros(sum(getindex.(getindex.(Ref(X), keys(X)),:nCol)))
 
 
 	##This is not really nFix, but the "blocks" of fixed effects
