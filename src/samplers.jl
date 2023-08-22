@@ -27,8 +27,6 @@ function runSampler!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength
 
 	#Start McMC
 @showprogress 1 "MCMC progress..." for iter in 1:chainLength
-
-		println("iter: $iter")
 		
 		#sample residual variance
 		if E.str == "D"
