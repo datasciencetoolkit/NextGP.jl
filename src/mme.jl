@@ -147,7 +147,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
                 end
 
 		if isa(X[xSet][:xpx],Matrix{Float64}) 
-			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./1)),size(X[xSet][:xpx]))
+			nothing
+#			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./100)),size(X[xSet][:xpx]))
 		end
         end
 
