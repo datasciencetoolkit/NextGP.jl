@@ -146,9 +146,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			X[xSet][:rhs] .= isa(summaryStat[xSet].v,Array{Float64,1}) ? inv.(summaryStat[xSet].v) .* (summaryStat[xSet].m)  : inv.(diag(summaryStat[xSet].v)) .* (summaryStat[xSet].m)
                 end
 
-		if isa(X[xSet][:xpx],Matrix{Float64}) 
-			nothing
-#			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./100)),size(X[xSet][:xpx]))
+		if isa(X[xSet][:xpx],Matrix{Float64})
+			println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx])))")
+			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./100)),size(X[xSet][:xpx]))
 		end
         end
 
