@@ -148,7 +148,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 		if isa(X[xSet][:xpx],Matrix{Float64})
 			println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
-			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./100)),size(X[xSet][:xpx]))
+			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10)),size(X[xSet][:xpx]))
 		end
         end
 
