@@ -96,6 +96,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	### X and b	
 	
 	for blk in blocks
+		println("blocking variables in $blk")
 		X[blk] = Dict{Symbol, Any}()
 		X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
 		X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
@@ -146,7 +147,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
                 end
 
 		if isa(X[xSet][:xpx],Matrix{Float64}) 
-			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./100000)),size(X[xSet][:xpx]))
+			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./1000)),size(X[xSet][:xpx]))
 		end
         end
 
