@@ -121,6 +121,7 @@ Makes genomic relationship matrix based on vanRaden method 1 (defult) or method 
 """
 function makeG(inputFile::String;method=1)
 	thisM = CSV.read(inputFile,CSV.Tables.matrix,header=false)
+	thisM = Matrix{Float64}(thisM)
 	p = mean(thisM,dims=1)./2.0
 	q = 1.0 .- p
         thisM .-= mean(thisM,dims=1) 
