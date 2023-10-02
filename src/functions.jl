@@ -376,6 +376,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	#Estimate both Prob (p) and pi π
 	if M[mSet].estPi == true
 		for a in 1:nAnnot
+			println("n SNPs in annotation group $a: $(nLoci[a,:])")
 			piHat = samplePi(nLoci[a,:])
 			M[mSet].piHat[a] = piHat
 			M[mSet].logPi[a] = log.(piHat)
