@@ -339,7 +339,6 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			probAnnot1 = M[mSet].annotProb[locus,:] .* vec(sum(ExpLogL,dims=2))
 			probAnnot2 = sum(probAnnot1)
 			probAnnot = probAnnot1 ./ probAnnot2
-			println("locus: $locus, probAnnot1: $(probAnnot1), probAnnot2: $(probAnnot2), probAnnot: $(probAnnot)")
 			##########
 			AnnnotClassSNP = rand(Categorical(probAnnot))  #position
 			posAnnotInNonZero = findfirst(isequal(AnnnotClassSNP), M[mSet].annotNonZeroPos[locus])
@@ -377,7 +376,6 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	#Estimate both Prob (p) and pi π
 	if M[mSet].estPi == true
 		for a in 1:nAnnot
-			println("n SNPs in annotation group $a: $(nLoci[a,:])")
 			piHat = samplePi(nLoci[a,:])
 			M[mSet].piHat[a] = piHat
 			M[mSet].logPi[a] = log.(piHat)
