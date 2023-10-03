@@ -400,6 +400,10 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			meanBeta = lhs\rhs
 			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+
+			#####TEMP TEST
+			varBeta[mSet][locus] = getindex(beta[M[mSet].pos],locus)^2
+			#####
 		end
 	end
 	
