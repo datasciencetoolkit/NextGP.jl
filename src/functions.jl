@@ -433,8 +433,8 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 				log_vari = log(varianceBeta)
 				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
 			end
+			println("locus: $locus var: $(varBeta[mSet][locus])")
 		end
-		println("locus: $locus var: $(varBeta[mSet][locus])")
 	end
 	println("trapped: $trapped not trapped: $notTrapped")
 	M[mSet].SNPVARRESID .+= M[mSet].covariates*M[mSet].c			
