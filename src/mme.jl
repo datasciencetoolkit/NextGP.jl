@@ -395,7 +395,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:nVarCov]     = length(theseRegions) 
 				
 				designMat = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
-				println("designMat: $designMat")
 				M[pSet][:covariates] = designMat
 				M[pSet][:covariatesT] = transpose(designMat)
 				M[pSet][:c] = zeros(size(designMat,2))
