@@ -400,10 +400,6 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			meanBeta = lhs\rhs
 			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-
-			#####TEMP TEST
-			varBeta[mSet][locus] = getindex(beta[M[mSet].pos],locus)^2
-			#####
 		end
 	end
 	
@@ -413,6 +409,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	notTrapped = 0
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
 		for locus in theseLoci::UnitRange{Int64}
+			println("locus: $locus var: $(varBeta[mSet][locus])")
 			vari = varBeta[mSet][locus]
 			bi = getindex(beta[M[mSet].pos],locus)
 			log_vari = log(vari)
@@ -437,12 +434,14 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
 			end
 		end
+		println("locus: $locus var: $(varBeta[mSet][locus])")
 	end
 	println("trapped: $trapped not trapped: $notTrapped")
 	M[mSet].SNPVARRESID .+= M[mSet].covariates*M[mSet].c			
 	rhsC = M[mSet].covariatesT*M[mSet].SNPVARRESID
 	meanC   = M[mSet].iCpC*rhsC
 	M[mSet].c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*var_var))))
+	println("coeff: $(M[mSet].c)")
 	M[mSet].SNPVARRESID .-= M[mSet].covariates*M[mSet].c
 end
 
