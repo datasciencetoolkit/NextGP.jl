@@ -441,6 +441,7 @@ function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycor
 					nNonZero[a] += 1
 					meanBeta = lhs[a,classSNP]\rhs
 					betaSample = sampleBeta(meanBeta, lhs[a,classSNP])
+					println("locus: $locus, betaSample: $betaSample")
 					tempBeta += betaSample
 #					varSNP = varc[a][classSNP]
 					varSNP = M[mSet].vClass[classSNP] #Same variant classes for all annotations
