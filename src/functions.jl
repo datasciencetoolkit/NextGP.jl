@@ -427,7 +427,6 @@ function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycor
 
 			tempBeta = 0.0
 			for a in M[mSet].annotNonZeroPos[locus]
-				println("locus: $locus, tempBeta: $tempBeta")
 				probsV = ExpLogL[a,:]./sum(ExpLogL[a,:])
 				cumProbsV = cumsum(probsV)
 				classSNP = findfirst(x->x>=rand(), cumProbsV) #position
@@ -441,16 +440,13 @@ function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycor
 					nNonZero[a] += 1
 					meanBeta = lhs[a,classSNP]\rhs
 					betaSample = sampleBeta(meanBeta, lhs[a,classSNP])
-					println("locus: $locus, betaSample: $betaSample")
 					tempBeta += betaSample
 #					varSNP = varc[a][classSNP]
 					varSNP = M[mSet].vClass[classSNP] #Same variant classes for all annotations
 					sumS[a] +=  betaSample^2 / varSNP  
 				else tempBeta += 0.0
 				end
-				println("locus: $locus, tempBeta: $tempBeta")
 			end
-			println("locus: $locus, tempBeta: $tempBeta")
 			setindex!(beta[M[mSet].pos],tempBeta,locus)
 			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 		end
