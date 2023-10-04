@@ -372,7 +372,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:nVarCov]     = 1
 				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
 				M[pSet][:piHat]       = deepcopy(priorVCV[pSet].pi)
-			elseif priorVCV[pSet].name == "BayesRCπ"
+			elseif priorVCV[pSet].name == "BayesRCπ" || priorVCV[pSet].name == "BayesRCplus"
 				M[pSet][:vClass]      = priorVCV[pSet].class
 				M[pSet][:method]      = "BayesRCπ"
 				M[pSet][:funct]       = sampleBayesRCπ!
