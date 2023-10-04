@@ -412,12 +412,12 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			vari = varBeta[mSet][locus]
 			bi = getindex(beta[M[mSet].pos],locus)
 			log_vari = log(vari)
-			var_resid = M[mSet].SNPVARRESID[locus]	#variance of residual for log-var
-			var_mui = log_vari - var_resid 		#mean of "variance at log scale"
+			resid = M[mSet].SNPVARRESID[locus]	#variance of residual for log-var
+			var_mui = log_vari - resid 		#mean of "variance at log scale"
 			
 			c1 = ^(vari,-1.51)*rand()
 			c2 = exp(-0.5*bi*bi/vari)*rand()
-			c3 = exp(-0.5*var_resid*var_resid/var_var)*rand()
+			c3 = exp(-0.5*resid*resid/var_var)*rand()
 			temp = sqrt(-2*var_var*log(c3))
 			lbound = exp(var_mui-temp)
 			rbound = exp(var_mui+temp)
@@ -439,7 +439,6 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	rhsC = M[mSet].covariatesT*M[mSet].SNPVARRESID
 	meanC   = M[mSet].iCpC*rhsC
 	M[mSet].c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*var_var))))
-	println("coeff: $(M[mSet].c)")
 	M[mSet].SNPVARRESID .-= M[mSet].covariates*M[mSet].c
 end
 
