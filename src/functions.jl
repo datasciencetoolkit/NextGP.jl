@@ -446,8 +446,8 @@ function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycor
 					varSNP = M[mSet].vClass[classSNP] #Same variant classes for all annotations
 					sumS[a] +=  betaSample^2 / varSNP  
 				else tempBeta += 0.0
-				println("locus: $locus, tempBeta: $tempBeta")
 				end
+				println("locus: $locus, tempBeta: $tempBeta")
 			end
 			println("locus: $locus, tempBeta: $tempBeta")
 			setindex!(beta[M[mSet].pos],tempBeta,locus)
