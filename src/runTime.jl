@@ -110,7 +110,7 @@ end
 * `estimatePi` is `true`if `pi` is estimated. By default it is ´false´
 """
 BayesRCπ(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Matrix{Int64};name="BayesRCπ",estimatePi::Bool=false) = BayesRCType(pi,class,v,annot,name,estimatePi)
-BayesRCplus(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Matrix{Int64};name="BayesRCπ",estimatePi::Bool=false) = BayesRCType(pi,class,v,annot,name,estimatePi)
+BayesRCplus(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Matrix{Int64};name="BayesRCplus",estimatePi::Bool=false) = BayesRCType(pi,class,v,annot,name,estimatePi)
 
 
 struct BayesLogVarType
