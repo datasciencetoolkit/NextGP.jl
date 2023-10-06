@@ -488,7 +488,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	
 	# model variance
 	
-	var_var =  var(log.(varBeta[mSet]))*0.1 #0.01
+	var_var =  var(log.(varBeta[mSet]))*0.001 #0.01
 	
 	trapped = 0
 	notTrapped = 0
