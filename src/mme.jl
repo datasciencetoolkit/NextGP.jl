@@ -411,8 +411,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				designMat = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
 				M[pSet][:covariates] = designMat
 				M[pSet][:covariatesT] = transpose(designMat)
-				M[pSet][:c] = zeros(size(designMat,2))
-				M[pSet][:SNPVARRESID] = zeros(size(designMat,1))
+				M[pSet][:c] = rand(size(designMat,2))
+				M[pSet][:SNPVARRESID] = rand(size(designMat,1))
 				#iCpC inverse taken later
 				M[pSet][:iCpC] = M[pSet][:covariatesT]*M[pSet][:covariates]
 				if isa(M[pSet][:iCpC],Matrix{Float64}) 
