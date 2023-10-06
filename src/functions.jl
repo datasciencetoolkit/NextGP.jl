@@ -491,12 +491,14 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	trapped = 0
 	notTrapped = 0
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
-		for locus in theseLoci::UnitRange{Int64}
+		for locus in theseLoci::UnitRange{Int64}			
 			vari = varBeta[mSet][locus]
 			bi = getindex(beta[M[mSet].pos],locus)
 			log_vari = log(vari)
 			ζ = M[mSet].SNPVARRESID[locus]	#residual of variance for log-var
 			var_mui = log_vari - ζ 		#mean of "variance at log scale"
+
+			var_var = log_vari*0.01
 			
 			c1 = ^(vari,-1.51)*rand()
 			c2 = exp(-0.5*bi*bi/vari)*rand()
