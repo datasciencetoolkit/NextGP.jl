@@ -513,7 +513,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			else
 				notTrapped +=1
 				vari = lbound+rand()*(rbound-lbound)
-
+				println("lbound, rbound: $lbound, $rbound")
 				println("varBeta, vari: $(round(varBeta[mSet][locus],digits=2)), $(round(vari,digits=2))")
 				
 				varBeta[mSet][locus] = vari
