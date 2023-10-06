@@ -473,6 +473,9 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	local lhs::Float64
 	local meanBeta::Float64
 	local lambda::Float64
+
+	var_var =  var(log.(varBeta[mSet]))*0.01 #0.01
+	
 	nLoci = 0
 	iVarE = 1/varE
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
@@ -487,8 +490,6 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	end
 	
 	# model variance
-	
-	var_var =  var(log.(varBeta[mSet]))*0.01 #0.01
 	
 	trapped = 0
 	notTrapped = 0
@@ -512,6 +513,9 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			else
 				notTrapped +=1
 				vari = lbound+rand()*(rbound-lbound)
+
+				println("varBeta, vari: $(round(varBeta[mSet][locus],digits=2)), $(round(vari,digits=2))")
+				
 				varBeta[mSet][locus] = vari
 				log_vari = log(vari)
 				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
