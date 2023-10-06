@@ -511,14 +511,14 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 				trapped +=1
 			else
 				notTrapped +=1
-				varianceBeta = lbound+rand()*(rbound-lbound)
-				varBeta[mSet][locus] = varianceBeta
-				log_vari = log(varianceBeta)
-#				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
+				vari = lbound+rand()*(rbound-lbound)
+				varBeta[mSet][locus] = vari
+				log_vari = log(vari)
+				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
 			end
 		end
 	end
-	println("trapped: $trapped not trapped: $notTrapped")
+	println("trapped/not trapped: $(trapped/notTrapped)")
 	
 	M[mSet].SNPVARRESID .+= M[mSet].covariates*M[mSet].c			
 	rhsC = M[mSet].covariatesT*M[mSet].SNPVARRESID	
