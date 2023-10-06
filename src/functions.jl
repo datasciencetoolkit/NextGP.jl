@@ -476,7 +476,6 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	nLoci = 0
 	iVarE = 1/varE
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
-#		lambda = varE/(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			rhs = getindex(M[mSet].Mp,locus)*ycorr*iVarE + getindex(M[mSet].rhs,locus)  
@@ -496,12 +495,12 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			vari = varBeta[mSet][locus]
 			bi = getindex(beta[M[mSet].pos],locus)
 			log_vari = log(vari)
-			resid = M[mSet].SNPVARRESID[locus]	#variance of residual for log-var
-			var_mui = log_vari - resid 		#mean of "variance at log scale"
+			ζ = M[mSet].SNPVARRESID[locus]	#residual of variance for log-var
+			var_mui = log_vari - ζ 		#mean of "variance at log scale"
 			
 			c1 = ^(vari,-1.51)*rand()
 			c2 = exp(-0.5*bi*bi/vari)*rand()
-			c3 = exp(-0.5*resid*resid/var_var)*rand()
+			c3 = exp(-0.5*ζ*ζ/var_var)*rand()
 			temp = sqrt(-2*var_var*log(c3))
 			lbound = exp(var_mui-temp)
 			rbound = exp(var_mui+temp)
@@ -514,7 +513,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 				varianceBeta = lbound+rand()*(rbound-lbound)
 				varBeta[mSet][locus] = varianceBeta
 				log_vari = log(varianceBeta)
-				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
+#				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
 			end
 		end
 	end
