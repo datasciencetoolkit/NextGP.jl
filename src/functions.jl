@@ -514,7 +514,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 				varianceBeta = lbound+rand()*(rbound-lbound)
 				varBeta[mSet][locus] = varianceBeta
 				log_vari = log(varianceBeta)
-				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
+#				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
 			end
 		end
 	end
