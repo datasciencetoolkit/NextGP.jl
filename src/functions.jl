@@ -498,7 +498,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			ζ = M[mSet].SNPVARRESID[locus]	#residual of variance for log-var
 			var_mui = log_vari - ζ 		#mean of "variance at log scale"
 
-			var_var = log_vari*0.01
+			var_var = ^(log_vari,2)*0.01
 			
 			c1 = ^(vari,-1.51)*rand()
 			c2 = exp(-0.5*bi*bi/vari)*rand()
