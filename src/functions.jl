@@ -474,7 +474,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	local meanBeta::Float64
 	local lambda::Float64
 
-	var_var =  var(log.(varBeta[mSet]))*0.2 #0.01
+	var_var = var(M[mSet].SNPVARRESID) #0.01
 	
 	nLoci = 0
 	iVarE = 1/varE
