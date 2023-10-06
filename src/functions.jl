@@ -487,7 +487,9 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	end
 	
 	# model variance
-	var_var = 0.01
+	
+	var_var =  var(log.(varBeta[mSet]))*0.01 #0.01
+	
 	trapped = 0
 	notTrapped = 0
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
@@ -497,9 +499,6 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			log_vari = log(vari)
 			ζ = M[mSet].SNPVARRESID[locus]	#residual of variance for log-var
 			var_mui = log_vari - ζ 		#mean of "variance at log scale"
-
-			var_var = ^(log_vari,2)*0.01
-			
 			c1 = ^(vari,-1.5)*rand()
 			c2 = exp(-0.5*bi*bi/vari)*rand()
 			c3 = exp(-0.5*ζ*ζ/var_var)*rand()
