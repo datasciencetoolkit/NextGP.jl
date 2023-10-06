@@ -514,24 +514,17 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 				varianceBeta = lbound+rand()*(rbound-lbound)
 				varBeta[mSet][locus] = varianceBeta
 				log_vari = log(varianceBeta)
-#				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
+				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
 			end
 		end
 	end
 	println("trapped: $trapped not trapped: $notTrapped")
 	
-#	M[mSet].SNPVARRESID .+= M[mSet].covariates*M[mSet].c			
-#	rhsC = M[mSet].covariatesT*M[mSet].SNPVARRESID
-
-	rhsC = M[mSet].covariatesT*log.(vec(varBeta[mSet]))
-	
-	
+	M[mSet].SNPVARRESID .+= M[mSet].covariates*M[mSet].c			
+	rhsC = M[mSet].covariatesT*M[mSet].SNPVARRESID	
 	meanC   = M[mSet].iCpC*rhsC
 	M[mSet].c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*var_var))))
-#	M[mSet].SNPVARRESID .-= M[mSet].covariates*M[mSet].c
-
-	M[mSet].SNPVARRESID .= log.(vec(varBeta[mSet])).- M[mSet].covariates*M[mSet].c
-	
+	M[mSet].SNPVARRESID .-= M[mSet].covariates*M[mSet].c	
 end
 
 #####
