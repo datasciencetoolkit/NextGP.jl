@@ -500,7 +500,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 
 			var_var = ^(log_vari,2)*0.01
 			
-			c1 = ^(vari,-1.51)*rand()
+			c1 = ^(vari,-1.5)*rand()
 			c2 = exp(-0.5*bi*bi/vari)*rand()
 			c3 = exp(-0.5*ζ*ζ/var_var)*rand()
 			temp = sqrt(-2*var_var*log(c3))
