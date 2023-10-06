@@ -519,7 +519,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			end
 		end
 	end
-	println("trapped/not trapped: $(trapped/notTrapped)")
+	println("trapped: $(trapped/(trapped+notTrapped))")
 	
 	M[mSet].SNPVARRESID .+= M[mSet].covariates*M[mSet].c			
 	rhsC = M[mSet].covariatesT*M[mSet].SNPVARRESID	
