@@ -421,8 +421,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 				end
  		              	M[pSet][:iCpC]  = inv(M[pSet][:iCpC])
-				M[pSet][:zeta]  = [priorVCV[pSet].zeta]
-				M[pSet][:estZeta] = priorVCV[pSet].estimateZeta
+				M[pSet][:varZeta]  = [priorVCV[pSet].VarZeta]
+				M[pSet][:estVarZeta] = priorVCV[pSet].estimateVarZeta
 				designMat = 0
 			end
 			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
@@ -588,7 +588,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				IO.outMCMC(outPut,"annot$mSet",hcat(M[mSet][:levels]...))
 			elseif in(M[mSet][:method],["BayesLV"])
 				IO.outMCMC(outPut,"c$mSet",[["c$v" for v in 1:(length(M[mSet][:c]))]]) #[] to have it as one row
-				IO.outMCMC(outPut,"varZeta",["zeta"])
+				IO.outMCMC(outPut,"varZeta$mSet",["varZeta"])
 			end
 		elseif isa(mSet,Tuple)
 			for m in mSet
