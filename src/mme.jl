@@ -586,6 +586,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				IO.outMCMC(outPut,"annot$mSet",hcat(M[mSet][:levels]...))
 			elseif in(M[mSet][:method],["BayesLV"])
 				IO.outMCMC(outPut,"c$mSet",[["c$v" for v in 1:(length(M[mSet][:c]))]]) #[] to have it as one row
+				IO.outMCMC(outPut,"varEta",["eta"])
 			end
 		elseif isa(mSet,Tuple)
 			for m in mSet
