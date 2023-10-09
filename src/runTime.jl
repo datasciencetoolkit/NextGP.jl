@@ -119,6 +119,7 @@ struct BayesLogVarType
     covariates::DataFrame
     zeta::Float64
     name::String
+    estimateZeta::Bool=false
 end
 
 """
@@ -128,7 +129,7 @@ end
 * `covariates`is the `DataFrame` that includes explanatory varibles for the variance of each SNP.
 * `zeta` is the variance for the log-linear variance.
 """
-BayesLV(v::Float64,f::StatsModels.TermOrTerms,covariates::DataFrame,zeta::Float64;name="BayesLV") = BayesLogVarType(v,f,covariates,zeta,name)
+BayesLV(v::Float64,f::StatsModels.TermOrTerms,covariates::DataFrame,zeta::Float64;name="BayesLV",estimateZeta::Bool=false) = BayesLogVarType(v,f,covariates,zeta,name,estimateZeta)
 
 struct RandomEffectType
     str::Any
