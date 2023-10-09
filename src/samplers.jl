@@ -88,7 +88,7 @@ function runSampler!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength
 					end
 					if in(M[mSet].method,["BayesLV"])
 						IO.outMCMC(outPut,"c$mSet",[vcat(M[mSet].c...)])
-						IO.outMCMC(outPut,"zeta$mSet",M[mSet].zeta)
+						IO.outMCMC(outPut,"varZeta$mSet",M[mSet].varZeta)
 					end
 				elseif isa(mSet,Tuple)
 					for p in M[mSet].pos
