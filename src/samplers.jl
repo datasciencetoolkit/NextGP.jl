@@ -86,6 +86,9 @@ function runSampler!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength
 						IO.outMCMC(outPut,"pi$mSet",[vcat(M[mSet].piHat...)])
 						IO.outMCMC(outPut,"annot$mSet",[M[mSet].annotCat])	
 					end
+					if in(M[mSet].method,["BayesLV"])
+						IO.outMCMC(outPut,"c$mSet",[vcat(M[pSet].c...)])
+					end
 				elseif isa(mSet,Tuple)
 					for p in M[mSet].pos
 						mSet2print = mSet[p]
