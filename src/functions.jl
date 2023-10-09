@@ -478,7 +478,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 #	var_var = sampleVarE(0,0.0,M[mSet].SNPVARRESID,length(M[mSet].SNPVARRESID)) #var(M[mSet].SNPVARRESID) #0.01
 	var_var = M[mSet].estZeta == true ? var(M[mSet].SNPVARRESID) : M[mSet].zeta
 
-	M[mSet].zeta = var_var
+	M[mSet].zeta[1] = var_var
 	
 	nLoci = 0
 	iVarE = 1/varE
