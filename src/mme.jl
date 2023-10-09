@@ -421,7 +421,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 				end
  		              	M[pSet][:iCpC]  = inv(M[pSet][:iCpC])
-				M[pSet][:varZeta]  = [priorVCV[pSet].VarZeta]
+				M[pSet][:varZeta]  = [priorVCV[pSet].varZeta]
 				M[pSet][:estVarZeta] = priorVCV[pSet].estimateVarZeta
 				designMat = 0
 			end
