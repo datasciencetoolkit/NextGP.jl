@@ -121,12 +121,13 @@ struct BayesLogVarType
 end
 
 """
-        function BayesLV(v,f,covariates)
+        function BayesLV(v,f,covariates,zeta)
 * `v` is the variance for the prior distribution of SNPs.
 * `f` is the model formula for the variance
-* `covariates`is the `DataFrame` that includes explanatory varibles for the variance of each SNP. 
+* `covariates`is the `DataFrame` that includes explanatory varibles for the variance of each SNP.
+* `zeta` is the variance for the log-linear variance.
 """
-BayesLV(v::Float64,f::StatsModels.TermOrTerms,covariates::DataFrame;name="BayesLV") = BayesLogVarType(v,f,covariates,name)
+BayesLV(v::Float64,f::StatsModels.TermOrTerms,covariates::DataFrame,zeta::Float64;name="BayesLV") = BayesLogVarType(v,f,covariates,zeta,name)
 
 struct RandomEffectType
     str::Any
