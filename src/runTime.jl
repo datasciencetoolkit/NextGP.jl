@@ -117,6 +117,7 @@ struct BayesLogVarType
     v::Union{Matrix{Float64},Float64}
     f::StatsModels.TermOrTerms
     covariates::DataFrame
+    zeta::Float64
     name::String
 end
 
