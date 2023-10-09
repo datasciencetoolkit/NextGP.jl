@@ -416,7 +416,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				#iCpC inverse taken later
 				M[pSet][:iCpC] = M[pSet][:covariatesT]*M[pSet][:covariates]
 				if isa(M[pSet][:iCpC],Matrix{Float64}) 
-					M[pSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[pSet][:iCpC])./10000)),size(M[pSet][:iCpC]))
+#					M[pSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[pSet][:iCpC])./10000)),size(M[pSet][:iCpC]))
+					M[pSet][:iCpC] += Matrix(I*0.01,size(M[pSet][:iCpC]))
+
 				end
  		              	M[pSet][:iCpC] = inv(M[pSet][:iCpC])
 				designMat = 0
