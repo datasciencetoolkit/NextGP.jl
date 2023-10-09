@@ -119,7 +119,7 @@ struct BayesLogVarType
     covariates::DataFrame
     zeta::Float64
     name::String
-    estimateZeta::Bool=false
+    estimateZeta::Bool
 end
 
 """
