@@ -420,8 +420,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					M[pSet][:iCpC] += Matrix(I*0.01,size(M[pSet][:iCpC]))
 
 				end
- 		              	M[pSet][:iCpC] = inv(M[pSet][:iCpC])
+ 		              	M[pSet][:iCpC]  = inv(M[pSet][:iCpC])
 				M[pSet][:zeta]  = priorVCV[pSet].zeta
+				M[pSet][:estZeta] = priorVCV[pSet].estimateZeta
 				designMat = 0
 			end
 			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
