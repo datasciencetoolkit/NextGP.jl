@@ -13,6 +13,7 @@ export SummaryStatistics
 export makeA
 export makePed
 export makeG
+export summaryMCMC
 
 using DataFrames
 using CategoricalArrays

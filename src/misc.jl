@@ -234,4 +234,11 @@ end
 myUnzip(d::Dict) = Dict(p.first => (;p.second...) for p in d)
 myUnzip(d) = d
 
-
+"""
+	summaryMCMC(param::String;outFolder::String)
+Computes posterior mean for parameter(s), `param`, from McMC output stored in `outFolder` folder. By default it searches for the folder "outMCMC" in the current directory.
+"""
+function summaryMCMC(param;outFolder=pwd()*"/outMCMC")
+        param = mean(CSV.read("$outFolder/$(param)Out",Tables.Matrix,header=true),dims=1)
+        return param
+end
