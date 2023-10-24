@@ -13,13 +13,11 @@ using DataFrames, CSV, StatsModels, StatsBase, NextGP
 
 ```julia
 myHints = Dict(:lact => StatsModels.FullDummyCoding(),
-               :ID => StatsModels.FullDummyCoding(),
                :herd => StatsModels.FullDummyCoding())
 ```
 
     Dict{Symbol, StatsModels.FullDummyCoding} with 3 entries:
       :herd => FullDummyCoding()
-      :ID   => FullDummyCoding()
       :lact => FullDummyCoding()
 
 ```julia
@@ -84,36 +82,5 @@ runLMEM(f,pheno,5000,500,10;outFolder="pure$Breed",VCV=priorVar,myHints=myHints,
     | A      | Random (Marker) | 1 block(s) | 4.0 | 0.02   |
     | B      | Random (Marker) | 1 block(s) | 4.0 | 0.02   |
     | e      | Random          | I          | 4.0 | 1250.0 |
-
-
-
-```julia
-b = summaryMCMC("b";summary=true,plots=true,outFolder="pure$Breed")
-```
-
-```julia
-betaA = summaryMCMC("betaA",outFolder="pure$Breed")
-```
-
-```julia
-betaB = summaryMCMC("betaB",outFolder="pure$Breed")
-```
-
-
-```julia
-varA = summaryMCMC("varA";summary=true,plots=true,outFolder="pure$Breed")
-```
-
-
-```julia
-varB = summaryMCMC("varB";summary=true,plots=true,outFolder="pure$Breed")
-```
-
-
-
-```julia
-varE = summaryMCMC("varE";summary=true,plots=true,outFolder="pure$Breed")
-```
-
 
 
