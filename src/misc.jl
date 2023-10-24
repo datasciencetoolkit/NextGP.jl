@@ -236,13 +236,13 @@ myUnzip(d) = d
 
 
 """
-	summaryMcMC(param;summary,plots,outFolder)
+	summaryMCMC(param;summary,plots,outFolder)
 Checking convergency of McMC for parameter `param`
 * If `summary=true`, will print convergency statistics for McMC
 * If `plots=true`, will print trace plot(s) of McMC
 * `outFolder` is the folder for the McMC output. By default it looks for the folder "outMCMC" in the current directory. 
 """
-function summaryMcMC(param;summary=false,plots=false,outFolder=pwd()*"/outMCMC")
+function summaryMCMC(param;summary=false,plots=false,outFolder=pwd()*"/outMCMC")
         param = CSV.read("$outFolder/$(param)Out",DataFrame,header=true)
         namesParam = names(param)
         param = Matrix(param)
