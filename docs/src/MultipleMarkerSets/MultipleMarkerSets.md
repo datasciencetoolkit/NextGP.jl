@@ -2,9 +2,6 @@
 # Multiple marker sets
 
 
-```julia
-Breed = "HOL"
-```
 
 ```julia
 using DataFrames, CSV, StatsModels, StatsBase, NextGP
@@ -55,10 +52,9 @@ priorVar = Dict(:A => BayesPR(9999,0.04),
 
 
 ```julia
-runLMEM(f,pheno,5000,500,10;outFolder="pure$Breed",VCV=priorVar,myHints=myHints,blockThese=blk)
+runLMEM(f,pheno,5000,500,10;VCV=priorVar,myHints=myHints,blockThese=blk)
 ```
 
-    Output folder pureHOL exists. Removing its content
     
      ---------------- Summary of input ---------------- 
     

@@ -3,10 +3,6 @@
 
 
 ```julia
-Population = "Pop"
-```
-
-```julia
 using DataFrames, CSV, StatsModels, StatsBase, NextGP
 ```
 
@@ -56,7 +52,7 @@ priorVar = Dict(:M => BayesLV(0.001,f_LV,data_LV),
 
 
 ```julia
-runLMEM(f,pheno,50000,10000,10;outFolder="Population",VCV=priorVar,map=myMap,M)
+runLMEM(f,pheno,50000,10000,10;VCV=priorVar)
 ```
 
 

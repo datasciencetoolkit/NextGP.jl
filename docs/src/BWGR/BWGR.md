@@ -3,10 +3,6 @@
 
 
 ```julia
-Population = "Pop"
-```
-
-```julia
 using DataFrames, CSV, StatsModels, StatsBase, NextGP
 ```
 
@@ -38,10 +34,9 @@ priorVar = Dict(:M => BayesPR(9999,0.001),
 ```
 
 ```julia
-runLMEM(f,pheno,50000,10000,10;outFolder="Population",VCV=priorVar,map=myMap,M)
+runLMEM(f,pheno,50000,10000,10;VCV=priorVar)
 ```
 
-    Output folder pureHOL exists. Removing its content
     
      ---------------- Summary of input ---------------- 
     
