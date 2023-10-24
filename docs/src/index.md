@@ -59,6 +59,8 @@ prep
 
 ## Convenience functions
 
+### Convergency checking
+
 ```julia
 using MCMCChains,StatsPlots
 
@@ -67,7 +69,7 @@ function summaryMCMC(param;summary=false,plots=false,outFolder=pwd()*"/outMCMC")
         namesParam = names(param)
         param = Matrix(param)
                 if summary==true
-                        chn = MCMCChains.Chains(param,namesParam)
+                        chn = Chains(param,namesParam)
                         display(chn)
                         if plots==true
                                 display(plot(chn))
