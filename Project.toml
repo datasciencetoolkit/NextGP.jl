@@ -1,7 +1,8 @@
 name = "NextGP"
 uuid = "1a32220a-4ac3-442e-849d-1943511e16f7"
 authors = ["Emre Karaman <emrkaraman@gmail.com> and contributors"]
-version = "0.1.0"
+version = "1.0.0"
+repo = "https://github.com/datasciencetoolkit/NextGP.jl.git"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
