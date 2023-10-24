@@ -29,8 +29,6 @@ include("GRN.jl")
 
 using .MCMC
 export runLMEM
-using .IO
-export summaryMCMC
 using .prepMatVec
 export prep
 using .GRN
