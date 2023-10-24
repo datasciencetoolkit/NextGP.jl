@@ -11,12 +11,12 @@ path2Data = "../data/"
 ```
 
 ```julia
-pheno = CSV.read(path2Data*"pheno$(Pop)_ref",DataFrame)
+pheno = CSV.read("../data/pheno_ref",DataFrame)
 ```
 
 
 ```julia
-f = @formula(y ~ 1 + SNP(M,"../data/pureGenoHOL_ref"))
+f = @formula(y ~ 1 + SNP(M,"../data/geno_ref"))
 ```
 
 
@@ -25,11 +25,11 @@ f = @formula(y ~ 1 + SNP(M,"../data/pureGenoHOL_ref"))
       y(unknown)
     Predictors:
       1
-      (M)->SNP(M, "../data/pureGenoHOL_ref")
+      (M)->SNP(M, "../data/geno_ref")
 
 
 ```julia
-data_LV = CSV.read(path2Data*"GWAS$(Breed)_ref",DataFrame)
+data_LV = CSV.read("../data/GWAS_ref",DataFrame)
 ```
 
 ```julia
