@@ -6,8 +6,6 @@ export summaryMCMC
 using DelimitedFiles
 using CSV
 using StatsBase
-using MCMCChains
-using StatsPlots
 using DataFrames
 
 macro name(arg)
