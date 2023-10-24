@@ -62,7 +62,7 @@ prep
 ### Convergency checking
 
 ```julia
-using MCMCChains,StatsPlots
+using MCMCChains,StatsPlots,StatsBase,CSV
 
 function summaryMCMC(param;summary=false,plots=false,outFolder=pwd()*"/outMCMC")
         param = CSV.read("$outFolder/$(param)Out",DataFrame,header=true)
