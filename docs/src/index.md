@@ -58,7 +58,10 @@ prep
 ```
 
 ## Convenience functions
+
+```julia
 using MCMCChains,StatsPlots
+
 function summaryMCMC(param;summary=false,plots=false,outFolder=pwd()*"/outMCMC")
         param = CSV.read("$outFolder/$(param)Out",DataFrame,header=true)
         namesParam = names(param)
@@ -75,5 +78,6 @@ function summaryMCMC(param;summary=false,plots=false,outFolder=pwd()*"/outMCMC")
                 end
         return param
 end
+```
 
 
