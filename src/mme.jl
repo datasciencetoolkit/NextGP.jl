@@ -148,7 +148,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 		if isa(X[xSet][:xpx],Matrix{Float64})
 #			println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
-			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10)),size(X[xSet][:xpx]))
+			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
 		end
         end
 
@@ -387,6 +387,20 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:annotNonZeroPos]   = [findall(!iszero, row) for row in eachrow(priorVCV[pSet].annot)]
 #				M[pSet][:annotNonZero]= getindex.(Ref(priorVCV[pSet].annot),M[pSet][:annotNonZeroPos])
 				M[pSet][:annotCat]    = zeros(Int64,1,M[pSet][:dims][2])
+			elseif priorVCV[pSet].name == "BayesRCplus"
+				M[pSet][:vClass]      = priorVCV[pSet].class
+				M[pSet][:method]      = "BayesRCplus"
+				M[pSet][:funct]       = sampleBayesRCplus!
+				theseRegions          = [r:r for r in 1:size(nowM,2)]
+				M[pSet][:regionArray] = theseRegions
+				M[pSet][:nVarCov]     = size(priorVCV[pSet].annot,2)
+				M[pSet][:logPi]       = [log.(priorVCV[pSet].pi) for i in 1:M[pSet][:nVarCov]]
+				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
+				M[pSet][:piHat]       = [priorVCV[pSet].pi for i in 1:M[pSet][:nVarCov]]
+				M[pSet][:annotInput]  = deepcopy(priorVCV[pSet].annot)
+				M[pSet][:annotProb]   = priorVCV[pSet].annot./sum(priorVCV[pSet].annot,dims=2)
+				M[pSet][:annotNonZeroPos]   = [findall(!iszero, row) for row in eachrow(priorVCV[pSet].annot)]
+				M[pSet][:annotCat]    = zeros(Int64,1,M[pSet][:dims][2])
 			elseif priorVCV[pSet].name == "BayesLV"
 				M[pSet][:method]      = "BayesLV"
 				M[pSet][:funct]       = sampleBayesLV!
@@ -397,14 +411,18 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				designMat = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
 				M[pSet][:covariates] = designMat
 				M[pSet][:covariatesT] = transpose(designMat)
-				M[pSet][:c] = zeros(size(designMat,2))
-				M[pSet][:SNPVARRESID] = zeros(size(designMat,1))
+				M[pSet][:c] = rand(size(designMat,2))
+				M[pSet][:SNPVARRESID] = rand(size(designMat,1))
 				#iCpC inverse taken later
 				M[pSet][:iCpC] = M[pSet][:covariatesT]*M[pSet][:covariates]
 				if isa(M[pSet][:iCpC],Matrix{Float64}) 
-					M[pSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[pSet][:iCpC])./10000)),size(M[pSet][:iCpC]))
+#					M[pSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[pSet][:iCpC])./10000)),size(M[pSet][:iCpC]))
+					M[pSet][:iCpC] += Matrix(I*0.0001,size(M[pSet][:iCpC]))
+
 				end
- 		              	M[pSet][:iCpC] = inv(M[pSet][:iCpC])
+ 		              	M[pSet][:iCpC]  = inv(M[pSet][:iCpC])
+				M[pSet][:varZeta]  = [priorVCV[pSet].varZeta]
+				M[pSet][:estVarZeta] = priorVCV[pSet].estimateVarZeta
 				designMat = 0
 			end
 			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
@@ -568,6 +586,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				npis = length(M[mSet][:vClass])*M[mSet][:nVarCov]
 				IO.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:npis]]) #[] to have it as one row
 				IO.outMCMC(outPut,"annot$mSet",hcat(M[mSet][:levels]...))
+			elseif in(M[mSet][:method],["BayesLV"])
+				IO.outMCMC(outPut,"c$mSet",[["c$v" for v in 1:(length(M[mSet][:c]))]]) #[] to have it as one row
+				IO.outMCMC(outPut,"varZeta$mSet",["varZeta"])
 			end
 		elseif isa(mSet,Tuple)
 			for m in mSet

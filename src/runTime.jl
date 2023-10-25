@@ -110,21 +110,26 @@ end
 * `estimatePi` is `true`if `pi` is estimated. By default it is ´false´
 """
 BayesRCπ(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Matrix{Int64};name="BayesRCπ",estimatePi::Bool=false) = BayesRCType(pi,class,v,annot,name,estimatePi)
+BayesRCplus(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Matrix{Int64};name="BayesRCplus",estimatePi::Bool=false) = BayesRCType(pi,class,v,annot,name,estimatePi)
+
 
 struct BayesLogVarType
     v::Union{Matrix{Float64},Float64}
     f::StatsModels.TermOrTerms
     covariates::DataFrame
+    varZeta::Float64
     name::String
+    estimateVarZeta::Bool
 end
 
 """
-        function BayesLV(v,f,covariates)
+        function BayesLV(v,f,covariates,zeta)
 * `v` is the variance for the prior distribution of SNPs.
 * `f` is the model formula for the variance
-* `covariates`is the `DataFrame` that includes explanatory varibles for the variance of each SNP. 
+* `covariates`is the `DataFrame` that includes explanatory varibles for the variance of each SNP.
+* `zeta` is the variance for the log-linear variance.
 """
-BayesLV(v::Float64,f::StatsModels.TermOrTerms,covariates::DataFrame;name="BayesLV") = BayesLogVarType(v,f,covariates,name)
+BayesLV(v::Float64,f::StatsModels.TermOrTerms,covariates::DataFrame,varZeta::Float64;name="BayesLV",estimateVarZeta::Bool=false) = BayesLogVarType(v,f,covariates,varZeta,name,estimateVarZeta)
 
 struct RandomEffectType
     str::Any

@@ -101,6 +101,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Sy
 			(arg1,arg2,arg3...) = f.rhs[i].args_parsed
 			arg1 = Symbol(repr(arg1))
 			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false)
+			thisM = Matrix{Float64}(thisM)
 			
 			#str field can only be in GBLUP for marker related analysis
 			if haskey(priorVCV,arg1) && in(:str,fieldnames(typeof(priorVCV[arg1])))
@@ -138,7 +139,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Sy
 			push!(summarize,[arg,"|",typeof(thisZ),size(thisZ,2)])
 			thisZ = 0
                 else
-			my_sch = schema(userData[!,intersect(Symbol.(names(userData)),terms4StatsModels)]) #can be done only once above
+			my_sch = schema(userData[!,intersect(Symbol.(names(userData)),terms4StatsModels)],userHints) #can be done only once above
 #			my_sch = schema(userData[!,[Symbol(f.rhs[i])]]) #will crash for general mean
 #			my_sch = schema(userData, userHints)
 			my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)

@@ -3,7 +3,7 @@ module NextGP
 #exporting run-time equivalent of functions
 export PED
 export SNP
-export BayesPR,BayesB,BayesC,BayesR,BayesRCπ,BayesLV
+export BayesPR,BayesB,BayesC,BayesR,BayesRCπ,BayesRCplus,BayesLV
 export Random
 export BayesPRType
 export SummaryStatistics
@@ -13,6 +13,7 @@ export SummaryStatistics
 export makeA
 export makePed
 export makeG
+export summaryMCMC
 
 using DataFrames
 using CategoricalArrays
@@ -29,8 +30,6 @@ include("GRN.jl")
 
 using .MCMC
 export runLMEM
-using .IO
-export summaryMCMC
 using .prepMatVec
 export prep
 using .GRN
