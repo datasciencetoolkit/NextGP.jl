@@ -3,10 +3,6 @@
 
 
 ```julia
-Population = "Pop"
-```
-
-```julia
 using DataFrames, CSV, StatsModels, StatsBase, NextGP
 ```
 
@@ -15,12 +11,12 @@ path2Data = "../data/"
 ```
 
 ```julia
-pheno = CSV.read(path2Data*"pheno$(Pop)_ref",DataFrame)
+pheno = CSV.read("../data/pheno_ref",DataFrame)
 ```
 
 
 ```julia
-f = @formula(y ~ 1 + SNP(M,"../data/pureGenoHOL_ref"))
+f = @formula(y ~ 1 + SNP(M,"../data/geno_ref"))
 ```
 
 
@@ -29,11 +25,11 @@ f = @formula(y ~ 1 + SNP(M,"../data/pureGenoHOL_ref"))
       y(unknown)
     Predictors:
       1
-      (M)->SNP(M, "../data/pureGenoHOL_ref")
+      (M)->SNP(M, "../data/geno_ref")
 
 
 ```julia
-data_LV = CSV.read(path2Data*"GWAS$(Breed)_ref",DataFrame)
+data_LV = CSV.read("../data/GWAS_ref",DataFrame)
 ```
 
 ```julia
@@ -56,7 +52,7 @@ priorVar = Dict(:M => BayesLV(0.001,f_LV,data_LV),
 
 
 ```julia
-runLMEM(f,pheno,50000,10000,10;outFolder="Population",VCV=priorVar,map=myMap,M)
+runLMEM(f,pheno,50000,10000,10;VCV=priorVar)
 ```
 
 

@@ -180,30 +180,7 @@ runLMEM(f,data,100000,20000,10;VCV=priorVar)
 
 
 ```julia
-postmean_b = summaryMCMC("b";summary=true,plots=true)
+postmean_b = summaryMCMC("b")
 ```
-
-
-    Chains MCMC chain (8000×5×1 Array{Float64, 3}):
-    
-    Iterations        = 1:1:8000
-    Number of chains  = 1
-    Samples per chain = 8000
-    parameters        = (Intercept), a, b: e, b: f, b: g   
- 
-    Summary Statistics
-                     mean      std      naive_se    mcse      ess       rhat
-         (Intercept) 2.1758    0.1633     0.0172    0.0282   58.4130    1.0054
-               a     6.8008    0.2824     0.0298    0.0265   66.1012    1.0148
-             b:e     6.0294    0.2549     0.0269    0.0334   86.3682    0.9965
-             b:f     7.6209    0.2117     0.0223    0.0342   57.0216    1.0141
-             b:g     8.8120    0.2593     0.0273    0.0341   73.2393    1.0010
-    
- .........
-
-
-
-
-![svg](output_17_1.svg)
 
 
