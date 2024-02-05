@@ -527,7 +527,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 
 	for q in 1:length(M[mSet].c)
 		M[mSet].SNPVARRESID .+= M[mSet].covariates[:,q].*M[mSet].c[q]
-		rhsCq = M[mSet].covariatesT[q,:]*M[mSet].SNPVARRESID
+		rhsCq = dot(M[mSet].covariatesT[q,:],M[mSet].SNPVARRESID)
 		meanCq   = M[mSet].iCpC[q,q]*rhsCq
 		M[mSet].c[q] = rand(Normal(meanCq,sqrt(M[mSet].iCpC[q,q]*var_var)))
 		M[mSet].SNPVARRESID .-= M[mSet].covariates[:,q].*M[mSet].c[q]
