@@ -525,13 +525,12 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	end
 	println("trapped: $(trapped/(trapped+notTrapped))")
 
-	for q in 1:length(M[mSet].c)
-		M[mSet].SNPVARRESID .+= M[mSet].covariates[:,q].*M[mSet].c[q]
-		rhsCq = dot(M[mSet].covariatesT[q,:],M[mSet].SNPVARRESID)
-		meanCq   = M[mSet].iCpC[q,q]*rhsCq
-		M[mSet].c[q] = rand(Normal(meanCq,sqrt(M[mSet].iCpC[q,q]*var_var)))
-		M[mSet].SNPVARRESID .-= M[mSet].covariates[:,q].*M[mSet].c[q]
-	end
+	M[mSet].SNPVARRESID .+= M[mSet].covariates*M[mSet].c			
+	rhsC = M[mSet].covariatesT*M[mSet].SNPVARRESID	
+	meanC   = M[mSet].iCpC*rhsC
+	M[mSet].c .= rand(MvNormal(vec(meanC),Matrix(Diagonal(M[mSet].iCpC*var_var))))
+	M[mSet].SNPVARRESID .-= M[mSet].covariates*M[mSet].c	
+
 	
 #	M[mSet].SNPVARRESID .+= M[mSet].covariates*M[mSet].c			
 #	rhsC = M[mSet].covariatesT*M[mSet].SNPVARRESID	
