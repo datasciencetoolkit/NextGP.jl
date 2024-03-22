@@ -534,7 +534,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	rhsC = M[mSet].covariatesT*log.(varBeta[mSet])
 	M[mSet].c .=  M[mSet].iCpC*rhsC
 #	M[mSet].c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*var_var))))
-	M[mSet].SNPVARRESID .-= M[mSet].covariates*M[mSet].c
+	M[mSet].SNPVARRESID = log.(varBeta[mSet]) .- M[mSet].covariates*M[mSet].c
 end
 
 #####
