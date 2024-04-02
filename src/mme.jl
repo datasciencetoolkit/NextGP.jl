@@ -406,8 +406,10 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:funct]       = sampleBayesLV!
 				theseRegions          = [r:r for r in 1:size(nowM,2)]
 				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nVarCov]     = length(theseRegions) 
-				
+				M[pSet][:nVarCov]     = length(theseRegions)
+				#logVar can be created in a smarter way, maybe together with var??...
+				M[pSet][:logVar]     = [log(priorVCV[mSet].v) for i in 1:M[mSet][:nVarCov]]
+				println("size logVar container = $(length(M[pSet][:logVar]))")
 				designMat = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
 				M[pSet][:covariates] = designMat
 				M[pSet][:covariatesT] = transpose(designMat)
