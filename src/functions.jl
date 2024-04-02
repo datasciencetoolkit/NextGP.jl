@@ -501,7 +501,8 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 		for locus in theseLoci::UnitRange{Int64}			
 			vari = varBeta[mSet][locus]
 			bi = getindex(beta[M[mSet].pos],locus)
-			log_vari = log(vari)
+#			log_vari = log(vari)
+			log_vari = M[mSet].logVar[locus]
 			ζ = M[mSet].SNPVARRESID[locus]	#residual of variance for log-var
 			var_mui = log_vari - ζ 		#mean of "variance at log scale"
 			c1 = ^(vari,-1.5)*rand()
@@ -518,18 +519,18 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 				notTrapped +=1
 				vari = lbound+rand()*(rbound-lbound)				
 				varBeta[mSet][locus] = vari
-				log_vari = log(vari)
-#				M[mSet].SNPVARRESID[locus] = log_vari - var_mui
+				M[mSet].logVar[locus] = log(vari)
 			end
 		end
 	end
 	println("trapped: $(trapped/(trapped+notTrapped))")
 
-	rhsC = M[mSet].covariatesT*log.(varBeta[mSet])
-#	M[mSet].c .=  M[mSet].iCpC*rhsC
+	#rhsC = M[mSet].covariatesT*log.(varBeta[mSet])
+	rhsC = M[mSet].covariatesT*M[mSet].logVar
 	meanC = M[mSet].iCpC*rhsC
 	M[mSet].c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*var_var))))
-	M[mSet].SNPVARRESID .= log.(varBeta[mSet]) .- M[mSet].covariates*M[mSet].c
+	#M[mSet].SNPVARRESID .= log.(varBeta[mSet]) .- M[mSet].covariates*M[mSet].c
+	M[mSet].SNPVARRESID .= M[mSet].logVar .- M[mSet].covariates*M[mSet].c
 end
 
 #####
