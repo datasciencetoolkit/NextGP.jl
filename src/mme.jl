@@ -409,7 +409,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:nVarCov]     = length(theseRegions)
 				#logVar can be created in a smarter way, maybe together with var??...
 				M[pSet][:logVar]     = [log(priorVCV[pSet].v) for i in 1:M[pSet][:nVarCov]]
-				println("size logVar container = $(length(M[pSet][:logVar]))")
 				designMat = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
 				M[pSet][:covariates] = designMat
 				M[pSet][:covariatesT] = transpose(designMat)
