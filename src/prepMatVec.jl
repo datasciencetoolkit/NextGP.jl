@@ -100,7 +100,10 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Sy
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "SNP")
 			(arg1,arg2,arg3...) = f.rhs[i].args_parsed
 			arg1 = Symbol(repr(arg1))
-			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false)
+			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
+			#drops cols if any value is missing. Later should check map files etc..
+			thisM[:,.!(any.(ismissing, eachcol(thisM))]
+			#
 			thisM = Matrix{Float64}(thisM)
 			
 			#str field can only be in GBLUP for marker related analysis
