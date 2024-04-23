@@ -102,7 +102,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Sy
 			arg1 = Symbol(repr(arg1))
 			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
 			#drops cols if any value is missing. Later should check map files etc..
-			thisM[:,.!(any.(ismissing, eachcol(thisM)))]
+			thisM = thisM[:,.!(any.(ismissing, eachcol(thisM)))]
 			#
 			thisM = Matrix{Float64}(thisM)
 			
