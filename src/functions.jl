@@ -428,8 +428,11 @@ function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycor
 			println("locus $locus")
 			tempBeta = 0.0
 			for a in M[mSet].annotNonZeroPos[locus]
+				println("a: $a")
+				println("ExpLogL $(ExpLogL[a,:])")
 				probsV = ExpLogL[a,:]./sum(ExpLogL[a,:])
 				cumProbsV = cumsum(probsV)
+				println("cumProbsV: $cumProbsV")
 				classSNP = findfirst(x->x>=rand(), cumProbsV) #position
 			
 #NEED FOR EACH ANNOT NOW!!!!!	setindex!(delta[M[mSet].pos],classSNP,locus)
