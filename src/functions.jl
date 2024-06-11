@@ -339,12 +339,6 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 			probAnnot1 = M[mSet].annotProb[locus,:] .* vec(sum(ExpLogL,dims=2))
 			probAnnot2 = sum(probAnnot1)
 			probAnnot = probAnnot1 ./ probAnnot2
-			println("locus $locus")
-			println("M[mSet].annotProb[locus,:] $(M[mSet].annotProb[locus,:])")
-			println("vec(sum(ExpLogL,dims=2)) $(vec(sum(ExpLogL,dims=2)))")
-			println("probAnnot1 $probAnnot1")
-			println("probAnnot2 $probAnnot2")
-			println("probAnnot $probAnnot")
 			##########
 			AnnnotClassSNP = rand(Categorical(probAnnot))  #position
 			posAnnotInNonZero = findfirst(isequal(AnnnotClassSNP), M[mSet].annotNonZeroPos[locus])
@@ -419,22 +413,16 @@ function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycor
 
 			########KEEP for now ANNOTATION ASSIGNMENT
 			#####################################################################
-			probAnnot1 = M[mSet].annotProb[locus,:] .* vec(sum(ExpLogL,dims=2))
-			probAnnot2 = sum(probAnnot1)
-			probAnnot = probAnnot1 ./ probAnnot2
-			println("locus $locus")
-			println("M[mSet].annotProb[locus,:] $(M[mSet].annotProb[locus,:])")
-			println("vec(sum(ExpLogL,dims=2)) $(vec(sum(ExpLogL,dims=2)))")
-			println("probAnnot1 $probAnnot1")
-			println("probAnnot2 $probAnnot2")
-			println("probAnnot $probAnnot")
+			#probAnnot1 = M[mSet].annotProb[locus,:] .* vec(sum(ExpLogL,dims=2))
+			#probAnnot2 = sum(probAnnot1)
+			#probAnnot = probAnnot1 ./ probAnnot2
 			##########
-			AnnnotClassSNP = rand(Categorical(probAnnot))  #position
-			posAnnotInNonZero = findfirst(isequal(AnnnotClassSNP), M[mSet].annotNonZeroPos[locus])
+			#AnnnotClassSNP = rand(Categorical(probAnnot))  #position
+			#posAnnotInNonZero = findfirst(isequal(AnnnotClassSNP), M[mSet].annotNonZeroPos[locus])
 			##pi sampled here
-			M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]] = sampleProb(posAnnotInNonZero,M[mSet].annotInput[locus,M[mSet].annotNonZeroPos[locus]])
+			#M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]] = sampleProb(posAnnotInNonZero,M[mSet].annotInput[locus,M[mSet].annotNonZeroPos[locus]])
 			##########
-			setindex!(M[mSet].annotCat,AnnnotClassSNP,locus)
+			#setindex!(M[mSet].annotCat,AnnnotClassSNP,locus)
 			###################################################################
 
 			tempBeta = 0.0
