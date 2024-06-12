@@ -422,7 +422,7 @@ function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycor
 				else betaSample = 0.0
 				end
 				tempBeta += betaSample
-				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+				BLAS.axpy!(-1.0*betaSample,view(M[mSet].data,:,locus),ycorr)
 			end
 			setindex!(beta[M[mSet].pos],tempBeta,locus)			
 		end
