@@ -397,63 +397,34 @@ function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycor
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesR
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rhs = getindex(M[mSet].Mp,locus)*ycorr*iVarE + getindex(M[mSet].rhs,locus)
-#			rhs = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #+ getindex(M[mSet].rhs,locus)
 			lhs = zeros(nAnnot,nVarClass)
 			ExpLogL = zeros(nAnnot,nVarClass)
+			tempBeta = 0.0
 			for a in M[mSet].annotNonZeroPos[locus]
+				rhs = getindex(M[mSet].Mp,locus)*ycorr*iVarE + getindex(M[mSet].rhs,locus)
 				for v in 1:nVarClass
-#					lhs[a,v] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus) + varE/varc[a][v]
-#					logLv    = varc[a][v]==0.0 ? M[mSet].logPi[a][v] : -0.5*(log(varc[a][v]*lhs[a,v]/varE)-((rhs^2)/(varE*lhs[a,v]))) + M[mSet].logPi[a][v]
 					lhs[a,v] = varc[a][v]==0.0 ? 0.0 : getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + 1/varc[a][v]
 					logLv    = varc[a][v]==0.0 ? M[mSet].logPi[a][v] : -0.5*(log(varc[a][v]*lhs[a,v])-((rhs^2)/lhs[a,v])) + M[mSet].logPi[a][v]
 					ExpLogL[a,v] = exp(logLv)
 				end
-			end
-
-			########KEEP for now ANNOTATION ASSIGNMENT
-			#####################################################################
-			#probAnnot1 = M[mSet].annotProb[locus,:] .* vec(sum(ExpLogL,dims=2))
-			#probAnnot2 = sum(probAnnot1)
-			#probAnnot = probAnnot1 ./ probAnnot2
-			##########
-			#AnnnotClassSNP = rand(Categorical(probAnnot))  #position
-			#posAnnotInNonZero = findfirst(isequal(AnnnotClassSNP), M[mSet].annotNonZeroPos[locus])
-			##pi sampled here
-			#M[mSet].annotProb[locus,M[mSet].annotNonZeroPos[locus]] = sampleProb(posAnnotInNonZero,M[mSet].annotInput[locus,M[mSet].annotNonZeroPos[locus]])
-			##########
-			#setindex!(M[mSet].annotCat,AnnnotClassSNP,locus)
-			###################################################################
-
-			println("locus $locus")
-			tempBeta = 0.0
-			for a in M[mSet].annotNonZeroPos[locus]
-				println("a: $a")
-				println("ExpLogL $(ExpLogL[a,:])")
 				probsV = ExpLogL[a,:]./sum(ExpLogL[a,:])
 				cumProbsV = cumsum(probsV)
-				println("cumProbsV: $cumProbsV")
 				classSNP = findfirst(x->x>=rand(), cumProbsV) #position
-			
-#NEED FOR EACH ANNOT NOW!!!!!	setindex!(delta[M[mSet].pos],classSNP,locus)
-				println("classSNP $classSNP")
+				setindex!(delta[M[mSet].pos],classSNP,locus)
 				nLoci[a,classSNP] += 1
-
-			
 				###sample only non-zero class SNPs
 				if varc[a][classSNP]!= 0.0
 					nNonZero[a] += 1
 					meanBeta = lhs[a,classSNP]\rhs
 					betaSample = sampleBeta(meanBeta, lhs[a,classSNP])
-					tempBeta += betaSample
-#					varSNP = varc[a][classSNP]
 					varSNP = M[mSet].vClass[classSNP] #Same variant classes for all annotations
 					sumS[a] +=  betaSample^2 / varSNP  
-				else tempBeta += 0.0
+				else betaSample = 0.0
 				end
+				tempBeta += betaSample
+				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			end
-			setindex!(beta[M[mSet].pos],tempBeta,locus)
-			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+			setindex!(beta[M[mSet].pos],tempBeta,locus)			
 		end
 	end
 		
@@ -469,7 +440,6 @@ function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycor
 			M[mSet].piHat[a] = piHat
 			M[mSet].logPi[a] = log.(piHat)
 		end
-#		sampleProb()
 	end
 end
 
