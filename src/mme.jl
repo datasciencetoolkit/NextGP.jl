@@ -384,6 +384,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:piHat]       = [priorVCV[pSet].pi for i in 1:M[pSet][:nVarCov]]
 				M[pSet][:annotInput]  = deepcopy(priorVCV[pSet].annot)
 				M[pSet][:annotProb]   = priorVCV[pSet].annot./sum(priorVCV[pSet].annot,dims=2)
+				#If all annotations are zero, prob is NA. I make it "0" here
+				M[pSet][:annotProb][findall([all(iszero, row) for row in eachrow(priorVCV[pSet].annot)]),:] .= 0.0
+				#
 				M[pSet][:annotNonZeroPos]   = [findall(!iszero, row) for row in eachrow(priorVCV[pSet].annot)]
 #				M[pSet][:annotNonZero]= getindex.(Ref(priorVCV[pSet].annot),M[pSet][:annotNonZeroPos])
 				M[pSet][:annotCat]    = zeros(Int64,1,M[pSet][:dims][2])
