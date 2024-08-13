@@ -311,9 +311,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 					ExpLogL[a,v] = exp(logLv)
 				end
 			end
-			println("probAnnot: $(M[mSet].annotProb[locus,:])")
-			println("probAnnot: $(vec(sum(ExpLogL,dims=2)))")
-
+			
 			probAnnot1 = M[mSet].annotProb[locus,:] .* vec(sum(ExpLogL,dims=2))
 			probAnnot2 = sum(probAnnot1)
 			probAnnot = probAnnot1 ./ probAnnot2
