@@ -286,6 +286,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	posMcounter = 0
 	for pSet in keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
 		############priorVCV cannot be empty for markers, currently!!
+		println("pSet now: $pSet")
+		println("keysM: $(keys(M))")
 		in(pSet, collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]) ? throw(ArgumentError("You must provide a prior for genomic analysis. Example: BayesPR(9999,0.05)")) : nothing
 
 		#symbol :M1 or expression
