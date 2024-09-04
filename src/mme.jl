@@ -481,7 +481,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	end
 		
 	for mSet ∈ keys(M)
-		M[mSet][:df] = 3.0+size(priorVCV[mSet].v,1)
+		M[mSet][:df] = haskey(priorVCV,mSet) ? 3.0+size(priorVCV[mSet].v,1) : 4.0
+		#M[mSet][:df] = 3.0+size(priorVCV[mSet].v,1)
 	end
 
 
