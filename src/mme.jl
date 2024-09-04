@@ -284,7 +284,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 	#make mpm
 	posMcounter = 0
-	for pSet in keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
+	for pSet in keys(M) #keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
 		############priorVCV cannot be empty for markers, currently!!
 		println("pSet now: $pSet")
 		println("keysM: $(keys(M))")
@@ -488,9 +488,14 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	end
 
 
-        for mSet in keys(M)
-                nMComp = size(priorVCV[mSet].v,1)
-                M[mSet][:scale] = nMComp>1 ? priorVCV[mSet].v .* (M[mSet][:df]-nMComp-1.0)  : priorVCV[mSet].v * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make float and array of float
+        for mSet ∈ keys(M)
+		if haskey(priorVCV,mSet)
+                	nMComp = size(priorVCV[mSet].v,1)
+                	M[mSet][:scale] = nMComp>1 ? priorVCV[mSet].v .* (M[mSet][:df]-nMComp-1.0)  : priorVCV[mSet].v * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make float and array of float
+		else
+			nMComp = 1
+			M[mSet][:scale] = 0.05 * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make float and array of floa
+		end
         end
 	
 	
