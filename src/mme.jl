@@ -512,8 +512,12 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	varU = deepcopy(varU_prior) #for storage
 
 	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
-        for mSet in keys(M)
-                varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]]
+        for mSet ∈ keys(M)
+		if haskey(priorVCV,mSet)
+                	varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]]
+		else
+			varBeta[mSet] = [0.05 for i in 1:M[mSet][:nVarCov]]
+		end
         end
 
 	#summarize analysis
