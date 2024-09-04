@@ -433,7 +433,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	BpB = var(beta[M[mSet].pos])
 	println("var: $BpB")
 	IFFixed = 0.01*(log(BpB)^2)
-	println("IFFixed")
+	println("IFFixed $IFFixed")
 
 	setindex!(M[mSet].varZeta,var_var,1)
 	
