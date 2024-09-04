@@ -495,23 +495,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			M[pSet][:lhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) : inv.(diag(summaryStat[pSet].v))
                         M[pSet][:rhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
                 end
-		
-		#wheenn no prior was given, the below code should include only 9999 case. Delete the rest!
-		if isempty(M[pSet][:map])		
-			if priorVCV[pSet].r == 1
-				printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
-				theseRegions = [r:r for r in 1:size(nowM,2)]
-				M[pSet][:regionArray] = theseRegions
-			elseif priorVCV[pSet].r == 9999
-				printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
-				theseRegions = [1:r for r in size(nowM,2)]
-				M[pSet][:regionArray] = theseRegions
-			else throw(ArgumentError("Please enter a valid region size (1 or 9999)"))
-			end
-		else
-			theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],9999)
-			M[pSet][:regionArray] = theseRegions
-		end
+		#wheenn no prior was given, it should include only 9999 case.		
+		theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],9999)
+		M[pSet][:regionArray] = theseRegions
 		M[pSet][:nVarCov] = length(theseRegions)
 	end
 
