@@ -279,14 +279,15 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	#ADD MARKERS
 	# read map file and make regions
 																		
-	############priorVCV cannot be empty for markers, currently!!																	
-
 	beta = []
 	delta = []
 
 	#make mpm
 	posMcounter = 0
 	for pSet in keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
+		############priorVCV cannot be empty for markers, currently!!
+		in(pSet, collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]) ? throw(ArgumentError("You must provide a prior for genomic analysis. Example: BayesPR(9999,0.05)")) : nothing
+
 		#symbol :M1 or expression
 		if isa(pSet,Symbol) && in(pSet,keys(M))
 			posMcounter += 1
@@ -478,30 +479,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			M[pSet][:nVarCov] = length(theseRegions)
 		end
 	end
-	
-	for pSet in collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]
-		posMcounter += 1
-		M[pSet][:pos] = posMcounter
-		printstyled("No prior was provided for $pSet, but it was included in the data. It will be made uncorrelated with default priors and region size 9999 (WG)\n"; color = :green)		
-		tempmpm = []
-		nowM = M[pSet][:data]
-		for c in eachcol(nowM)
-			push!(tempmpm,BLAS.dot(c,c))
-		end
-		M[pSet][:mpm] = tempmpm
-		M[pSet][:lhs] = zeros(M[pSet][:dims][2])
-		M[pSet][:rhs] = zeros(M[pSet][:dims][2])
-                if pSet in keys(summaryStat)
-			M[pSet][:lhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) : inv.(diag(summaryStat[pSet].v))
-                        M[pSet][:rhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
-                end
-		#wheenn no prior was given, it should include only 9999 case.		
-		theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],9999)
-		M[pSet][:regionArray] = theseRegions
-		M[pSet][:nVarCov] = length(theseRegions)
-	end
-
-	
+		
 	for mSet ∈ keys(M)
 		M[mSet][:df] = 3.0+size(priorVCV[mSet].v,1)
 	end
