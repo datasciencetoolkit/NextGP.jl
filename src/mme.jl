@@ -440,11 +440,11 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					M[pSet][:estVarZeta] = priorVCV[pSet].estimateVarZeta
 					designMat = 0
 				end
-				beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
-				delta = push!(delta,ones(Int64,1,M[pSet][:dims][2]))
-				tempmpm = 0
-				nowM = 0
 			end
+			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
+			delta = push!(delta,ones(Int64,1,M[pSet][:dims][2]))
+			tempmpm = 0
+			nowM = 0
 		#tuple of symbols (:M1,:M2)
 		elseif (isa(pSet,Tuple{Vararg{Symbol}})) && all((in).(pSet,Ref(keys(M)))) #if all elements are available # all([pSet .in Ref(keys(M))])
 			M[pSet] = Dict{Symbol, Any}()
