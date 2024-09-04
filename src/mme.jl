@@ -284,11 +284,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 	#make mpm
 	posMcounter = 0
-	for pSet in keys(M) #keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
-		############priorVCV cannot be empty for markers, currently!!
+	for pSet in keys(M) 		#keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
 		println("pSet now: $pSet")
-		println("keysM: $(keys(M))")
-		in(pSet, collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]) ? throw(ArgumentError("You must provide a prior for genomic analysis. Example: BayesPR(9999,0.05)")) : nothing
+#		in(pSet, collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]) ? throw(ArgumentError("You must provide a prior for genomic analysis. Example: BayesPR(9999,0.05)")) : nothing
 
 		#symbol :M1 or expression
 		if isa(pSet,Symbol) && in(pSet,keys(M))
@@ -322,7 +320,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:rhs][isnan.(M[pSet][:rhs])].= 0.0
 			end
 			
-			if priorVCV[pSet].name == "BayesPR"
+			if priorVCV[pSet].name == "BayesPR" || !haskey(priorVCV,pSet)
 				M[pSet][:method] = "BayesPR"
 				M[pSet][:funct] = sampleBayesPR!
 				if isempty(M[pSet][:map])		
