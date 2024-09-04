@@ -285,7 +285,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	#make mpm
 	posMcounter = 0
 	for pSet in keys(M) 		#keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
-		println("pSet now: $pSet")
 #		in(pSet, collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]) ? throw(ArgumentError("You must provide a prior for genomic analysis. Example: BayesPR(9999,0.05)")) : nothing
 		
 		haskey(priorVCV,pSet) ? nothing : printstyled("No prior was provided for $pSet, but it was included in the data. It will be made uncorrelated with default priors and region size 9999 (WG)\n"; color = :green)
