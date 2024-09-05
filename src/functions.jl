@@ -427,10 +427,19 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	
 #	var_var = M[mSet].estVarZeta == true ? var(M[mSet].SNPVARRESID) : M[mSet].varZeta[]
 
+	if M[mSet].estVarZeta == true
+		BpB = dot(beta[M[mSet].pos],beta[M[mSet].pos])/length(beta[M[mSet].pos])
+		IFFixed = 0.01*(log(BpB)^2) #I chose 0.01
+		var_var = BpB == 0.0 ? M[mSet].varZeta[] : IFFixed
+	elseif M[mSet].estVarZeta == false
+		var_var = M[mSet].varZeta[]		
+	else
+		nothing
+	end
 	#
-	BpB = dot(beta[M[mSet].pos],beta[M[mSet].pos])/length(beta[M[mSet].pos])
-	IFFixed = 0.01*(log(BpB)^2)
-	var_var = BpB == 0.0 ? M[mSet].varZeta[] : IFFixed
+	#BpB = dot(beta[M[mSet].pos],beta[M[mSet].pos])/length(beta[M[mSet].pos])
+	#IFFixed = 0.01*(log(BpB)^2)
+	#var_var = BpB == 0.0 ? M[mSet].varZeta[] : IFFixed
 	#
 
 	setindex!(M[mSet].varZeta,var_var,1)
