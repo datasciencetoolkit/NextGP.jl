@@ -425,12 +425,12 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	local lambda::Float64
 
 	
-	var_var = M[mSet].estVarZeta == true ? var(M[mSet].SNPVARRESID) : M[mSet].varZeta[]
+#	var_var = M[mSet].estVarZeta == true ? var(M[mSet].SNPVARRESID) : M[mSet].varZeta[]
 
 	#
-#	BpB = dot(beta[M[mSet].pos],beta[M[mSet].pos])/length(beta[M[mSet].pos])
-#	IFFixed = 0.01*(log(BpB)^2)
-#	var_var = BpB == 0.0 ? M[mSet].varZeta[] : IFFixed
+	BpB = dot(beta[M[mSet].pos],beta[M[mSet].pos])/length(beta[M[mSet].pos])
+	IFFixed = 0.01*(log(BpB)^2)
+	var_var = BpB == 0.0 ? M[mSet].varZeta[] : IFFixed
 	#
 
 	setindex!(M[mSet].varZeta,var_var,1)
