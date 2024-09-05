@@ -119,7 +119,7 @@ struct BayesLogVarType
     covariates::DataFrame
     varZeta::Float64
     name::String
-    estimateVarZeta::Bool
+    estimateVarZeta::Union{Float64,Bool}
 end
 
 """
