@@ -428,13 +428,17 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 #	var_var = M[mSet].estVarZeta == true ? var(M[mSet].SNPVARRESID) : M[mSet].varZeta[]
 
 	if isa(M[mSet].estVarZeta,Float64)
+		#the proportion is defined by the user, as in some BayesB, BayesC implementations
 		BpB = dot(beta[M[mSet].pos],beta[M[mSet].pos])/length(beta[M[mSet].pos])
 		IFFixed = M[mSet].estVarZeta*(log(BpB)^2)
 		var_var = BpB == 0.0 ? M[mSet].varZeta[] : IFFixed #this is to aavoid first iterations to crash
-	elseif M[mSet].estVarZeta == false
+	elseif M[mSet].estVarZeta == false #This is the default
 		var_var = M[mSet].varZeta[]		
-	else
-		nothing
+	elseif M[mSet].estVarZeta == true
+		#if it is true, I take 0.01% 
+		BpB = dot(beta[M[mSet].pos],beta[M[mSet].pos])/length(beta[M[mSet].pos])
+		IFFixed = 0.01*(log(BpB)^2)
+		var_var = BpB == 0.0 ? M[mSet].varZeta[] : IFFixed #this is to aavoid first iterations to crash
 	end
 	#
 	#BpB = dot(beta[M[mSet].pos],beta[M[mSet].pos])/length(beta[M[mSet].pos])
