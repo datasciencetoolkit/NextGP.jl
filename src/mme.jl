@@ -431,7 +431,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					#iCpC inverse taken later
 					M[pSet][:iCpC] = M[pSet][:covariatesT]*M[pSet][:covariates]
 					if isa(M[pSet][:iCpC],Matrix{Float64}) 
-						println("adding 0.001 to the diagonal of XpX")
 						M[pSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[pSet][:iCpC])./10000)),size(M[pSet][:iCpC]))
 						#Matrix(I*0.001,size(M[pSet][:iCpC]))
 					end
