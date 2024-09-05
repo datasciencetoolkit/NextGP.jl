@@ -127,7 +127,8 @@ end
 * `v` is the variance for the prior distribution of SNPs.
 * `f` is the model formula for the variance
 * `covariates`is the `DataFrame` that includes explanatory varibles for the variance of each SNP.
-* `zeta` is the variance for the log-linear variance.
+* `zeta` is the error variance in the model for the SNP variances.
+* If `estimateVarZeta` is `true`, it assumes that the error variance for the model for the SNP variances is 0.01 percent of the variance of the log-variances. If `estimateVarZeta` is `false`, it uses `zeta` as the error variance for the log-linear variances (fixed value). If `estimateVarZeta` is a `Float64`, it assumes that the error variance for the model for the SNP variances is `estimateVarZeta` percent of the variance of the log-variances.
 """
 BayesLV(v::Float64,f::StatsModels.TermOrTerms,covariates::DataFrame,varZeta::Float64;name="BayesLV",estimateVarZeta::Union{Float64,Bool}=false) = BayesLogVarType(v,f,covariates,varZeta,name,estimateVarZeta)
 
