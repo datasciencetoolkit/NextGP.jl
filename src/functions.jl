@@ -429,9 +429,10 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 
 	if isa(M[mSet].estVarZeta,Float64)
 		#the proportion is defined by the user, as in some BayesB, BayesC implementations
-		BpB = dot(beta[M[mSet].pos],beta[M[mSet].pos])/length(beta[M[mSet].pos])
-		IFFixed = M[mSet].estVarZeta*(log(BpB)^2)
-		var_var = BpB == 0.0 ? M[mSet].varZeta[] : IFFixed #this is to aavoid first iterations to crash
+		#BpB = dot(beta[M[mSet].pos],beta[M[mSet].pos])/length(beta[M[mSet].pos])
+		#IFFixed = M[mSet].estVarZeta*(log(BpB)^2)
+		#var_var = BpB == 0.0 ? M[mSet].varZeta[] : IFFixed #this is to avoid first iterations to crash
+		var_var = M[mSet].estVarZeta*var(M[mSet].logVar)
 	elseif M[mSet].estVarZeta == false #This is the default
 		var_var = M[mSet].varZeta[]		
 	elseif M[mSet].estVarZeta == true
