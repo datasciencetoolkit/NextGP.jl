@@ -468,7 +468,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 			end
 		end
 	end
-	println("trapped: $(trapped/(trapped+notTrapped))")
+	#println("trapped: $(trapped/(trapped+notTrapped))")
 
 	#sample varZeta
 	if isa(M[mSet].estVarZeta,Float64)
