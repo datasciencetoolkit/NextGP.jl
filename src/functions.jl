@@ -424,20 +424,6 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	local meanBeta::Float64
 	local lambda::Float64
 
-	
-#	var_var = M[mSet].estVarZeta == true ? var(M[mSet].SNPVARRESID) : M[mSet].varZeta[]
-
-#	if isa(M[mSet].estVarZeta,Float64)
-#		var_var = M[mSet].estVarZeta*var(M[mSet].logVar)
-#	elseif M[mSet].estVarZeta == false
-#		var_var = M[mSet].varZeta[]		
-#	elseif M[mSet].estVarZeta == true
-#		var_var = 0.01*var(M[mSet].logVar)
-#	end
-	
-	#critical to have var_var as the provided value if fixed, and sampled value if true
-#	setindex!(M[mSet].varZeta,var_var,1)
-
 	var_var = M[mSet].varZeta[]
 	
 	nLoci = 0
@@ -496,8 +482,8 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	#rhsC = M[mSet].covariatesT*log.(varBeta[mSet])
 	rhsC = M[mSet].covariatesT*M[mSet].logVar
 	meanC = M[mSet].iCpC*rhsC
-	M[mSet].c .= meanC
-	#M[mSet].c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*var_var))))
+	#M[mSet].c .= meanC
+	M[mSet].c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*var_var))))
 	M[mSet].SNPVARRESID .= M[mSet].logVar .- M[mSet].covariates*M[mSet].c
 end
 
