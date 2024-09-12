@@ -477,6 +477,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	predVar = M[mSet].covariates*M[mSet].c
 	M[mSet].SNPVARRESID .= M[mSet].logVar .- predVar
 	M[mSet].logVar .= predVar
+	varBeta[mSet] .= exp.(M[mSet].logVar)
 	#
 	#M[mSet].SNPVARRESID .= M[mSet].logVar .- M[mSet].covariates*M[mSet].c
 
