@@ -470,12 +470,15 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	end
 	#println("trapped: $(trapped/(trapped+notTrapped))")
 
-	#rhsC = M[mSet].covariatesT*log.(varBeta[mSet])
 	rhsC = M[mSet].covariatesT*M[mSet].logVar
 	meanC = M[mSet].iCpC*rhsC
-	#M[mSet].c .= meanC
 	M[mSet].c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*var_var))))
-	M[mSet].SNPVARRESID .= M[mSet].logVar .- M[mSet].covariates*M[mSet].c
+	#
+	predVar = M[mSet].covariates*M[mSet].c
+	M[mSet].SNPVARRESID .= M[mSet].logVar .- predVar
+	M[mSet].logVar = predVar
+	#
+	#M[mSet].SNPVARRESID .= M[mSet].logVar .- M[mSet].covariates*M[mSet].c
 
 	#sample varZeta
 	if isa(M[mSet].estVarZeta,Float64)
