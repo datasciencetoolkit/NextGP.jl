@@ -473,13 +473,7 @@ function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	rhsC = M[mSet].covariatesT*M[mSet].logVar
 	meanC = M[mSet].iCpC*rhsC
 	M[mSet].c .= rand(MvNormal(vec(meanC),convert(Array,Symmetric(M[mSet].iCpC*var_var))))
-	#
-	predVar = M[mSet].covariates*M[mSet].c
-	M[mSet].SNPVARRESID .= M[mSet].logVar .- predVar
-	M[mSet].logVar .= predVar
-	varBeta[mSet] .= exp.(M[mSet].logVar)
-	#
-	#M[mSet].SNPVARRESID .= M[mSet].logVar .- M[mSet].covariates*M[mSet].c
+	M[mSet].SNPVARRESID .= M[mSet].logVar .- M[mSet].covariates*M[mSet].c
 
 	#sample varZeta
 	if isa(M[mSet].estVarZeta,Float64)
