@@ -279,16 +279,18 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	#ADD MARKERS
 	# read map file and make regions
 																		
-	############priorVCV cannot be empty for markers, currently!!																	
-
 	beta = []
 	delta = []
 
 	#make mpm
 	posMcounter = 0
-	for pSet in keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
+	for pSet in keys(M) 		#keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
+#		in(pSet, collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]) ? throw(ArgumentError("You must provide a prior for genomic analysis. Example: BayesPR(9999,0.05)")) : nothing
+		
+		haskey(priorVCV,pSet) ? nothing : printstyled("No prior was provided for $pSet, but it was included in the data. It will be made uncorrelated with default priors and region size 9999 (WG)\n"; color = :green)
+		
 		#symbol :M1 or expression
-		if isa(pSet,Symbol) && in(pSet,keys(M))
+		if isa(pSet,Symbol) #&& in(pSet,keys(M)), now keys are always in keys(M)
 			posMcounter += 1
 			M[pSet][:pos] = posMcounter
 			tempmpm = []
@@ -318,112 +320,125 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				M[pSet][:lhs][isinf.(M[pSet][:lhs])].= 0.0
 				M[pSet][:rhs][isnan.(M[pSet][:rhs])].= 0.0
 			end
-			
-			if priorVCV[pSet].name == "BayesPR"
+
+			if !haskey(priorVCV,pSet)
 				M[pSet][:method] = "BayesPR"
 				M[pSet][:funct] = sampleBayesPR!
-				if isempty(M[pSet][:map])		
-					if priorVCV[pSet].r == 1
-						printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
-						theseRegions = [r:r for r in 1:size(nowM,2)]
-						M[pSet][:regionArray] = theseRegions
-					elseif priorVCV[pSet].r == 9999
-						printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
-						theseRegions = [1:r for r in size(nowM,2)]
-						M[pSet][:regionArray] = theseRegions
-					else throw(ArgumentError("Please enter a valid region size (1 or 9999)"))
-					end
-				else
-					theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
-					M[pSet][:regionArray] = theseRegions
-				end
+				theseRegions = [1:r for r in size(nowM,2)]
+				M[pSet][:regionArray] = theseRegions
 				M[pSet][:nVarCov] = length(theseRegions)
-			elseif priorVCV[pSet].name == "BayesB"
-				M[pSet][:logPi]       = [log(1.0 .- priorVCV[pSet].pi) log(priorVCV[pSet].pi)] #not fitted, fitted
-#				M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
-#				M[pSet][:logPiOut]    = log(1.0 .- priorVCV[pSet].pi)
-				M[pSet][:method]      = "BayesB"
-				M[pSet][:funct]       = sampleBayesB!
-				theseRegions          = [r:r for r in 1:size(nowM,2)]
-				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nVarCov]     = length(theseRegions)
-				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
-				M[pSet][:piHat]       = [1.0 .- priorVCV[pSet].pi priorVCV[pSet].pi] #not fitted, fitted
-				M[pSet][:vClass]      = [0 1] #2 variance class, one with own, one with null
-			elseif priorVCV[pSet].name == "BayesC"
-				M[pSet][:logPi]       = [log(1.0 .- priorVCV[pSet].pi) log(priorVCV[pSet].pi)] #not fitted, fitted
-#				M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
-#				M[pSet][:logPiOut]    = log(1.0 .- priorVCV[pSet].pi)
-				M[pSet][:method]      = "BayesC"
-				M[pSet][:funct] = sampleBayesC!
-				theseRegions          = [r:r for r in 1:size(nowM,2)]
-				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nVarCov]     = 1
-				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
-				M[pSet][:piHat]       = [1.0 .- priorVCV[pSet].pi priorVCV[pSet].pi] #not fitted, fitted
-				M[pSet][:vClass]      = [0 1] #2 variance class, one with common, one with null
-			elseif priorVCV[pSet].name == "BayesR"
-				M[pSet][:logPi]       = log.(priorVCV[pSet].pi)
-				M[pSet][:vClass]      = priorVCV[pSet].class
-				M[pSet][:method]      = "BayesR"
-				M[pSet][:funct]       = sampleBayesR!
-				theseRegions          = [r:r for r in 1:size(nowM,2)]
-				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nVarCov]     = 1
-				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
-				M[pSet][:piHat]       = deepcopy(priorVCV[pSet].pi)
-			elseif priorVCV[pSet].name == "BayesRCπ"
-				M[pSet][:vClass]      = priorVCV[pSet].class
-				M[pSet][:method]      = "BayesRCπ"
-				M[pSet][:funct]       = sampleBayesRCπ!
-				theseRegions          = [r:r for r in 1:size(nowM,2)]
-				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nVarCov]     = size(priorVCV[pSet].annot,2)
-				M[pSet][:logPi]       = [log.(priorVCV[pSet].pi) for i in 1:M[pSet][:nVarCov]]
-				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
-				M[pSet][:piHat]       = [priorVCV[pSet].pi for i in 1:M[pSet][:nVarCov]]
-				M[pSet][:annotInput]  = deepcopy(priorVCV[pSet].annot)
-				M[pSet][:annotProb]   = priorVCV[pSet].annot./sum(priorVCV[pSet].annot,dims=2)
-				M[pSet][:annotNonZeroPos]   = [findall(!iszero, row) for row in eachrow(priorVCV[pSet].annot)]
-#				M[pSet][:annotNonZero]= getindex.(Ref(priorVCV[pSet].annot),M[pSet][:annotNonZeroPos])
-				M[pSet][:annotCat]    = zeros(Int64,1,M[pSet][:dims][2])
-			elseif priorVCV[pSet].name == "BayesRCplus"
-				M[pSet][:vClass]      = priorVCV[pSet].class
-				M[pSet][:method]      = "BayesRCplus"
-				M[pSet][:funct]       = sampleBayesRCplus!
-				theseRegions          = [r:r for r in 1:size(nowM,2)]
-				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nVarCov]     = size(priorVCV[pSet].annot,2)
-				M[pSet][:logPi]       = [log.(priorVCV[pSet].pi) for i in 1:M[pSet][:nVarCov]]
-				M[pSet][:estPi]       = priorVCV[pSet].estimatePi
-				M[pSet][:piHat]       = [priorVCV[pSet].pi for i in 1:M[pSet][:nVarCov]]
-				M[pSet][:annotInput]  = deepcopy(priorVCV[pSet].annot)
-				M[pSet][:annotProb]   = priorVCV[pSet].annot./sum(priorVCV[pSet].annot,dims=2)
-				M[pSet][:annotNonZeroPos]   = [findall(!iszero, row) for row in eachrow(priorVCV[pSet].annot)]
-				M[pSet][:annotCat]    = zeros(Int64,1,M[pSet][:dims][2])
-			elseif priorVCV[pSet].name == "BayesLV"
-				M[pSet][:method]      = "BayesLV"
-				M[pSet][:funct]       = sampleBayesLV!
-				theseRegions          = [r:r for r in 1:size(nowM,2)]
-				M[pSet][:regionArray] = theseRegions
-				M[pSet][:nVarCov]     = length(theseRegions) 
-				
-				designMat = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
-				M[pSet][:covariates] = designMat
-				M[pSet][:covariatesT] = transpose(designMat)
-				M[pSet][:c] = rand(size(designMat,2))
-				M[pSet][:SNPVARRESID] = rand(size(designMat,1))
-				#iCpC inverse taken later
-				M[pSet][:iCpC] = M[pSet][:covariatesT]*M[pSet][:covariates]
-				if isa(M[pSet][:iCpC],Matrix{Float64}) 
-#					M[pSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[pSet][:iCpC])./10000)),size(M[pSet][:iCpC]))
-					M[pSet][:iCpC] += Matrix(I*0.0001,size(M[pSet][:iCpC]))
-
+			else
+				if priorVCV[pSet].name == "BayesPR"
+					M[pSet][:method] = "BayesPR"
+					M[pSet][:funct] = sampleBayesPR!
+					if isempty(M[pSet][:map])		
+						if priorVCV[pSet].r == 1
+							printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
+							theseRegions = [r:r for r in 1:size(nowM,2)]
+							M[pSet][:regionArray] = theseRegions
+						elseif priorVCV[pSet].r == 9999
+							printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
+							theseRegions = [1:r for r in size(nowM,2)]
+							M[pSet][:regionArray] = theseRegions
+						else throw(ArgumentError("Please enter a valid region size (1 or 9999)"))
+						end
+					else
+						theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],priorVCV[pSet].r)
+						M[pSet][:regionArray] = theseRegions
+					end
+					M[pSet][:nVarCov] = length(theseRegions)
+				elseif priorVCV[pSet].name == "BayesB"
+					M[pSet][:logPi]       = [log(1.0 .- priorVCV[pSet].pi) log(priorVCV[pSet].pi)] #not fitted, fitted
+#					M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
+#					M[pSet][:logPiOut]    = log(1.0 .- priorVCV[pSet].pi)
+					M[pSet][:method]      = "BayesB"
+					M[pSet][:funct]       = sampleBayesB!
+					theseRegions          = [r:r for r in 1:size(nowM,2)]
+					M[pSet][:regionArray] = theseRegions
+					M[pSet][:nVarCov]     = length(theseRegions)
+					M[pSet][:estPi]       = priorVCV[pSet].estimatePi
+					M[pSet][:piHat]       = [1.0 .- priorVCV[pSet].pi priorVCV[pSet].pi] #not fitted, fitted
+					M[pSet][:vClass]      = [0 1] #2 variance class, one with own, one with null
+				elseif priorVCV[pSet].name == "BayesC"
+					M[pSet][:logPi]       = [log(1.0 .- priorVCV[pSet].pi) log(priorVCV[pSet].pi)] #not fitted, fitted
+#					M[pSet][:logPiIn]     = log(priorVCV[pSet].pi)
+#					M[pSet][:logPiOut]    = log(1.0 .- priorVCV[pSet].pi)
+					M[pSet][:method]      = "BayesC"
+					M[pSet][:funct] = sampleBayesC!
+					theseRegions          = [r:r for r in 1:size(nowM,2)]
+					M[pSet][:regionArray] = theseRegions
+					M[pSet][:nVarCov]     = 1
+					M[pSet][:estPi]       = priorVCV[pSet].estimatePi
+					M[pSet][:piHat]       = [1.0 .- priorVCV[pSet].pi priorVCV[pSet].pi] #not fitted, fitted
+					M[pSet][:vClass]      = [0 1] #2 variance class, one with common, one with null
+				elseif priorVCV[pSet].name == "BayesR"
+					M[pSet][:logPi]       = log.(priorVCV[pSet].pi)
+					M[pSet][:vClass]      = priorVCV[pSet].class
+					M[pSet][:method]      = "BayesR"
+					M[pSet][:funct]       = sampleBayesR!
+					theseRegions          = [r:r for r in 1:size(nowM,2)]
+					M[pSet][:regionArray] = theseRegions
+					M[pSet][:nVarCov]     = 1
+					M[pSet][:estPi]       = priorVCV[pSet].estimatePi
+					M[pSet][:piHat]       = deepcopy(priorVCV[pSet].pi)
+				elseif priorVCV[pSet].name == "BayesRCπ"
+					M[pSet][:vClass]      = priorVCV[pSet].class
+					M[pSet][:method]      = "BayesRCπ"
+					M[pSet][:funct]       = sampleBayesRCπ!
+					theseRegions          = [r:r for r in 1:size(nowM,2)]
+					M[pSet][:regionArray] = theseRegions
+					M[pSet][:nVarCov]     = size(priorVCV[pSet].annot,2)
+					M[pSet][:logPi]       = [log.(priorVCV[pSet].pi) for i in 1:M[pSet][:nVarCov]]
+					M[pSet][:estPi]       = priorVCV[pSet].estimatePi
+					M[pSet][:piHat]       = [priorVCV[pSet].pi for i in 1:M[pSet][:nVarCov]]
+					M[pSet][:annotInput]  = deepcopy(priorVCV[pSet].annot)
+					M[pSet][:annotProb]   = priorVCV[pSet].annot./sum(priorVCV[pSet].annot,dims=2)
+					#If all annotations are zero, prob is NA. I make it "0" here
+					#But if all zero, those SNPs should be in a seperate marker set.
+					#So i cancel this
+					#M[pSet][:annotProb][findall([all(iszero, row) for row in eachrow(priorVCV[pSet].annot)]),:] .= 0.0
+					#
+					M[pSet][:annotNonZeroPos]   = [findall(!iszero, row) for row in eachrow(priorVCV[pSet].annot)]
+#					M[pSet][:annotNonZero]= getindex.(Ref(priorVCV[pSet].annot),M[pSet][:annotNonZeroPos])
+					M[pSet][:annotCat]    = zeros(Int64,1,M[pSet][:dims][2])
+				elseif priorVCV[pSet].name == "BayesRCplus"
+					M[pSet][:vClass]      = priorVCV[pSet].class
+					M[pSet][:method]      = "BayesRCplus"
+					M[pSet][:funct]       = sampleBayesRCplus!
+					theseRegions          = [r:r for r in 1:size(nowM,2)]
+					M[pSet][:regionArray] = theseRegions
+					M[pSet][:nVarCov]     = size(priorVCV[pSet].annot,2)
+					M[pSet][:logPi]       = [log.(priorVCV[pSet].pi) for i in 1:M[pSet][:nVarCov]]
+					M[pSet][:estPi]       = priorVCV[pSet].estimatePi
+					M[pSet][:piHat]       = [priorVCV[pSet].pi for i in 1:M[pSet][:nVarCov]]
+					M[pSet][:annotInput]  = deepcopy(priorVCV[pSet].annot)
+					M[pSet][:annotProb]   = priorVCV[pSet].annot./sum(priorVCV[pSet].annot,dims=2)
+					M[pSet][:annotNonZeroPos]   = [findall(!iszero, row) for row in eachrow(priorVCV[pSet].annot)]
+					M[pSet][:annotCat]    = zeros(Int64,1,M[pSet][:dims][2])
+				elseif priorVCV[pSet].name == "BayesLV"
+					M[pSet][:method]      = "BayesLV"
+					M[pSet][:funct]       = sampleBayesLV!
+					theseRegions          = [r:r for r in 1:size(nowM,2)]
+					M[pSet][:regionArray] = theseRegions
+					M[pSet][:nVarCov]     = length(theseRegions)
+					#logVar can be created in a smarter way, maybe together with var??...
+					M[pSet][:logVar]     = [log(priorVCV[pSet].v) for i in 1:M[pSet][:nVarCov]]
+					designMat = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
+					M[pSet][:covariates] = designMat
+					M[pSet][:covariatesT] = transpose(designMat)
+					M[pSet][:c] = rand(size(designMat,2))
+					M[pSet][:SNPVARRESID] = rand(size(designMat,1))
+					#iCpC inverse taken later
+					M[pSet][:iCpC] = M[pSet][:covariatesT]*M[pSet][:covariates]
+					if isa(M[pSet][:iCpC],Matrix{Float64}) 
+						M[pSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[pSet][:iCpC])./10000)),size(M[pSet][:iCpC]))
+						#Matrix(I*0.001,size(M[pSet][:iCpC]))
+					end
+ 		              		M[pSet][:iCpC]  = inv(M[pSet][:iCpC])
+					M[pSet][:varZeta]  = [priorVCV[pSet].varZeta]
+					M[pSet][:estVarZeta] = priorVCV[pSet].estimateVarZeta
+					designMat = 0
 				end
- 		              	M[pSet][:iCpC]  = inv(M[pSet][:iCpC])
-				M[pSet][:varZeta]  = [priorVCV[pSet].varZeta]
-				M[pSet][:estVarZeta] = priorVCV[pSet].estimateVarZeta
-				designMat = 0
 			end
 			beta  = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
 			delta = push!(delta,ones(Int64,1,M[pSet][:dims][2]))
@@ -473,52 +488,21 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			M[pSet][:nVarCov] = length(theseRegions)
 		end
 	end
-	
-	for pSet in collect(keys(M))[(!in).(keys(M),Ref(keys(priorVCV)))]
-		posMcounter += 1
-		M[pSet][:pos] = posMcounter
-		printstyled("No prior was provided for $pSet, but it was included in the data. It will be made uncorrelated with default priors and region size 9999 (WG)\n"; color = :green)		
-		tempmpm = []
-		nowM = M[pSet][:data]
-		for c in eachcol(nowM)
-			push!(tempmpm,BLAS.dot(c,c))
-		end
-		M[pSet][:mpm] = tempmpm
-		M[pSet][:lhs] = zeros(M[pSet][:dims][2])
-		M[pSet][:rhs] = zeros(M[pSet][:dims][2])
-                if pSet in keys(summaryStat)
-			M[pSet][:lhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) : inv.(diag(summaryStat[pSet].v))
-                        M[pSet][:rhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
-                end
 		
-		#wheenn no prior was given, the below code should include only 9999 case. Delete the rest!
-		if isempty(M[pSet][:map])		
-			if priorVCV[pSet].r == 1
-				printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
-				theseRegions = [r:r for r in 1:size(nowM,2)]
-				M[pSet][:regionArray] = theseRegions
-			elseif priorVCV[pSet].r == 9999
-				printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
-				theseRegions = [1:r for r in size(nowM,2)]
-				M[pSet][:regionArray] = theseRegions
-			else throw(ArgumentError("Please enter a valid region size (1 or 9999)"))
-			end
-		else
-			theseRegions = prep2RegionData(outPut,pSet,M[pSet][:map],9999)
-			M[pSet][:regionArray] = theseRegions
-		end
-		M[pSet][:nVarCov] = length(theseRegions)
-	end
-
-	
 	for mSet ∈ keys(M)
-		M[mSet][:df] = 3.0+size(priorVCV[mSet].v,1)
+		M[mSet][:df] = haskey(priorVCV,mSet) ? 3.0+size(priorVCV[mSet].v,1) : 4.0
+		#M[mSet][:df] = 3.0+size(priorVCV[mSet].v,1)
 	end
 
 
-        for mSet in keys(M)
-                nMComp = size(priorVCV[mSet].v,1)
-                M[mSet][:scale] = nMComp>1 ? priorVCV[mSet].v .* (M[mSet][:df]-nMComp-1.0)  : priorVCV[mSet].v * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make float and array of float
+        for mSet ∈ keys(M)
+		if haskey(priorVCV,mSet)
+                	nMComp = size(priorVCV[mSet].v,1)
+                	M[mSet][:scale] = nMComp>1 ? priorVCV[mSet].v .* (M[mSet][:df]-nMComp-1.0)  : priorVCV[mSet].v * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make float and array of float
+		else
+			nMComp = 1
+			M[mSet][:scale] = 0.05 * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make float and array of floa
+		end
         end
 	
 	
@@ -527,8 +511,12 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	varU = deepcopy(varU_prior) #for storage
 
 	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
-        for mSet in keys(M)
-                varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]]
+        for mSet ∈ keys(M)
+		if haskey(priorVCV,mSet)
+                	varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]]
+		else
+			varBeta[mSet] = [0.05 for i in 1:M[mSet][:nVarCov]]
+		end
         end
 
 	#summarize analysis
@@ -582,7 +570,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			IO.outMCMC(outPut,"delta$mSet",hcat(M[mSet][:levels]...))
 			if in(M[mSet][:method],["BayesB","BayesC","BayesR"])
 				IO.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:length(M[mSet][:vClass])]]) #[] to have it as one row
-			elseif in(M[mSet][:method],["BayesRCπ"])
+			elseif in(M[mSet][:method],["BayesRCπ","BayesRCplus"])
 				npis = length(M[mSet][:vClass])*M[mSet][:nVarCov]
 				IO.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:npis]]) #[] to have it as one row
 				IO.outMCMC(outPut,"annot$mSet",hcat(M[mSet][:levels]...))
