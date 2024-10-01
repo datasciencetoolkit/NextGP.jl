@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>PBLUP · NextGP.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../home/"><img src="../../assets/logo.png" alt="NextGP.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../home/">NextGP.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../home/">Home</a></li><li><a class="tocitem" href="../../">Modules</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../../Example/Example/">Example</a></li><li class="is-active"><a class="tocitem" href>PBLUP</a></li><li><a class="tocitem" href="../../BWGR/BWGR/">BWGR</a></li><li><a class="tocitem" href="../../MultipleMarkerSets/MultipleMarkerSets/">Multiple marker sets</a></li><li><a class="tocitem" href="../../BayesLV/BayesLV/">BayesLV</a></li></ul></li><li><a class="tocitem" href="../../citation/">Citation</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>PBLUP</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>PBLUP</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/datasciencetoolkit/NextGP.jl/blob/main/docs/src/PBLUP/PBLUP.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="PBLUP"><a class="docs-heading-anchor" href="#PBLUP">PBLUP</a><a id="PBLUP-1"></a><a class="docs-heading-anchor-permalink" href="#PBLUP" title="Permalink"></a></h1><pre><code class="language-julia hljs">using CSV, StatsModels, DataFrames, NextGP</code></pre><pre><code class="language-julia hljs">data = CSV.read(&quot;YOURPATH/phenotypes.csv&quot;,DataFrame)</code></pre><pre><code class="language-text hljs">ID     Sire  Dam   Herds Pen BW
+QGG5   QGG1  QGG2  1     1   35.0
+QGG6   QGG3  QGG2  1     2   20.0
+QGG7   QGG4  QGG6  1     2   25.0
+QGG8   QGG3  QGG5  1     1   40.0
+QGG9   QGG1  QGG6  2     1   42.0
+QGG10  QGG3  QGG2  2     2   22.0
+QGG11  QGG3  QGG7  2     2   35.0
+QGG12  QGG8  QGG7  3     2   34.0
+QGG13  QGG9  QGG2  3     1   20.0
+QGG14  QGG3  QGG6  3     2   40.0</code></pre><pre><code class="language-julia hljs">pedigree = &quot;YOURPATH/pedigreeBase.txt&quot;</code></pre><pre><code class="nohighlight hljs">&quot;YOURPATH/pedigreeBase.txt&quot;</code></pre><pre><code class="language-text hljs">#Pedigree for the above example
+QGG1 0 0
+QGG2 0 0
+QGG3 0 0
+QGG4 0 0
+QGG5 QGG1 QGG2
+QGG6 QGG3 QGG2
+QGG7 QGG4 QGG6
+QGG8 QGG3 QGG5
+QGG9 QGG1 QGG6
+QGG10 QGG3 QGG2
+QGG11 QGG3 QGG7
+QGG12 QGG8 QGG7
+QGG13 QGG9 QGG2
+QGG14 QGG3 QGG6</code></pre><pre><code class="language-julia hljs">f = @formula(BW ~ Herds + Pen + PED(ID) + PED(Dam) + (1|Dam))</code></pre><pre><code class="nohighlight hljs">FormulaTerm
+Response:
+  BW(unknown)
+Predictors:
+  Herds(unknown)
+  Pen(unknown)
+  (ID)-&gt;PED(ID)
+  (Dam)-&gt;PED(Dam)
+  (Dam)-&gt;1 | Dam</code></pre><pre><code class="language-julia hljs">myHints = Dict(:Dam =&gt; StatsModels.FullDummyCoding(),
+            :ID =&gt; StatsModels.FullDummyCoding(),
+            :Herds =&gt; StatsModels.DummyCoding(),
+            :Pen =&gt; StatsModels.FullDummyCoding())</code></pre><pre><code class="language-julia hljs">blk = [(:Herds,:Pen)]</code></pre><pre><code class="language-julia hljs">priorVar = Dict(:ID      =&gt; Random(&quot;A&quot;,150.0),
+                :Dam     =&gt; Random(&quot;A&quot;,90.0),
+                :(1|Dam) =&gt; Random(&quot;I&quot;,40.0),
+                :e       =&gt; Random(&quot;I&quot;,350.0));</code></pre><pre><code class="language-julia hljs">@time runLMEM(f,data,100000,10000,10;myHints=myHints,blockThese=blk,VCV=priorVar,userPedData=pedigree)</code></pre><pre><code class="nohighlight hljs">Output folder outMCMC exists. Removing its content
+
+ ---------------- Summary of input ---------------- 
+
+|Variable   Term   Type              Levels
+|----------|------|-----------------|--------|
+| Herds    | Term | Matrix{Float64} | 2      |
+| Pen      | Term | Matrix{Float64} | 2      |
+| ID       | PED  | Matrix{Bool}    | 14     |
+| Dam      | PED  | Matrix{Bool}    | 14     |
+| 1 | Dam  | |    | Matrix{Float64} | 4      |
+
+prior var-cov structure for &quot;e&quot; is either empty or &quot;I&quot; was given. An identity matrix will be used
+prior var-cov structure for ID is A. Computed A matrix (from pedigree file) will be used
+prior var-cov structure for Dam is A. Computed A matrix (from pedigree file) will be used
+prior var-cov structure for 1 | Dam is either empty or &quot;I&quot; was given. An identity matrix will be used
+
+ ---------------- Summary of analysis ---------------- 
+
+|Effect    Type     Str   df    scale
+|---------|--------|-----|-----|-------|
+| ID      | Random | A   | 4.0 | 75.0  |
+| Dam     | Random | A   | 4.0 | 45.0  |
+| 1 | Dam | Random | I   | 4.0 | 20.0  |
+| e       | Random | I   | 4.0 | 175.0 |
+
+
+MCMC progress... 100%|███████████████████████████████████| Time: 0:00:10</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../Example/Example/">« Example</a><a class="docs-footer-nextpage" href="../../BWGR/BWGR/">BWGR »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.23 on <span class="colophon-date" title="Tuesday 1 October 2024 10:57">Tuesday 1 October 2024</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
