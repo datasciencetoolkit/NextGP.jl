@@ -2,8 +2,10 @@ module prepMatVec
 
 using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
 
-import StatsModels.terms
-StatsModels.terms!(path::String) = path #path for data and map
+#import StatsModels.terms
+#StatsModels.terms!(path::String) = path #path for data and map
+import StatsModels.Term
+StatsModels.Term!(path::String) = path #path for data and map
 
 include("misc.jl")
 
