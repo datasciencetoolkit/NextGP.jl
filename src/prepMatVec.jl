@@ -1,3 +1,5 @@
+__precompile__(false) 
+
 module prepMatVec
 
 using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
