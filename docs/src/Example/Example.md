@@ -157,7 +157,7 @@ See StatsModels.jl documentation for alternatives
 myHints = Dict(:b => StatsModels.FullDummyCoding())
 =#
 
-priorVar = Dict(:e => ([],0.01))
+priorVar = Dict(:e => Random([],0.01))
 
 runLMEM(f,data,100000,20000,10;VCV=priorVar)
 ```
