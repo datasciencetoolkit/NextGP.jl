@@ -6,8 +6,9 @@ using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructure
 
 #import StatsModels.terms
 #StatsModels.terms!(path::String) = path #path for data and map
-import StatsModels.term
-StatsModels.term(path::String) = path #path for data and map
+import StatsModels.parse!
+parse!(path::String, protected) = path
+StatsModels.termvars(path::String) = path #path for data and map
 
 include("misc.jl")
 
