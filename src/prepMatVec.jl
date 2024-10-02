@@ -161,7 +161,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Sy
 
 	
 	println("\n ---------------- Summary of input ---------------- \n")
-	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
+	pretty_table(summarize, tf = tf_markdown, show_row_number = false,alignment=:l)
 
         return vec(yVec), X, Z, M
 end
