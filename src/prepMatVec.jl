@@ -8,7 +8,6 @@ import StatsModels.parse!
 parse!(path::String, protected) = path
 StatsModels.termvars(path::String) = path #path for data and map
 
-include("runTime.jl")
 #display the term for my custom functions correctly
 function Base.show(io::IO, ::MIME"text/plain",
                    t::FunctionTerm;
