@@ -22,7 +22,6 @@ end
 include("misc.jl")
 
 export prep
-export show
 
 
 """
