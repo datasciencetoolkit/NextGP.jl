@@ -31,7 +31,7 @@ include("GRN.jl")
 using .MCMC
 export runLMEM
 using .prepMatVec
-export prep
+export prep,show
 using .GRN
 export estGRN_MHGibbs 
 
