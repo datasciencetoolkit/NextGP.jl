@@ -10,7 +10,7 @@ StatsModels.termvars(path::String) = path #path for data and map
 
 include("runTime.jl")
 #display the term for my custom functions correctly
-Base.show(io::IO, t::FunctionTerm) = print(io, ":($(first(t.args)))")
+Base.show(io::IO, t::FunctionTerm{typeof(SNP)}) = print(io, ":($(t.exorig))")
 function Base.show(io::IO, ::MIME"text/plain",
                    t::FunctionTerm{typeof(SNP)};
                    prefix = "")
