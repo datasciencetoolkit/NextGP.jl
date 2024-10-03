@@ -22,7 +22,7 @@ end
 include("misc.jl")
 
 export prep
-export Base.show
+export show
 
 
 """
