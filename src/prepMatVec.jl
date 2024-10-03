@@ -17,7 +17,6 @@ function Base.show(io::IO, ::MIME"text/plain",
     print(io, prefix, "(")
     print(io,first(t.args), ")->", t.exorig)
 end
-export show
 
 include("misc.jl")
 
