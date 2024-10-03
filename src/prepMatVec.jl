@@ -111,7 +111,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Sy
 		
 
         for i in 1:length(f.rhs)
-		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "SNP")
+		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].f)) == "SNP") #change forig to f everywhere
 			(arg1,arg2,arg3...) = f.rhs[i].args_parsed
 			arg1 = Symbol(repr(arg1))
 			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
@@ -134,14 +134,14 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Sy
 			end
 			thisM = 0
 
-                elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "PED")
+                elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].f)) == "PED") #change forig to f everywhere
                         arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
 			IDs,thisZ = ranMat(arg, :ID, userData4ran, pedigree)
 			ids = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
 			Z[arg] = Dict(:data=>thisZ,:method=>"BLUP",:str=>"A",:iVarStr=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
 			push!(summarize,[arg,"PED",typeof(thisZ),size(thisZ,2)])
 			thisZ = 0
-                elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].forig)) == "|")
+                elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].f)) == "|") #change forig to f everywhere
                         my_sch = schema(userData, userHints) #work on userData and userHints
 			
 			f.rhs[i].args_parsed[1] == ConstantTerm{Int64}(1) ? my_ApplySch = apply_schema(f.rhs[i].args_parsed[2], my_sch, MixedModels.MixedModel) : my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel) 	
