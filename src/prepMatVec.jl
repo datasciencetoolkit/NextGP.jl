@@ -12,7 +12,7 @@ StatsModels.termvars(path::String) = path #path for data and map
 
 #display the term for my custom functions correctly
 function Base.show(io::IO, ::MIME"text/plain",
-                   t::FunctionTerm;
+                   t::FunctionTerm{typeof(SNP)};
                    prefix = "")
     print(io, prefix, "(")
     print(io,first(t.args), ")->", t.exorig)
