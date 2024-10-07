@@ -111,7 +111,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Sy
 
         for i in 1:length(f.rhs)
 		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].f)) == "SNP") #change forig to f everywhere
-			(arg1,arg2,arg3...) = f.rhs[i].args_parsed
+			(arg1,arg2,arg3...) = f.rhs[i].args
 			arg1 = Symbol(repr(arg1))
 			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
 			#drops cols if any value is missing. Later should check map files etc..
@@ -134,7 +134,7 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Sy
 			thisM = 0
 
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].f)) == "PED") #change forig to f everywhere
-                        arg = Symbol(repr((f.rhs[i].args_parsed)[1]))
+                        arg = Symbol(repr((f.rhs[i].args)[1]))
 			IDs,thisZ = ranMat(arg, :ID, userData4ran, pedigree)
 			ids = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
 			Z[arg] = Dict(:data=>thisZ,:method=>"BLUP",:str=>"A",:iVarStr=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
@@ -143,10 +143,10 @@ function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Sy
                 elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].f)) == "|") #change forig to f everywhere
                         my_sch = schema(userData, userHints) #work on userData and userHints
 			
-			f.rhs[i].args_parsed[1] == ConstantTerm{Int64}(1) ? my_ApplySch = apply_schema(f.rhs[i].args_parsed[2], my_sch, MixedModels.MixedModel) : my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel) 	
+			f.rhs[i].args[1] == ConstantTerm{Int64}(1) ? my_ApplySch = apply_schema(f.rhs[i].args_parsed[2], my_sch, MixedModels.MixedModel) : my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel) 	
 			#####ID is from the pheno  file directly, order not  checked!#####################################################
-			arg1 = Symbol(repr((f.rhs[i].args_parsed)[1]))
-                        arg2 = Symbol(repr((f.rhs[i].args_parsed)[2]))
+			arg1 = Symbol(repr((f.rhs[i].args)[1]))
+                        arg2 = Symbol(repr((f.rhs[i].args)[2]))
 			arg = Meta.parse(join([arg1,arg2]," | "))
                        	thisZ = modelcols(my_ApplySch, userData)
 			ids = unique(userData[!,arg2])
