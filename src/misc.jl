@@ -5,6 +5,8 @@ using PedigreeBase
 using StatsBase
 using StatsModels
 
+include("runTime.jl")
+
 import StatsModels.parse!
 parse!(path::String, protected) = path
 StatsModels.termvars(path::String) = path #path for data and map
