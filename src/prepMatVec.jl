@@ -18,9 +18,9 @@ function Base.show(io::IO, ::MIME"text/plain",
     print(io,first(t.args), ")->", t.exorig)
 end
 
-Base.show(io::IO, t::FunctionTerm{typeof(PED)}) = print(io, ":($(t.exorig))")
+Base.show(io::IO, t::typeof(PED)) = print(io, ":($(t.exorig))")
 function Base.show(io::IO, ::MIME"text/plain",
-                   t::FunctionTerm{typeof(PED)};
+                   t::typeof(PED);
                    prefix = "")
     print(io, prefix, "(")
     print(io,last(t.args), ")->", t.exorig)
