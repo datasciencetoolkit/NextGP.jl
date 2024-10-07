@@ -21,10 +21,10 @@ using StatsModels
 using MixedModels
 using Printf
 
+include("misc.jl")
 include("prepMatVec.jl")
 include("runTime.jl")
 include("MCMC.jl")
-include("misc.jl")
 include("outFiles.jl")
 include("GRN.jl")
 
