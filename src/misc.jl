@@ -3,7 +3,7 @@ using DataFrames
 using CSV
 using PedigreeBase
 using StatsBase
-
+using StatsModels
 
 function getTerms(f)
         terms4StatsModels = String.(split(repr(f.rhs), ('+')))

@@ -535,7 +535,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	push!(summarize,["e","Random",E[:str],E[:df],E[:scale]])						
 
 	println("\n ---------------- Summary of analysis ---------------- \n")
-	pretty_table(summarize, tf = tf_markdown, show_row_number = false,nosubheader=true,alignment=:l)
+	pretty_table(summarize, tf = tf_markdown, show_row_number = false,alignment=:l)
 
 
 	#########make MCMC output files.
