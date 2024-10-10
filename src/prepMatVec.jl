@@ -9,12 +9,11 @@ parse!(path::String, protected) = path
 StatsModels.termvars(path::String) = path #path for data and map
 
 #display the term for my custom functions correctly
-include("runTime.jl")
 import StatsModels.show
-StatsModels.show(io::IO, t::FunctionTerm) = print(io, ":($(t.exorig))")
+StatsModels.show(io::IO, t::FunctionTerm{F}) = print(io, ":($(t.exorig))")
 function StatsModels.show(io::IO, ::MIME"text/plain",
                    t::FunctionTerm;
-                   prefix = "")
+                   prefix = "") where F<:typeof(SNP) 
     print(io, prefix, "(")
     print(io,first(t.args), ")->", t.exorig)
 end
