@@ -5,7 +5,7 @@ module prepMatVec
 #using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
 using MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
 
-import StatsModels.parse!
+import StatsModels: parse!,termvars
 parse!(path::String, protected) = path
 StatsModels.termvars(path::String) = path #path for data and map
 
