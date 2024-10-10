@@ -1,10 +1,11 @@
-__precompile__(false) 
+#__precompile__(false) 
 
 module prepMatVec
 
 using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
 
-import StatsModels.parse!
+using Reexport
+@reexport import StatsModels.parse!
 parse!(path::String, protected) = path
 StatsModels.termvars(path::String) = path #path for data and map
 
