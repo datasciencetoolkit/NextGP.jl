@@ -25,14 +25,14 @@ To install the latest official version, please use the following standard Julia 
 
 ```@example
 using Pkg
-pkg> Pkg.add("NextGP")
+Pkg.add("NextGP")
 ```
 ## Unstable
 
-To install the latest unofficial version (0.2.0), please use the following.
+To install the latest unofficial version, please use the following.
 
 ```@example
 using Pkg
-pkg> Pkg.add(url = "https://github.com/datasciencetoolkit/NextGP.jl", rev="dev_0.2.0")
+Pkg.add(url = "https://github.com/datasciencetoolkit/NextGP.jl", rev="dev_1.2.0")
 ```
 

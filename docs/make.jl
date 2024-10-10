@@ -5,6 +5,7 @@ push!(LOAD_PATH,"../src/")
 makedocs(
          modules  = [NextGP],
          doctest  = true,
+	 checkdocs=:none,
          clean    = true,
          sitename = "NextGP.jl",
          authors  = "Emre Karaman",
