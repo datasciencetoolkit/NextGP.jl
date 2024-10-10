@@ -8,15 +8,14 @@ import StatsModels.parse!
 parse!(path::String, protected) = path
 StatsModels.termvars(path::String) = path #path for data and map
 
-include("runTime.jl")
 #display the term for my custom functions correctly
-StatsModels.show(io::IO, t::myTerms) = print(io, ":($(t.exorig))")
-function StatsModels.show(io::IO, ::MIME"text/plain",
-                   t::myTerms;
-                   prefix = "") 
-    print(io, prefix, "(")
-    print(io,first(t.args), ")->", t.exorig)
-end
+#StatsModels.show(io::IO, t::FunctionTerm) = print(io, ":($(t.exorig))")
+#function StatsModels.show(io::IO, ::MIME"text/plain",
+#                   t::FunctionTerm;
+#                   prefix = "") 
+#    print(io, prefix, "(")
+#    print(io,first(t.args), ")->", t.exorig)
+#end
 
 include("misc.jl")
 
