@@ -11,7 +11,7 @@ StatsModels.termvars(path::String) = path #path for data and map
 #display the term for my custom functions correctly
 import StatsModels.show
 include("runTime.jl")
-StatsModels.show(io::IO, t::FunctionTerm) = print(io, ":($(t.exorig))")
+StatsModels.show(io::IO, t::FunctionTerm{F}) where F<:typeof(SNP)  = print(io, ":($(t.exorig))")
 function StatsModels.show(io::IO, ::MIME"text/plain",
                    t::FunctionTerm{F};
                    prefix = "") where F<:typeof(SNP) 
