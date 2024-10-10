@@ -8,6 +8,7 @@ makedocs(
 	 checkdocs=:none,
          clean    = true,
          sitename = "NextGP.jl",
+#repo = GitHub("datasciencetoolkit", "NextGP.jl"),
          authors  = "Emre Karaman",
          pages = [
             "Home" => "home.md",

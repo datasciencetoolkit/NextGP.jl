@@ -1,3 +1,7 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 NextGP = "1a32220a-4ac3-442e-849d-1943511e16f7"
+
+[compat]
+NextGP = "1.2.0"
+Documenter = "1.7"
