@@ -32,6 +32,7 @@ using .MCMC
 export runLMEM
 using .prepMatVec
 export prep
+export show
 using .GRN
 export estGRN_MHGibbs 
 
