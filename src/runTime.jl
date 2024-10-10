@@ -10,7 +10,9 @@ end
 
 PED(s::Char) = RandTerm(s)
 
-struct GenomicTerm
+abstract type myTerms <: FunctionTerm end
+
+struct GenomicTerm <: myTerms
     name::Char
     path::String
     map::String
