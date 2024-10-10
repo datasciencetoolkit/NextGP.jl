@@ -11,8 +11,8 @@ StatsModels.termvars(path::String) = path #path for data and map
 #display the term for my custom functions correctly
 include("runTime.jl")
 import StatsModels.show
-show(io::IO, t::FunctionTerm) = print(io, ":($(t.exorig))")
-function show(io::IO, ::MIME"text/plain",
+StatsModels.show(io::IO, t::FunctionTerm) = print(io, ":($(t.exorig))")
+function StatsModels.show(io::IO, ::MIME"text/plain",
                    t::FunctionTerm;
                    prefix = "")
     print(io, prefix, "(")
