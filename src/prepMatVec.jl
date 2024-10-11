@@ -8,7 +8,7 @@ import StatsModels: parse!,termvars
 StatsModels.parse!(path::String, protected) = path
 StatsModels.termvars(path::String) = path #path for data and map
 
-display the term for my custom functions correctly
+#display the term for my custom functions correctly
 StatsModels.show(io::IO, t::FunctionTerm) = print(io, ":($(t.exorig))")
 function StatsModels.show(io::IO, ::MIME"text/plain",
                    t::FunctionTerm;
