@@ -2,21 +2,20 @@
 
 module prepMatVec
 
-#using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
-using MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
+using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
 
 import StatsModels: parse!,termvars
-parse!(path::String, protected) = path
+StatsModels.parse!(path::String, protected) = path
 StatsModels.termvars(path::String) = path #path for data and map
 
-#display the term for my custom functions correctly
-#StatsModels.show(io::IO, t::FunctionTerm) = print(io, ":($(t.exorig))")
-#function StatsModels.show(io::IO, ::MIME"text/plain",
-#                   t::FunctionTerm;
-#                   prefix = "") 
-#    print(io, prefix, "(")
-#    print(io,first(t.args), ")->", t.exorig)
-#end
+display the term for my custom functions correctly
+StatsModels.show(io::IO, t::FunctionTerm) = print(io, ":($(t.exorig))")
+function StatsModels.show(io::IO, ::MIME"text/plain",
+                   t::FunctionTerm;
+                   prefix = "") 
+    print(io, prefix, "(")
+    print(io,first(t.args), ")->", t.exorig)
+end
 
 include("misc.jl")
 
