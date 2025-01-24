@@ -6,8 +6,6 @@ include("runTime.jl")
 include("misc.jl")
 include("designMat.jl")
 
-
-
 export prep
 
 
@@ -28,7 +26,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 	
 #	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
 	
-	terms4StatsModels = getTerms(f)
+	terms4Model = getTerms(f)
 
 	userData = deepcopy(inputData)
 
