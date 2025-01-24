@@ -3,15 +3,6 @@ using DataFrames
 using CSV
 using PedigreeBase
 using StatsBase
-using StatsModels
-
-function getTerms(f)
-        terms4StatsModels = String.(split(repr(f.rhs), ('+')))
-        terms4StatsModels = replace.(terms4StatsModels, ":" => "")
-        terms4StatsModels = [filter(x -> !isspace(x), trm) for trm in terms4StatsModels]
-        terms4StatsModels = Symbol.(terms4StatsModels)
-        return(terms4StatsModels)
-end
 
 
 """
