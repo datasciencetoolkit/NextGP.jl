@@ -1,22 +1,8 @@
-__precompile__(false) 
-
 module prepMatVec
 
-using StatsModels, MixedModels, CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
+using CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
 
-import StatsModels.parse!
-parse!(path::String, protected) = path
-StatsModels.termvars(path::String) = path #path for data and map
-
-#display the term for my custom functions correctly
 include("runTime.jl")
-Base.show(io::IO, t::FunctionTerm) = print(io, ":($(t.exorig))")
-function Base.show(io::IO, ::MIME"text/plain",
-                   t::FunctionTerm;
-                   prefix = "")
-    print(io, prefix, "(")
-    print(io,first(t.args), ")->", t.exorig)
-end
 
 include("misc.jl")
 
@@ -36,7 +22,7 @@ export prep
     * all `String` rhs variables (also those made `Categorical`) are dummy coded, except those defined by the user in `userHints`, 
     * all `Float` rhs variables are centered.
 """
-function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Symbol,Any}(),path2ped=[],priorVCV=[])
+function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 	
 #	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
 	
