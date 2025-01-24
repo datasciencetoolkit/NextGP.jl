@@ -23,7 +23,7 @@ using Printf
 
 include("misc.jl")
 include("prepMatVec.jl")
-include("runTime.jl")
+include("types.jl")
 include("MCMC.jl")
 include("outFiles.jl")
 include("GRN.jl")
