@@ -2,14 +2,42 @@ PiTypes = Union{Vector{Float64},Float64} #pi can be different (vector) or same p
 VarCovarTypes = Union{Vector{Matrix{Float64}},Vector{Float64},Matrix{Float64},Float64} #prior for (co)var can be different (vector) or same per SNP
 
 
-struct RandTerm
-    var::Char
+struct LMM
+	model::Expr
+	sym::Any
+	lhs::Union{Symbol,Expr}
+	rhs::Expr
 end
 
-PED(s::Char) = RandTerm(s)
+
+#make n a type with where{T} in ...
+struct ConstantTerm
+    n::Int64	
+end
+
+struct DataTerm
+    col::Symbol 	
+end
+
+struct InteractionTerm
+    cols::Vector{Symbol}	
+end
+
+struct FunctionTerm
+    fun::Symbol
+    cols::Union{Symbol,Expr} 	
+end
+
+struct PedTerm
+    var::Union{Symbol,Expr}
+    path::Union{Matrix{Float64},String}
+end
+
+#runtime equivalent but does nothing
+PED(var::Union{Symbol,Expr},path::Union{Matrix{Float64},String}) = PedTerm(var,path)
 
 struct GenomicTerm
-    name::Char
+    name::Symbol
     path::String
     map::String
 end
@@ -23,7 +51,7 @@ end
 * Map file is optional. If not provided, a Bayesian Regression model with common variance for all SNPs will be applied. If provided, shoul match the order in the genotype file.
 * One most avoid overlapping marker sets by using different `name`s.
 """
-SNP(name::Char,path::Union{Matrix{Float64},String};map::String="") = GenomicTerm(name,path,map)
+SNP(name::Symbol,path::Union{Matrix{Float64},String};map::String="") = GenomicTerm(name,path,map)
 
 struct BayesPRType
     r::Int
