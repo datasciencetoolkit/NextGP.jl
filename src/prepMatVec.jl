@@ -2,7 +2,7 @@ module prepMatVec
 
 using CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
 
-include("runTime.jl")
+include("types.jl")
 include("misc.jl")
 include("designMat.jl")
 
