@@ -95,58 +95,47 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 
 		
 
-        for i in 1:length(f.rhs)
-		if (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].f)) == "SNP") #change forig to f everywhere
-			(arg1,arg2,arg3...) = f.rhs[i].args
-			arg1 = Symbol(repr(arg1))
-			thisM = CSV.read(arg2,CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
+        for (k,v) in terms4Model
+		if isa(v,GenomicTerm)			
+			thisM = CSV.read(v.path,CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
 			#drops cols if any value is missing. Later should check map files etc..
 			thisM = thisM[:,.!(any.(ismissing, eachcol(thisM)))]
 			#
 			thisM = Matrix{Float64}(thisM)
+			isempty(v.map) ? nowMap=[] : nowMap=v.map
 			
 			#str field can only be in GBLUP for marker related analysis
-			if haskey(priorVCV,arg1) && in(:str,fieldnames(typeof(priorVCV[arg1])))
-				iGRel = Symmetric(inv(makeG(thisM;method=priorVCV[arg1].type)))
-				push!(summarize,[arg1,"GBLUP",typeof(iGRel),size(iGRel,2)])
-				Z[arg1] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>arg3[1],:method=>"GBLUP",:str=>"G",:iVarStr=>iGRel,:dims=>size(iGRel),:levels=>["Ind$i" for i in 1:size(thisM,2)]) 	
+			if haskey(priorVCV,k) && in(:str,fieldnames(typeof(priorVCV[k])))
+				iGRel = Symmetric(inv(makeG(thisM;method=priorVCV[k].type)))
+				push!(summarize,[k,"GBLUP",typeof(iGRel),size(iGRel,2)])
+				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>iGRel,:dims=>size(iGRel),:levels=>["Ind$i" for i in 1:size(thisM,2)]) 	
 		
 			else
 				thisM .-= mean(thisM,dims=1)
-				isempty(arg3) ? nowMap=[] : nowMap=arg3[1]
 				M[arg1] = Dict(:data=>thisM,:map=>nowMap,:method=>"SNP",:str=>"I",:iVarStr=>[],:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 			
-				push!(summarize,[arg1,"Marker Effect",typeof(thisM),size(thisM,2)])
+				push!(summarize,[k,"Marker Effect",typeof(thisM),size(thisM,2)])
 			end
 			thisM = 0
-
-                elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].f)) == "PED") #change forig to f everywhere
-                        arg = Symbol(repr((f.rhs[i].args)[1]))
-			IDs,thisZ = ranMat(arg, :ID, userData4ran, pedigree)
+		elseif isa(v,PedigreeTerm)
+			IDs,thisZ = ranMat(k, :ID, userData4ran, pedigree)
 			ids = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
-			Z[arg] = Dict(:data=>thisZ,:method=>"BLUP",:str=>"A",:iVarStr=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
-			push!(summarize,[arg,"PED",typeof(thisZ),size(thisZ,2)])
-			thisZ = 0
-                elseif (f.rhs[i] isa FunctionTerm) && (String(nameof(f.rhs[i].f)) == "|") #change forig to f everywhere
-                        my_sch = schema(userData, userHints) #work on userData and userHints
-			
-			f.rhs[i].args[1] == ConstantTerm{Int64}(1) ? my_ApplySch = apply_schema(f.rhs[i].args[2], my_sch, MixedModels.MixedModel) : my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel) 	
-			#####ID is from the pheno  file directly, order not  checked!#####################################################
-			arg1 = Symbol(repr((f.rhs[i].args)[1]))
-                        arg2 = Symbol(repr((f.rhs[i].args)[2]))
-			arg = Meta.parse(join([arg1,arg2]," | "))
-                       	thisZ = modelcols(my_ApplySch, userData)
-			ids = unique(userData[!,arg2])
-			strI = Matrix(1.0*I,size(thisZ,2),size(thisZ,2))
-			Z[arg] = Dict(:data=>thisZ,:method=>"|",:str=>"I",:iVarStr=>strI,:dims=>size(strI),:levels=>ids) 	
-			push!(summarize,[arg,"|",typeof(thisZ),size(thisZ,2)])
-			thisZ = 0
+			Z[k] = Dict(:data=>thisZ,:method=>"BLUP",:str=>"A",:iVarStr=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
+			push!(summarize,[k,"PED",typeof(thisZ),size(thisZ,2)])
+			thisZ = 0                
                 else
+			isa(modelTerms[k],ConstantTerm) ? X[k] = ones(size(df,1)) : nothing
+			isa(modelTerms[k],DataTerm) ? X[k] = makeX(df::DataFrame,k) : nothing
+			####only apply to one column data but should also apply to interactions etc.?
+			isa(modelTerms[k],FunctionTerm) ? X[k] = map(getproperty(Main, modelTerms[k].fun),makeX(df::DataFrame,modelTerms[k].cols)) : nothing
+			isa(modelTerms[k],InteractionTerm) ? X[k] = makeX(df::DataFrame,modelTerms[k].cols) : nothing
+			
 			my_sch = schema(userData[!,intersect(Symbol.(names(userData)),terms4StatsModels)],userHints) #can be done only once above
 #			my_sch = schema(userData[!,[Symbol(f.rhs[i])]]) #will crash for general mean
 #			my_sch = schema(userData, userHints)
 			my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
 			levelX = coefnames(my_ApplySch)
 			thisX = modelcols(my_ApplySch, userData)
+			
 			isa(thisX,Vector) ? nCol = 1 : nCol = size(thisX,2)
 			X[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:nCol=>nCol,:levels=>levelX) 
 			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(thisX),nCol])
