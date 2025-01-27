@@ -133,11 +133,8 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 			elseif isa(modelTerms[k],InteractionTerm)
 				X[k] = makeX(userData,modelTerms[k].cols)
 			else nothing
-			end
-			
-			X[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:nCol=>nCol,:levels=>levelX) 
-			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(thisX),nCol])
-			thisX = 0
+			end			
+			push!(summarize,[k,typeof(k),typeof(X[k][:data]),X[k][:nCol]])
                 end
         end
 
