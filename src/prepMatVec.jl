@@ -122,21 +122,19 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 			Z[k] = Dict(:data=>thisZ,:method=>"BLUP",:str=>"A",:iVarStr=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
 			push!(summarize,[k,"PED",typeof(thisZ),size(thisZ,2)])
 			thisZ = 0                
-                else
-			isa(modelTerms[k],ConstantTerm) ? X[k] = ones(size(df,1)) : nothing
-			isa(modelTerms[k],DataTerm) ? X[k] = makeX(df::DataFrame,k) : nothing
-			####only apply to one column data but should also apply to interactions etc.?
-			isa(modelTerms[k],FunctionTerm) ? X[k] = map(getproperty(Main, modelTerms[k].fun),makeX(df::DataFrame,modelTerms[k].cols)) : nothing
-			isa(modelTerms[k],InteractionTerm) ? X[k] = makeX(df::DataFrame,modelTerms[k].cols) : nothing
+                else    
+			if isa(modelTerms[k],ConstantTerm)
+				X[k] = Dict(:data=>ones(size(df,1)),:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>1)
+			elseif isa(modelTerms[k],DataTerm)
+				X[k] = makeX(userData,k)
+			elseif isa(modelTerms[k],FunctionTerm)
+				X[k] = makeX(userData,modelTerms[k].cols)
+				X[k][:data] = map(getproperty(Main, modelTerms[k].fun),X[k][:data])
+			elseif isa(modelTerms[k],InteractionTerm)
+				X[k] = makeX(userData,modelTerms[k].cols)
+			else nothing
+			end
 			
-			my_sch = schema(userData[!,intersect(Symbol.(names(userData)),terms4StatsModels)],userHints) #can be done only once above
-#			my_sch = schema(userData[!,[Symbol(f.rhs[i])]]) #will crash for general mean
-#			my_sch = schema(userData, userHints)
-			my_ApplySch = apply_schema(f.rhs[i], my_sch, MixedModels.MixedModel)
-			levelX = coefnames(my_ApplySch)
-			thisX = modelcols(my_ApplySch, userData)
-			
-			isa(thisX,Vector) ? nCol = 1 : nCol = size(thisX,2)
 			X[terms4StatsModels[i]] = Dict(:data=>thisX,:map=>[],:method=>"FixedEffects",:nCol=>nCol,:levels=>levelX) 
 			push!(summarize,[f.rhs[i],typeof(f.rhs[i]),typeof(thisX),nCol])
 			thisX = 0
