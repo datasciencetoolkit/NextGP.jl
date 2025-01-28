@@ -11,7 +11,7 @@ using PrettyTables
 
 include("outFiles.jl")
 include("misc.jl")
-include("runTime.jl")
+include("types.jl")
 
 include("functions.jl")
 using .functions
