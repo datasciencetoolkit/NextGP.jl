@@ -21,6 +21,7 @@ using DataFrames
 using CategoricalArrays
 using Printf
 
+include("model.jl")
 include("misc.jl")
 include("prepMatVec.jl")
 include("types.jl")
