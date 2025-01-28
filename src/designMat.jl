@@ -3,7 +3,7 @@ using DataFrames, SparseArrays
 
 
 #should work for only categorical variables
-function makeXCat(tempData::Vector)
+function makeXCat(tempData::Vector,col::Symbol)
 	#println(tempData)
 	colLevels = unique(tempData)
 	#println(colLevels)
@@ -15,7 +15,7 @@ function makeXCat(tempData::Vector)
 	jj = [dictCol[i] for i in tempData]  # get column numbers using list comprehension
 	codedCol = Matrix(sparse(ii,jj,1.0))
 	dictCol = sort(dictCol,byvalue=true)
-	return Dict(:data=>codedCol,:map=>[],:method=>"FixedEffects",:nCol=>length(colLevels),:levels=>keys(dictCol))
+	return Dict(:data=>codedCol,:map=>[],:method=>"FixedEffects",:nCol=>length(colLevels),:levels=>"$col"*":".*keys(dictCol))
 end
 
 
@@ -26,7 +26,7 @@ function makeX(df::DataFrame,col::Symbol)
 	tempData = df[!,col]
 	if isa(tempData,Vector{String})
 		#println("tempData is a String")
-		Xnow = makeXCat(tempData)
+		Xnow = makeXCat(tempData,col)
 	elseif isa(tempData,Vector{Float64})
 		#println("tempData is a Float")
 		Xnow = Dict(:data=>tempData,:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>String(col))
