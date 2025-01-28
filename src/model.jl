@@ -19,7 +19,7 @@ isacall(exp::Expr) = (exp.head == :call)
 isacall(exp::Int) = false
 isacall(exp::Symbol) = false
 
-function getTerms(preserved,f)
+function getTerms(f;pre=preserved)
 	modelTerms = Dict()
 	for term in filter(!in(preserved), f.rhs.args)
 		!isacall(term) && (term==1) ? modelTerms[term] = ConstantTerm(term) : nothing
