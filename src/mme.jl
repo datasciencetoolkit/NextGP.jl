@@ -423,18 +423,18 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					M[pSet][:nVarCov]     = length(theseRegions)
 					#logVar can be created in a smarter way, maybe together with var??...
 					M[pSet][:logVar]     = [log(priorVCV[pSet].v) for i in 1:M[pSet][:nVarCov]]
-					designMat = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
-					M[pSet][:covariates] = designMat
-					M[pSet][:covariatesT] = transpose(designMat)
-					M[pSet][:c] = rand(size(designMat,2))
-					M[pSet][:SNPVARRESID] = rand(size(designMat,1))
+				#	designMat = modelmatrix(priorVCV[pSet].f, priorVCV[pSet].covariates)
+				#	M[pSet][:covariates] = designMat
+				#	M[pSet][:covariatesT] = transpose(designMat)
+				#	M[pSet][:c] = rand(size(designMat,2))
+				#	M[pSet][:SNPVARRESID] = rand(size(designMat,1))
 					#iCpC inverse taken later
-					M[pSet][:iCpC] = M[pSet][:covariatesT]*M[pSet][:covariates]
-					if isa(M[pSet][:iCpC],Matrix{Float64}) 
-						M[pSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[pSet][:iCpC])./10000)),size(M[pSet][:iCpC]))
+				#	M[pSet][:iCpC] = M[pSet][:covariatesT]*M[pSet][:covariates]
+				#	if isa(M[pSet][:iCpC],Matrix{Float64}) 
+				#		M[pSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[pSet][:iCpC])./10000)),size(M[pSet][:iCpC]))
 						#Matrix(I*0.001,size(M[pSet][:iCpC]))
 					end
- 		              		M[pSet][:iCpC]  = inv(M[pSet][:iCpC])
+ 		              	#	M[pSet][:iCpC]  = inv(M[pSet][:iCpC])
 					M[pSet][:varZeta]  = [priorVCV[pSet].varZeta]
 					M[pSet][:estVarZeta] = priorVCV[pSet].estimateVarZeta
 					designMat = 0
