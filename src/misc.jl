@@ -4,6 +4,19 @@ using CSV
 using PedigreeBase
 using StatsBase
 
+macro model(expr::Expr)
+	m = LMM(expr,expr.args...)
+	return m
+end
+
+import Base.show #also export!!!
+function show(io::IO, m::LMM)
+		println("MODEL: \n $(m.model) \nLHS: \n $(m.lhs) \nRHS:")
+		for term in filter(!in(preserved), m.rhs.args)
+		    	println(" $term")
+		end
+end
+
 preserved = [:*,:+, :~, :-, :|, :/]
 isacall(exp::Expr) = (exp.head == :call)
 #isacall(exp::Expr) = ((exp == :Symbol) && !in(exp,preserved))
