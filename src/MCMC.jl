@@ -4,8 +4,6 @@ export runLMEM
 
 using DataFrames
 using CategoricalArrays
-using StatsModels
-using MixedModels
 using Distributions,LinearAlgebra #samplers
 using StatsBase
 using Printf
