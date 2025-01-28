@@ -10,10 +10,8 @@ droplevel!(colLevels::Union{Vector{String},Vector{Int}}, j) = colLevels[deleteat
 function makeXCat(tempData::Vector,col::Symbol)
 	#println(tempData)
 	colLevels = unique(tempData)
-	println(colLevels)
 	###DUMMY CODING
 	droplevel!(colLevels,1)
-	println(colLevels)
   	dictCol = Dict()
 	for (i,c) in enumerate(colLevels)
   		dictCol[c] = i
