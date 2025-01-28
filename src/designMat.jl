@@ -1,5 +1,5 @@
 
-using DataFrames
+using DataFrames, SparseArrays
 
 
 #should work for only categorical variables
