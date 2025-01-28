@@ -27,7 +27,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 	
 #	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
 	
-	terms4Model = getTerms(f)
+	modelTerms = getTerms(f)
 
 	userData = deepcopy(inputData)
 
@@ -86,7 +86,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 
 		
 
-        for (k,v) in terms4Model
+        for (k,v) in modelTerms
 		if isa(v,GenomicTerm)			
 			thisM = CSV.read(v.path,CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
 			#drops cols if any value is missing. Later should check map files etc..
