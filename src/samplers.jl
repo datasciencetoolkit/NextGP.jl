@@ -54,52 +54,52 @@ function runSampler!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength
 				               		
         	#print
 		if iter in these2Keep
-			IO.outMCMC(outPut,"b",b') ### currently no path is provided!!!!
-			IO.outMCMC(outPut,"varE",varE)
+			inOut.outMCMC(outPut,"b",b') ### currently no path is provided!!!!
+			inOut.outMCMC(outPut,"varE",varE)
 			
 			for zSet in keys(Z)
 				if isa(zSet,Union{Expr,Symbol})
-					IO.outMCMC(outPut,"u$zSet",u[Z[zSet].pos])
+					inOut.outMCMC(outPut,"u$zSet",u[Z[zSet].pos])
 				elseif isa(zSet,Tuple)
 					pCounter = 1
 					for p in zSet
 						#zSet2print = zSet[p]
-						IO.outMCMC(outPut,"u$p",u[Z[zSet].pos][[pCounter],:])
+						inOut.outMCMC(outPut,"u$p",u[Z[zSet].pos][[pCounter],:])
 						pCounter += 1
 					end
 				end
                         end
 
 			for zSet in keys(Z)
-				IO.outMCMC(outPut,"varU$zSet",hcat(reduce(hcat,varU[zSet])...))
+				inOut.outMCMC(outPut,"varU$zSet",hcat(reduce(hcat,varU[zSet])...))
 			end
 			
 
 			for mSet in keys(M)
 				if isa(mSet,Symbol)
-					IO.outMCMC(outPut,"beta$mSet",beta[M[mSet].pos])
-					IO.outMCMC(outPut,"delta$mSet",delta[M[mSet].pos])
+					inOut.outMCMC(outPut,"beta$mSet",beta[M[mSet].pos])
+					inOut.outMCMC(outPut,"delta$mSet",delta[M[mSet].pos])
 					if in(M[mSet].method,["BayesB","BayesC","BayesR"])
-						IO.outMCMC(outPut,"pi$mSet",[M[mSet].piHat])	
+						inOut.outMCMC(outPut,"pi$mSet",[M[mSet].piHat])	
 					end
 					if in(M[mSet].method,["BayesRCπ","BayesRCplus"])
-						IO.outMCMC(outPut,"pi$mSet",[vcat(M[mSet].piHat...)])
-						IO.outMCMC(outPut,"annot$mSet",[M[mSet].annotCat])	
+						inOut.outMCMC(outPut,"pi$mSet",[vcat(M[mSet].piHat...)])
+						inOut.outMCMC(outPut,"annot$mSet",[M[mSet].annotCat])	
 					end
 					if in(M[mSet].method,["BayesLV"])
-						IO.outMCMC(outPut,"c$mSet",[vcat(M[mSet].c...)])
-						IO.outMCMC(outPut,"varZeta$mSet",M[mSet].varZeta)
+						inOut.outMCMC(outPut,"c$mSet",[vcat(M[mSet].c...)])
+						inOut.outMCMC(outPut,"varZeta$mSet",M[mSet].varZeta)
 					end
 				elseif isa(mSet,Tuple)
 					for p in M[mSet].pos
 						mSet2print = mSet[p]
-						IO.outMCMC(outPut,"beta$mSet2print",beta[p])	
+						inOut.outMCMC(outPut,"beta$mSet2print",beta[p])	
 					end
 				end
                         end
 
 			for pSet in keys(M)
-				IO.outMCMC(outPut,"var$(pSet)",hcat(reduce(hcat,varBeta[pSet])...))
+				inOut.outMCMC(outPut,"var$(pSet)",hcat(reduce(hcat,varBeta[pSet])...))
 			end
 		end
 	end
