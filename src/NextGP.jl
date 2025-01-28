@@ -14,6 +14,7 @@ export makeA
 export makePed
 export makeG
 export summaryMCMC
+export show #import is in misc
 
 using DataFrames
 using CategoricalArrays
