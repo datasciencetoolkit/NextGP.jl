@@ -542,57 +542,57 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	
 	isempty(blocks) ? levelsX = hcat(vcat([value[:levels] for (key, value) in X]...)...) : levelsX = hcat(vcat([vcat(value[:levels]) for (key, value) in X]...)...)
 
-	IO.outMCMC(outPut,"b",levelsX)
+	inOut.outMCMC(outPut,"b",levelsX)
 	
 	#check for correlated RE
         for zSet in keys(Z)
 		if isa(zSet, Symbol)
 			nameRE_VCV = String(zSet)
-			IO.outMCMC(outPut,"u$zSet",[Z[zSet][:levels]])
-			IO.outMCMC(outPut,"varU$zSet",[nameRE_VCV]) #[] to have it as one row
+			inOut.outMCMC(outPut,"u$zSet",[Z[zSet][:levels]])
+			inOut.outMCMC(outPut,"varU$zSet",[nameRE_VCV]) #[] to have it as one row
 		elseif isa(zSet, Expr)
 			nameRE_VCV = join(zSet.args)[2:end]
-			IO.outMCMC(outPut,"u$zSet",[Z[zSet][:levels]])
-			IO.outMCMC(outPut,"varU$zSet",[nameRE_VCV]) #[] to have it as one row
+			inOut.outMCMC(outPut,"u$zSet",[Z[zSet][:levels]])
+			inOut.outMCMC(outPut,"varU$zSet",[nameRE_VCV]) #[] to have it as one row
 		elseif isa(zSet, Tuple)
 			nameRE_VCV =  join(String.(vcat(zSet...)),"_").*hcat(["_$i" for i in 1:(length(zSet)^2)]...)
 			for z in zSet
-   				IO.outMCMC(outPut,"u$z",[Z[zSet][:levels]])
+   				inOut.outMCMC(outPut,"u$z",[Z[zSet][:levels]])
 			end
-			IO.outMCMC(outPut,"varU$zSet",[nameRE_VCV]) #[] to have it as one row
+			inOut.outMCMC(outPut,"varU$zSet",[nameRE_VCV]) #[] to have it as one row
 		end
 	end	
 		
 	#arbitrary marker names
 	for mSet in keys(M)
 		if isa(mSet,Symbol)
-			IO.outMCMC(outPut,"beta$mSet",hcat(M[mSet][:levels]...))
-			IO.outMCMC(outPut,"delta$mSet",hcat(M[mSet][:levels]...))
+			inOut.outMCMC(outPut,"beta$mSet",hcat(M[mSet][:levels]...))
+			inOut.outMCMC(outPut,"delta$mSet",hcat(M[mSet][:levels]...))
 			if in(M[mSet][:method],["BayesB","BayesC","BayesR"])
-				IO.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:length(M[mSet][:vClass])]]) #[] to have it as one row
+				inOut.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:length(M[mSet][:vClass])]]) #[] to have it as one row
 			elseif in(M[mSet][:method],["BayesRCπ","BayesRCplus"])
 				npis = length(M[mSet][:vClass])*M[mSet][:nVarCov]
-				IO.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:npis]]) #[] to have it as one row
-				IO.outMCMC(outPut,"annot$mSet",hcat(M[mSet][:levels]...))
+				inOut.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:npis]]) #[] to have it as one row
+				inOut.outMCMC(outPut,"annot$mSet",hcat(M[mSet][:levels]...))
 			elseif in(M[mSet][:method],["BayesLV"])
-				IO.outMCMC(outPut,"c$mSet",[["c$v" for v in 1:(length(M[mSet][:c]))]]) #[] to have it as one row
-				IO.outMCMC(outPut,"varZeta$mSet",["varZeta"])
+				inOut.outMCMC(outPut,"c$mSet",[["c$v" for v in 1:(length(M[mSet][:c]))]]) #[] to have it as one row
+				inOut.outMCMC(outPut,"varZeta$mSet",["varZeta"])
 			end
 		elseif isa(mSet,Tuple)
 			for m in mSet
-   				IO.outMCMC(outPut,"beta$m",hcat(M[mSet][:levels]...))
-				IO.outMCMC(outPut,"delta$m",hcat(M[mSet][:levels]...))
+   				inOut.outMCMC(outPut,"beta$m",hcat(M[mSet][:levels]...))
+				inOut.outMCMC(outPut,"delta$m",hcat(M[mSet][:levels]...))
 			end
 		end
         end
 	
 	for mSet in keys(varBeta)
 		isa(mSet, Symbol) ? nameM_VCV = ["reg_$r" for r in 1:M[mSet][:nVarCov]] : nameM_VCV = vcat([["reg_$(i)_$j" for j in 1:size(M[mSet][:scale],2)^2] for i in 1:M[mSet][:nRegions]]...)
-		IO.outMCMC(outPut,"var$mSet",[nameM_VCV]) #[] to have it as one row
+		inOut.outMCMC(outPut,"var$mSet",[nameM_VCV]) #[] to have it as one row
         end
 	
 
-	IO.outMCMC(outPut,"varE",["e"])
+	inOut.outMCMC(outPut,"varE",["e"])
 	##########
 	
 	X  = myUnzip(X)
