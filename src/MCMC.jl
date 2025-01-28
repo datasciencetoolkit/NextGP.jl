@@ -13,7 +13,7 @@ using Printf
 include("prepMatVec.jl")
 include("mme.jl")
 include("samplers.jl")
-#include("misc.jl")
+include("misc.jl")
 include("outFiles.jl")
 
 
