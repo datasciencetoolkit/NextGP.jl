@@ -11,7 +11,7 @@ export prep
 
 
 """
-	function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;userHints=Dict{Symbol,Any}(),path2ped=[],priorVCV=[])
+	function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;path2ped=[],priorVCV=[])
 
 * `NextGP` relies on `StatsModels.jl` package for model expression (`f`), and fixed effect design matrix generation.
 * Details for the model expression (`f`), and fixed effects coding specifications (e.g., effect or dummy coding) can be found at [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/).
@@ -20,7 +20,7 @@ export prep
 * Finally returns lhs vector and rhs matrices.
 * By default:
     * all `Int` rhs variables are made `Categorical`,
-    * all `String` rhs variables (also those made `Categorical`) are dummy coded, except those defined by the user in `userHints`, 
+    * all `String` rhs variables (also those made `Categorical`) are dummy coded,
     * all `Float` rhs variables are centered.
 """
 function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
@@ -36,16 +36,6 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
                 	userData[!,n] = CategoricalArray(userData[!,n])
         	end
         end
-
-
-	for n in Symbol.(names(userData))
-		if typeof(userData[!,n]).==Array{String, 1}
-    			if !haskey(userHints,n)
-				userHints[n] = StatsModels.DummyCoding()
-			end
-		end
-	end
-
 
 	#center cont. covariates	
 	for n in Symbol.(names(userData))
