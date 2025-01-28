@@ -2,16 +2,24 @@
 using DataFrames, SparseArrays
 
 #remove any column from data as reference column in dummy coding
-dropcol!(matrix::AbstractMatrix, j) = matrix[:, deleteat!(collect(axes(matrix, 2)), j)]
+dropCol(matrix::AbstractMatrix,j) = matrix[:, deleteat!(collect(axes(matrix, 2)), j)]
+#ref level is always first now! Later reflevel shouild be changed to k!=reflevel with k being real level not coded value. Also drop col should be adapted sa such
+
+function dropLevel(levelCodesDict,matrix;refKey=[])
+	refKey = isempty(refKey) ? first(keys(levelCodesDict)) : refKey
+	refValue = levelCodesDict[refKey]
+	levelCodesDict = sort(Dict(k => v for (k, v) in levelCodesDict if k != refKey))
+	matrix = dropCol(matrix,refValue)
+	return levelCodesDict,matrix 
+end
+
 #maybe not needed Union thing below?
-droplevel!(colLevels::Union{Vector{String},Vector{Int}}, j) = deleteat!(colLevels, j)
 
 #should work for only categorical variables
 function makeXCat(tempData::Vector,col::Symbol)
 	#println(tempData)
-	colLevels = unique(tempData)
-	###DUMMY CODING
-	droplevel!(colLevels,1)
+	#makes values and keys ordered as wanted
+	colLevels = sort(unique(tempData))
   	dictCol = Dict()
 	for (i,c) in enumerate(colLevels)
   		dictCol[c] = i
@@ -20,7 +28,9 @@ function makeXCat(tempData::Vector,col::Symbol)
 	jj = [dictCol[i] for i in tempData]  # get column numbers using list comprehension
 	codedCol = Matrix(sparse(ii,jj,1.0))
 	dictCol = sort(dictCol,byvalue=true)
-	return Dict(:data=>codedCol,:map=>[],:method=>"FixedEffects",:nCol=>length(colLevels),:levels=>"$col"*":".*keys(dictCol))
+	###DUMMY CODING
+	dictCol,codedCol = dropLevel(dictCol,codedCol;refKey=[])
+	return Dict(:data=>codedCol,:map=>[],:method=>"FixedEffects",:nCol=>size(codedCol,2),:levels=>"$col"*":".*keys(dictCol))
 end
 
 
@@ -46,7 +56,7 @@ end
 #should work for only categorical variables
 function makeXInt(tempData::Matrix)
 	#println(tempData)
-	colLevels = unique(tempData,dims=1)
+	colLevels = sort(unique(tempData,dims=1))
 	colLevels = Array.(eachrow(colLevels))
 	#println(colLevels)
   	dictCol = Dict()
@@ -58,6 +68,7 @@ function makeXInt(tempData::Matrix)
 	jj = [dictCol[i] for i in eachrow(tempData)]  # get column numbers using list comprehension
 	codedCol = Matrix(sparse(ii,jj,1.0))
 	dictCol = sort(dictCol,byvalue=true)
+	dictCol,codedCol = dropLevel(dictCol,codedCol;refKey=[])
 	return Dict(:data=>codedCol,:map=>[],:method=>"FixedEffects",:nCol=>length(colLevels),:levels=>keys(dictCol))
 end
 
