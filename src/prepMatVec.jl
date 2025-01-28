@@ -48,7 +48,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 
 
 	#only for single trait now
-        yVec = makeX(userData,f.lhs)
+        yVec = makeX(userData,f.lhs)[:data]
 	
 	X = Dict{Any,Any}()
 	Z = Dict{Any,Any}()
