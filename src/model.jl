@@ -22,7 +22,7 @@ isacall(exp::Symbol) = false
 function getTerms(f;pre=preserved)
 	modelTerms = Dict()
 	for term in filter(!in(preserved), f.rhs.args)
-		!isacall(term) && (term==1) ? modelTerms[term] = ConstantTerm(term) : nothing
+		!isacall(term) && (term==1) ? modelTerms[:(Intercept))] = ConstantTerm(term) : nothing
 		!isacall(term) && isa(term,Symbol) ? modelTerms[term] = DataTerm(term) : nothing
 		isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) == *) ? modelTerms[term] = InteractionTerm(term.args[2:end]) : nothing
 		isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) != *) ? modelTerms[term] = FunctionTerm(term.args[1],term.args[2]) : nothing
