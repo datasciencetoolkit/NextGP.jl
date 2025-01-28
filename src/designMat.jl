@@ -3,7 +3,8 @@ using DataFrames, SparseArrays
 
 #remove any column from data as reference column in dummy coding
 dropcol!(matrix::AbstractMatrix, j) = matrix[:, deleteat!(collect(axes(matrix, 2)), j)]
-droplevel!(colLevels::UnitRange, j) = colLevels!(collect(1:length(colLevels)), j)
+#maybe not needed Union thing below?
+droplevel!(colLevels::Vector{Union{String,Int}}, j) = colLevels!(collect(1:length(colLevels)), j)
 
 #should work for only categorical variables
 function makeXCat(tempData::Vector,col::Symbol)
