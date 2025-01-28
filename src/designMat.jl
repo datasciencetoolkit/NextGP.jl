@@ -13,8 +13,9 @@ function makeXCat(tempData::Vector)
 	end
 	ii = 1:size(tempData,1)            # get row numbers
 	jj = [dictCol[i] for i in tempData]  # get column numbers using list comprehension
-	codedCol = Matrix(sparse(ii,jj,1.0))	
-	return dictCol, codedCol
+	codedCol = Matrix(sparse(ii,jj,1.0))
+	dictCol = sort(dictCol,byvalue=true)
+	return Dict(:data=>codedCol,:map=>[],:method=>"FixedEffects",:nCol=>length(colLevels),:levels=>keys(dictCol))
 end
 
 
@@ -28,7 +29,7 @@ function makeX(df::DataFrame,col::Symbol)
 		Xnow = makeXCat(tempData)
 	elseif isa(tempData,Vector{Float64})
 		#println("tempData is a Float")
-		Xnow = tempData
+		Xnow = Dict(:data=>tempData,:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>String(col))
 	elseif isa(tempData,Vector{Int64})
 		#println("tempData is a Int")
 		Xnow = makeXCat(tempData)
@@ -50,8 +51,9 @@ function makeXInt(tempData::Matrix)
 	#println(dictCol)
 	ii = 1:size(tempData,1)            # get row numbers
 	jj = [dictCol[i] for i in eachrow(tempData)]  # get column numbers using list comprehension
-	codedCol = Matrix(sparse(ii,jj,1.0))	
-	return dictCol, codedCol
+	codedCol = Matrix(sparse(ii,jj,1.0))
+	dictCol = sort(dictCol,byvalue=true)
+	return Dict(:data=>codedCol,:map=>[],:method=>"FixedEffects",:nCol=>length(colLevels),:levels=>keys(dictCol))
 end
 
 
@@ -65,7 +67,7 @@ function makeX(df::DataFrame,col::Vector{Symbol})
 		Xnow = makeXInt(tempData)
 	elseif isa(tempData,Matrix{Float64})
 		#println("tempData is a MAT Float")
-		Xnow = prod.(eachrow(tempData))
+		Xnow = Dict(:data=>prod.(eachrow(tempData)),:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>String.(col))
 	elseif isa(tempData,Matrix{Int64})
 		#println("tempData is a MAT Int")
 		Xnow = makeXInt(tempData)
