@@ -15,7 +15,7 @@ export makePed
 export makeG
 export summaryMCMC
 export show #import is in misc
-export @model
+#export @model
 
 using DataFrames
 using CategoricalArrays
