@@ -433,7 +433,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 				#	if isa(M[pSet][:iCpC],Matrix{Float64}) 
 				#		M[pSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[pSet][:iCpC])./10000)),size(M[pSet][:iCpC]))
 						#Matrix(I*0.001,size(M[pSet][:iCpC]))
-					end
+				#	end
  		              	#	M[pSet][:iCpC]  = inv(M[pSet][:iCpC])
 					M[pSet][:varZeta]  = [priorVCV[pSet].varZeta]
 					M[pSet][:estVarZeta] = priorVCV[pSet].estimateVarZeta
