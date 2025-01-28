@@ -24,7 +24,6 @@ using Printf
 include("model.jl")
 include("misc.jl")
 include("prepMatVec.jl")
-include("types.jl")
 include("MCMC.jl")
 include("outFiles.jl")
 include("GRN.jl")
