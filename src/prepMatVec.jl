@@ -116,7 +116,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 			thisZ = 0                
                 else    
 			if isa(v,ConstantTerm)
-				X[Symbol(k)] = Dict(:data=>ones(size(userData,1)),:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>1)
+				X[:(Intercept)] = Dict(:data=>ones(size(userData,1)),:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>1)
 			elseif isa(v,DataTerm)
 				X[k] = makeX(userData,k)
 			elseif isa(v,FunctionTerm)
