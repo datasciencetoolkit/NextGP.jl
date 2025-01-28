@@ -56,8 +56,8 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
         end
 
 
-
-        yVec = StatsModels.modelmatrix(f.lhs, userData)
+	#only for single trait now
+        yVec = makeX(userData,f.lhs)
 	
 	X = Dict{Any,Any}()
 	Z = Dict{Any,Any}()
