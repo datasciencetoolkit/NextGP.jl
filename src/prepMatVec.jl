@@ -134,7 +134,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 	println("\n ---------------- Summary of input ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,alignment=:l)
 
-        return vec(yVec), X, Z, M
+        return yVec, X, Z, M
 end
 
 end
