@@ -87,6 +87,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 		
 
         for (k,v) in modelTerms
+		println("$k is a $(typeof(v))")
 		if isa(v,GenomicTerm)			
 			thisM = CSV.read(v.path,CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
 			#drops cols if any value is missing. Later should check map files etc..
@@ -114,14 +115,14 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 			push!(summarize,[k,"PED",typeof(thisZ),size(thisZ,2)])
 			thisZ = 0                
                 else    
-			if isa(modelTerms[k],ConstantTerm)
+			if isa(v,ConstantTerm)
 				X[k] = Dict(:data=>ones(size(df,1)),:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>1)
-			elseif isa(modelTerms[k],DataTerm)
+			elseif isa(v,DataTerm)
 				X[k] = makeX(userData,k)
-			elseif isa(modelTerms[k],FunctionTerm)
+			elseif isa(v,FunctionTerm)
 				X[k] = makeX(userData,modelTerms[k].cols)
 				X[k][:data] = map(getproperty(Main, modelTerms[k].fun),X[k][:data])
-			elseif isa(modelTerms[k],InteractionTerm)
+			elseif isa(v,InteractionTerm)
 				X[k] = makeX(userData,modelTerms[k].cols)
 			else nothing
 			end			
