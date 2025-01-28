@@ -17,8 +17,6 @@ export summaryMCMC
 
 using DataFrames
 using CategoricalArrays
-using StatsModels
-using MixedModels
 using Printf
 
 include("misc.jl")
