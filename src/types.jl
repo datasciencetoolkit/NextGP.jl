@@ -28,7 +28,7 @@ struct FunctionTerm
     cols::Union{Symbol,Expr} 	
 end
 
-struct PedTerm
+struct PedigreeTerm
     var::Union{Symbol,Expr}
     path::Union{Matrix{Float64},String}
 end
