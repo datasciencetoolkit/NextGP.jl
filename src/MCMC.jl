@@ -29,7 +29,7 @@ runLMEM = function(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}(
 	
 	folderHandler(outFolder)
 
-	yVec,X,Z,M = prepMatVec.prep(formula,userData,userHints=myHints,path2ped=userPedData,priorVCV=VCV)
+	yVec,X,Z,M = prepMatVec.prep(formula,userData,path2ped=userPedData,priorVCV=VCV)
 
 	ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta = mme.getMME!(yVec,X,Z,M,blockThese,VCV,summaryStat,outFolder)
 
