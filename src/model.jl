@@ -26,8 +26,8 @@ function getTerms(f;pre=preserved)
 		!isacall(term) && isa(term,Symbol) ? modelTerms[term] = DataTerm(term) : nothing
 		isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) == *) ? modelTerms[term] = InteractionTerm(term.args[2:end]) : nothing
 		isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) != *) ? modelTerms[term] = FunctionTerm(term.args[1],term.args[2]) : nothing
-		isacall(term) && (term.args[1] == :PED) ? modelTerms[term.args[2]]=PedTerm(term.args[2:end]...) : nothing
-		isacall(term) && (term.args[1] == :SNP) ? modelTerms[term.args[2]]=GenomicTerm(term.args[2:end]...) : nothing	
+		isacall(term) && (term.args[1] == :PED) ? modelTerms[term.args[2]]=PED(term.args[2:end]...) : nothing
+		isacall(term) && (term.args[1] == :SNP) ? modelTerms[term.args[2]]=SNP(term.args[2:end]...) : nothing	
 	end
 	return modelTerms
 end
