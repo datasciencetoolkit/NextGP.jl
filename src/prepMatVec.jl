@@ -104,7 +104,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 		
 			else
 				thisM .-= mean(thisM,dims=1)
-				M[arg1] = Dict(:data=>thisM,:map=>nowMap,:method=>"SNP",:str=>"I",:iVarStr=>[],:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 			
+				M[k] = Dict(:data=>thisM,:map=>nowMap,:method=>"SNP",:str=>"I",:iVarStr=>[],:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 			
 				push!(summarize,[k,"Marker Effect",typeof(thisM),size(thisM,2)])
 			end
 			thisM = 0
