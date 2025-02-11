@@ -137,7 +137,7 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 		#M[mSet].scale
 		sampledScale = sampleScaleOfVar(M[mSet].df,varBeta[mSet][r],length(M[mSet].mpm))
 		setindex!(M[mSet].scale, sampledScale, 1)
-		println("scale after: $M[mSet].scale")
+		println("scale after: $(M[mSet].scale)")
 		@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),regionSize)
 	end
 end
