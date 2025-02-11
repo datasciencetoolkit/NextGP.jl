@@ -550,7 +550,7 @@ function sampleProb(posAnnotInNonZero,input)
 end
 
 function sampleScaleOfVar(df,var,k)
-	return rand(Gamma(0.5*df*k+k,0.5*df*k*(1/var)+k))
+	return rand(Gamma(0.5*df*k+k,1/(0.5*df*k*(1/var)+k)))
 end
 							
 end
