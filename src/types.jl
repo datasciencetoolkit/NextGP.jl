@@ -57,6 +57,7 @@ struct BayesPRType
     r::Int
     v::Union{Matrix{Float64},Float64}
     name::String
+    params::Bool
 end
 
 """
@@ -68,7 +69,7 @@ end
     * One can define any other region size, for example, 30, 40 or 100
 * `v` is an estimate of the variance for the distribution of SNPs
 """
-BayesPR(r::Int,v::Union{Matrix{Float64},Float64};name="BayesPR") = BayesPRType(r,v,name)
+BayesPR(r::Int,v::Union{Matrix{Float64},Float64};name="BayesPR",params=false) = BayesPRType(r,v,name,params)
 
 
 struct BayesBType
