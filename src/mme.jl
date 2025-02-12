@@ -502,13 +502,15 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
                 	nMComp = size(priorVCV[mSet].v,1)
 			if priorVCV[mSet].params==false
 				println("hyperparameters are fixed")
+				M[mSet][:params] = false
                 		M[mSet][:scale] = nMComp>1 ? priorVCV[mSet].v .* (M[mSet][:df]-nMComp-1.0)  : priorVCV[mSet].v * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make array of float and float 
 			elseif priorVCV[mSet].params==true
 				println("hyperparameters are estimated")
+				M[mSet][:params] = true
 				M[mSet][:scale] = nMComp>1 ? [priorVCV[mSet].v .* (M[mSet][:df]-nMComp-1.0)]  : [priorVCV[mSet].v * (M[mSet][:df]-2.0)/(M[mSet][:df])] #I make array of float and float
-
 			end
 		else
+			M[mSet][:params] = false
 			nMComp = 1
 			M[mSet][:scale] = 0.05 * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make float and array of floa
 		end
