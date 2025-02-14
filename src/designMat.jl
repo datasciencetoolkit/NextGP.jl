@@ -5,6 +5,21 @@ using DataFrames, SparseArrays
 dropCol(matrix::AbstractMatrix,j) = matrix[:, deleteat!(collect(axes(matrix, 2)), j)]
 #ref level is always first now! Later reflevel shouild be changed to k!=reflevel with k being real level not coded value. Also drop col should be adapted sa such
 
+function designMat(k,v,userData)
+	if isa(v,ConstantTerm)
+		X0 = Dict(:data=>ones(size(userData,1)),:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>"Intercept")
+	elseif isa(v,DataTerm)
+		X0 = makeX(userData,k)
+	elseif isa(v,FunctionTerm)
+		X0 = makeX(userData,modelTerms[k].cols)
+		X0[:data] = map(getproperty(Main, modelTerms[k].fun),X[k][:data])
+	elseif isa(v,InteractionTerm)
+		X0 = makeX(userData,modelTerms[k].cols)
+	else nothing
+	end
+	return X0
+end
+
 function dropLevel(levelCodesDict,matrix;refKey=[])
 	refKey = isempty(refKey) ? first(keys(levelCodesDict)) : refKey
 	refValue = levelCodesDict[refKey]
