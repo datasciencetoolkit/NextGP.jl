@@ -115,17 +115,19 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 			push!(summarize,[k,"PED",typeof(thisZ),size(thisZ,2)])
 			thisZ = 0                
                 else    
-			if isa(v,ConstantTerm)
-				X[k] = Dict(:data=>ones(size(userData,1)),:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>"Intercept")
-			elseif isa(v,DataTerm)
-				X[k] = makeX(userData,k)
-			elseif isa(v,FunctionTerm)
-				X[k] = makeX(userData,modelTerms[k].cols)
-				X[k][:data] = map(getproperty(Main, modelTerms[k].fun),X[k][:data])
-			elseif isa(v,InteractionTerm)
-				X[k] = makeX(userData,modelTerms[k].cols)
-			else nothing
-			end			
+			#if isa(v,ConstantTerm)
+			#	X[k] = Dict(:data=>ones(size(userData,1)),:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>"Intercept")
+			#elseif isa(v,DataTerm)
+			#	X[k] = makeX(userData,k)
+			#elseif isa(v,FunctionTerm)
+			#	X[k] = makeX(userData,modelTerms[k].cols)
+			#	X[k][:data] = map(getproperty(Main, modelTerms[k].fun),X[k][:data])
+			#elseif isa(v,InteractionTerm)
+			#	X[k] = makeX(userData,modelTerms[k].cols)
+			#else nothing
+			#end
+			
+			X[k] = designMat(k,v,userData)
 			push!(summarize,[k,typeof(k),typeof(X[k][:data]),X[k][:nCol]])
                 end
         end
