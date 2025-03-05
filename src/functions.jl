@@ -554,7 +554,7 @@ end
 function sampleScaleOfVar(df,var,k)
 	#length(var) should be nVarComp
 	#+1 is for Gamma(1,1) prior
-	println("df: $df var: $var lengthVar: $(length(var))")
+	println("df: $df 1/var: $(1.0./var) lengthVar: $(length(var))")
 	return rand(Gamma(0.5*df*length(var)+1,1/(1+0.5*df*sum(1.0./var))))
 end
 							
