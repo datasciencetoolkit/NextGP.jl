@@ -552,7 +552,10 @@ function sampleProb(posAnnotInNonZero,input)
 end
 
 function sampleScaleOfVar(df,var,k)
-	return rand(Gamma(0.5*df*k+k,1/(0.5*df*k*(1/var)+k)))
+	#length(var) should be nVarComp
+	#+1 is for Gamma(1,1) prior
+	println("df: $df var: $var lengthVar: $(length(var))")
+	return rand(Gamma(0.5*df*length(var)+1,1/(1+0.5*df*sum(1.0./var))))
 end
 							
 end
