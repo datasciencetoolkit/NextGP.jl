@@ -136,11 +136,7 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 	end
 	#println("scale before: $(M[mSet].scale)")
 	#println(M[mSet].df," ", varBeta[mSet]," ", length(M[mSet].mpm))
-	if M[mSet].params==true
-		sampledScale = sampleScaleOfVar(M[mSet].df,varBeta[mSet],M[mSet].nVarCov)
-		setindex!(M[mSet].scale, sampledScale, 1)
-	else nothing
-	end
+	M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df,varBeta[mSet],M[mSet].nVarCov), 1) : nothing
 	#println("scale after: $(M[mSet].scale)")
 end
 	
@@ -200,6 +196,10 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		M[mSet].piHat .= [1.0-piIn piIn]
 		M[mSet].logPi .= log.([1.0-piIn piIn])
 	end
+	#println("scale before: $(M[mSet].scale)")
+	#println(M[mSet].df," ", varBeta[mSet]," ", length(M[mSet].mpm))
+	M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df,varBeta[mSet],M[mSet].nVarCov), 1) : nothing
+	#println("scale after: $(M[mSet].scale)")
 end
 
 function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
@@ -241,6 +241,10 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		M[mSet].piHat .= [1.0-piIn piIn]
 		M[mSet].logPi .= log.([1.0-piIn piIn])
 	end
+	#println("scale before: $(M[mSet].scale)")
+	#println(M[mSet].df," ", varBeta[mSet]," ", length(M[mSet].mpm))
+	M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df,varBeta[mSet],M[mSet].nVarCov), 1) : nothing
+	#println("scale after: $(M[mSet].scale)")
 end
 
 function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
@@ -294,6 +298,10 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		M[mSet].piHat .= piHat
 		M[mSet].logPi .= log.(piHat)
 	end
+	#println("scale before: $(M[mSet].scale)")
+	#println(M[mSet].df," ", varBeta[mSet]," ", length(M[mSet].mpm))
+	M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df,varBeta[mSet],M[mSet].nVarCov), 1) : nothing
+	#println("scale after: $(M[mSet].scale)")
 end
 
 function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
@@ -365,6 +373,10 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 		end
 #		sampleProb()
 	end
+	#println("scale before: $(M[mSet].scale)")
+	#println(M[mSet].df," ", varBeta[mSet]," ", length(M[mSet].mpm))
+	M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df,varBeta[mSet],M[mSet].nVarCov), 1) : nothing
+	#println("scale after: $(M[mSet].scale)")
 end
 
 function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
@@ -424,6 +436,10 @@ function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycor
 			M[mSet].logPi[a] = log.(piHat)
 		end
 	end
+	#println("scale before: $(M[mSet].scale)")
+	#println(M[mSet].df," ", varBeta[mSet]," ", length(M[mSet].mpm))
+	M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df,varBeta[mSet],M[mSet].nVarCov), 1) : nothing
+	#println("scale after: $(M[mSet].scale)")
 end
 
 function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
