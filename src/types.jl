@@ -77,6 +77,7 @@ struct BayesBType
     v::VarCovarTypes
     name::String
     estimatePi::Bool
+    params::Bool
 end
 
 """
@@ -85,13 +86,14 @@ end
 * `v` is the variance for the prior distribution of SNPs.
 * `estimatePi` is `true`if `pi` is estimated. By default it is ´false´
 """
-BayesB(pi::PiTypes,v::VarCovarTypes;name="BayesB",estimatePi::Bool=false) = BayesBType(pi,v,name,estimatePi)
+BayesB(pi::PiTypes,v::VarCovarTypes;name="BayesB",estimatePi::Bool=false,params::Bool=false) = BayesBType(pi,v,name,estimatePi,params)
 
 struct BayesCType
     pi::PiTypes
     v::VarCovarTypes
     name::String
     estimatePi::Bool
+    params::Bool
 end
 
 """
@@ -100,7 +102,7 @@ end
 * `v` is the variance for the prior distribution of SNPs.
 * `estimatePi` is `true`if `pi` is estimated. By default it is ´false´
 """
-BayesC(pi::PiTypes,v::VarCovarTypes;name="BayesC",estimatePi::Bool=false) = BayesCType(pi,v,name,estimatePi)
+BayesC(pi::PiTypes,v::VarCovarTypes;name="BayesC",estimatePi::Bool=false,params::Bool=false) = BayesCType(pi,v,name,estimatePi,params)
 
 struct BayesRType
     pi::PiTypes
@@ -108,6 +110,7 @@ struct BayesRType
     v::VarCovarTypes
     name::String
     estimatePi::Bool
+    params::Bool
 end
 
 """
@@ -117,7 +120,7 @@ end
 * `v` is the variance for the prior distribution of SNPs.
 * `estimatePi` is `true`if `pi` is estimated. By default it is ´false´
 """
-BayesR(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes;name="BayesR",estimatePi::Bool=false) = BayesRType(pi,class,v,name,estimatePi)
+BayesR(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes;name="BayesR",estimatePi::Bool=false,params::Bool=false) = BayesRType(pi,class,v,name,estimatePi,params)
 
 struct BayesRCType
     pi::PiTypes
@@ -126,6 +129,7 @@ struct BayesRCType
     annot::Matrix{Int64}
     name::String
     estimatePi::Bool
+    params::Bool
 end
 
 """
@@ -136,8 +140,8 @@ end
 * `annnot` is a matrix of annottations. Rows are SNPs, columnns are annnotation classes. Entries are binary coded, 0/1.
 * `estimatePi` is `true`if `pi` is estimated. By default it is ´false´
 """
-BayesRCπ(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Matrix{Int64};name="BayesRCπ",estimatePi::Bool=false) = BayesRCType(pi,class,v,annot,name,estimatePi)
-BayesRCplus(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Matrix{Int64};name="BayesRCplus",estimatePi::Bool=false) = BayesRCType(pi,class,v,annot,name,estimatePi)
+BayesRCπ(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Matrix{Int64};name="BayesRCπ",estimatePi::Bool=false,params::Bool=false) = BayesRCType(pi,class,v,annot,name,estimatePi,params)
+BayesRCplus(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Matrix{Int64};name="BayesRCplus",estimatePi::Bool=false,params::Bool=false) = BayesRCType(pi,class,v,annot,name,estimatePi,params)
 
 
 struct BayesLogVarType
