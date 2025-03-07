@@ -183,11 +183,11 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 				meanBeta = lhs\rhs
 				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),1)
+				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),1)
 			else 
 				setindex!(beta[M[mSet].pos],0.0,locus)
 				setindex!(delta[M[mSet].pos],0,locus)
-				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,[0.0],0)
+				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df,[0.0],0)
 			end
 		end
 	end
@@ -290,7 +290,7 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	end
 		
 	##
-	@inbounds varBeta[mSet][1] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS,nNonZero)
+	@inbounds varBeta[mSet][1] = sampleVarBetaR(M[mSet].scale[],M[mSet].df,sumS,nNonZero)
 	##
 	
 	if M[mSet].estPi == true 
@@ -361,7 +361,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 		
 	## Assumes same variant classes, v for all!
 	for a in 1:nAnnot
-		@inbounds varBeta[mSet][a] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS[a],nNonZero[a])
+		@inbounds varBeta[mSet][a] = sampleVarBetaR(M[mSet].scale[],M[mSet].df,sumS[a],nNonZero[a])
 	end
 	
 	#Estimate both Prob (p) and pi π
@@ -425,7 +425,7 @@ function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycor
 		
 	## Assumes same variant classes, v for all!
 	for a in 1:nAnnot
-		@inbounds varBeta[mSet][a] = sampleVarBetaR(M[mSet].scale,M[mSet].df,sumS[a],nNonZero[a])
+		@inbounds varBeta[mSet][a] = sampleVarBetaR(M[mSet].scale[],M[mSet].df,sumS[a],nNonZero[a])
 	end
 	
 	#Estimate both Prob (p) and pi π
