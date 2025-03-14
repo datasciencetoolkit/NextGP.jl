@@ -53,7 +53,7 @@ end
 """
 SNP(name::Symbol,path::Union{Matrix{Float64},String};map::String="") = GenomicTerm(name,path,map)
 SNP(name::Symbol,path::Union{Matrix{Float64},String},map::String="") = GenomicTerm(name,path,map)
-SNP(name::Symbol,path::Expr,map::String="") = GenomicTerm(name,path,map)
+SNP(name::Symbol,path::Symbol,map::String="") = GenomicTerm(name,path,map)
 
 struct BayesPRType
     r::Int
