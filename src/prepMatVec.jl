@@ -89,7 +89,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
         for (k,v) in modelTerms
 		println("$k is a $(typeof(v))")
 		if isa(v,GenomicTerm)			
-			thisM = CSV.read(v.path,CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
+			thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
 			#drops cols if any value is missing. Later should check map files etc..
 			thisM = thisM[:,.!(any.(ismissing, eachcol(thisM)))]
 			#
