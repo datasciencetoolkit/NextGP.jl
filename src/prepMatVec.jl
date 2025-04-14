@@ -28,8 +28,10 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 #	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
 	
 	modelRhsTerms = getRhsTerms(f)
+
+			println(modelRhsTerms)
+
 	modelLhsTerms = getLhsTerms(f)
-		println(modelRhsTerms)
 
 	println(modelLhsTerms)
 
