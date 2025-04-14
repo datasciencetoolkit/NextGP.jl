@@ -49,8 +49,6 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 
 	#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
 	yVec = length(modelLhsTerms) == 1 ? makeX(userData,f.lhs)[:data] : hcat([makeX(userData,k)[:data] for (k,v) in modelLhsTerms]...)
-	println(yVec)
-        #yVec = makeX(userData,f.lhs)[:data]
 	
 	X = Dict{Any,Any}()
 	Z = Dict{Any,Any}()
@@ -117,18 +115,6 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 			push!(summarize,[k,"PED",typeof(thisZ),size(thisZ,2)])
 			thisZ = 0                
                 else    
-			#if isa(v,ConstantTerm)
-			#	X[k] = Dict(:data=>ones(size(userData,1)),:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>"Intercept")
-			#elseif isa(v,DataTerm)
-			#	X[k] = makeX(userData,k)
-			#elseif isa(v,FunctionTerm)
-			#	X[k] = makeX(userData,modelRhsTerms[k].cols)
-			#	X[k][:data] = map(getproperty(Main, modelRhsTerms[k].fun),X[k][:data])
-			#elseif isa(v,InteractionTerm)
-			#	X[k] = makeX(userData,modelRhsTerms[k].cols)
-			#else nothing
-			#end
-			
 			X[k] = designMat(k,v,userData)
 			push!(summarize,[k,typeof(k),typeof(X[k][:data]),X[k][:nCol]])
                 end
