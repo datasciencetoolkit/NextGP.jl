@@ -22,14 +22,15 @@ isacall(exp::Symbol) = false
 #multi-trait
 function getLhsTerms(f;pre=preserved)
 	modelLhsTerms = Dict()
-	if is(f.lhs,Symbol) 
+	if isa(f.lhs,Symbol) 
 		modelLhsTerms[f.lhs] = ResponseTerm(f.lhs)
-	elseif is(f.lhs,Expr)
+	elseif isa(f.lhs,Expr)
 		for term in f.lhs.args
 			modelLhsTerms[term] = ResponseTerm(term)
 		end
 	else throw(DomainError("Invalid response variable"))
 	end
+	return modelLhsTerms
 end
 
 function getRhsTerms(f;pre=preserved)
