@@ -29,6 +29,8 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 	
 	modelRhsTerms = getRhsTerms(f)
 	modelLhsTerms = getLhsTerms(f)
+		println(modelRhsTerms)
+
 	println(modelLhsTerms)
 
 	userData = deepcopy(inputData)
