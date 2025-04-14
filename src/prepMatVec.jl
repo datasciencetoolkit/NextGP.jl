@@ -29,6 +29,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 	
 	modelRhsTerms = getRhsTerms(f)
 	modelLhsTerms = getLhsTerms(f)
+	println(modelLhsTerms)
 
 	userData = deepcopy(inputData)
 
@@ -49,6 +50,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 
 
 	#only for single trait now
+	#Y = tempData = df[!,]
         yVec = makeX(userData,f.lhs)[:data]
 	
 	X = Dict{Any,Any}()
