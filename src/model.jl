@@ -19,7 +19,18 @@ isacall(exp::Expr) = (exp.head == :call)
 isacall(exp::Int) = false
 isacall(exp::Symbol) = false
 
-getLhsTerms(f;pre=preserved) = f.lhs
+#multi-trait
+function getLhsTerms(f;pre=preserved)
+	modelLhsTerms = Dict()
+	if is(f.lhs,Symbol) 
+		modelLhsTerms[f.lhs] = ResponseTerm(f.lhs)
+	elseif is(f.lhs,Expr)
+		for term in f.lhs.args
+			modelLhsTerms[term] = ResponseTerm(term)
+		end
+	else throw(DomainError("Invalid response variable"))
+	end
+end
 
 function getRhsTerms(f;pre=preserved)
 	modelRhsTerms = Dict()
