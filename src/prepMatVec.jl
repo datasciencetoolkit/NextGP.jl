@@ -29,7 +29,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 	
 	modelRhsTerms = getRhsTerms(f)
 
-			println(modelRhsTerms)
+	println(modelRhsTerms)
 
 	modelLhsTerms = getLhsTerms(f)
 
@@ -54,8 +54,9 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 
 
 	#only for single trait now
-	#Y = tempData = df[!,]
-        yVec = makeX(userData,f.lhs)[:data]
+	yVec = hcat([makeX(userData,lhsTerm)[:data] for lhsTerm in modelLhsTerms]...)
+	println(yVec)
+        #yVec = makeX(userData,f.lhs)[:data]
 	
 	X = Dict{Any,Any}()
 	Z = Dict{Any,Any}()
