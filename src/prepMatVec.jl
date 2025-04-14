@@ -27,7 +27,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 	
 #	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
 	
-	modelTerms = getTerms(f)
+	modelRhsTerms = getRhsTerms(f)
 
 	userData = deepcopy(inputData)
 
@@ -86,7 +86,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 
 		
 
-        for (k,v) in modelTerms
+        for (k,v) in modelRhsTerms
 		println("$k is a $(typeof(v))")
 		if isa(v,GenomicTerm)			
 			thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
@@ -120,10 +120,10 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 			#elseif isa(v,DataTerm)
 			#	X[k] = makeX(userData,k)
 			#elseif isa(v,FunctionTerm)
-			#	X[k] = makeX(userData,modelTerms[k].cols)
-			#	X[k][:data] = map(getproperty(Main, modelTerms[k].fun),X[k][:data])
+			#	X[k] = makeX(userData,modelRhsTerms[k].cols)
+			#	X[k][:data] = map(getproperty(Main, modelRhsTerms[k].fun),X[k][:data])
 			#elseif isa(v,InteractionTerm)
-			#	X[k] = makeX(userData,modelTerms[k].cols)
+			#	X[k] = makeX(userData,modelRhsTerms[k].cols)
 			#else nothing
 			#end
 			
