@@ -47,6 +47,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 		end
         end
 
+	#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
 	yVec = length(modelLhsTerms) == 1 ? makeX(userData,f.lhs)[:data] : hcat([makeX(userData,k)[:data] for (k,v) in modelLhsTerms]...)
 	println(yVec)
         #yVec = makeX(userData,f.lhs)[:data]
