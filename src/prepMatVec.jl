@@ -49,9 +49,9 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 
 
 	#only for single trait now
-	yVec = hcat([makeX(userData,k)[:data] for (k,v) in modelLhsTerms]...)
-	println(yVec)
-        #yVec = makeX(userData,f.lhs)[:data]
+	#yVec = hcat([makeX(userData,k)[:data] for (k,v) in modelLhsTerms]...)
+	#println(yVec)
+        yVec = makeX(userData,f.lhs)[:data]
 	
 	X = Dict{Any,Any}()
 	Z = Dict{Any,Any}()
