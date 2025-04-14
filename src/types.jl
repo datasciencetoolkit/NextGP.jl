@@ -9,6 +9,9 @@ struct LMM
 	rhs::Expr
 end
 
+struct ResponseTerm
+    col::Symbol
+end
 
 #make n a type with where{T} in ...
 struct ConstantTerm
