@@ -19,6 +19,10 @@ isacall(exp::Expr) = (exp.head == :call)
 isacall(exp::Int) = false
 isacall(exp::Symbol) = false
 
+function getLhsTerms(f;pre=preserved)
+	nothing
+end
+
 function getRhsTerms(f;pre=preserved)
 	modelRhsTerms = Dict()
 	for term in filter(!in(preserved), f.rhs.args)
