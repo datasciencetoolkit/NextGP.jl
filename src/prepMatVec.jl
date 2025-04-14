@@ -47,9 +47,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 		end
         end
 
-
-	#only for single trait now
-	yVec = hcat([makeX(userData,k)[:data] for (k,v) in modelLhsTerms]...)
+	yVec = length(modelLhsTerms) == 1 ? makeX(userData,f.lhs)[:data] : hcat([makeX(userData,k)[:data] for (k,v) in modelLhsTerms]...)
 	println(yVec)
         #yVec = makeX(userData,f.lhs)[:data]
 	
