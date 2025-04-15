@@ -15,7 +15,7 @@ include("types.jl")
 
 macro model(expr::Expr,data::Symbol)
       M = LMM(expr,data)
-      m = lmm(M.model,M.model.args...)
+      m = lmm(M.model,M.model.args...,M.data)
       return m
 end
 
