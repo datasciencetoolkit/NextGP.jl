@@ -3,6 +3,7 @@ VarCovarTypes = Union{Vector{Matrix{Float64}},Vector{Float64},Matrix{Float64},Fl
 
 #the core lmm structure
 struct lmm
+	data::Any
 	model::Expr
 	sym::Any
 	lhs::Union{Symbol,Expr}
