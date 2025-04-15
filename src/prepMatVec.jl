@@ -110,7 +110,6 @@ function prep(f;path2ped=[],priorVCV=[])
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
 
         for (k,v) in modelRHSTerms
-		println("Getting k: $k v: $v")
 		if isa(v,GenomicTerm)			
 			thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
 			#drops cols if any value is missing. Later should check map files etc..
