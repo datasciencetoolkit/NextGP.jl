@@ -12,7 +12,9 @@ export prep
 function prepData!(inputData,f)
 	#make in categorical
 	for n in Symbol.(names(inputData))
-                if typeof(inputData[!,n]).==Array{Int, 1}
+                #if typeof(inputData[!,n]).==Array{Int, 1}
+		if isa(inputData[!,n],Union{Array{Int, 1},Array{String, 1}})
+			println("$n is a categorical array")
                 	inputData[!,n] = CategoricalArray(inputData[!,n])
         	end
         end
