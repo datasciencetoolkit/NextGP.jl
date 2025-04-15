@@ -1,7 +1,6 @@
 module prepMatVec
 
 using CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
-using NextGP.lmm
 
 include("model.jl")
 include("misc.jl")
@@ -75,7 +74,7 @@ end
 """
 function prep(f;path2ped=[],priorVCV=[])
 	println("f type: $(typeof(f))")
-	if isa(f,NextGP.lmm)
+	if typeof(f) == NextGP.lmm
 		modelRHSTerms = getRHSTerms(f)
 		modelLHSTerms = getLHSTerms(f)
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
@@ -88,7 +87,7 @@ function prep(f;path2ped=[],priorVCV=[])
 			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',')
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
 		end
-	elseif isa(f,Tuple{Vararg{NextGP.lmm}})
+	elseif typeof(f) == Tuple{Vararg{NextGP.lmm}})
 		modelLHSTerms = Dict()
 		for (i,fi) in enumerate(f)
 			println("reading $i $fi")
