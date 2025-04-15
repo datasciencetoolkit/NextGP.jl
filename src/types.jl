@@ -1,12 +1,18 @@
 PiTypes = Union{Vector{Float64},Float64} #pi can be different (vector) or same per SNP (NO COR BayesB YET). BayesR also takes a vector of pi
 VarCovarTypes = Union{Vector{Matrix{Float64}},Vector{Float64},Matrix{Float64},Float64} #prior for (co)var can be different (vector) or same per SNP
 
-
-struct LMM
+#the core lmm structure
+struct lmm
 	model::Expr
 	sym::Any
 	lhs::Union{Symbol,Expr}
 	rhs::Expr
+end
+
+#a general model structure with data added to the model
+struct LMM
+	model::Expr
+	data::Symbol
 end
 
 struct ResponseTerm
