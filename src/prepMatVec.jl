@@ -10,28 +10,8 @@ include("designMat.jl")
 export prep
 
 
-"""
-	function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;path2ped=[],priorVCV=[])
-
-* `NextGP` relies on `StatsModels.jl` package for model expression (`f`), and fixed effect design matrix generation.
-* Details for the model expression (`f`), and fixed effects coding specifications (e.g., effect or dummy coding) can be found at [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/).
-* Design matrices for random effects are generated either own internal functions or using `StatsModels.jl`s `modelcols`, depending on how user defined the model term in the model.
-* Reads in marker data, and mean-centers the columns.
-* Finally returns lhs vector and rhs matrices.
-* By default:
-    * all `Int` rhs variables are made `Categorical`,
-    * all `String` rhs variables (also those made `Categorical`) are dummy coded,
-    * all `Float` rhs variables are centered.
-"""
-function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
-	
-#	any(typeof.(terms(f)).==ConstantTerm{Int64}) == false ? throw(ErrorException("Models without constant term are not allowed")) : nothing 
-	
-	modelRhsTerms = getRhsTerms(f)
-	modelLhsTerms = getLhsTerms(f)
-
-	userData = deepcopy(inputData)
-
+function prepData(userData,f)
+	#make in categorical
 	for n in Symbol.(names(userData))
                 if typeof(userData[!,n]).==Array{Int, 1}
                 	userData[!,n] = CategoricalArray(userData[!,n])
@@ -46,15 +26,12 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
                		 end
 		end
         end
+	return userData
+end
 
-	#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
-	yVec = length(modelLhsTerms) == 1 ? makeX(userData,f.lhs)[:data] : hcat([makeX(userData,k)[:data] for (k,v) in modelLhsTerms]...)
-	
-	X = Dict{Any,Any}()
-	Z = Dict{Any,Any}()
-	M = Dict{Any,Any}()
 
-        #read pedigree
+function usePedigree(path2ped,userData)
+	#read pedigree
 	if isempty(path2ped)
 		Ainv = []
 	else
@@ -77,14 +54,52 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 	end	
 
 	#original id within pedigree
-	#seemed to be IDs for only phenotyped ones????? from the ranMat()
-		
-	idRE = OrderedDict{Any,Any}()
+	#seemed to be IDs for only phenotyped ones????? from the ranMat()	
+	#idRE = OrderedDict{Any,Any}()
+	return userData4ran,Ainv
+end
+
+
+"""
+	function prep(f::StatsModels.TermOrTerms, inputData::DataFrame;path2ped=[],priorVCV=[])
+
+* `NextGP` relies on `StatsModels.jl` package for model expression (`f`), and fixed effect design matrix generation.
+* Details for the model expression (`f`), and fixed effects coding specifications (e.g., effect or dummy coding) can be found at [`StatsModels.jl`](https://juliastats.org/StatsModels.jl/latest/).
+* Design matrices for random effects are generated either own internal functions or using `StatsModels.jl`s `modelcols`, depending on how user defined the model term in the model.
+* Reads in marker data, and mean-centers the columns.
+* Finally returns lhs vector and rhs matrices.
+* By default:
+    * all `Int` rhs variables are made `Categorical`,
+    * all `String` rhs variables (also those made `Categorical`) are dummy coded,
+    * all `Float` rhs variables are centered.
+"""
+function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
+	
+	userData = prepData(inputData,f)
+	userData4ran,Ainv = usePedigree(path2ped,userData)
+
+	if length(f) == 1
+		modelRhsTerms = getRhsTerms(f)
+		modelLhsTerms = getLhsTerms(f)
+		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
+		if length(modelLhsTerms) == 1
+			Y = makeX(userData,f.lhs)[:data] 
+		elseif length(modelLhsTerms) > 1
+			Y = hcat([makeX(userData,k)[:data] for (k,v) in modelLhsTerms]...)
+		end
+	elseif length(f) > 1
+		modelLhsTerms = Dict()
+		for fi in f
+			modelLhsTerms = merge!(modelLhsTerms,fi)
+		end
+	end
+	
+	X = Dict{Any,Any}()
+	Z = Dict{Any,Any}()
+	M = Dict{Any,Any}()
 
 	#summarize input
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
-
-		
 
         for (k,v) in modelRhsTerms
 		println("$k is a $(typeof(v))")
