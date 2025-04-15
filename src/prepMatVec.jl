@@ -29,8 +29,8 @@ function prepData(userData,f)
 	return userData
 end
 
-
-function usePedigree(path2ped,userData)
+#can modify userData
+function usePedigree!(path2ped,userData)
 	#read pedigree
 	if isempty(path2ped)
 		Ainv = []
