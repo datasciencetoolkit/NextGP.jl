@@ -48,14 +48,14 @@ function usePedigree!(path2ped,userData)
 		
 		#picking up new IDs (row/column number) from pedigree, and put into sire and dam in the phenotypic data
 		userData4ran = deepcopy(userData)
-		userData4ran[!,[:ID,:Sire,:Dam]] .= pedigree[[findall(pedigree.origID.==x)[] for x in userData4ran.origID],[:ID,:Sire,:Dam]]
+		userData[!,[:ID,:Sire,:Dam]] .= pedigree[[findall(pedigree.origID.==x)[] for x in userData4ran.origID],[:ID,:Sire,:Dam]]
 		
 	end	
 
 	#original id within pedigree
 	#seemed to be IDs for only phenotyped ones????? from the ranMat()	
 	#idRE = OrderedDict{Any,Any}()
-	return userData4ran,Ainv
+	return userData,Ainv
 end
 
 
@@ -80,7 +80,7 @@ function prep(f;path2ped=[],priorVCV=[])
 		if length(modelLHSTerms) == 1
 			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',')
 			inputData = prepData(inputData,f)
-			userData4ran,Ainv = usePedigree(path2ped,inputData)
+			inputData,Ainv = usePedigree!(path2ped,inputData)
 			Y = makeX(inputData,f.lhs)[:data] 
 		elseif length(modelLHSTerms) > 1
 			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',')
@@ -91,7 +91,7 @@ function prep(f;path2ped=[],priorVCV=[])
 		for (i,fi) in enumerate(f)
 			println("reading $i $fi")
 			inputData = CSV.read(fi.data,DataFrames.DataFrame,header=true,delim=',')
-			userData4ran,Ainv = usePedigree(path2ped,userData)
+			inputData,Ainv = usePedigree!(path2ped,inputData)
 			modelLHSTerms = merge!(modelLHSTerms,fi)
 		end
 	else throw(ArgumentError("model expression is not valid"))
