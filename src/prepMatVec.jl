@@ -73,25 +73,25 @@ end
     * all `String` rhs variables (also those made `Categorical`) are dummy coded,
     * all `Float` rhs variables are centered.
 """
-function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
-	
-	userData4ran,Ainv = usePedigree(path2ped,userData)
-
+function prep(f;path2ped=[],priorVCV=[])
 	if length(f) == 1
 		modelRHSTerms = getRHSTerms(f)
 		modelLHSTerms = getLHSTerms(f)
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
 		if length(modelLHSTerms) == 1
-			userData = prepData(inputData,f)
-			userData4ran,Ainv = usePedigree(path2ped,userData)
-			Y = makeX(userData,f.lhs)[:data] 
+			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',')
+			inputData = prepData(inputData,f)
+			userData4ran,Ainv = usePedigree(path2ped,inputData)
+			Y = makeX(inputData,f.lhs)[:data] 
 		elseif length(modelLHSTerms) > 1
-			Y = hcat([makeX(userData,k)[:data] for (k,v) in modelLHSTerms]...)
+			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',')
+			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
 		end
 	elseif length(f) > 1
 		modelLHSTerms = Dict()
 		for (i,fi) in enumerate(f)
-			userData = prepData(inputData,f)
+			println("reading $i $fi")
+			inputData = CSV.read(fi.data,DataFrames.DataFrame,header=true,delim=',')
 			userData4ran,Ainv = usePedigree(path2ped,userData)
 			modelLHSTerms = merge!(modelLHSTerms,fi)
 		end
