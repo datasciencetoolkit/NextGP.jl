@@ -12,7 +12,7 @@ export prep
 function prepData!(inputData,f)
 	#make in categorical
 	for n in Symbol.(names(inputData))
-		if isa(inputData[!,n],Union{Vector{Int},Vector{String}})
+		if isa(inputData[!,n],Vector{Int})
                 	inputData[!,n] = CategoricalArray(inputData[!,n])
         	end
         end
