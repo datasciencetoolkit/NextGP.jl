@@ -54,7 +54,7 @@ end
 #Int variable is considered as categorical
 #no Int String interaction yet
 function makeX(df::DataFrame,col::Symbol)
-	#println("processing $col")
+	println("processing $col")
 	tempData = df[!,col]
 	if isa(tempData,Vector{String})
 		#println("tempData is a String")
