@@ -137,7 +137,7 @@ function prep(f;path2ped=[],priorVCV=[])
 			push!(summarize,[k,"PED",typeof(thisZ),size(thisZ,2)])
 			thisZ = 0                
                 else    
-			X[k] = designMat(k,v,userData4ran) #userData
+			X[k] = designMat(k,v,userData)
 			push!(summarize,[k,typeof(k),typeof(X[k][:data]),X[k][:nCol]])
                 end
         end
