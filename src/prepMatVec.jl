@@ -74,7 +74,7 @@ end
 """
 function prep(f;path2ped=[],priorVCV=[])
 	println("f type: $(typeof(f))")
-	if typeof(f) == NextGP.lmm
+	if typeof(f) == lmm
 		modelRHSTerms = getRHSTerms(f)
 		modelLHSTerms = getLHSTerms(f)
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
@@ -87,7 +87,7 @@ function prep(f;path2ped=[],priorVCV=[])
 			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',')
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
 		end
-	elseif typeof(f) == Tuple{Vararg{NextGP.lmm}}
+	elseif typeof(f) == Tuple{Vararg{lmm}}
 		modelLHSTerms = Dict()
 		for (i,fi) in enumerate(f)
 			println("reading $i $fi")
