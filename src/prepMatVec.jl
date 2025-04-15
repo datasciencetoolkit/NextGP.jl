@@ -79,20 +79,24 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 	userData4ran,Ainv = usePedigree(path2ped,userData)
 
 	if length(f) == 1
-		modelRhsTerms = getRhsTerms(f)
-		modelLhsTerms = getLhsTerms(f)
+		modelRHSTerms = getRHSTerms(f)
+		modelLHSTerms = getLHSTerms(f)
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
-		if length(modelLhsTerms) == 1
+		if length(modelLHSTerms) == 1
 			Y = makeX(userData,f.lhs)[:data] 
-		elseif length(modelLhsTerms) > 1
-			Y = hcat([makeX(userData,k)[:data] for (k,v) in modelLhsTerms]...)
+		elseif length(modelLHSTerms) > 1
+			Y = hcat([makeX(userData,k)[:data] for (k,v) in modelLHSTerms]...)
 		end
 	elseif length(f) > 1
-		modelLhsTerms = Dict()
+		modelLHSTerms = Dict()
 		for fi in f
-			modelLhsTerms = merge!(modelLhsTerms,fi)
+			modelLHSTerms = merge!(modelLHSTerms,fi)
 		end
 	end
+
+	println(modelLHSTerms)
+	println(modelRHSTerms)
+
 	
 	X = Dict{Any,Any}()
 	Z = Dict{Any,Any}()
@@ -101,7 +105,7 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 	#summarize input
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
 
-        for (k,v) in modelRhsTerms
+        for (k,v) in modelRHSTerms
 		println("$k is a $(typeof(v))")
 		if isa(v,GenomicTerm)			
 			thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
