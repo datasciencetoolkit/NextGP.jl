@@ -3,7 +3,7 @@ VarCovarTypes = Union{Vector{Matrix{Float64}},Vector{Float64},Matrix{Float64},Fl
 
 #the core lmm structure
 struct lmm
-	data::Any
+	data::String
 	model::Expr
 	sym::Any
 	lhs::Union{Symbol,Expr}
@@ -13,7 +13,7 @@ end
 #a general model structure with data added to the model
 struct LMM
 	model::Expr
-	data::Symbol
+	data::String
 end
 
 struct ResponseTerm
