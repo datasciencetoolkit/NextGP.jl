@@ -21,9 +21,6 @@ using DataFrames
 using CategoricalArrays
 using Printf
 
-include("types.jl")
-export DataTerm
-
 include("model.jl")
 include("misc.jl")
 include("prepMatVec.jl")
