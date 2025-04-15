@@ -87,7 +87,7 @@ function prep(f;path2ped=[],priorVCV=[])
 			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',')
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
 		end
-	elseif typeof(f) == Tuple{Vararg{NextGP.lmm}})
+	elseif typeof(f) == Tuple{Vararg{NextGP.lmm}}
 		modelLHSTerms = Dict()
 		for (i,fi) in enumerate(f)
 			println("reading $i $fi")
