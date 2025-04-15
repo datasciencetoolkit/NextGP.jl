@@ -7,10 +7,8 @@ dropCol(matrix::AbstractMatrix,j) = matrix[:, deleteat!(collect(axes(matrix, 2))
 
 function designMat(k,v,userData)
 	if isa(v,ConstantTerm)
-		println("$v is a ConstantTerm")
 		X0 = Dict(:data=>ones(size(userData,1)),:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>"Intercept")
 	elseif isa(v,DataTerm)
-		println("$v is a DataTerm")
 		X0 = makeX(userData,k)
 	elseif isa(v,FunctionTerm)
 		X0 = makeX(userData,modelTerms[k].cols)
@@ -54,7 +52,7 @@ end
 #Int variable is considered as categorical
 #no Int String interaction yet
 function makeX(df::DataFrame,col::Symbol)
-	println("processing $col")
+	#println("processing $col")
 	tempData = df[!,col]
 	if isa(tempData,Vector{String})
 		#println("tempData is a String")
