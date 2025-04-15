@@ -21,6 +21,7 @@ using StatsModels
 using MixedModels
 using Printf
 
+include("types.jl")
 include("misc.jl")
 include("prepMatVec.jl")
 include("runTime.jl")
