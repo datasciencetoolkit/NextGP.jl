@@ -98,8 +98,8 @@ function prep(f;path2ped=[],priorVCV=[])
 	end
 
 	#println(modelLHSTerms)
-	#println(modelRHSTerms)
-	#println(inputData)
+	println(modelRHSTerms)
+	println(inputData)
 
 	
 	X = Dict{Any,Any}()
@@ -110,7 +110,7 @@ function prep(f;path2ped=[],priorVCV=[])
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
 
         for (k,v) in modelRHSTerms
-		println("$k is a $(typeof(v))")
+		println(Getting "k: $k v: $v")
 		if isa(v,GenomicTerm)			
 			thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
 			#drops cols if any value is missing. Later should check map files etc..
