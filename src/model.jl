@@ -34,28 +34,28 @@ isacall(exp::Int) = false
 isacall(exp::Symbol) = false
 
 #multi-trait
-function getLhsTerms(f;pre=preserved)
-	modelLhsTerms = Dict()
+function getLHSTerms(f;pre=preserved)
+	modelLHSTerms = Dict()
 	if isa(f.lhs,Symbol) 
-		modelLhsTerms[f.lhs] = ResponseTerm(f.lhs)
+		modelLHSTerms[f.lhs] = ResponseTerm(f.lhs)
 	elseif isa(f.lhs,Expr)
 		for term in f.lhs.args
-			modelLhsTerms[term] = ResponseTerm(term)
+			modelLHSTerms[term] = ResponseTerm(term)
 		end
 	else throw(DomainError("Invalid response variable"))
 	end
-	return modelLhsTerms
+	return modelLHSTerms
 end
 
-function getRhsTerms(f;pre=preserved)
-	modelRhsTerms = Dict()
+function getRHSTerms(f;pre=preserved)
+	modelRHSTerms = Dict()
 	for term in filter(!in(preserved), f.rhs.args)
-		!isacall(term) && (term==1) ? modelRhsTerms[:(Intercept)] = ConstantTerm(term) : nothing
-		!isacall(term) && isa(term,Symbol) ? modelRhsTerms[term] = DataTerm(term) : nothing
-		isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) == *) ? modelRhsTerms[term] = InteractionTerm(term.args[2:end]) : nothing
-		isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) != *) ? modelRhsTerms[term] = FunctionTerm(term.args[1],term.args[2]) : nothing
-		isacall(term) && (term.args[1] == :PED) ? modelRhsTerms[term.args[2]]=PED(term.args[2:end]...) : nothing
-		isacall(term) && (term.args[1] == :SNP) ? modelRhsTerms[term.args[2]]=SNP(term.args[2:end]...) : nothing	
+		!isacall(term) && (term==1) ? modelRHSTerms[:(Intercept)] = ConstantTerm(term) : nothing
+		!isacall(term) && isa(term,Symbol) ? modelRHSTerms[term] = DataTerm(term) : nothing
+		isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) == *) ? modelRHSTerms[term] = InteractionTerm(term.args[2:end]) : nothing
+		isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) != *) ? modelRHSTerms[term] = FunctionTerm(term.args[1],term.args[2]) : nothing
+		isacall(term) && (term.args[1] == :PED) ? modelRHSTerms[term.args[2]]=PED(term.args[2:end]...) : nothing
+		isacall(term) && (term.args[1] == :SNP) ? modelRHSTerms[term.args[2]]=SNP(term.args[2:end]...) : nothing	
 	end
-	return modelRhsTerms
+	return modelRHSTerms
 end
