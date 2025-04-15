@@ -13,7 +13,7 @@ include("types.jl")
 #		end
 #end
 
-macro model(expr::Expr,data::Symbol)
+macro model(expr::Expr,data::String)
       M = LMM(expr,data)
       m = lmm(M.data,M.model,M.model.args...)
       return m
