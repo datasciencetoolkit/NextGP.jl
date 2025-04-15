@@ -99,6 +99,7 @@ function prep(f;path2ped=[],priorVCV=[])
 
 	println(modelLHSTerms)
 	println(modelRHSTerms)
+	println(inputData)
 
 	
 	X = Dict{Any,Any}()
