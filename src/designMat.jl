@@ -6,7 +6,7 @@ dropCol(matrix::AbstractMatrix,j) = matrix[:, deleteat!(collect(axes(matrix, 2))
 #ref level is always first now! Later reflevel shouild be changed to k!=reflevel with k being real level not coded value. Also drop col should be adapted sa such
 
 function designMat(k,v,userData)
-	println("dealing with $k and $v and $data")
+	println("dealing with $k and $v and $userData")
 	if isa(v,ConstantTerm)
 		X0 = Dict(:data=>ones(size(userData,1)),:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>"Intercept")
 	elseif isa(v,DataTerm)
