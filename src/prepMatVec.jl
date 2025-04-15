@@ -75,7 +75,6 @@ end
 """
 function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 	
-	userData = prepData(inputData,f)
 	userData4ran,Ainv = usePedigree(path2ped,userData)
 
 	if length(f) == 1
@@ -83,13 +82,17 @@ function prep(f, inputData::DataFrame;path2ped=[],priorVCV=[])
 		modelLHSTerms = getLHSTerms(f)
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
 		if length(modelLHSTerms) == 1
+			userData = prepData(inputData,f)
+			userData4ran,Ainv = usePedigree(path2ped,userData)
 			Y = makeX(userData,f.lhs)[:data] 
 		elseif length(modelLHSTerms) > 1
 			Y = hcat([makeX(userData,k)[:data] for (k,v) in modelLHSTerms]...)
 		end
 	elseif length(f) > 1
 		modelLHSTerms = Dict()
-		for fi in f
+		for (i,fi) in enumerate(f)
+			userData = prepData(inputData,f)
+			userData4ran,Ainv = usePedigree(path2ped,userData)
 			modelLHSTerms = merge!(modelLHSTerms,fi)
 		end
 	end
