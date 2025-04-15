@@ -97,9 +97,9 @@ function prep(f;path2ped=[],priorVCV=[])
 	else throw(ArgumentError("model expression is not valid"))
 	end
 
-	println(modelLHSTerms)
-	println(modelRHSTerms)
-	println(inputData)
+	#println(modelLHSTerms)
+	#println(modelRHSTerms)
+	#println(inputData)
 
 	
 	X = Dict{Any,Any}()
