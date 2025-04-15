@@ -73,9 +73,8 @@ end
     * all `String` rhs variables (also those made `Categorical`) are dummy coded,
     * all `Float` rhs variables are centered.
 """
-println("f type: $(typeof(f))")
-
 function prep(f;path2ped=[],priorVCV=[])
+	println("f type: $(typeof(f))")
 	if isa(f,lmm)
 		modelRHSTerms = getRHSTerms(f)
 		modelLHSTerms = getLHSTerms(f)
