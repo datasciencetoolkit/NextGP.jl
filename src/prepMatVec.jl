@@ -9,53 +9,53 @@ include("designMat.jl")
 export prep
 
 
-function prepData!(userData,f)
+function prepData!(inputData,f)
 	#make in categorical
-	for n in Symbol.(names(userData))
-                if typeof(userData[!,n]).==Array{Int, 1}
-                	userData[!,n] = CategoricalArray(userData[!,n])
+	for n in Symbol.(names(inputData))
+                if typeof(inputData[!,n]).==Array{Int, 1}
+                	inputData[!,n] = CategoricalArray(inputData[!,n])
         	end
         end
 
 	#center cont. covariates	
-	for n in Symbol.(names(userData))
+	for n in Symbol.(names(inputData))
 		if n !== Symbol(repr(f.lhs))
-        		if typeof(userData[!,n]).==Array{Float64, 1} || typeof(userData[!,n]).==Array{Float32, 1}
-                		userData[!,n] .-= mean(userData[!,n],dims=1)
+        		if typeof(inputData[!,n]).==Array{Float64, 1} || typeof(inputData[!,n]).==Array{Float32, 1}
+                		inputData[!,n] .-= mean(inputData[!,n],dims=1)
                		 end
 		end
         end
-	return userData
+	return inputData
 end
 
-#can modify userData
-function usePedigree!(path2ped,userData)
+#can modify inputData
+function usePedigree!(path2ped,inputData)
 	#read pedigree
 	if isempty(path2ped)
 		Ainv = []
 	else
 
-		pedigree,Ainv = makePed(path2ped,userData.ID)
+		pedigree,Ainv = makePed(path2ped,inputData.ID)
 		Ainv = Symmetric(Ainv)
 		
 		#sort data by pedigree. Needs to be carefully checked
-		userData.origID = userData.ID
-		userData.origSire = userData.Sire
-		userData.origDam = userData.Dam
-		userData.order = [findfirst(userData.origID .== x) for x in intersect(pedigree.origID,userData.origID)]
-		sort!(userData, :order)
-		select!(userData, Not(:order))
+		inputData.origID = inputData.ID
+		inputData.origSire = inputData.Sire
+		inputData.origDam = inputData.Dam
+		inputData.order = [findfirst(inputData.origID .== x) for x in intersect(pedigree.origID,inputData.origID)]
+		sort!(inputData, :order)
+		select!(inputData, Not(:order))
 		
 		#picking up new IDs (row/column number) from pedigree, and put into sire and dam in the phenotypic data
-		userData4ran = deepcopy(userData)
-		userData[!,[:ID,:Sire,:Dam]] .= pedigree[[findall(pedigree.origID.==x)[] for x in userData4ran.origID],[:ID,:Sire,:Dam]]
+		userData4ran = deepcopy(inputData)
+		inputData[!,[:ID,:Sire,:Dam]] .= pedigree[[findall(pedigree.origID.==x)[] for x in userData4ran.origID],[:ID,:Sire,:Dam]]
 		
 	end	
 
 	#original id within pedigree
 	#seemed to be IDs for only phenotyped ones????? from the ranMat()	
 	#idRE = OrderedDict{Any,Any}()
-	return userData,Ainv
+	return inputData,Ainv
 end
 
 
