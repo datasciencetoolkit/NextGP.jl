@@ -12,9 +12,7 @@ export prep
 function prepData!(inputData,f)
 	#make in categorical
 	for n in Symbol.(names(inputData))
-                #if typeof(inputData[!,n]).==Array{Int, 1}
-		if isa(inputData[!,n],Union{Array{Int, 1},Array{String, 1}})
-			println("$n is a categorical array")
+		if isa(inputData[!,n],Union{Vector{Int},Vector{String}})
                 	inputData[!,n] = CategoricalArray(inputData[!,n])
         	end
         end
@@ -80,19 +78,19 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 		modelLHSTerms = getLHSTerms(f)
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
 		if length(modelLHSTerms) == 1
-			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',')
+			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',',pool=false,stringtype=String)
 			inputData = prepData!(inputData,f)
 			inputData,Ainv = usePedigree!(path2ped,inputData)
 			Y = makeX(inputData,f.lhs)[:data] 
 		elseif length(modelLHSTerms) > 1
-			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',')
+			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',',pool=false,stringtype=String)
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
 		end
 	elseif isa(f,Tuple)
 		modelLHSTerms = Dict()
 		for (i,fi) in enumerate(f)
 			println("reading $i $fi")
-			inputData = CSV.read(fi.data,DataFrames.DataFrame,header=true,delim=',')
+			inputData = CSV.read(fi.data,DataFrames.DataFrame,header=true,delim=',',pool=false,stringtype=String)
 			inputData,Ainv = usePedigree!(path2ped,inputData)
 			modelLHSTerms = merge!(modelLHSTerms,fi)
 		end
