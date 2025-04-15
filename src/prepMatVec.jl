@@ -95,7 +95,7 @@ function prep(f;path2ped=[],priorVCV=[])
 			userData4ran,Ainv = usePedigree(path2ped,userData)
 			modelLHSTerms = merge!(modelLHSTerms,fi)
 		end
-	else 
+	else throw(ArgumentError("model expression is not valid"))
 	end
 
 	println(modelLHSTerms)
