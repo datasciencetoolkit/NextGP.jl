@@ -9,7 +9,7 @@ include("designMat.jl")
 export prep
 
 
-function prepData(userData,f)
+function prepData!(userData,f)
 	#make in categorical
 	for n in Symbol.(names(userData))
                 if typeof(userData[!,n]).==Array{Int, 1}
@@ -79,7 +79,7 @@ function prep(f;path2ped=[],priorVCV=[])
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
 		if length(modelLHSTerms) == 1
 			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',')
-			inputData = prepData(inputData,f)
+			inputData = prepData!(inputData,f)
 			inputData,Ainv = usePedigree!(path2ped,inputData)
 			Y = makeX(inputData,f.lhs)[:data] 
 		elseif length(modelLHSTerms) > 1
@@ -137,7 +137,7 @@ function prep(f;path2ped=[],priorVCV=[])
 			push!(summarize,[k,"PED",typeof(thisZ),size(thisZ,2)])
 			thisZ = 0                
                 else    
-			X[k] = designMat(k,v,userData)
+			X[k] = designMat(k,v,inputData)
 			push!(summarize,[k,typeof(k),typeof(X[k][:data]),X[k][:nCol]])
                 end
         end
