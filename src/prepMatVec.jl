@@ -146,7 +146,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 	println("\n ---------------- Summary of input ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,alignment=:l)
 
-        return yVec, X, Z, M
+        return Y, X, Z, M
 end
 
 end
