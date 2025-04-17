@@ -16,7 +16,6 @@ export makeG
 export summaryMCMC
 export show #import is in misc
 export @model
-export lmm
 
 using DataFrames
 using CategoricalArrays
