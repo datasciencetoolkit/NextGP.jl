@@ -27,7 +27,7 @@ runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol
 
 	println("model is a $(typeof(model))")
 
-	all(isa.(typeof{model},Tuple{Vararg{lmm}})) || all(isa.(typeof{model},Tuple{lmm})) ? println("ALL IS WELL") : throw(ArgumentError("Please enter a valid model"))
+	all(typeof.(model).== lmm) ? println("ALL IS WELL") : throw(ArgumentError("Please enter a valid model"))
 	
 	isa(model,Tuple{Vararg{lmm}}) || isa(model,Tuple{lmm}) ? nothing : throw(ArgumentError("Please enter a valid model"))
 
