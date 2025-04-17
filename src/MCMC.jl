@@ -26,10 +26,8 @@ include("outFiles.jl")
 runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol,Any}(),blockThese=[],outFolder="outMCMC",VCV=[],userPedData=[],summaryStat=Dict{Any,Any}())
 
 	println("model is a $(typeof(model))")
-
-	all(typeof.(model).== lmm) ? println("ALL IS WELL") : throw(ArgumentError("Please enter a valid model"))
 	
-	isa(model,Tuple{Vararg{lmm}}) || isa(model,Tuple{lmm}) ? nothing : throw(ArgumentError("Please enter a valid model"))
+	isa(model,Tuple{Vararg{NextGP.lmm}}) || isa(model,Tuple{NextGP.lmm}) ? nothing : throw(ArgumentError("Please enter a valid model"))
 
 	folderHandler(outFolder)
 
