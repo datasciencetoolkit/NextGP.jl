@@ -22,7 +22,7 @@ end
 function modelType(model::Tuple)
 	types = ()
 	for mi in model	
-      		M = LMM(mi[1],mi[2]) #expr,data
+      		M = LMM(mi.model,mi.data) #expr,data
       		m = lmm(M.data,M.model,M.model.args...)
 		push!(types,typeof(m))
 	end
