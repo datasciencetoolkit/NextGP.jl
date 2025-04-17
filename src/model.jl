@@ -20,13 +20,13 @@ macro model(expr::Expr,data::String)
 end
 
 function modelType(model::Tuple)
-	types = ()
+	models = ()
 	for mi in model	
       		M = LMM(mi.model,mi.data) #expr,data
       		m = lmm(M.data,M.model,M.model.args...)
-		types = (types...,typeof(m))
+		models = (models...,models(m))
 	end
-	return types
+	return models
 end
 
 import Base.show #also export!!!
