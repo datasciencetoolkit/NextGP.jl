@@ -15,6 +15,7 @@ export makePed
 export makeG
 export summaryMCMC
 export show #import is in misc
+export lmm
 
 using DataFrames
 using CategoricalArrays
@@ -26,7 +27,6 @@ include("MCMC.jl")
 include("outFiles.jl")
 include("GRN.jl")
 include("types.jl")
-export lmm
 
 using .prepMatVec
 export @model
