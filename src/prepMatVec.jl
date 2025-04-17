@@ -6,7 +6,7 @@ include("model.jl")
 include("misc.jl")
 include("designMat.jl")
 
-export prep
+#export prep
 
 
 function prepData!(inputData,f)
