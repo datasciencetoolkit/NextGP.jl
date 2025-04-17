@@ -7,6 +7,7 @@ include("misc.jl")
 include("designMat.jl")
 
 export @model
+export lmm #from types
 export prep
 
 function prepData!(inputData,f)
