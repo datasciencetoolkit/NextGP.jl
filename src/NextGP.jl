@@ -20,7 +20,7 @@ using DataFrames
 using CategoricalArrays
 using Printf
 
-#include("model.jl")
+include("types.jl")
 include("misc.jl")
 include("prepMatVec.jl")
 include("MCMC.jl")
