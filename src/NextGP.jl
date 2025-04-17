@@ -21,13 +21,14 @@ using CategoricalArrays
 using Printf
 
 include("types.jl")
+export lmm
+
 include("misc.jl")
 include("prepMatVec.jl")
 include("MCMC.jl")
 include("outFiles.jl")
 include("GRN.jl")
 
-export lmm
 using .prepMatVec
 export @model
 using .MCMC
