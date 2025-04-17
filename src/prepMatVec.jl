@@ -72,7 +72,8 @@ end
     * all `String` rhs variables (also those made `Categorical`) are dummy coded,
     * all `Float` rhs variables are centered.
 """
-function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld also come here, otherwise input data is only the last one in the memory! 
+function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld also come here, otherwise input data is only the last one in the memory!
+	println("your model is $f")
 	if !isa(f,Tuple)
 		modelRHSTerms = getRHSTerms(f)
 		modelLHSTerms = getLHSTerms(f)
