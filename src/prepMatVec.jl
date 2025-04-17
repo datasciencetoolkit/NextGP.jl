@@ -87,11 +87,13 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 		end
 	elseif length(f) > 1
 		modelLHSTerms = Dict()
+		modelRHSTerms = Dict()
 		for (i,fi) in enumerate(f)
 			println("reading $i $fi")
 			inputData = CSV.read(fi.data,DataFrames.DataFrame,header=true,delim=',',pool=false,stringtype=String)
 			inputData,Ainv = usePedigree!(path2ped,inputData)
-			modelLHSTerms = merge!(modelLHSTerms,getRHSTerms(fi))
+			modelLHSTerms = merge!(modelLHSTerms,getLHSTerms(fi))
+			modelRHSTerms = merge!(modelRHSTerms,getRHSTerms(fi))
 		end
 	else throw(ArgumentError("model expression is not valid"))
 	end
