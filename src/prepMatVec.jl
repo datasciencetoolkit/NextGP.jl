@@ -74,16 +74,16 @@ end
 """
 function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld also come here, otherwise input data is only the last one in the memory!
 	if length(f) == 1
-		modelRHSTerms = getRHSTerms(f)
-		modelLHSTerms = getLHSTerms(f)
+		modelRHSTerms = getRHSTerms(f[1])
+		modelLHSTerms = getLHSTerms(f[1])
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
 		if length(modelLHSTerms) == 1
-			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',',pool=false,stringtype=String)
-			inputData = prepData!(inputData,f)
+			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=',',pool=false,stringtype=String)
+			inputData = prepData!(inputData,f[1])
 			inputData,Ainv = usePedigree!(path2ped,inputData)
-			Y = makeX(inputData,f.lhs)[:data] 
+			Y = makeX(inputData,f[1].lhs)[:data] 
 		elseif length(modelLHSTerms) > 1
-			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',',pool=false,stringtype=String)
+			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=',',pool=false,stringtype=String)
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
 		end
 	elseif length(f) > 1
