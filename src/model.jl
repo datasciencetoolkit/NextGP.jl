@@ -24,7 +24,7 @@ function modelType(model::Tuple)
 	for mi in model	
       		M = LMM(mi.model,mi.data) #expr,data
       		m = lmm(M.data,M.model,M.model.args...)
-		models = (models...,models(m))
+		models = (models...,m)
 	end
 	return models
 end
