@@ -24,8 +24,8 @@ include("outFiles.jl")
 """
 runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol,Any}(),blockThese=[],outFolder="outMCMC",VCV=[],userPedData=[],summaryStat=Dict{Any,Any}())
 
-	isa(model,Tuple{NextGP.lmm}) ? println("I AM A TUPLE") : println("I AM NOT A TUPLE")
-
+	isa(model,Tuple{lmm}) ? println("I AM A TUPLE") : println("I AM NOT A TUPLE")
+	
 	folderHandler(outFolder)
 
 	yVec,X,Z,M = prepMatVec.prep(model,path2ped=userPedData,priorVCV=VCV)
