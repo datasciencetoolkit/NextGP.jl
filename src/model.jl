@@ -19,6 +19,16 @@ macro model(expr::Expr,data::String)
       return m
 end
 
+function modelType(model::Tuple)
+	types = ()
+	for (i,fi) in model	
+      		M = LMM(expr,data)
+      		m = lmm(M.data,M.model,M.model.args...)
+		push!(types,typeof(m))
+	end
+	return types
+end
+
 import Base.show #also export!!!
 function show(io::IO, m::lmm)
 		println("MODEL: \n $(m.model) \nLHS: \n $(m.lhs) \nRHS:")
