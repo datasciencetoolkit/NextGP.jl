@@ -30,10 +30,9 @@ include("types.jl")
 
 using .prepMatVec
 export @model
+export prep
 using .MCMC
 export runLMEM
-using .prepMatVec
-export prep
 using .GRN
 export estGRN_MHGibbs 
 
