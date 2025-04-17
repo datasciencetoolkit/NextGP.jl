@@ -26,6 +26,7 @@ include("MCMC.jl")
 include("outFiles.jl")
 include("GRN.jl")
 include("types.jl")
+export lmm
 
 using .prepMatVec
 export @model
