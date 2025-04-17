@@ -73,7 +73,7 @@ end
     * all `Float` rhs variables are centered.
 """
 function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld also come here, otherwise input data is only the last one in the memory!
-	println("your model is $f")
+	println("typeof $(typeof(f))")
 	if !isa(f,Tuple)
 		modelRHSTerms = getRHSTerms(f)
 		modelLHSTerms = getLHSTerms(f)
