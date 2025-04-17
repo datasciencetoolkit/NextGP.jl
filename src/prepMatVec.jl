@@ -91,7 +91,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			println("reading $i $fi")
 			inputData = CSV.read(fi.data,DataFrames.DataFrame,header=true,delim=',',pool=false,stringtype=String)
 			inputData,Ainv = usePedigree!(path2ped,inputData)
-			modelLHSTerms = merge!(modelLHSTerms,fi)
+			modelLHSTerms = merge!(modelLHSTerms,fi.rhs)
 		end
 	else throw(ArgumentError("model expression is not valid"))
 	end
