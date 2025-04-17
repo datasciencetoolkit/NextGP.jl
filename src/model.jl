@@ -60,8 +60,8 @@ end
 function getRHSTerms(f;pre=preserved)
 	modelRHSTerms = Dict()
 	for term in filter(!in(preserved), f.rhs.args)
-		!isacall(term) && (term==Int) ? modelRHSTerms[:(Intercept)] = ConstantTerm(term) : nothing
-		#!isacall(term) && (term==Int) ? modelRHSTerms[Symbol("Intercept$term")] = ConstantTerm(term) : nothing
+		#!isacall(term) && typeof(term)==Int ? modelRHSTerms[:(Intercept)] = ConstantTerm(term) : nothing
+		!isacall(term) && typeof(term)==Int ? modelRHSTerms[Symbol("Intercept$term")] = ConstantTerm(term) : nothing
 		!isacall(term) && isa(term,Symbol) ? modelRHSTerms[term] = DataTerm(term) : nothing
 		isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) == *) ? modelRHSTerms[term] = InteractionTerm(term.args[2:end]) : nothing
 		isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) != *) ? modelRHSTerms[term] = FunctionTerm(term.args[1],term.args[2]) : nothing
