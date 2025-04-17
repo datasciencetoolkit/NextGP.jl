@@ -1,4 +1,4 @@
-include("types.jl")
+#include("types.jl")
 
 #macro model(expr::Expr)
 #	m = LMM(expr,expr.args...)
