@@ -8,7 +8,7 @@ using Distributions,LinearAlgebra #samplers
 using StatsBase
 using Printf
 
-
+include("types.jl")
 include("prepMatVec.jl")
 include("mme.jl")
 include("samplers.jl")
@@ -25,7 +25,7 @@ include("outFiles.jl")
 """
 runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol,Any}(),blockThese=[],outFolder="outMCMC",VCV=[],userPedData=[],summaryStat=Dict{Any,Any}())
 		
-	isa(model,Tuple{Vararg{NextGP.lmm}}) ? nothing : 
+	isa(model,Tuple{Vararg{lmm}}) ? nothing : throw(ArgumentError("Please enter a valid model"))
 
 	folderHandler(outFolder)
 
