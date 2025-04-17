@@ -25,7 +25,7 @@ include("outFiles.jl")
 """
 runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol,Any}(),blockThese=[],outFolder="outMCMC",VCV=[],userPedData=[],summaryStat=Dict{Any,Any}())
 
-	println("model")
+	println("$model")
 		
 	isa(model,Tuple{Vararg{lmm}}) ? nothing : throw(ArgumentError("Please enter a valid model"))
 
