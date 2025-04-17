@@ -27,7 +27,7 @@ runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol
 
 	println("$model")
 		
-	isa(model,Tuple{Vararg{lmm}}) ? nothing : throw(ArgumentError("Please enter a valid model"))
+	isa(model,Tuple{Vararg{lmm}}) || isa(model,lmm) ? nothing : throw(ArgumentError("Please enter a valid model"))
 
 	folderHandler(outFolder)
 
