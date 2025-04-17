@@ -73,8 +73,7 @@ end
     * all `Float` rhs variables are centered.
 """
 function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld also come here, otherwise input data is only the last one in the memory!
-	println("typeof $(typeof(f))")
-	if !isa(f,Tuple)
+	if length(f) == 1
 		modelRHSTerms = getRHSTerms(f)
 		modelLHSTerms = getLHSTerms(f)
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
@@ -87,7 +86,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			inputData = CSV.read(f.data,DataFrames.DataFrame,header=true,delim=',',pool=false,stringtype=String)
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
 		end
-	elseif isa(f,Tuple)
+	elseif length(f) > 1
 		modelLHSTerms = Dict()
 		for (i,fi) in enumerate(f)
 			println("reading $i $fi")
