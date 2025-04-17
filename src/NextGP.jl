@@ -15,19 +15,20 @@ export makePed
 export makeG
 export summaryMCMC
 export show #import is in misc
-export @model
 
 using DataFrames
 using CategoricalArrays
 using Printf
 
-include("model.jl")
+#include("model.jl")
 include("misc.jl")
 include("prepMatVec.jl")
 include("MCMC.jl")
 include("outFiles.jl")
 include("GRN.jl")
 
+using .prepMatVec
+export @model
 using .MCMC
 export runLMEM
 using .prepMatVec
