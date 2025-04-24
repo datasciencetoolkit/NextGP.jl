@@ -358,7 +358,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					theseRegions          = [r:r for r in 1:size(nowM,2)]
 					M[pSet][:regionArray] = theseRegions
 					M[pSet][:nVarCov]     = length(theseRegions)
-					M[pSet][:scale]	      = [] 
 					M[pSet][:estPi]       = priorVCV[pSet].estimatePi
 					M[pSet][:piHat]       = [1.0 .- priorVCV[pSet].pi priorVCV[pSet].pi] #not fitted, fitted
 					M[pSet][:vClass]      = [0 1] #2 variance class, one with own, one with null
@@ -371,7 +370,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					theseRegions          = [r:r for r in 1:size(nowM,2)]
 					M[pSet][:regionArray] = theseRegions
 					M[pSet][:nVarCov]     = 1
-					M[pSet][:scale]	      = [] 
 					M[pSet][:estPi]       = priorVCV[pSet].estimatePi
 					M[pSet][:piHat]       = [1.0 .- priorVCV[pSet].pi priorVCV[pSet].pi] #not fitted, fitted
 					M[pSet][:vClass]      = [0 1] #2 variance class, one with common, one with null
@@ -383,7 +381,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					theseRegions          = [r:r for r in 1:size(nowM,2)]
 					M[pSet][:regionArray] = theseRegions
 					M[pSet][:nVarCov]     = 1
-					M[pSet][:scale]	      = [] 
 					M[pSet][:estPi]       = priorVCV[pSet].estimatePi
 					M[pSet][:piHat]       = deepcopy(priorVCV[pSet].pi)
 				elseif priorVCV[pSet].name == "BayesRCπ"
@@ -393,7 +390,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					theseRegions          = [r:r for r in 1:size(nowM,2)]
 					M[pSet][:regionArray] = theseRegions
 					M[pSet][:nVarCov]     = size(priorVCV[pSet].annot,2)
-					M[pSet][:scale]	      = [] 
 					M[pSet][:logPi]       = [log.(priorVCV[pSet].pi) for i in 1:M[pSet][:nVarCov]]
 					M[pSet][:estPi]       = priorVCV[pSet].estimatePi
 					M[pSet][:piHat]       = [priorVCV[pSet].pi for i in 1:M[pSet][:nVarCov]]
@@ -414,7 +410,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 					theseRegions          = [r:r for r in 1:size(nowM,2)]
 					M[pSet][:regionArray] = theseRegions
 					M[pSet][:nVarCov]     = size(priorVCV[pSet].annot,2)
-					M[pSet][:scale]	      = [] 
 					M[pSet][:logPi]       = [log.(priorVCV[pSet].pi) for i in 1:M[pSet][:nVarCov]]
 					M[pSet][:estPi]       = priorVCV[pSet].estimatePi
 					M[pSet][:piHat]       = [priorVCV[pSet].pi for i in 1:M[pSet][:nVarCov]]
