@@ -601,6 +601,10 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	for mSet in keys(varBeta)
 		isa(mSet, Symbol) ? nameM_VCV = ["reg_$r" for r in 1:M[mSet][:nVarCov]] : nameM_VCV = vcat([["reg_$(i)_$j" for j in 1:size(M[mSet][:scale],2)^2] for i in 1:M[mSet][:nRegions]]...)
 		inOut.outMCMC(outPut,"var$mSet",[nameM_VCV]) #[] to have it as one row
+		####
+		isa(mSet, Symbol) ? nameM_VCV = "scale" : nameM_VCV = ["scale$i" for i in 1:size(vec(varBeta[mSet]))]
+		inOut.outMCMC(outPut,"scale$mSet",[nameM_VCV]) #[] to have it as one row
+		####
         end
 	
 
