@@ -99,8 +99,8 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 	end
 
 	#println(modelLHSTerms)
-	println(modelRHSTerms)
-	println(inputData)
+	#println(modelRHSTerms)
+	#println(inputData)
 
 	
 	X = Dict{Any,Any}()
