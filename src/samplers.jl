@@ -100,7 +100,7 @@ function runSampler!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength
 
 			for pSet in keys(M)
 				inOut.outMCMC(outPut,"var$(pSet)",hcat(reduce(hcat,varBeta[pSet])...))
-				inOut.outMCMC(outPut,"scale$(pSet)",hcat(reduce(hcat,M[mSet].scale)...))
+				inOut.outMCMC(outPut,"scale$(pSet)",hcat(reduce(hcat,M[pSet].scale)...))
 			end
 		end
 	end
