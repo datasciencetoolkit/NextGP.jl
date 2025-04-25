@@ -77,12 +77,12 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 		modelLHSTerms = getLHSTerms(f[1])
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
 		if length(modelLHSTerms) == 1
-			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=',',pool=false,stringtype=String)
+			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			inputData = prepData!(inputData,f[1])
 			inputData,Ainv = usePedigree!(path2ped,inputData)
 			Y = makeX(inputData,f[1].lhs)[:data] 
 		elseif length(modelLHSTerms) > 1
-			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=',',pool=false,stringtype=String)
+			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
 		end
 	elseif length(f) > 1
@@ -90,7 +90,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 		modelRHSTerms = Dict()
 		for (i,fi) in enumerate(f)
 			println("reading $i $fi")
-			inputData = CSV.read(fi.data,DataFrames.DataFrame,header=true,delim=',',pool=false,stringtype=String)
+			inputData = CSV.read(fi.data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			inputData,Ainv = usePedigree!(path2ped,inputData)
 			modelLHSTerms = merge!(modelLHSTerms,getLHSTerms(fi))
 			modelRHSTerms = merge!(modelRHSTerms,getRHSTerms(fi))
