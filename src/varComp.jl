@@ -37,7 +37,7 @@ end
 
 #set up (co)variance structures for U
 
-function setVarCovStr!(zSet::ExprOrSymbolOrTuple,Z::Dict,priorVCV,varU_prior::Dict)
+function setVarCovStr!(zSet::ExprOrSymbolOrTuple,Z::Dict,priorVCV,varU_prior::Dict,varU::Dict)
 	if haskey(priorVCV,zSet)	
 		if ismissing(priorVCV[zSet].str) || priorVCV[zSet].str=="I" 
 			printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
@@ -57,6 +57,9 @@ function setVarCovStr!(zSet::ExprOrSymbolOrTuple,Z::Dict,priorVCV,varU_prior::Di
 		priorVCV[zSet] = Random("I",100)
 		Z[zSet][:iVarStr] = Matrix(1.0I,Z[zSet][:dims][2],Z[zSet][:dims][2])
 	end
+	#for storage
+	varU = deepcopy(varU_prior) #for storage
+	#
 end
 
 	#df, shape, scale...															
@@ -72,6 +75,15 @@ function varCovZ!(Z,priorVCV)
         end
 	return Z
 end
+
+	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
+        for mSet ∈ keys(M)
+		if haskey(priorVCV,mSet)
+                	varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]]
+		else
+			varBeta[mSet] = [0.05 for i in 1:M[mSet][:nVarCov]]
+		end
+        end
 
 
 
