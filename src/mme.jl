@@ -44,7 +44,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 
 	#set up varCov for e
-	varCovE!(priorVCV,nData,E)
+	varCovE!(E,priorVCV,nData,varE)
 	
 	
 	### 
