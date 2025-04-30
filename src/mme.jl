@@ -44,7 +44,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 
 	#set up varCov for e
-	varCovE!(E,priorVCV,nData,varE)
+	setVarCovStrE!(E,priorVCV,nData,varE)
 	
 	
 	### 
@@ -124,7 +124,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			tempzpz = []
 			nowZ = Z[zSet][:data]
 			
-			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
+			setVarCovStrU!(zSet,Z,priorVCV,varU_prior)
 			
 			if E[:str] == "D"
 				for c in eachcol(nowZ)
@@ -165,7 +165,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			#same Z for all components in a single-trait model get only first column! Z[zSet][:data] = getindex.(tempZ,:,1)
 			Z[zSet][:data] = tempZ
 			
-			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
+			setVarCovStrU!(zSet,Z,priorVCV,varU_prior)
 			
 			Z[zSet][:str] = Z[zSet[1]][:str] 
 			
