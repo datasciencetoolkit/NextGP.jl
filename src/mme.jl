@@ -39,39 +39,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	priorVCV = convert(Dict{ExprOrSymbolOrTuple, Any},priorVCV)	
 
 
-	#set up for E.
-	E = Dict{Any,Any}()	
-	#no inverse implemented yet!
-	if haskey(priorVCV,:e)	
-		if isempty(priorVCV[:e].str) || priorVCV[:e].str=="I" 
-				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
-				E[:str] = "I"
-				E[:iVarStr] = [] #Matrix(1.0I,nData,nData)
-				priorVCV[:e] = Random("I",priorVCV[:e].v)
-		elseif isa(priorVCV[:e].str,Vector) # D
-				E[:str] = "D"
-				E[:iVarStr] = inv.(priorVCV[:e].str) #inv(Diagonal(priorVCV[:e].str))
-#				error("var-cov structure \"D\" has not been implemented yet")
-				printstyled("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used\n"; color = :green)
-		else 
-				error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
-		end
-	else	
-		printstyled("prior var-cov for \"e\" is fully  empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
-		E[:iVarStr] = [] #Matrix(1.0I,nData,nData)
-		#just add to priors
-		priorVCV[:e] = Random("I",100)
-	end
-								
-	#parameters for priors
-        E[:df] = 4.0
- 	       
-	if priorVCV[:e].v==0.0
-		priorVCV[:e].v  = 0.0005
-       		E[:scale]     = 0.0005
-        else
-       		E[:scale]    = priorVCV[:e].v*(E[:df]-2.0)/E[:df]    
-   	end
+	
 	
 	### X and b	
 	
