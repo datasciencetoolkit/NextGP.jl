@@ -38,11 +38,14 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 	priorVCV = convert(Dict{ExprOrSymbolOrTuple, Any},priorVCV)	
 
-	#set up varCov for E
+	#set up varCov for e
 	varCovE!(priorVCV,nData)
 	
 	
-	### X and b	
+	### 
+	X and b
+	###
+	
 	for blk in blocks
 		println("blocking variables in $blk")
 		X[blk] = Dict{Symbol, Any}()
@@ -99,7 +102,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		end
         end
 
-	#### New u
+	### 
+	Z and u
+	###
 	
 	u = []
 	varU_prior = Dict{Any,Any}()
@@ -197,6 +202,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
                 end
 		setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 	end
+
+	##set up varCov for u
+	varCovZ!(Z,priorVCV)
 																		
 												
         ####
