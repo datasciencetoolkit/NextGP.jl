@@ -37,13 +37,17 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 	priorVCV = convert(Dict{ExprOrSymbolOrTuple, Any},priorVCV)
 	
-	E = Dict{Any,Any}()
+	
 	varU = Dict{Any,Any}() #for storage
 	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
 
+#########NEW
+	
+	varE = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
 
 
 	#set up varCov for e
+	E = Dict{Any,Any}()
 	setVarCovStrE!(E,priorVCV,nData,varE)
 	
 	
