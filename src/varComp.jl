@@ -1,6 +1,5 @@
 #set up (co)variance structures for E
-function varCovE!(priorVCV,nData)
-	E = Dict{Any,Any}()	
+function varCovE!(priorVCV,nData,E)	
 	#no inverse implemented yet!
 	if haskey(priorVCV,:e)	
 		if isempty(priorVCV[:e].str) || priorVCV[:e].str=="I" 
@@ -32,7 +31,6 @@ function varCovE!(priorVCV,nData)
         else
        		E[:scale]    = priorVCV[:e].v*(E[:df]-2.0)/E[:df]    
    	end
-	return priorVCV,E
 end
 
 #set up (co)variance structures for U
