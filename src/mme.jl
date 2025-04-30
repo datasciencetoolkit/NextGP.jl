@@ -107,7 +107,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	###
 	
 	u = []
-	varU_prior = Dict{Any,Any}()
+	varU_prior = Dict{Any,Any}() #for setting up varCov str
+	varU = Dict{Any,Any}() #for storage
 
 	#matrices are ready
 	
@@ -204,7 +205,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	end
 
 	##set up varCov for u
-	varCovZ!(Z,priorVCV)
+	varCovZ!(Z,priorVCV,varU_prior,varU)
 																		
 												
         ####
