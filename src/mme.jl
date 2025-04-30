@@ -36,7 +36,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
         #initial computations and settings
 	ycorr = deepcopy(Y)
 
-	priorVCV = convert(Dict{ExprOrSymbolOrTuple, Any},priorVCV)	
+	priorVCV = convert(Dict{ExprOrSymbolOrTuple, Any},priorVCV)
 
 	#set up varCov for e
 	varCovE!(priorVCV,nData)
@@ -426,12 +426,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	end
 
 	##set up varCov for markers
-	varCovM!(M,priorVCV)
-		
-	
-	#storage
-
-	
+	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
+	varCovM!(M,priorVCV,varBeta)	
 
 	#summarize analysis
 	summarize = DataFrame(Effect=Any[],Type=Any[],Str=Any[],df=Any[],scale=Any[])
