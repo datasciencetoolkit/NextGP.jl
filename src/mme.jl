@@ -23,9 +23,6 @@ export getMME!
 ExprOrSymbol = Union{Expr,Symbol}
 ExprOrSymbolOrTuple = Union{Expr,Symbol,Tuple}
 
-
-
-
 #main sampler
 function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			
@@ -39,7 +36,8 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	ycorr = deepcopy(Y)
 
 	priorVCV = convert(Dict{ExprOrSymbolOrTuple, Any},priorVCV)
-
+	
+	E = Dict{Any,Any}()
 	varU_prior = Dict{Any,Any}() #for setting up varCov str
 	varU = Dict{Any,Any}() #for storage
 	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
@@ -47,7 +45,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 
 	#set up varCov for e
-	varCovE!(priorVCV,nData)
+	varCovE!(priorVCV,nData,E)
 	
 	
 	### 
