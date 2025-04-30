@@ -38,11 +38,11 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 
 	priorVCV = convert(Dict{ExprOrSymbolOrTuple, Any},priorVCV)	
 
-
+	#set up varCov for E
+	varCovE!(priorVCV,nData)
 	
 	
 	### X and b	
-	
 	for blk in blocks
 		println("blocking variables in $blk")
 		X[blk] = Dict{Symbol, Any}()
@@ -56,10 +56,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	end
 
 	#==BLOCK FIXED EFFECTS.
-	Order of blocks is as definde by the user
+	Order of blocks is as defined by the user
 	Order of variables within blocks is always the same as in the model definition, not defined by the user in each block.
 	==#
-	
 	
 	#Positions of parameters for each variable and blocks for speed. b is a column vector.
 	countXCol = 0
@@ -101,14 +100,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
         end
 
 	#### New u
-	
-	#key positions for each effect in u, for speed. Order of matrices in Z are preserved here.
-					
-#        for zSet in keys(Z)
-#		pos = findall(x->x==zSet, collect(keys(Z)))[]
-#                Z[zSet][:pos] = pos
-#		println("$zSet : $pos")
-#        end
 	
 	u = []
 	varU_prior = Dict{Any,Any}()
@@ -207,19 +198,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 	end
 																		
-	#df, shape, scale...															
-	
-	for zSet ∈ keys(Z)
-		Z[zSet][:df] = 3.0+size(priorVCV[zSet].v,1)
-	end
-																
-        for zSet in keys(Z)
-                nZComp = size(priorVCV[zSet].v,1)
-		#priorVCV[zSet].v is a temporary solution
-		nZComp > 1 ? Z[zSet][:scale] = priorVCV[zSet].v .* (Z[zSet][:df]-nZComp-1.0)  : Z[zSet][:scale] = priorVCV[zSet].v * (Z[zSet][:df]-2.0)/Z[zSet][:df] #I make float and array of float														
-        end
-
-
 												
         ####
 																					
