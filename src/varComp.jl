@@ -21,31 +21,18 @@ function setVarCovStrE!(E,priorVCV,nData,varE)
 		#just add to priors
 		priorVCV[:e] = Random("I",100)
 	end
-								
-	#parameters for priors
-        E[:df] = 4.0
- 	       
+end
+
+###############################
+#df, shape, scale...															
+function varCovE!(E,priorVCV)
+        E[:df] = 4.0 	       
 	if priorVCV[:e].v==0.0
 		priorVCV[:e].v  = 0.0005
        		E[:scale]     = 0.0005
         else
        		E[:scale]    = priorVCV[:e].v*(E[:df]-2.0)/E[:df]    
    	end
-end
-
-###############################
-#df, shape, scale...															
-function varCovE!(Z,priorVCV)
-	for zSet ∈ keys(Z)
-		Z[zSet][:df] = 3.0+size(priorVCV[zSet].v,1)
-	end
-																
-        for zSet in keys(Z)
-                nZComp = size(priorVCV[zSet].v,1)
-		#priorVCV[zSet].v is a temporary solution
-		nZComp > 1 ? Z[zSet][:scale] = priorVCV[zSet].v .* (Z[zSet][:df]-nZComp-1.0)  : Z[zSet][:scale] = priorVCV[zSet].v * (Z[zSet][:df]-2.0)/Z[zSet][:df] #I make float and array of float														
-        end
-	return Z
 end
 
 #set up (co)variance structures for U
@@ -83,7 +70,6 @@ function varCovZ!(Z,priorVCV)
 		#priorVCV[zSet].v is a temporary solution
 		nZComp > 1 ? Z[zSet][:scale] = priorVCV[zSet].v .* (Z[zSet][:df]-nZComp-1.0)  : Z[zSet][:scale] = priorVCV[zSet].v * (Z[zSet][:df]-2.0)/Z[zSet][:df] #I make float and array of float														
         end
-	return Z
 end
 
 
