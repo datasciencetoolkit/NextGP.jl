@@ -62,7 +62,7 @@ function setVarCovStr!(zSet::ExprOrSymbolOrTuple,Z::Dict,priorVCV,varU_prior::Di
 	#
 end
 
-	#df, shape, scale...															
+#df, shape, scale...															
 function varCovZ!(Z,priorVCV)
 	for zSet ∈ keys(Z)
 		Z[zSet][:df] = 3.0+size(priorVCV[zSet].v,1)
@@ -76,20 +76,10 @@ function varCovZ!(Z,priorVCV)
 	return Z
 end
 
-	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
-        for mSet ∈ keys(M)
-		if haskey(priorVCV,mSet)
-                	varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]]
-		else
-			varBeta[mSet] = [0.05 for i in 1:M[mSet][:nVarCov]]
-		end
-        end
-
-
 
 #set up (co)variance structures for markers
 
-function varCovM!(M,priorVCV)
+function varCovM!(M,priorVCV,varBeta)
 	#df
 	for mSet ∈ keys(M)
 		M[mSet][:df] = haskey(priorVCV,mSet) ? 3.0+size(priorVCV[mSet].v,1) : 4.0
@@ -114,7 +104,15 @@ function varCovM!(M,priorVCV)
 			nMComp = 1
 			M[mSet][:scale] = 0.05 * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make float and array of float
 		end
-		return M
+
+		#for storage
+        	for mSet ∈ keys(M)
+			if haskey(priorVCV,mSet)
+                		varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]]
+			else
+			varBeta[mSet] = [0.05 for i in 1:M[mSet][:nVarCov]]
+			end
+        	end
         end
 
 
