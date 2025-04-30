@@ -33,10 +33,18 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	nRand = length(Z)
 	nData = length(Y)
 	nMarkerSets = length(M)
-        #initial computations and settings
+        
+	#initial computations and settings
+	
 	ycorr = deepcopy(Y)
 
 	priorVCV = convert(Dict{ExprOrSymbolOrTuple, Any},priorVCV)
+
+	varU_prior = Dict{Any,Any}() #for setting up varCov str
+	varU = Dict{Any,Any}() #for storage
+	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
+
+
 
 	#set up varCov for e
 	varCovE!(priorVCV,nData)
@@ -107,8 +115,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	###
 	
 	u = []
-	varU_prior = Dict{Any,Any}() #for setting up varCov str
-	varU = Dict{Any,Any}() #for storage
 
 	#matrices are ready
 	
@@ -120,6 +126,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			Z[zSet][:pos] = posZcounter
 			tempzpz = []
 			nowZ = Z[zSet][:data]
+			
 			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 			
 			if E[:str] == "D"
@@ -160,8 +167,11 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
 			#same Z for all components in a single-trait model get only first column! Z[zSet][:data] = getindex.(tempZ,:,1)
 			Z[zSet][:data] = tempZ
+			
 			setVarCovStr!(zSet,Z,priorVCV,varU_prior)
+			
 			Z[zSet][:str] = Z[zSet[1]][:str] 
+			
 			for d in zSet
                        		delete!(Z,d)
                		end
@@ -205,7 +215,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	end
 
 	##set up varCov for u
-	varCovZ!(Z,priorVCV,varU_prior,varU)
+	##varCovZ!(Z,priorVCV,varU_prior,varU)
 																		
 												
         ####
@@ -426,7 +436,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	end
 
 	##set up varCov for markers
-	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
 	varCovM!(M,priorVCV,varBeta)	
 
 	#summarize analysis
