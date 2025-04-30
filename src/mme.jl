@@ -424,32 +424,6 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 		end
 	end
 		
-	for mSet ∈ keys(M)
-		M[mSet][:df] = haskey(priorVCV,mSet) ? 3.0+size(priorVCV[mSet].v,1) : 4.0
-		#M[mSet][:df] = 3.0+size(priorVCV[mSet].v,1)
-	end
-
-	#when hyper-parameters are estimated, all models will have only one estimate. Not per SNP, for now!
-	#But in general, all models get same prior anyways.
-        for mSet ∈ keys(M)
-		if haskey(priorVCV,mSet)
-                	nMComp = size(priorVCV[mSet].v,1)
-			if priorVCV[mSet].params==false
-				println("hyperparameters are fixed")
-				M[mSet][:params] = false
-                		M[mSet][:scale] = nMComp>1 ? priorVCV[mSet].v .* (M[mSet][:df]-nMComp-1.0)  : priorVCV[mSet].v * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make array of float and float 
-			elseif priorVCV[mSet].params==true
-				println("hyperparameters are estimated")
-				M[mSet][:params] = true
-				M[mSet][:scale] = nMComp>1 ? [priorVCV[mSet].v .* (M[mSet][:df]-nMComp-1.0)]  : [priorVCV[mSet].v * (M[mSet][:df]-2.0)/(M[mSet][:df])] #I make array of float and float
-			end
-		else
-			M[mSet][:params] = false
-			nMComp = 1
-			M[mSet][:scale] = 0.05 * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make float and array of floa
-		end
-        end
-	
 	
 	#storage
 
