@@ -22,6 +22,20 @@ function setVarCovStr!(zSet::ExprOrSymbolOrTuple,Z::Dict,priorVCV,varU_prior::Di
 	end
 end
 
+	#df, shape, scale...															
+function varCovZ!(Z,priorVCV)
+	for zSet ∈ keys(Z)
+		Z[zSet][:df] = 3.0+size(priorVCV[zSet].v,1)
+	end
+																
+        for zSet in keys(Z)
+                nZComp = size(priorVCV[zSet].v,1)
+		#priorVCV[zSet].v is a temporary solution
+		nZComp > 1 ? Z[zSet][:scale] = priorVCV[zSet].v .* (Z[zSet][:df]-nZComp-1.0)  : Z[zSet][:scale] = priorVCV[zSet].v * (Z[zSet][:df]-2.0)/Z[zSet][:df] #I make float and array of float														
+        end
+	return Z
+end
+
 
 #set up (co)variance structures for E
 function varCovE!(priorVCV,nData)
@@ -59,5 +73,7 @@ function varCovE!(priorVCV,nData)
    	end
 	return priorVCV,E
 end
+
+
 
 
