@@ -1,5 +1,5 @@
 #set up (co)variance structures for E
-function varCovE!(priorVCV,nData,E)	
+function setVarCovStrE!(E,priorVCV,nData,varE)	
 	#no inverse implemented yet!
 	if haskey(priorVCV,:e)	
 		if isempty(priorVCV[:e].str) || priorVCV[:e].str=="I" 
@@ -33,9 +33,24 @@ function varCovE!(priorVCV,nData,E)
    	end
 end
 
+###############################
+#df, shape, scale...															
+function varCovE!(Z,priorVCV)
+	for zSet ∈ keys(Z)
+		Z[zSet][:df] = 3.0+size(priorVCV[zSet].v,1)
+	end
+																
+        for zSet in keys(Z)
+                nZComp = size(priorVCV[zSet].v,1)
+		#priorVCV[zSet].v is a temporary solution
+		nZComp > 1 ? Z[zSet][:scale] = priorVCV[zSet].v .* (Z[zSet][:df]-nZComp-1.0)  : Z[zSet][:scale] = priorVCV[zSet].v * (Z[zSet][:df]-2.0)/Z[zSet][:df] #I make float and array of float														
+        end
+	return Z
+end
+
 #set up (co)variance structures for U
 
-function setVarCovStr!(zSet::ExprOrSymbolOrTuple,Z::Dict,priorVCV,varU::Dict)
+function setVarCovStrU!(zSet::ExprOrSymbolOrTuple,Z::Dict,priorVCV,varU::Dict)
 	if haskey(priorVCV,zSet)	
 		if ismissing(priorVCV[zSet].str) || priorVCV[zSet].str=="I" 
 			printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
