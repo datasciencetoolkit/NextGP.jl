@@ -423,6 +423,9 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 			M[pSet][:nVarCov] = length(theseRegions)
 		end
 	end
+
+	##set up varCov for markers
+	varCovM!(M,priorVCV)
 		
 	
 	#storage
