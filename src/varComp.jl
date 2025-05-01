@@ -27,13 +27,20 @@ end
 ###############################
 #df, shape, scale...															
 function varCovE!(E,priorVCV)
-        E[:df] = 4.0 	       
-	if priorVCV[:e].v==0.0
-		priorVCV[:e].v  = 0.0005
-       		E[:scale]     = 0.0005
-        else
-       		E[:scale]    = priorVCV[:e].v*(E[:df]-2.0)/E[:df]    
-   	end
+	for eSet ∈ keys(E)
+		#df
+		E[eSet][:df] = 3.0+size(priorVCV[eSet].v,1)
+		#scale
+                nEComp = size(priorVCV[eSet].v,1)
+		#priorVCV[eSet].v is a temporary solution
+		nEComp > 1 ? E[eSet][:scale] = priorVCV[eSet].v .* (E[eSet][:df]-nEComp-1.0)  : E[eSet][:scale] = priorVCV[eSet].v * (E[eSet][:df]-2.0)/E[eSet][:df] #I make float and array of float														
+        end
+#	if priorVCV[:e].v==0.0
+#		priorVCV[:e].v  = 0.0005
+#       		E[:scale]     = 0.0005
+#        else
+#       		E[:scale]    = priorVCV[:e].v*(E[:df]-2.0)/E[:df]    
+#   	end
 end
 
 #set up (co)variance structures for U
@@ -73,7 +80,8 @@ function varCovZ!(Z,priorVCV)
 end
 
 
-#set up (co)variance structures for markers
+#set up (co)variance priors for markers
+#structure comes from method chosen, so it is not here.
 
 function varCovM!(M,priorVCV,varBeta)
 	#df
