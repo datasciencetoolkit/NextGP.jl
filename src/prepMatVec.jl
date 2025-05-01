@@ -72,6 +72,12 @@ end
     * all `Float` rhs variables are centered.
 """
 function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld also come here, otherwise input data is only the last one in the memory!
+
+	X = Dict{Any,Any}()
+	Z = Dict{Any,Any}()
+	M = Dict{Any,Any}()
+	E = Dict{Any,Any}()
+	
 	if length(f) == 1
 		modelRHSTerms = getRHSTerms(f[1])
 		modelLHSTerms = getLHSTerms(f[1])
@@ -80,10 +86,12 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			inputData = prepData!(inputData,f[1])
 			inputData,Ainv = usePedigree!(path2ped,inputData)
-			Y = makeX(inputData,f[1].lhs)[:data] 
+			Y = makeX(inputData,f[1].lhs)[:data]
+			E[f[1].lhs] = Dict(Any,Any)
 		elseif length(modelLHSTerms) > 1
 			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
+			[E[k] = Dict{Any,Any}() (k,v) in modelLHSTerms]
 		end
 	elseif length(f) > 1
 		modelLHSTerms = Dict()
@@ -92,8 +100,11 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			println("reading $i $fi")
 			inputData = CSV.read(fi.data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			inputData,Ainv = usePedigree!(path2ped,inputData)
-			modelLHSTerms = merge!(modelLHSTerms,getLHSTerms(fi))
-			modelRHSTerms = merge!(modelRHSTerms,getRHSTerms(fi))
+			LHSfi = getLHSTerms(fi)
+			RHSfi = getRHSTerms(fi)
+			modelLHSTerms = merge!(modelLHSTerms,LHSfi)
+			modelRHSTerms = merge!(modelRHSTerms,RHSfi)
+			E[LHSfi] = Dict{Any,Any}()
 		end
 	else throw(ArgumentError("model expression is not valid"))
 	end
@@ -103,16 +114,6 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 	#println(inputData)
 
 	
-	X = Dict{Any,Any}()
-	Z = Dict{Any,Any}()
-	M = Dict{Any,Any}()
-	E = Dict{Any,Any}()
-
-	for eSet in modelLHSTerms
-		println("eSet: $eSet")
-		#E[]
-	end
-
 	#summarize input
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
 
