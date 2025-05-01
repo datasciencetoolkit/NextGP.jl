@@ -2,12 +2,12 @@
 function setVarCovStrE!(eSet,E,priorVCV,nData,varE)	
 	#no inverse implemented yet!
 	if haskey(priorVCV,:e)	
-		if isempty(priorVCV[:eSet].str) || priorVCV[:eSet].str=="I" 
+		if isempty(priorVCV[eSet].str) || priorVCV[eSet].str=="I" 
 				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
 				E[eSet][:str] = "I"
 				E[eSet][:iVarStr] = [] #Matrix(1.0I,nData,nData)
 				priorVCV[eSet] = Random("I",priorVCV[eSet].v)
-		elseif isa(priorVCV[:e].str,Vector) # D
+		elseif isa(priorVCV[eSet].str,Vector) # D
 				E[eSet][:str] = "D"
 				E[eSet][:iVarStr] = inv.(priorVCV[eSet].str) #inv(Diagonal(priorVCV[eSet].str))
 #				error("var-cov structure \"D\" has not been implemented yet")
