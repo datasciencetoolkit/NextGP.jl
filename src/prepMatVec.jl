@@ -94,6 +94,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
 			[E[k] = Dict{Any,Any}() (k,v) in modelLHSTerms]
 		end
+		modelInformation[keys(modelLHSTerms)] = keys(modelRHSTerms) 
 	elseif length(f) > 1
 		modelLHSTerms = Dict()
 		modelRHSTerms = Dict()
@@ -106,9 +107,12 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			modelLHSTerms = merge!(modelLHSTerms,LHSfi)
 			modelRHSTerms = merge!(modelRHSTerms,RHSfi)
 			E[LHSfi] = Dict{Any,Any}()
+			modelInformation[keys(LHSfi)] = keys(RHSfi) 
 		end
 	else throw(ArgumentError("model expression is not valid"))
 	end
+
+	println("modelInformation: $(modelInformation)")
 
 	#println(modelLHSTerms)
 	#println(modelRHSTerms)
