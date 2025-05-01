@@ -21,6 +21,7 @@ function setVarCovStrE!(E,priorVCV,nData,varE)
 		#just add to priors
 		priorVCV[:e] = Random("I",100)
 	end
+	varE = priorVCV[:e].v
 end
 
 ###############################
