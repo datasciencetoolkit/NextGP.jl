@@ -52,7 +52,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
 	
 	
 	### 
-	X and b
+	#X and b
 	###
 	
 	for blk in blocks
@@ -112,7 +112,7 @@ function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
         end
 
 	### 
-	Z and u
+	#Z and u
 	###
 	
 	u = []
