@@ -30,10 +30,7 @@ function runSampler!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength
 		
 		#sample residual variance
 		for eSet in keys(E)
-			if E[eSet].str == "D"
-	       			varE[eSet] = sampleVarE!(eSet,E,varE,ycorr,nData)
-			else varE[eSet] = sampleVarE!(E[eSet].df,E[eSet].scale,ycorr,nData)
-			end
+			varE[eSet] = sampleVarE!(eSet,E,varE,ycorr,nData)			
 		end
 		
 		#sample fixed effects
