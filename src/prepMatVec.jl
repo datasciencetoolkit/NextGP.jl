@@ -73,12 +73,13 @@ end
 """
 function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld also come here, otherwise input data is only the last one in the memory!
 
+	modelInformation = Dict{Any,Any}()
 	X = Dict{Any,Any}()
 	Z = Dict{Any,Any}()
 	M = Dict{Any,Any}()
 	E = Dict{Any,Any}()
 	
-	if length(f) == 1
+	if length(f) == 1 #both traits have the same model terms
 		modelRHSTerms = getRHSTerms(f[1])
 		modelLHSTerms = getLHSTerms(f[1])
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
