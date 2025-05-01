@@ -106,6 +106,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 	X = Dict{Any,Any}()
 	Z = Dict{Any,Any}()
 	M = Dict{Any,Any}()
+	E = Dict{Any,Any}()
 
 	#summarize input
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
