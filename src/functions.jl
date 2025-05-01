@@ -550,10 +550,10 @@ end
 function sampleVarE(E::NamedTuple,yCorVec,nRecords)
 	return (E.df*E.scale + sum(E.iVarStr.*(yCorVec.^2)))/rand(Chisq(E.df + nRecords))
 end
-function sampleVarE!(E,varE,yCorr,nRecords)
-	for eSet in keys(E)
-		varE[eSet] = sampleVarE(E[eSet].df,E[eSet].scale,yCorVec,nRecords)
-		varE[eSet] = sampleVarE(E[eSet].df*E[eSet].scale + sum(E[eSet].iVarStr.*(yCorVec.^2)))/rand(Chisq(E[eSet].df + nRecords))
+function sampleVarE!(eSet,E,varE,yCorVec,nRecords)
+	if E[eSet].str == "D"
+	       	varE[eSet] = sampleVarE(E,yCorVec,nRecords)
+	else varE[eSet] = sampleVarE(E[eSet].df,E[eSet].scale,yCorVec,nRecords)
 	end
 end
 					
