@@ -29,9 +29,11 @@ function runSampler!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength
 @showprogress 1 "MCMC progress..." for iter in 1:chainLength
 		
 		#sample residual variance
-		if E.str == "D"
-	       		varE = sampleVarE(E,ycorr,nData)
-		else varE = sampleVarE(E.df,E.scale,ycorr,nData)
+		for eSet in keys(E)
+			if E[eSet].str == "D"
+	       			varE[eSet] = sampleVarE!(eSet,E,varE,ycorr,nData)
+			else varE[eSet] = sampleVarE!(E[eSet].df,E[eSet].scale,ycorr,nData)
+			end
 		end
 		
 		#sample fixed effects
