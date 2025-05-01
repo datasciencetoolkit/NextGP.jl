@@ -92,7 +92,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 		elseif length(modelLHSTerms) > 1
 			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
-			[E[k] = Dict{Any,Any}() (k,v) in modelLHSTerms]
+			[E[k] = Dict{Any,Any}() for (k,v) in modelLHSTerms]
 		end
 		modelInformation[keys(modelLHSTerms)] = keys(modelRHSTerms) 
 	elseif length(f) > 1
