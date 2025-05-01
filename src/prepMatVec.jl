@@ -108,6 +108,11 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 	M = Dict{Any,Any}()
 	E = Dict{Any,Any}()
 
+	for eSet in modelLHSTerms
+		println("eSet: $eSet")
+		#E[]
+	end
+
 	#summarize input
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
 
