@@ -22,7 +22,7 @@ export getMME!
 
 
 #main sampler
-function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
+function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,outPut)
 			
         #some info
 	nRand = length(Z)
