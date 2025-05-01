@@ -23,13 +23,13 @@ include("outFiles.jl")
 """
 runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol,Any}(),blockThese=[],outFolder="outMCMC",VCV=[],userPedData=[],summaryStat=Dict{Any,Any}())
 
-	isa(prepMatVec.modelType(model),prepMatVec.lmm) || isa(prepMatVec.modelType(model),Tuple{Vararg{prepMatVec.lmm}}) ? println("I AM A TUPLE") : println("I AM NOT A TUPLE")
+	isa(prepMatVec.modelType(model),prepMatVec.lmm) || isa(prepMatVec.modelType(model),Tuple{Vararg{prepMatVec.lmm}}) ? println("I AM A lmm") : println("I AM NOT A lmm")
 	
 	folderHandler(outFolder)
 
-	yVec,X,Z,M = prepMatVec.prep(model,path2ped=userPedData,priorVCV=VCV)
+	yVec,X,Z,M,E = prepMatVec.prep(model,path2ped=userPedData,priorVCV=VCV)
 
-	ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta = mme.getMME!(yVec,X,Z,M,blockThese,VCV,summaryStat,outFolder)
+	ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta = mme.getMME!(yVec,X,Z,M,E,blockThese,VCV,summaryStat,outFolder)
 
 	samplers.runSampler!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,nChain,nBurn,nThin,outFolder)
 	
