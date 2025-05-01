@@ -118,6 +118,7 @@ function varCovM!(M,priorVCV,varBeta)
 			end
         	end
         end
+end
 
 
 
