@@ -12,6 +12,7 @@ using PrettyTables
 include("outFiles.jl")
 include("misc.jl")
 include("types.jl")
+include("varComp.jl")
 
 #function name attached to genomic component, such as M[pSet][:funct] = sampleBayesC!
 include("functions.jl")
