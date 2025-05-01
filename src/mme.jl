@@ -21,6 +21,77 @@ using .functions
 export getMME!
 
 
+function MMEX!(X,E,blocks,summaryStat)
+	for BLALALALALALALALLA
+		for blk in blocks
+			println("blocking variables in $blk")
+			X[blk] = Dict{Symbol, Any}()
+			X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
+			X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
+			X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
+			X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
+			for d in blk
+				delete!(X,d)
+			end
+		end
+
+		#==BLOCK FIXED EFFECTS.
+		Order of blocks is as defined by the user
+		Order of variables within blocks is always the same as in the model definition, not defined by the user in each block.
+		==#
+	
+		#Positions of parameters for each variable and blocks for speed. b is a column vector.
+		countXCol = 0
+		for xSet in keys(X)
+			nCol = X[xSet][:nCol]
+          	      	X[xSet][:pos] = (countXCol+1):(countXCol+nCol)
+			countXCol += nCol
+        	end
+		countXCol = 0
+
+		###Allow no fixed effects
+		isempty(keys(X)) ? b = [] : b = zeros(sum(getindex.(getindex.(Ref(X), keys(X)),:nCol)))
+
+
+		##This is not really nFix, but the "blocks" of fixed effects
+        	nFix  = length(X)
+	
+        	for xSet in keys(X)
+			if E[:str] == "D"
+#				X[xSet][:xpx] = X[xSet][:data]'*E[:iVarStr]*X[xSet][:data]
+				X[xSet][:xpx] = X[xSet][:data]'*(E[:iVarStr].*X[xSet][:data])
+				X[xSet][:Xp] = transpose(X[xSet][:data].*E[:iVarStr])
+			else 
+				X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
+				X[xSet][:Xp] = transpose(X[xSet][:data])
+			end
+			X[xSet][:lhs] = zeros(X[xSet][:nCol])
+			X[xSet][:rhs] = zeros(X[xSet][:nCol])
+
+                	if xSet in keys(summaryStat)
+	  			X[xSet][:lhs] .= isa(summaryStat[xSet].v,Array{Float64,1}) ? inv.(summaryStat[xSet].v) : inv.(diag(summaryStat[xSet].v))
+				X[xSet][:rhs] .= isa(summaryStat[xSet].v,Array{Float64,1}) ? inv.(summaryStat[xSet].v) .* (summaryStat[xSet].m)  : inv.(diag(summaryStat[xSet].v)) .* (summaryStat[xSet].m)
+                	end
+
+			if isa(X[xSet][:xpx],Matrix{Float64})
+#				println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
+				X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
+			end
+        	end
+	end ###BLALALALALALALALA
+end
+
+
+
+
+
+
+
+
+
+
+
+
 #main sampler
 function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,outPut)
 			
@@ -54,61 +125,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,outPut)
 	#X and b
 	###
 	
-	for blk in blocks
-		println("blocking variables in $blk")
-		X[blk] = Dict{Symbol, Any}()
-		X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
-		X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
-		X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
-		X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
-		for d in blk
-			delete!(X,d)
-		end
-	end
-
-	#==BLOCK FIXED EFFECTS.
-	Order of blocks is as defined by the user
-	Order of variables within blocks is always the same as in the model definition, not defined by the user in each block.
-	==#
 	
-	#Positions of parameters for each variable and blocks for speed. b is a column vector.
-	countXCol = 0
-	for xSet in keys(X)
-		nCol = X[xSet][:nCol]
-                X[xSet][:pos] = (countXCol+1):(countXCol+nCol)
-		countXCol += nCol
-        end
-	countXCol = 0
-
-	###Allow no fixed effects
-	isempty(keys(X)) ? b = [] : b = zeros(sum(getindex.(getindex.(Ref(X), keys(X)),:nCol)))
-
-
-	##This is not really nFix, but the "blocks" of fixed effects
-        nFix  = length(X)
-	
-        for xSet in keys(X)
-		if E[:str] == "D"
-#			X[xSet][:xpx] = X[xSet][:data]'*E[:iVarStr]*X[xSet][:data]
-			X[xSet][:xpx] = X[xSet][:data]'*(E[:iVarStr].*X[xSet][:data])
-			X[xSet][:Xp] = transpose(X[xSet][:data].*E[:iVarStr])
-		else 
-			X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
-			X[xSet][:Xp] = transpose(X[xSet][:data])
-		end
-		X[xSet][:lhs] = zeros(X[xSet][:nCol])
-		X[xSet][:rhs] = zeros(X[xSet][:nCol])
-
-                if xSet in keys(summaryStat)
-	  		X[xSet][:lhs] .= isa(summaryStat[xSet].v,Array{Float64,1}) ? inv.(summaryStat[xSet].v) : inv.(diag(summaryStat[xSet].v))
-			X[xSet][:rhs] .= isa(summaryStat[xSet].v,Array{Float64,1}) ? inv.(summaryStat[xSet].v) .* (summaryStat[xSet].m)  : inv.(diag(summaryStat[xSet].v)) .* (summaryStat[xSet].m)
-                end
-
-		if isa(X[xSet][:xpx],Matrix{Float64})
-#			println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
-			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
-		end
-        end
 
 	### 
 	#Z and u
