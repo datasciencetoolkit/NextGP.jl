@@ -88,7 +88,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			inputData = prepData!(inputData,f[1])
 			inputData,Ainv = usePedigree!(path2ped,inputData)
 			Y = makeX(inputData,f[1].lhs)[:data]
-			E[f[1].lhs] = Dict(Any,Any)
+			E[f[1].lhs] = Dict{Any,Any}()
 		elseif length(modelLHSTerms) > 1
 			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
