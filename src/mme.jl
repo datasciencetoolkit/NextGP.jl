@@ -20,9 +20,6 @@ using .functions
 
 export getMME!
 
-#define type for priorVCV to include Expression :(1|Dam)  or Symbol (:Dam)
-ExprOrSymbol = Union{Expr,Symbol}
-ExprOrSymbolOrTuple = Union{Expr,Symbol,Tuple}
 
 #main sampler
 function getMME!(Y,X,Z,M,blocks,priorVCV,summaryStat,outPut)
