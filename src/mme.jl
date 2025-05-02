@@ -21,8 +21,8 @@ using .functions
 export getMME!
 
 
-function MMEX!(X,E,blocks,summaryStat) #LHS is a Tuple
-#	for BLALALALALALALALLA
+function MMEX!(X,E,blocks,summaryStat,modelInformation) #LHS is a Tuple
+#	for y in keys(E)
 		for blk in blocks
 			println("blocking variables in $blk")
 			X[blk] = Dict{Symbol, Any}()
