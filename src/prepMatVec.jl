@@ -104,6 +104,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			inputData = CSV.read(fi.data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			inputData,Ainv = usePedigree!(path2ped,inputData)
 			LHSfi = getLHSTerms(fi)
+			println("LHSfi: $LHSfi")
 			RHSfi = getRHSTerms(fi)
 			modelLHSTerms = merge!(modelLHSTerms,LHSfi)
 			modelRHSTerms = merge!(modelRHSTerms,RHSfi)
