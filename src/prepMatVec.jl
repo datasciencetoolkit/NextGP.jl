@@ -96,6 +96,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 		end
 		modelInformation[keys(modelLHSTerms)] = keys(modelRHSTerms) 
 	elseif length(f) > 1
+		Y = Matrix(undef,0,length(f))
 		modelLHSTerms = Dict()
 		modelRHSTerms = Dict()
 		for (i,fi) in enumerate(f)
@@ -106,6 +107,8 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			RHSfi = getRHSTerms(fi)
 			modelLHSTerms = merge!(modelLHSTerms,LHSfi)
 			modelRHSTerms = merge!(modelRHSTerms,RHSfi)
+			yi = makeX(inputData,LHSfi)[:data]
+			Y[:,i] = yi
 			E[LHSfi] = Dict{Any,Any}()
 			modelInformation[keys(LHSfi)] = keys(RHSfi) 
 		end
