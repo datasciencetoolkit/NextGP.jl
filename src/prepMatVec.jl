@@ -108,7 +108,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			RHSfi = getRHSTerms(fi)
 			modelLHSTerms = merge!(modelLHSTerms,LHSfi)
 			modelRHSTerms = merge!(modelRHSTerms,RHSfi)
-			yi = makeX(inputData,LHSfi)[:data]
+			yi = makeX(inputData,keys(LHSfi))[:data]
 			Y[:,i] = yi
 			E[LHSfi] = Dict{Any,Any}()
 			modelInformation[keys(LHSfi)] = keys(RHSfi) 
