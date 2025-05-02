@@ -22,7 +22,7 @@ export getMME!
 
 
 function MMEX!(X,E,blocks,summaryStat) #LHS is a Tuple
-	for BLALALALALALALALLA
+#	for BLALALALALALALALLA
 		for blk in blocks
 			println("blocking variables in $blk")
 			X[blk] = Dict{Symbol, Any}()
@@ -78,7 +78,7 @@ function MMEX!(X,E,blocks,summaryStat) #LHS is a Tuple
 				X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
 			end
         	end
-	end ###BLALALALALALALALA
+#	end ###BLALALALALALALALA
 end
 
 
