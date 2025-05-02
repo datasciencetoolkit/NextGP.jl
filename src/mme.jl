@@ -467,9 +467,9 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,outPut)
 		push!(summarize,[mSet,"Random (Marker)",str,M[mSet][:df],M[mSet][:scale]])
 	end
 	
-
-	push!(summarize,["e","Random",E[:str],E[:df],E[:scale]])						
-
+	for eSet in keys(E)
+		push!(summarize,[eSet,"Random",E[eSet][:str],E[eSet][:df],E[eSet][:scale]])						
+	end
 	println("\n ---------------- Summary of analysis ---------------- \n")
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,alignment=:l)
 
