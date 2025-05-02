@@ -79,6 +79,7 @@ function MMEX!(X,E,blocks,summaryStat) #LHS is a Tuple
 			end
         	end
 #	end ###BLALALALALALALALA
+	return b
 end
 
 
@@ -126,7 +127,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,outPut)
 	#X and b
 	###
 	
-	
+	b = MMEX!(X,E,blocks,summaryStat)
 
 	### 
 	#Z and u
