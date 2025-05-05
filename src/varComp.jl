@@ -25,31 +25,7 @@ function setVarCovStrE!(eSet::Symbol,E,priorVCV,nData,varE)
 	varE[eSet] = priorVCV[eSet].v
 end
 
-function setVarCovStrE!(eSet::Tuple,E,priorVCV,nData,varE)	
-	#no inverse implemented yet!
-	if haskey(priorVCV,eSet)	
-		if isempty(priorVCV[eSet].str) || priorVCV[eSet].str=="I" 
-				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
-				E[eSet][:str] = "I"
-				E[eSet][:iVarStr] = [] #Matrix(1.0I,nData,nData)
-				priorVCV[eSet] = Random("I",priorVCV[eSet].v)
-		elseif isa(priorVCV[eSet].str,Vector) # D
-				E[eSet][:str] = "D"
-				E[eSet][:iVarStr] = inv.(priorVCV[eSet].str) #inv(Diagonal(priorVCV[eSet].str))
-#				error("var-cov structure \"D\" has not been implemented yet")
-				printstyled("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used\n"; color = :green)
-		else 
-				error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
-		end
-	else	
-		printstyled("prior var-cov for \"e\" is fully  empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
-		E[eSet][:str] = "I"
-		E[eSet][:iVarStr] = [] #Matrix(1.0I,nData,nData)
-		#just add to priors
-		priorVCV[eSet] = Random("I",100.0)
-	end
-	varE[eSet] = priorVCV[eSet].v
-end
+
 
 ###############################
 #df, shape, scale...															
