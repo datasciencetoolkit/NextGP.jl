@@ -96,7 +96,8 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			modelInformation[:type] = "lmm_MV"
 			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
-			[E[k] = Dict{Any,Any}() for (k,v) in modelLHSTerms]
+			#[E[k] = Dict{Any,Any}() for (k,v) in modelLHSTerms]
+			E[Tuple(collect(keys(modelLHSTerms)))] = Dict{Any,Any}()
 			modelInformation[collect(keys(modelLHSTerms))] = keys(modelRHSTerms)
 		end
 	elseif length(f) > 1
