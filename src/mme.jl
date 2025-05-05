@@ -45,7 +45,7 @@ function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
 	==#
 	
         for xSet in keys(X)
-		println("eSet: $eSet")
+		println("eSet: $eSet xSet: $xSet")
 		if E[eSet][:str] == "D"
 #			X[xSet][:xpx] = X[xSet][:data]'*E[ySet][:iVarStr]*X[xSet][:data]
 			X[xSet][:xpx] = X[xSet][:data]'*(E[ySet][:iVarStr].*X[xSet][:data])
@@ -72,7 +72,7 @@ end
 
 
 #main sampler
-function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut)
+function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,outPut)
 			
         #some info
 	nRand = length(Z)
@@ -108,7 +108,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut)
 	#X and b
 	########
 	for eSet in keys(E)
-		MMEX!(X,eSet,E,blocks,modelInformation,summaryStat)
+		MMEX!(X,eSet,E,blocks,summaryStat)
 	end
 
 	#Positions of parameters for each variable and blocks for speed. b is a column vector.
