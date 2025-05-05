@@ -128,6 +128,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 	#println(modelLHSTerms)
 	#println(modelRHSTerms)
 	#println(inputData)
+	println(E)
 
 	
 	#summarize input
