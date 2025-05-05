@@ -109,8 +109,14 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	######## 
 	#X and b
 	########
-	for eSet in keys(E)
-		MMEX!(X,eSet,E,blocks,summaryStat)
+	if isa(keys(modelInformation),Vector{Any})
+		println("model is a multi-trait model where measurements/observations are from the same individuals")
+#	elseif isa(keys(modelInformation),)
+		for eSet in keys(E)
+			MMEX!(X,eSet,E,blocks,summaryStat)
+		end
+#	elseif
+#	else 
 	end
 
 	#Positions of parameters for each variable and blocks for speed. b is a column vector.
