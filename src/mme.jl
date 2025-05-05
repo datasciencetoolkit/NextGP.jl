@@ -21,7 +21,7 @@ using .functions
 export getMME!
 
 
-function MMEX!(X,eSet,E,blocks,summaryStat) #LHS is a Tuple
+function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
 	println("dealing trait $eSet")
 	if haskey(blocks, eSet)
 		for blk in blocks[eSet]
@@ -46,7 +46,7 @@ function MMEX!(X,eSet,E,blocks,summaryStat) #LHS is a Tuple
         for xSet in keys(X)
 		#for this xSet, i need to find the right modelInformation (eSet)
 		which(x::Any, y) = x == y
-		eSet = [k for (k,v) in di if which(v, xSet)]
+		eSet = [k for (k,v) in modelInformation if which(v, xSet)]
 		
 		if E[eSet][:str] == "D"
 #			X[xSet][:xpx] = X[xSet][:data]'*E[eSet][:iVarStr]*X[xSet][:data]
@@ -110,7 +110,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut)
 	#X and b
 	########
 	for eSet in keys(E)
-		MMEX!(X,eSet,E,blocks,summaryStat)
+		MMEX!(X,eSet,E,blocks,modelInformation,summaryStat)
 	end
 
 	#Positions of parameters for each variable and blocks for speed. b is a column vector.
