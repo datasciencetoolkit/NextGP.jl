@@ -21,7 +21,7 @@ using .functions
 export getMME!
 
 
-function MMEX!(X,E,blocks,summaryStat,modelInformation) #LHS is a Tuple
+function MMEX!(X,E,blocks,summaryStat) #LHS is a Tuple
 #	for y in keys(E)
 		for blk in blocks
 			println("blocking variables in $blk")
@@ -127,7 +127,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut)
 	#X and b
 	###
 	
-	b = MMEX!(X,E,blocks,summaryStat,modelInformation)
+	b = MMEX!(X,E,blocks,summaryStat)
 
 	### 
 	#Z and u
