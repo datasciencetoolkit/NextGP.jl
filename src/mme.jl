@@ -35,8 +35,9 @@ function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
 				delete!(X,d)
 			end
 		end
-		println("NO blocking is performed for trait $eSet")
+	else println("NO blocking is performed for trait $eSet")
 	end
+	
 
 	#==BLOCK FIXED EFFECTS.
 	Order of blocks is as defined by the user
@@ -45,8 +46,7 @@ function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
 	
         for xSet in keys(X)
 		#for this xSet, i need to find the right modelInformation (eSet)
-		which(x::Any, y) = x == y
-		eSet = [k for (k,v) in modelInformation if which(v, xSet)][1]
+		eSet = [k[] for (k,v) in modelInformation if in(xSet, v)]
 		
 		if E[eSet][:str] == "D"
 #			X[xSet][:xpx] = X[xSet][:data]'*E[eSet][:iVarStr]*X[xSet][:data]
