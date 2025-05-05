@@ -46,14 +46,12 @@ function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
 	
         for xSet in keys(X)
 		#for this xSet, i need to find the right modelInformation (eSet)
-		println(xSet)
-		println([(k,v) for (k,v) in modelInformation])
-		eSet = [k[] for (k,v) in modelInformation if in(Symbol(xSet), v)][] #avoid returning vector
+		ySet = [k[] for (k,v) in modelInformation if in(xSet, v)][] #avoid returning vector
 		
-		if E[eSet][:str] == "D"
-#			X[xSet][:xpx] = X[xSet][:data]'*E[eSet][:iVarStr]*X[xSet][:data]
-			X[xSet][:xpx] = X[xSet][:data]'*(E[eSet][:iVarStr].*X[xSet][:data])
-			X[xSet][:Xp] = transpose(X[xSet][:data].*E[eSet][:iVarStr])
+		if E[ySet][:str] == "D"
+#			X[xSet][:xpx] = X[xSet][:data]'*E[ySet][:iVarStr]*X[xSet][:data]
+			X[xSet][:xpx] = X[xSet][:data]'*(E[ySet][:iVarStr].*X[xSet][:data])
+			X[xSet][:Xp] = transpose(X[xSet][:data].*E[ySet][:iVarStr])
 		else 
 			X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
 			X[xSet][:Xp] = transpose(X[xSet][:data])
