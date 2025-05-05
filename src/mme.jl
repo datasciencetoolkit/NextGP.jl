@@ -21,7 +21,7 @@ using .functions
 export getMME!
 
 
-function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
+function MMEX!(X,eSet,E,blocks,summaryStat) #LHS is a Tuple
 	println("dealing trait $eSet")
 	if haskey(blocks, eSet)
 		for blk in blocks[eSet]
@@ -72,7 +72,7 @@ end
 
 
 #main sampler
-function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,outPut)
+function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) #maybe later use modelInformation
 			
         #some info
 	nRand = length(Z)
