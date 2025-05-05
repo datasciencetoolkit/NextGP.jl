@@ -109,7 +109,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	######## 
 	#X and b
 	########
-	if isa(keys(modelInformation),Vector{Any})
+	if modelInformation[:type]
 		println("model is a multi-trait model where measurements/observations are from the same individuals")
 #	elseif isa(keys(modelInformation),)
 		for eSet in keys(E)
