@@ -110,7 +110,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			modelRHSTerms = merge!(modelRHSTerms,RHSfi)
 			yi = makeX(inputData,keys(LHSfi))[:data]
 			Y[:,i] = yi
-			E[LHSfi] = Dict{Any,Any}()
+			E[keys(LHSfi)] = Dict{Any,Any}()
 			modelInformation[keys(LHSfi)] = keys(RHSfi) 
 		end
 	else throw(ArgumentError("model expression is not valid"))
