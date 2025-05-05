@@ -29,7 +29,7 @@ runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol
 
 	Y,X,Z,M,E,modelInformation = prepMatVec.prep(model,path2ped=userPedData,priorVCV=VCV)
 
-	ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta = mme.getMME!(Y,X,Z,M,E,blockThese,VCV,summaryStat,outFolder)
+	ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta = mme.getMME!(Y,X,Z,M,E,blockThese,VCV,summaryStat,modelInformation,outFolder)
 
 	samplers.runSampler!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,nChain,nBurn,nThin,outFolder)
 	
