@@ -47,7 +47,7 @@ function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
         for xSet in keys(X)
 		#for this xSet, i need to find the right modelInformation (eSet)
 		println(xSet)
-		eSet = [k[] for (k,v) in modelInformation if in(xSet, v)][] #avoid returning vector
+		eSet = [k[] for (k,v) in modelInformation if in(Symbol(xSet), v)][] #avoid returning vector
 		
 		if E[eSet][:str] == "D"
 #			X[xSet][:xpx] = X[xSet][:data]'*E[eSet][:iVarStr]*X[xSet][:data]
