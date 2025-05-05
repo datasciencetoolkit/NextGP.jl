@@ -19,7 +19,7 @@ function setVarCovStrE!(eSet,E,priorVCV,nData,varE)
 		printstyled("prior var-cov for \"e\" is fully  empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
 		E[eSet][:iVarStr] = [] #Matrix(1.0I,nData,nData)
 		#just add to priors
-		priorVCV[eSet] = Random("I",100)
+		priorVCV[eSet] = Random("I",100.0)
 	end
 	varE[eSet] = priorVCV[eSet].v
 end
