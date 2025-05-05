@@ -21,8 +21,9 @@ using .functions
 export getMME!
 
 
-function MMEX!(X,E,blocks,summaryStat) #LHS is a Tuple
-	for eSet in keys(E)
+function MMEX!(X,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
+	for (y,ySet) in enumerate(keys(modelInformation))
+		println("dealing with $y trait $ySet")
 		for blk in blocks
 			println("blocking variables in $blk")
 			X[blk] = Dict{Symbol, Any}()
@@ -78,7 +79,7 @@ function MMEX!(X,E,blocks,summaryStat) #LHS is a Tuple
 				X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
 			end
         	end
-#	end ###BLALALALALALALALA
+	end ###BLALALALALALALALA
 	return b
 end
 
@@ -127,7 +128,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut)
 	#X and b
 	###
 	
-	b = MMEX!(X,E,blocks,summaryStat)
+	b = MMEX!(X,E,blocks,modelInformation,summaryStat)
 
 	### 
 	#Z and u
