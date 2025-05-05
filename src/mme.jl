@@ -73,7 +73,9 @@ end
 
 #main sampler
 function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) #maybe later use modelInformation
-			
+
+	println(E)
+		
         #some info
 	nRand = length(Z)
 	nData = length(Y)
