@@ -109,14 +109,18 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	######## 
 	#X and b
 	########
-	if modelInformation[:type]
-		println("model is a multi-trait model where measurements/observations are from the same individuals")
-#	elseif isa(keys(modelInformation),)
+	
+	if isequal(modelInformation[:type],"lmm")
+		println("model is a single-trait model")
 		for eSet in keys(E)
 			MMEX!(X,eSet,E,blocks,summaryStat)
 		end
-#	elseif
-#	else 
+	elseif isequal(modelInformation[:type],"lmm_MV")
+		println("model is a multi-trait model where measurements/observations are from the same individuals")
+	elseif isequal(modelInformation[:type],"lmm_MV_General")
+		println("model is a multi-population model where measurements/observations are from different individuals")
+	else 	ArgumentError("Could not understand the type of your model")
+
 	end
 
 	#Positions of parameters for each variable and blocks for speed. b is a column vector.
