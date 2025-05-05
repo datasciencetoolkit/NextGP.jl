@@ -91,7 +91,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	varE = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
 
 	######## 
-	#E
+	#E (is per trait information up until now)
 	########
 
 
