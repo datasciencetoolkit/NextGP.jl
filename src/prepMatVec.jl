@@ -74,7 +74,7 @@ end
 function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld also come here, otherwise input data is only the last one in the memory!
 
 	#I am assuming different variables names for each model. y1 = a1 + b1 +... and y2 = a2 + b2 +....
-	modelInformation = Dict{Any,Vector{Symbol}}()
+	modelInformation = Dict{Any,Any}()
 	X = Dict{Any,Any}()
 	Z = Dict{Any,Any}()
 	M = Dict{Any,Any}()
