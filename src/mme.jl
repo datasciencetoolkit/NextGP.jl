@@ -21,11 +21,10 @@ using .functions
 export getMME!
 
 
-function MMEX!(X,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
-	for (y,ySet) in enumerate(keys(modelInformation))
+function MMEX!(X,eSet,E,blocks,summaryStat) #LHS is a Tuple
 		println("dealing with $y trait $ySet")
-		for blk in blocks
-			println("blocking variables in $blk")
+		for blk in values(blocks)
+			println("blocking variables $blk for trait $ySet")
 			X[blk] = Dict{Symbol, Any}()
 			X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
 			X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
@@ -79,7 +78,6 @@ function MMEX!(X,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
 				X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
 			end
         	end
-	end ###BLALALALALALALALA
 	return b
 end
 
@@ -95,7 +93,7 @@ end
 
 
 #main sampler
-function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut)
+function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,outPut)
 			
         #some info
 	nRand = length(Z)
@@ -127,9 +125,10 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut)
 	### 
 	#X and b
 	###
+	for eSet in keys(E)
+		b = MMEX!(X,eSet,E,blocks,modelInformation,summaryStat)
+	end
 	
-	b = MMEX!(X,E,blocks,modelInformation,summaryStat)
-
 	### 
 	#Z and u
 	###
