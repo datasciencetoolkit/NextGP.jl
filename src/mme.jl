@@ -73,8 +73,6 @@ end
 
 #main sampler
 function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) #maybe later use modelInformation
-
-	println(E)
 		
         #some info
 	nRand = length(Z)
@@ -102,6 +100,8 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 		setVarCovStrE!(eSet,E,priorVCV,nData,varE)
 	end
 	varCovE!(E,priorVCV)
+
+	println(E)
 
 	###################################
 	
