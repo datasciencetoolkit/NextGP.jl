@@ -93,7 +93,7 @@ end
 
 
 #main sampler
-function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,outPut)
+function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut)
 			
         #some info
 	nRand = length(Z)
@@ -126,7 +126,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,outPut)
 	#X and b
 	###
 	for eSet in keys(E)
-		b = MMEX!(X,eSet,E,blocks,modelInformation,summaryStat)
+		b = MMEX!(X,eSet,E,blocks,summaryStat)
 	end
 	
 	### 
