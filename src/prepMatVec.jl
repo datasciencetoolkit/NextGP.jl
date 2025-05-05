@@ -85,6 +85,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 		modelLHSTerms = getLHSTerms(f[1])
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
 		if length(modelLHSTerms) == 1
+			modelInformation[:type] = "lmm"
 			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			inputData = prepData!(inputData,f[1])
 			inputData,Ainv = usePedigree!(path2ped,inputData)
@@ -92,6 +93,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			E[f[1].lhs] = Dict{Any,Any}()
 			modelInformation[collect(keys(modelLHSTerms))[]] = keys(modelRHSTerms)
 		elseif length(modelLHSTerms) > 1
+			modelInformation[:type] = "lmm_MV"
 			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
 			[E[k] = Dict{Any,Any}() for (k,v) in modelLHSTerms]
@@ -101,6 +103,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 		Y = [] #Matrix(undef,0,length(f))
 		modelLHSTerms = Dict()
 		modelRHSTerms = Dict()
+		modelInformation[:type] = "lmm_MV_General"
 		for (i,fi) in enumerate(f)
 			println("reading $i $fi")
 			inputData = CSV.read(fi.data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
