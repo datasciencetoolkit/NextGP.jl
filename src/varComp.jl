@@ -1,5 +1,5 @@
 #set up (co)variance structures for E
-function setVarCovStrE!(eSet,E,priorVCV,nData,varE)	
+function setVarCovStrE!(eSet::Symbol,E,priorVCV,nData,varE)	
 	#no inverse implemented yet!
 	if haskey(priorVCV,eSet)	
 		if isempty(priorVCV[eSet].str) || priorVCV[eSet].str=="I" 
