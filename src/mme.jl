@@ -23,16 +23,19 @@ export getMME!
 
 function MMEX!(X,eSet,E,blocks,summaryStat) #LHS is a Tuple
 	println("dealing trait $eSet")
-	for blk in blocks[eSet]
-		println("blocking variables $blk for trait $eSet")
-		X[blk] = Dict{Symbol, Any}()
-		X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
-		X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
-		X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
-		X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
-		for d in blk
-			delete!(X,d)
+	if haskey(blocks, eSet)
+		for blk in blocks[eSet]
+			println("blocking variables $blk for trait $eSet")
+			X[blk] = Dict{Symbol, Any}()
+			X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
+			X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
+			X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
+			X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
+			for d in blk
+				delete!(X,d)
+			end
 		end
+		println("NO blocking is performed for trait $eSet")
 	end
 
 	#==BLOCK FIXED EFFECTS.
@@ -107,7 +110,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut)
 	#X and b
 	########
 	for eSet in keys(E)
-		b = MMEX!(X,eSet,E,blocks,summaryStat)
+		MMEX!(X,eSet,E,blocks,summaryStat)
 	end
 
 	#Positions of parameters for each variable and blocks for speed. b is a column vector.
