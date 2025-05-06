@@ -36,7 +36,7 @@ function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
 			println("modelInformation $modelInformation EXTENDED")
 			for d in blk
 				delete!(X,d)
-				delete!(modelInformation[eSet],d)
+				modelInformation[eSet] = delete!(collect(values(modelInformation[eSet])),d)
 				println("modelInformation $modelInformation DELETED")
 			end
 			println("modelInformation $modelInformation FINAL")
