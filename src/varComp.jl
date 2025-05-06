@@ -27,6 +27,7 @@ end
 
 function setVarCovStrE!(eSet::Tuple{Vararg{Symbol}},E,priorVCV,nData,varE)	
 	#no inverse implemented yet!
+	println("eSET LENGTH: $(length(eSet))")
 	if haskey(priorVCV,eSet)	
 		if isempty(priorVCV[eSet].str) || priorVCV[eSet].str=="I" 
 				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. R0 (kron) I will be used\n"; color = :green)
@@ -42,11 +43,11 @@ function setVarCovStrE!(eSet::Tuple{Vararg{Symbol}},E,priorVCV,nData,varE)
 				error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
 		end
 	else	
-		printstyled("prior var-cov for \"e\" is fully  empty. R0 (kron) I will be used where R0 is [100.0 50.0;50.0 100]\n"; color = :green)
+		printstyled("prior var-cov for \"e\" is fully  empty. R0 (kron) I will be used where R0 is [100.0 0.0....;....;0 100.0 ...;0.0 ... 100.0]\n"; color = :green)
 		E[eSet][:str] = "I"
 		E[eSet][:iVarStr] = [] #Matrix(1.0I,nData,nData)
 		#just add to priors
-		priorVCV[eSet] = Random("I",[100.0 50.0;50.0 100])
+		priorVCV[eSet] = Random("I",Matrix(100.0I,length(eSet),length(eSet)))
 	end
 	varE[eSet] = priorVCV[eSet].v
 end
