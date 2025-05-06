@@ -41,7 +41,7 @@ function runSampler!(ycorr,nData,E,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength
 	
 		#sample random effects and variances
 		for zSet in keys(Z)
-	        	functions.sampleZ!(zSet,Z,u,ycorr,varE,varU)	
+	        	sampleZ!(zSet,Z,u,ycorr,varE,varU)	
 		end
 		
 	
