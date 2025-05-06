@@ -21,7 +21,7 @@ using .functions
 export getMME!
 
 
-function MMEX!(X,eSet,E,blocks,summaryStat) #LHS is a Tuple
+function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
 	println("dealing trait $eSet")
 	if haskey(blocks, eSet)
 		for blk in blocks[eSet]
@@ -31,8 +31,10 @@ function MMEX!(X,eSet,E,blocks,summaryStat) #LHS is a Tuple
 			X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
 			X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
 			X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
+			push!(modelInformation[eSet],blk)
 			for d in blk
 				delete!(X,d)
+				delete!(modelInformation[eSet],d)
 			end
 		end
 	else println("NO blocking is performed for trait $eSet")
@@ -113,7 +115,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	if isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Symbol
 		println("model is a single-trait model")
 		for eSet in keys(E)
-			MMEX!(X,eSet,E,blocks,summaryStat)
+			MMEX!(X,eSet,E,blocks,modelInformation,summaryStat)
 		end
 	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
 		println("model is a multi-trait model where measurements/observations are from the same individuals")
