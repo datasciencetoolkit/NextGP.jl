@@ -32,7 +32,7 @@ function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
 			X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
 			X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
 			X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
-			push!(modelInformation[eSet],blk)
+			modelInformation[eSet] = push!(values(modelInformation[eSet]),blk)
 			println("modelInformation $modelInformation EXTENDED")
 			for d in blk
 				delete!(X,d)
@@ -118,7 +118,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	
 	if isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Symbol
 		println("model is a single-trait model")
-		for eSet in collect(keys(E))
+		for eSet in keys(E)
 			MMEX!(X,eSet,E,blocks,modelInformation,summaryStat)
 		end
 	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
