@@ -36,9 +36,8 @@ function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
 			println("modelInformation $modelInformation EXTENDED")
 			for d in blk
 				delete!(X,d)
-				modelInformation[eSet] = delete!(collect(values(modelInformation[eSet])),d)
-				println("modelInformation $modelInformation DELETED")
 			end
+			modelInformation[eSet] = filter!(e->e∉blk,collect(values(modelInformation[eSet])))
 			println("modelInformation $modelInformation FINAL")
 		end
 	else println("NO blocking is performed for trait $eSet")
