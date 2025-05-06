@@ -19,7 +19,7 @@ export sampleZ!
 
 ### NEW, Wang's trick
 
-function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict)
+function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict,ySet::Symbol)
 	iVarE = inv(varE)
 	bVec = deepcopy(b[X[xSet].pos])
 	Yi = X[xSet].Xp*ycorr*iVarE #computation of X'ycorr*iVarE for ALL  rhsb
@@ -36,8 +36,8 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 end
 
 # NEW with D and with Wang's Trick
-function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict)
-	iVarE = inv(varE)
+function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict,ySet::Symbol)
+	iVarE = inv(varE[ySet])
 	if length(b[X[xSet].pos])==1
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
 		rhs      = (X[xSet].Xp*ycorr).*iVarE .+ X[xSet].rhs
@@ -47,7 +47,7 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 		ycorr    .-= X[xSet].data .* b[X[xSet].pos]
 	else
 		ycorr    .+= X[xSet].data*b[X[xSet].pos]
-		b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,varE)
+		b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,varE,ySet)
 		ycorr    .-= X[xSet].data*b[X[xSet].pos]
 	end
 end
