@@ -37,7 +37,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 
 			for xSet in yModel #keys(X)
 				println("sampling now")
-				sampleX!(xSet,X,b,ycorr,varE[ySet])
+				sampleX!(xSet,X,b,ycorr,varE,ySet)
 			end
 	
 			#sample random effects and variances
