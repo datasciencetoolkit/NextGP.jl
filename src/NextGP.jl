@@ -36,7 +36,4 @@ export runLMEM
 using .GRN
 export estGRN_MHGibbs 
 
-export DataTerm
-
-
 end
