@@ -36,7 +36,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 			#sample fixed effects
 
 			for xSet in yModel #keys(X)
-				println("sampling now")
+				println("sampling now $xSet")
 				sampleX!(xSet,X,b,ycorr,varE,ySet)
 			end
 	
