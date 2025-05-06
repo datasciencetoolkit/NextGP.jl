@@ -119,7 +119,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 		println("model is a multi-trait model where measurements/observations are from the same individuals")
 	elseif !isequal(length(collect(keys(E))),1) && all(typeof.(collect(keys(E))) .<: Symbol)
 		println("model is a multi-population model where measurements/observations are from different individuals")
-	else 	ArgumentError("Could not understand the type of your model")
+	else 	throw(ArgumentError("Could not understand the type of your model"))
 
 	end
 
