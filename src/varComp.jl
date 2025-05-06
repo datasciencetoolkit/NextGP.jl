@@ -42,11 +42,11 @@ function setVarCovStrE!(eSet::Tuple{Vararg{Symbol}},E,priorVCV,nData,varE)
 				error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
 		end
 	else	
-		printstyled("prior var-cov for \"e\" is fully  empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
+		printstyled("prior var-cov for \"e\" is fully  empty. R0 (kron) I will be used where R0 is [100.0 50.0;50.0 100]\n"; color = :green)
 		E[eSet][:str] = "I"
 		E[eSet][:iVarStr] = [] #Matrix(1.0I,nData,nData)
 		#just add to priors
-		priorVCV[eSet] = Random("I",100.0)
+		priorVCV[eSet] = Random("I",[100.0 50.0;50.0 100])
 	end
 	varE[eSet] = priorVCV[eSet].v
 end
