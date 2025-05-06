@@ -25,7 +25,7 @@ function setVarCovStrE!(eSet::Symbol,E,priorVCV,nData,varE)
 	varE[eSet] = priorVCV[eSet].v
 end
 
-function setVarCovStrE!(eSet::Tuple{Vararg{Symbol}}},E,priorVCV,nData,varE)	
+function setVarCovStrE!(eSet::Tuple{Vararg{Symbol}},E,priorVCV,nData,varE)	
 	#no inverse implemented yet!
 	if haskey(priorVCV,eSet)	
 		if isempty(priorVCV[eSet].str) || priorVCV[eSet].str=="I" 
