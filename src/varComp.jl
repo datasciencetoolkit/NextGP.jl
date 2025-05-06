@@ -29,7 +29,7 @@ function setVarCovStrE!(eSet::Tuple{Vararg{Symbol}}},E,priorVCV,nData,varE)
 	#no inverse implemented yet!
 	if haskey(priorVCV,eSet)	
 		if isempty(priorVCV[eSet].str) || priorVCV[eSet].str=="I" 
-				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
+				printstyled("prior var-cov structure for \"e\" is either empty or \"I\" was given. R0 \otimes I will be used\n"; color = :green)
 				E[eSet][:str] = "I"
 				E[eSet][:iVarStr] = [] #Matrix(1.0I,nData,nData)
 				priorVCV[eSet] = Random("I",priorVCV[eSet].v)
