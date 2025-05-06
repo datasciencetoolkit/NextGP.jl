@@ -118,7 +118,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	
 	if isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Symbol
 		println("model is a single-trait model")
-		for eSet in keys(E)
+		for eSet in collect(keys(E))
 			MMEX!(X,eSet,E,blocks,modelInformation,summaryStat)
 		end
 	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
