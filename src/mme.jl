@@ -72,7 +72,7 @@ end
 
 
 #main sampler
-function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) #maybe later use modelInformation
+function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,outPut) #maybe later use modelInformation
 		
         #some info
 	nRand = length(Z)
