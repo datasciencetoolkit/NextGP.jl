@@ -35,10 +35,12 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 			
 			#sample fixed effects
 
-			for xSet in yModel #keys(X)
-				println("sampling now $xSet")
-				sampleX!(xSet,X,b,ycorr,varE,ySet)
-			end
+			#for xSet in yModel #keys(X)
+			#	println("sampling now $xSet")
+			#	sampleX!(xSet,X,b,ycorr,varE,ySet)
+			#end
+
+			[sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if isa(yModel[xSet],DataTerm)]
 	
 			#sample random effects and variances
 			for zSet in keys(Z)
