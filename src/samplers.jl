@@ -43,8 +43,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 			#[sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if isa(yModel[xSet],DataTerm)]
 			[println("sampling $xSet") for xSet in keys(yModel) if isa(values(yModel[xSet]),DataTerm)]
 			#[println("typeof $(yModel[xSet])") for xSet in keys(yModel) if !isa(values(yModel[xSet]),DataTerm)]
-			[println("name typeof $(nameof(typeof(yModel[xSet])))") for xSet in keys(yModel)]
-			[println("module typeof $(parentmodule(typeof(yModel[xSet])))") for xSet in keys(yModel)]
+			[println("sampling $xSet") for xSet in keys(yModel) if nameof(typeof(yModel[xSet]))==DataTerm]
 	
 			#sample random effects and variances
 			for zSet in keys(Z)
