@@ -23,6 +23,7 @@ export getMME!
 
 function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
 	println("dealing trait $eSet")
+	println("modelInformation $modelInformation IN")
 	if haskey(blocks, eSet)
 		for blk in blocks[eSet]
 			println("blocking variables $blk for trait $eSet")
@@ -32,10 +33,13 @@ function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
 			X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
 			X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
 			push!(modelInformation[eSet],blk)
+			println("modelInformation $modelInformation EXTENDED")
 			for d in blk
 				delete!(X,d)
 				delete!(modelInformation[eSet],d)
+				println("modelInformation $modelInformation DELETED")
 			end
+			println("modelInformation $modelInformation FINAL")
 		end
 	else println("NO blocking is performed for trait $eSet")
 	end
