@@ -30,7 +30,7 @@ function runSampler!(ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,varBeta,delta,chainL
 		
 		#sample residual variance
 		for eSet in keys(E)
-			varE[eSet] = sampleVarE!(eSet,E,varE,ycorr,nData)			
+			sampleVarE!(eSet,E,varE,ycorr,nData)			
 		end
 		
 		#sample fixed effects
