@@ -41,7 +41,8 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 			#end
 
 			#[sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if isa(yModel[xSet],DataTerm)]
-			[println("sampling $xSet") for xSet in keys(yModel) if isa(yModel[xSet],NextGP.MCMC.prepMatVec.DataTerm)]
+			[println("sampling $xSet") for xSet in keys(yModel) if isa(yModel[xSet],DataTerm)]
+			[println("NOT sampling $xSet") for xSet in keys(yModel) if !isa(yModel[xSet],DataTerm)]
 	
 			#sample random effects and variances
 			for zSet in keys(Z)
