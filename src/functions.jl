@@ -19,8 +19,8 @@ export sampleZ!
 
 ### NEW, Wang's trick
 
-function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict,ySet::Symbol)
-	iVarE = inv(varE)
+function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,iVarE)
+	#iVarE = inv(varE)
 	bVec = deepcopy(b[X[xSet].pos])
 	Yi = X[xSet].Xp*ycorr*iVarE #computation of X'ycorr*iVarE for ALL  rhsb
 	nCol = length(bVec)
@@ -47,7 +47,7 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 		ycorr    .-= X[xSet].data .* b[X[xSet].pos]
 	else
 		ycorr    .+= X[xSet].data*b[X[xSet].pos]
-		b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,varE,ySet)
+		b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,iVarE)
 		ycorr    .-= X[xSet].data*b[X[xSet].pos]
 	end
 end
