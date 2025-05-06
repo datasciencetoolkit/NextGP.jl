@@ -10,7 +10,7 @@ using DataStructures
 
 include("outFiles.jl")
 
-export sampleVarE
+export sampleVarE!
 export sampleX!
 export sampleBayesPR!,sampleBayesB!,sampleBayesC!,sampleBayesR!,sampleBayesRCπ!,sampleBayesLV!,sampleBayesRCplus!
 export sampleZandZVar!
