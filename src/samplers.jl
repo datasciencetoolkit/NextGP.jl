@@ -29,12 +29,15 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 @showprogress 1 "MCMC progress..." for iter in 1:chainLength
 		
 		#sample residual variance
-		for (ySet,value) in modelInformation
-								
+		for (ySet,yModel) in modelInformation
+
+			####NEED TO ADD VARE HERE
+			
 			#sample fixed effects
 
-			for xSet in keys(X)
-				sampleX!(xSet,X,b,ycorr,varE)
+			for xSet in yModel #keys(X)
+				println("sampling now")
+				sampleX!(xSet,X,b,ycorr,varE[ySet])
 			end
 	
 			#sample random effects and variances
