@@ -1,17 +1,5 @@
-include("types.jl")
+#include("types.jl")
 
-#macro model(expr::Expr)
-#	m = LMM(expr,expr.args...)
-#	return m
-#end
-
-#import Base.show #also export!!!
-#function show(io::IO, m::LMM)
-#		println("MODEL: \n $(m.model) \nLHS: \n $(m.lhs) \nRHS:")
-#		for term in filter(!in(preserved), m.rhs.args)
-#		    	println(" $term")
-#		end
-#end
 
 macro model(expr::Expr,data::String)
       M = LMM(expr,data)
