@@ -13,6 +13,8 @@ using DataFrames
 using CategoricalArrays
 using Printf
 
+include("types.jl")
+
 include("misc.jl")
 
 include("prepMatVec.jl")
