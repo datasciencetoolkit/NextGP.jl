@@ -27,7 +27,7 @@ runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol
 	else nothing
 	end
 
-	#isa(modelType(model),Tuple{Vararg{lmm}}) ? println("I AM A lmm TYPE") : println("I AM NOT A lmm TYPE")
+	isa(modelType(model),Tuple{Vararg{lmm}}) ? println("I AM A lmm TYPE") : println("I AM NOT A lmm TYPE")
 
 	folderHandler(outFolder)
 
