@@ -5,6 +5,9 @@ using CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTable
 include("model.jl")
 include("misc.jl")
 include("designMat.jl")
+include("types.jl")
+
+export lmm,DataTerm
 
 #export @model,prep
 
