@@ -22,6 +22,8 @@ using CategoricalArrays
 using Printf
 
 include("types.jl")
+export DataTerm
+
 include("misc.jl")
 include("prepMatVec.jl")
 include("MCMC.jl")
