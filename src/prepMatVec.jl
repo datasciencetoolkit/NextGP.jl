@@ -1,4 +1,4 @@
-module prepMatVec
+#module prepMatVec
 
 using CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
 
@@ -173,5 +173,5 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
         return Y, X, Z, M, E, modelInformation
 end
 
-end
+#end
 
