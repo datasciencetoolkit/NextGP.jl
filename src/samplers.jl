@@ -14,8 +14,8 @@ using PrettyTables
 #include("misc.jl")
 #include("types.jl")
 
-#include("functions.jl")
-#using .functions
+include("functions.jl")
+using .functions
 
 
 export runSampler!
