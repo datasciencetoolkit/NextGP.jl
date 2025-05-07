@@ -1,6 +1,6 @@
-module MCMC
+#module MCMC
 
-export runLMEM
+#export runLMEM
 
 using DataFrames
 using CategoricalArrays
@@ -37,4 +37,4 @@ runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol
 	
 end
 
-end
+#end
