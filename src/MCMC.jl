@@ -8,7 +8,7 @@ using Distributions,LinearAlgebra #samplers
 using StatsBase
 using Printf
 
-include("prepMatVec.jl")
+#include("prepMatVec.jl")
 include("mme.jl")
 include("samplers.jl")
 include("misc.jl")
