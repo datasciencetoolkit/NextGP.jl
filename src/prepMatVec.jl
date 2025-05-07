@@ -7,6 +7,8 @@ include("model.jl")
 include("misc.jl")
 include("designMat.jl")
 
+export DataTerm
+
 function prepData!(inputData,f)
 	#make in categorical
 	for n in Symbol.(names(inputData))
