@@ -9,8 +9,6 @@ include("mme.jl")
 include("samplers.jl")
 
 
-include("types.jl")
-
 """
 	function runLMEM(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}(),blockThese=[],outFolder="outMCMC",VCV=[],userPedData=[],summaryStat=Dict{Any,Any}())
 
