@@ -16,7 +16,6 @@ include("misc.jl")
 include("functions.jl")
 using .functions
 
-include("MCMC.jl")
 
 export runSampler!
 
