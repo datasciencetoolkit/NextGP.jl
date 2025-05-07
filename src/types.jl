@@ -28,7 +28,7 @@ struct ResponseTerm
 end
 
 #make n a type with where{T} in ...
-struct ConstantTerm
+struct ConstantTerm <: FixedEffect
     n::Int64	
 end
 
@@ -36,7 +36,7 @@ struct DataTerm <: FixedEffect
     col::Symbol 	
 end
 
-struct InteractionTerm
+struct InteractionTerm <: FixedEffect
     cols::Vector{Symbol}	
 end
 
