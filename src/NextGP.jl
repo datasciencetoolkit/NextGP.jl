@@ -13,9 +13,9 @@ using DataFrames
 using CategoricalArrays
 using Printf
 
-#include("types.jl")
+include("types.jl")
 #exporting run-time equivalent of functions
-#export Random,PED,SNP,BayesPRType,SummaryStatistics
+export Random,PED,SNP,BayesPRType,SummaryStatistics
 
 include("misc.jl")
 include("prepMatVec.jl")
@@ -27,7 +27,6 @@ include("model.jl")
 export @model
 
 using .prepMatVec
-export Random,PED,SNP,BayesPRType,SummaryStatistics
 export DataTerm
 
 
