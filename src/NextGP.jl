@@ -21,12 +21,12 @@ using DataFrames
 using CategoricalArrays
 using Printf
 
+include("types.jl")
 include("misc.jl")
 include("prepMatVec.jl")
 include("MCMC.jl")
 include("outFiles.jl")
 include("GRN.jl")
-include("types.jl")
 
 using .prepMatVec
 export @model
