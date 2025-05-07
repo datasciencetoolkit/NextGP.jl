@@ -42,9 +42,9 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 
 			#[sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if isa(yModel[xSet],DataTerm)]
 			[println("sampling $xSet") for xSet in keys(yModel) if isa(values(yModel[xSet]),DataTerm)]
-			#[println("typeof $(yModel[xSet])") for xSet in keys(yModel) if !isa(values(yModel[xSet]),DataTerm)]
-			[println("sampling $xSet") for xSet in keys(yModel) if nameof(typeof(yModel[xSet]))==Symbol(DataTerm)]
-	
+			gh = [typeof(yModel[xSet]) for xSet in keys(yModel) if !isa(values(yModel[xSet]),DataTerm)]
+			println("GH: $gh")
+			
 			#sample random effects and variances
 			for zSet in keys(Z)
 	        		sampleZ!(zSet,Z,u,ycorr,varE,varU)	
