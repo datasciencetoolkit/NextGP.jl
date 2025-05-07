@@ -20,8 +20,6 @@ include("types.jl")
 """
 runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol,Any}(),blockThese=Dict{Symbol,Any}(),outFolder="outMCMC",VCV=Dict{Union{Expr,Symbol,Tuple}, Any}(),userPedData=[],summaryStat=Dict{Any,Any}())
 
-	println("MODEL: $model")
-	#isa(prepMatVec.modelType(model),prepMatVec.lmm) || isa(prepMatVec.modelType(model),Tuple{Vararg{prepMatVec.lmm}}) ? println("I AM A lmm") : println("I AM NOT A lmm")
 	if length(model)==1 && isa(model[1].lhs,Symbol)
 		println("I AM A lmm")
 	elseif length(model)==1 && isa(model[1].lhs,Expr)
@@ -31,8 +29,7 @@ runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol
 	else nothing
 	end
 
-	isa(modelType(model),lmm) ? println("I AM A lmm TYPE") : println("I AM NOT A lmm TYPE")
-	isa(modelType(model),Tuple{Vararg{lmm}}) ? println("I AM A lmm TYPE") : println("I AM NOT A lmm TYPE")
+	#isa(modelType(model),Tuple{Vararg{lmm}}) ? println("I AM A lmm TYPE") : println("I AM NOT A lmm TYPE")
 
 	folderHandler(outFolder)
 
