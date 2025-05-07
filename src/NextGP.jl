@@ -14,22 +14,21 @@ using CategoricalArrays
 using Printf
 
 include("types.jl")
-
-include("misc.jl")
-
-include("prepMatVec.jl")
-#using .prepMatVec
 #exporting run-time equivalent of functions
-export @model
 export Random,PED,SNP,BayesPRType,SummaryStatistics
 export DataTerm,ConstantTerm,FixedEffect
+
+include("model.jl")
+export @model
+include("misc.jl")
+include("prepMatVec.jl")
 
 include("MCMC.jl")
 include("outFiles.jl")
 include("GRN.jl")
 
-#using .MCMC
 export runLMEM
+
 using .GRN
 export estGRN_MHGibbs 
 
