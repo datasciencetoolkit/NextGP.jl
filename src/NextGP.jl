@@ -26,12 +26,6 @@ include("GRN.jl")
 include("model.jl")
 export @model
 
-using .prepMatVec
-export DataTerm
-
-
-#export @model,prep
-
 using .MCMC
 export runLMEM
 using .GRN
