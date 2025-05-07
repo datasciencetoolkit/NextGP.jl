@@ -1,14 +1,14 @@
 #module samplers
 
 
-using Distributions, LinearAlgebra
-using StatsBase
+#using Distributions, LinearAlgebra
+#using StatsBase
 using Printf
-using CSV
-using DataFrames
-using DataStructures
+#using CSV
+#using DataFrames
+#using DataStructures
 using ProgressMeter
-using PrettyTables
+#using PrettyTables
 
 #include("outFiles.jl")
 #include("misc.jl")
