@@ -1,4 +1,4 @@
-module samplers
+#module samplers
 
 
 using Distributions, LinearAlgebra
@@ -115,4 +115,4 @@ end #end function
 
 
 
-end #end module
+#end #end module
