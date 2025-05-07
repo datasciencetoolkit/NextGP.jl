@@ -10,12 +10,12 @@ using DataStructures
 using ProgressMeter
 using PrettyTables
 
-include("outFiles.jl")
-include("misc.jl")
-include("types.jl")
+#include("outFiles.jl")
+#include("misc.jl")
+#include("types.jl")
 
-include("functions.jl")
-using .functions
+#include("functions.jl")
+#using .functions
 
 
 export runSampler!
