@@ -13,9 +13,9 @@ using DataFrames
 using CategoricalArrays
 using Printf
 
-include("types.jl")
+#include("types.jl")
 #exporting run-time equivalent of functions
-export Random,PED,SNP,BayesPRType,SummaryStatistics
+#export Random,PED,SNP,BayesPRType,SummaryStatistics
 
 include("misc.jl")
 include("prepMatVec.jl")
@@ -26,8 +26,13 @@ include("GRN.jl")
 include("model.jl")
 export @model
 
-#using .prepMatVec
+using .prepMatVec
+export Random,PED,SNP,BayesPRType,SummaryStatistics
+export DataTerm
+
+
 #export @model,prep
+
 using .MCMC
 export runLMEM
 using .GRN
