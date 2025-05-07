@@ -3,10 +3,10 @@ module functions
 
 using Distributions, LinearAlgebra
 using StatsBase
-using Printf
-using CSV
-using DataFrames
-using DataStructures
+#using Printf
+#using CSV
+#using DataFrames
+#using DataStructures
 
 include("outFiles.jl")
 
