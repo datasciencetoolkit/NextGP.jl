@@ -12,8 +12,6 @@ using PrettyTables
 
 include("outFiles.jl")
 include("misc.jl")
-include("prepMatVec.jl")
-using .prepMatVec
 
 include("functions.jl")
 using .functions
