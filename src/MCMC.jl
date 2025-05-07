@@ -17,6 +17,7 @@ include("samplers.jl")
 """
 runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol,Any}(),blockThese=Dict{Symbol,Any}(),outFolder="outMCMC",VCV=Dict{Union{Expr,Symbol,Tuple}, Any}(),userPedData=[],summaryStat=Dict{Any,Any}())
 
+	println("MODEL TYPE: $(modelType(model))")
 	#isa(prepMatVec.modelType(model),prepMatVec.lmm) || isa(prepMatVec.modelType(model),Tuple{Vararg{prepMatVec.lmm}}) ? println("I AM A lmm") : println("I AM NOT A lmm")
 	isa(modelType(model),lmm) || isa(modelType(model),Tuple{Vararg{lmm}}) ? println("I AM A lmm") : println("I AM NOT A lmm")
 
