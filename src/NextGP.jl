@@ -18,13 +18,14 @@ include("types.jl")
 export Random,PED,SNP,BayesPRType,SummaryStatistics
 export DataTerm,ConstantTerm,FixedEffect
 
+include("misc.jl")
+include("outFiles.jl")
+
 include("model.jl")
 export @model
-include("misc.jl")
 include("prepMatVec.jl")
-
 include("MCMC.jl")
-include("outFiles.jl")
+
 include("GRN.jl")
 
 export runLMEM
