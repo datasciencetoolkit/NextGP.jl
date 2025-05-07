@@ -19,9 +19,9 @@ runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol
 
 	println("MODEL: $model")
 	#isa(prepMatVec.modelType(model),prepMatVec.lmm) || isa(prepMatVec.modelType(model),Tuple{Vararg{prepMatVec.lmm}}) ? println("I AM A lmm") : println("I AM NOT A lmm")
-	if length(model)==1 && isa(model.lhs,Symbol)
+	if length(model)==1 && isa(model[1].lhs,Symbol)
 		println("I AM A lmm")
-	elseif length(model)==1 && isa(model.lhs,Expr)
+	elseif length(model)==1 && isa(model[1].lhs,Expr)
 		println("I AM A MV lmm")
 	elseif length(model)>1
 		println("I AM A multi population lmm")
