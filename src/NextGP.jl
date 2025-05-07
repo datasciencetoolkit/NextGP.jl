@@ -18,8 +18,9 @@ include("misc.jl")
 include("prepMatVec.jl")
 #using .prepMatVec
 #exporting run-time equivalent of functions
-export Random,PED,SNP,BayesPRType,SummaryStatistics
 export @model
+export Random,PED,SNP,BayesPRType,SummaryStatistics,
+export DataTerm,ConstantTerm,FixedEffect
 
 include("MCMC.jl")
 include("outFiles.jl")
