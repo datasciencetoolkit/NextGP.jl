@@ -6,6 +6,7 @@ macro model(expr::Expr,data::String)
       return m
 end
 
+#always returns a Tuple of lmm
 function modelType(model::Tuple)
 	models = ()
 	for mi in model	
