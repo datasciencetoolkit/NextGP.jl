@@ -1,13 +1,6 @@
 module NextGP
 
-#exporting run-time equivalent of functions
-export PED
-export SNP
 export BayesPR,BayesB,BayesC,BayesR,BayesRCπ,BayesRCplus,BayesLV
-export Random
-export BayesPRType
-export SummaryStatistics
-
 
 #
 export makeA
@@ -21,6 +14,9 @@ using CategoricalArrays
 using Printf
 
 include("types.jl")
+#exporting run-time equivalent of functions
+export Random,PED,SNP,BayesPRType,SummaryStatistics
+
 include("misc.jl")
 include("prepMatVec.jl")
 include("MCMC.jl")
