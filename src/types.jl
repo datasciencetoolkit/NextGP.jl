@@ -7,6 +7,22 @@ ExprOrSymbol = Union{Expr,Symbol}
 ExprOrSymbolOrTuple = Union{Expr,Symbol,Tuple}
 
 
+#the core lmm structure
+struct lmm
+	data::String
+	model::Expr
+	sym::Any
+	lhs::Union{Symbol,Expr}
+	rhs::Expr
+end
+
+#a general model structure with data added to the model
+struct LMM
+	model::Expr
+	data::String
+end
+
+
 struct ResponseTerm
     col::Symbol
 end
