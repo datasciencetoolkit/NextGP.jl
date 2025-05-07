@@ -7,6 +7,7 @@ include("misc.jl")
 include("designMat.jl")
 
 export @model,prep
+export DataTerm
 
 function prepData!(inputData,f)
 	#make in categorical
