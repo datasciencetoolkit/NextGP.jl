@@ -1,5 +1,7 @@
 abstract type FixedEffect end
-
+abstract type RandomEffect end
+abstract type RandomGeneticEffect end
+abstract type RandomMarkerEffect end
 
 PiTypes = Union{Vector{Float64},Float64} #pi can be different (vector) or same per SNP (NO COR BayesB YET). BayesR also takes a vector of pi
 VarCovarTypes = Union{Vector{Matrix{Float64}},Vector{Float64},Matrix{Float64},Float64} #prior for (co)var can be different (vector) or same per SNP
@@ -40,12 +42,12 @@ struct InteractionTerm <: FixedEffect
     cols::Vector{Symbol}	
 end
 
-struct FunctionTerm
+struct FunctionTerm <: FixedEffect
     fun::Symbol
     cols::Union{Symbol,Expr} 	
 end
 
-struct PedigreeTerm
+struct PedigreeTerm <: RandomGeneticEffect
     var::Union{Symbol,Expr}
     path::Union{Matrix{Float64},String}
 end
@@ -72,7 +74,7 @@ SNP(name::Symbol,path::Union{Matrix{Float64},String};map::String="") = GenomicTe
 SNP(name::Symbol,path::Union{Matrix{Float64},String},map::String="") = GenomicTerm(name,path,map)
 SNP(name::Symbol,path::Symbol,map::String="") = GenomicTerm(name,path,map)
 
-struct BayesPRType
+struct BayesPRType <: RandomMarkerEffect
     r::Int
     v::Union{Matrix{Float64},Float64}
     name::String
@@ -91,7 +93,7 @@ end
 BayesPR(r::Int,v::Union{Matrix{Float64},Float64};name="BayesPR",params=false) = BayesPRType(r,v,name,params)
 
 
-struct BayesBType
+struct BayesBType <: RandomMarkerEffect
     pi::PiTypes
     v::VarCovarTypes
     name::String
@@ -107,7 +109,7 @@ end
 """
 BayesB(pi::PiTypes,v::VarCovarTypes;name="BayesB",estimatePi::Bool=false,params::Bool=false) = BayesBType(pi,v,name,estimatePi,params)
 
-struct BayesCType
+struct BayesCType <: RandomMarkerEffect
     pi::PiTypes
     v::VarCovarTypes
     name::String
@@ -123,7 +125,7 @@ end
 """
 BayesC(pi::PiTypes,v::VarCovarTypes;name="BayesC",estimatePi::Bool=false,params::Bool=false) = BayesCType(pi,v,name,estimatePi,params)
 
-struct BayesRType
+struct BayesRType <: RandomMarkerEffect
     pi::PiTypes
     class::Vector{Float64}
     v::VarCovarTypes
@@ -141,7 +143,7 @@ end
 """
 BayesR(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes;name="BayesR",estimatePi::Bool=false,params::Bool=false) = BayesRType(pi,class,v,name,estimatePi,params)
 
-struct BayesRCType
+struct BayesRCType <: RandomMarkerEffect
     pi::PiTypes
     class::Vector{Float64}
     v::VarCovarTypes
@@ -163,7 +165,7 @@ BayesRCπ(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Matrix{Int6
 BayesRCplus(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Matrix{Int64};name="BayesRCplus",estimatePi::Bool=false,params::Bool=false) = BayesRCType(pi,class,v,annot,name,estimatePi,params)
 
 
-struct BayesLogVarType
+struct BayesLogVarType <: RandomMarkerEffect
     v::Union{Matrix{Float64},Float64}
     f::LMM
     covariates::DataFrame
@@ -182,7 +184,7 @@ end
 """
 BayesLV(v::Float64,f::LMM,covariates::DataFrame,varZeta::Float64;name="BayesLV",estimateVarZeta::Union{Float64,Bool}=false) = BayesLogVarType(v,f,covariates,varZeta,name,estimateVarZeta)
 
-struct RandomEffectType
+struct RandomEffectType <: RandomEffect
     str::Any
     v::Union{Matrix{Float64},Vector{Float64},Float64}
     type::Int
