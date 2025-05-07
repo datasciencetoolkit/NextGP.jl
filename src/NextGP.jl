@@ -22,7 +22,7 @@ using CategoricalArrays
 using Printf
 
 include("types.jl")
-export DataTerm
+export DataTerm,lmm
 
 include("misc.jl")
 include("prepMatVec.jl")
