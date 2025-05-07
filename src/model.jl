@@ -1,5 +1,19 @@
 #include("types.jl")
 
+#the core lmm structure
+struct lmm
+	data::String
+	model::Expr
+	sym::Any
+	lhs::Union{Symbol,Expr}
+	rhs::Expr
+end
+
+#a general model structure with data added to the model
+struct LMM
+	model::Expr
+	data::String
+end
 
 macro model(expr::Expr,data::String)
       M = LMM(expr,data)
