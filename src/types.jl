@@ -1,3 +1,5 @@
+module types
+
 PiTypes = Union{Vector{Float64},Float64} #pi can be different (vector) or same per SNP (NO COR BayesB YET). BayesR also takes a vector of pi
 VarCovarTypes = Union{Vector{Matrix{Float64}},Vector{Float64},Matrix{Float64},Float64} #prior for (co)var can be different (vector) or same per SNP
 ExprOrSymbol = Union{Expr,Symbol}
@@ -194,5 +196,7 @@ Random(str::Any,v::Union{Matrix{Float64},Float64};type=1) = RandomEffectType(str
 struct SummaryStatistics
     m::Union{Vector{Float64},Float64}
     v::Union{Vector{Float64},Matrix{Float64},Float64}
+end
+
 end
 
