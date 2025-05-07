@@ -7,7 +7,6 @@ include("model.jl")
 include("misc.jl")
 include("designMat.jl")
 
-export Random,PED,SNP,BayesPRType,SummaryStatistics,DataTerm,lmm,FixedEffect
 export @model
 
 function prepData!(inputData,f)
