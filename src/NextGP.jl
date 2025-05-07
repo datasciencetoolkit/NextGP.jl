@@ -16,7 +16,6 @@ using Printf
 include("types.jl")
 #exporting run-time equivalent of functions
 export Random,PED,SNP,BayesPRType,SummaryStatistics
-export DataTerm,ConstantTerm,FixedEffect
 
 include("misc.jl")
 include("outFiles.jl")
