@@ -9,6 +9,8 @@ using StatsBase
 using Printf
 
 include("prepMatVec.jl")
+using .prepMatVec
+
 include("mme.jl")
 include("samplers.jl")
 include("misc.jl")
