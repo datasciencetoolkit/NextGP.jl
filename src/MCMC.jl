@@ -23,11 +23,13 @@ include("outFiles.jl")
 """
 runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol,Any}(),blockThese=Dict{Symbol,Any}(),outFolder="outMCMC",VCV=Dict{Union{Expr,Symbol,Tuple}, Any}(),userPedData=[],summaryStat=Dict{Any,Any}())
 
-	isa(prepMatVec.modelType(model),prepMatVec.lmm) || isa(prepMatVec.modelType(model),Tuple{Vararg{prepMatVec.lmm}}) ? println("I AM A lmm") : println("I AM NOT A lmm")
-	
+	#isa(prepMatVec.modelType(model),prepMatVec.lmm) || isa(prepMatVec.modelType(model),Tuple{Vararg{prepMatVec.lmm}}) ? println("I AM A lmm") : println("I AM NOT A lmm")
+	isa(modelType(model),lmm) || isa(modelType(model),Tuple{lmm}}) ? println("I AM A lmm") : println("I AM NOT A lmm")
+
 	folderHandler(outFolder)
 
-	Y,X,Z,M,E,modelInformation = prepMatVec.prep(model,path2ped=userPedData,priorVCV=VCV)
+	#Y,X,Z,M,E,modelInformation = prepMatVec.prep(model,path2ped=userPedData,priorVCV=VCV)
+	Y,X,Z,M,E,modelInformation = prep(model,path2ped=userPedData,priorVCV=VCV)
 
 	modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,varBeta,delta = mme.getMME!(Y,X,Z,M,E,blockThese,VCV,summaryStat,modelInformation,outFolder)
 
