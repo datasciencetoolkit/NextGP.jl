@@ -35,6 +35,5 @@ using .MCMC
 export runLMEM
 using .GRN
 export estGRN_MHGibbs 
-export lmm, DataType
 
 end
