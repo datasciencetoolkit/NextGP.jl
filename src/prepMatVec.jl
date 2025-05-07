@@ -7,7 +7,7 @@ include("model.jl")
 include("misc.jl")
 include("designMat.jl")
 
-export DataTerm,FixedEffect
+export Random,PED,SNP,BayesPRType,SummaryStatistics,DataTerm,lmm,FixedEffect
 
 function prepData!(inputData,f)
 	#make in categorical
