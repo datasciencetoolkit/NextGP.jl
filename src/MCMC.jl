@@ -5,11 +5,8 @@
 #from prepMatVec
 using CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
 
-#include("prepMatVec.jl")
 include("mme.jl")
 include("samplers.jl")
-include("misc.jl")
-#include("outFiles.jl")
 
 """
 	function runLMEM(formula,userData,nChain,nBurn,nThin;myHints=Dict{Symbol,Any}(),blockThese=[],outFolder="outMCMC",VCV=[],userPedData=[],summaryStat=Dict{Any,Any}())
