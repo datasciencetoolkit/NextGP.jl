@@ -2,11 +2,8 @@
 
 #export runLMEM
 
-using DataFrames
-using CategoricalArrays
-using Distributions,LinearAlgebra #samplers
-using StatsBase
-using Printf
+#from prepMatVec
+using CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
 
 #include("prepMatVec.jl")
 include("mme.jl")
