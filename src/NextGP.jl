@@ -16,7 +16,7 @@ using Printf
 include("misc.jl")
 
 include("prepMatVec.jl")
-using .prepMatVec
+#using .prepMatVec
 #exporting run-time equivalent of functions
 export Random,PED,SNP,BayesPRType,SummaryStatistics
 export @model
