@@ -15,13 +15,13 @@ export makePed
 export makeG
 export summaryMCMC
 export show #import is in misc
-export lmm, DataTerm
+#export lmm, DataTerm
 
 using DataFrames
 using CategoricalArrays
 using Printf
 
-include("types.jl")
+#include("types.jl")
 include("misc.jl")
 include("prepMatVec.jl")
 include("MCMC.jl")
