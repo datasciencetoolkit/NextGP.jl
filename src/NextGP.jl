@@ -26,7 +26,7 @@ include("outFiles.jl")
 include("GRN.jl")
 
 #using .MCMC
-#export runLMEM
+export runLMEM
 using .GRN
 export estGRN_MHGibbs 
 
