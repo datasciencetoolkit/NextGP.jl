@@ -13,18 +13,16 @@ using DataFrames
 using CategoricalArrays
 using Printf
 
-include("types.jl")
-#exporting run-time equivalent of functions
-export Random,PED,SNP,BayesPRType,SummaryStatistics,DataTerm,lmm
-
 include("misc.jl")
+
 include("prepMatVec.jl")
+#exporting run-time equivalent of functions
+export Random,PED,SNP,BayesPRType,SummaryStatistics,DataTerm,lmm,FixedEffect
+export @model
+
 include("MCMC.jl")
 include("outFiles.jl")
 include("GRN.jl")
-
-include("model.jl")
-export @model
 
 using .MCMC
 export runLMEM
