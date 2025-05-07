@@ -28,9 +28,8 @@ include("MCMC.jl")
 include("outFiles.jl")
 include("GRN.jl")
 
-using .prepMatVec
-export @model
-export prep
+#using .prepMatVec
+#export @model,prep
 using .MCMC
 export runLMEM
 using .GRN
