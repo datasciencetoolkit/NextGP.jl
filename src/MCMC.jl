@@ -23,7 +23,7 @@ runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol
 		println("I AM A lmm")
 	elseif isa(modelType(model),lmm) && isa(model.lhs,Expr)
 		println("I AM A MV lmm")
-	elseif isa(modelType(model),Tuple{Vararg{lmm}})
+	#elseif isa(modelType(model),Tuple{Vararg{lmm}})
 		println("I AM A multi population lmm")
 	else nothing
 	end
