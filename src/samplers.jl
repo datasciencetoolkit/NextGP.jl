@@ -33,7 +33,7 @@ function runSampler!(modelInformation,ycorr,nRecords,E,varE,X,b,Z,u,varU,M,beta,
 		for (ySet,yModel) in modelInformation
 
 			#sample error variance all at once!!!
-			[sampleVarE!(ySet,E,varE,yCorVec,nRecords)
+			sampleVarE!(ySet,E,varE,yCorVec,nRecords)
 			
 			#sample fixed effects
 
