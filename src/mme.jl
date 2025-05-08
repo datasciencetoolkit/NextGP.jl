@@ -496,7 +496,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	
 	isempty(blocks) ? levelsX = hcat(vcat([value[:levels] for (key, value) in X]...)...) : levelsX = hcat(vcat([vcat(value[:levels]) for (key, value) in X]...)...)
 
-	inOut.outMCMC(outPut,"b",levelsX)
+	[inOut.outMCMC(outPut,"b_$eSet",levelsX) for eSet in keys(E)]
 	
 	#check for correlated RE
         for zSet in keys(Z)
@@ -550,7 +550,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
         end
 	
 
-	inOut.outMCMC(outPut,"varE",["e"])
+	[inOut.outMCMC(outPut,"varE_$eSet",["e_$eSet"]) for eSet in keys(E)]
 	##########
 	
 	X  = myUnzip(X)
