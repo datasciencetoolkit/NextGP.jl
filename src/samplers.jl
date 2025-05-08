@@ -21,7 +21,7 @@ using .functions
 export runSampler!
 
 #main sampler
-function runSampler!(modelInformation,ycorr,nRecords,E,varE,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength,burnIn,outputFreq,outPut)
+function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength,burnIn,outputFreq,outPut)
 		
 	#output settings
 	these2Keep  = collect((burnIn+outputFreq):outputFreq:chainLength) #print these iterations        
@@ -33,7 +33,7 @@ function runSampler!(modelInformation,ycorr,nRecords,E,varE,X,b,Z,u,varU,M,beta,
 		for (ySet,yModel) in modelInformation
 
 			#sample error variance all at once!!!
-			sampleVarE!(ySet,E,varE,yCorVec,nRecords)
+			sampleVarE!(ySet,E,varE,ycorr,nData)
 			
 			#sample fixed effects
 
