@@ -545,6 +545,8 @@ end
 
 #Sample residual variance
 function sampleVarE!(eSet,E,varE,yCorVec,nRecords)
+	println("eSet in varE $eSet")
+	println("E in varE $E")
 	if E[eSet].str == "D"
 		varE[eSet] = (E[eSet].df*E[eSet].scale + sum(E[eSet].iVarStr.*(yCorVec.^2)))/rand(Chisq(E[eSet].df + nRecords))
 	else varE[eSet] = (E[eSet].df*E[eSet].scale + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(E[eSet].df + nRecords))
