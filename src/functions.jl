@@ -544,16 +544,10 @@ function sampleVarBetaR(scalem,dfm,sumS,nLoci)::Float64
 end
 
 #Sample residual variance
-function sampleVarE(df_e,S_e,yCorVec,nRecords)
-	return (df_e*S_e + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(df_e + nRecords))
-end
-function sampleVarE(E::NamedTuple,yCorVec,nRecords)
-	return (E.df*E.scale + sum(E.iVarStr.*(yCorVec.^2)))/rand(Chisq(E.df + nRecords))
-end
 function sampleVarE!(eSet,E,varE,yCorVec,nRecords)
 	if E[eSet].str == "D"
-	       	varE[eSet] = sampleVarE(E,yCorVec,nRecords)
-	else varE[eSet] = sampleVarE(E[eSet].df,E[eSet].scale,yCorVec,nRecords)
+	       	varE[eSet] = (E[eSet].df*E[eSet].scale + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(E[eSet].df + nRecords))
+	else varE[eSet] = (E[eSet].df*E[eSet].scale + sum(E[eSet].iVarStr.*(yCorVec.^2)))/rand(Chisq(E[eSet].df + nRecords))
 	end
 end
 					
