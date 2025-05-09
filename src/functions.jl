@@ -38,18 +38,14 @@ end
 # NEW with D and with Wang's Trick
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict,ySet::Symbol)
 	iVarE = inv(varE[ySet])
-	println("b in the function: $b")
 	if X[xSet].nCol==1
-		println("sampling xSet $xSet at POS: $(X[xSet].pos)")
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
 		rhs      = getindex(X[xSet].Xp,X[xSet].pos)*ycorr.*iVarE .+ X[xSet].rhs
 		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
 		meanMu   = lhs\rhs		
-                b[X[xSet].pos] = rand(Normal(meanMu[],sqrt(inv(lhs[]))))
+                b[X[xSet].pos] .= rand(Normal(meanMu[],sqrt(inv(lhs[]))))
 		ycorr    .-= X[xSet].data .* b[X[xSet].pos]
 	else
-		println("sampling xSet $xSet at POS: $(X[xSet].pos)")
-		println("b[X[xSet].pos]: $(b[X[xSet].pos])")
 		ycorr    .+= X[xSet].data*b[X[xSet].pos]
 		b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,iVarE)
 		ycorr    .-= X[xSet].data*b[X[xSet].pos]
