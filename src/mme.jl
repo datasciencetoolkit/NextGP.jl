@@ -51,10 +51,9 @@ end
 	==#
 
 #single-trait
-function MMEX!(X,eSet::Symbol,E,blocks,modelInformation,summaryStat)
+function MMEX!(X,b,eSet::Symbol,E,blocks,modelInformation,summaryStat)
 	println("eSet is a Tuple")
 	blockX!(X,eSet,blocks,modelInformation)
-	b = []
 	posXcounter = 0
         for xSet in keys(X)
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
@@ -132,20 +131,22 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	######## 
 	#X and b
 	########
+
+	b = []
 	
 	if isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Symbol
 		println("model is a single-trait model")
 		for eSet in keys(E)
-			MMEX!(X,eSet,E,blocks,modelInformation,summaryStat)
+			MMEX!(X,b,eSet,E,blocks,modelInformation,summaryStat)
 		end
 	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
 		println("model is a multi-trait model where measurements/observations are from the same individuals")
 		for eSet in keys(E)
-			MMEX!(X,eSet,E,blocks,modelInformation,summaryStat)
+			MMEX!(X,b,eSet,E,blocks,modelInformation,summaryStat)
 		end
 	elseif !isequal(length(collect(keys(E))),1) && all(typeof.(collect(keys(E))) .<: Symbol)
 		for eSet in keys(E)
-			MMEX!(X,eSet,E,blocks,modelInformation,summaryStat)
+			MMEX!(X,b,eSet,E,blocks,modelInformation,summaryStat)
 		end
 		println("model is a multi-population model where measurements/observations are from different individuals")
 	else 	throw(ArgumentError("Could not understand the type of your model"))
