@@ -21,7 +21,7 @@ using .functions
 export getMME!
 
 
-function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
+function blockX!(X,eSet,blocks,modelInformation) #LHS is a Tuple
 	println("dealing trait $eSet")
 	println("modelInformation $modelInformation IN")
 	if haskey(blocks, eSet)
@@ -42,13 +42,46 @@ function MMEX!(X,eSet,E,blocks,modelInformation,summaryStat) #LHS is a Tuple
 		end
 	else println("NO blocking is performed for trait $eSet")
 	end
+end
 	
 
 	#==BLOCK FIXED EFFECTS.
 	Order of blocks is as defined by the user
 	Order of variables within blocks is always the same as in the model definition, not defined by the user in each block.
 	==#
-	
+
+
+function MMEX!(X,eSet::Symbol,E,blocks,modelInformation,summaryStat)
+	println("eSet is a SYMBOL")
+	blockX!(X,eSet,blocks,modelInformation)
+        for xSet in keys(X)
+		println("eSet: $eSet xSet: $xSet")
+		if E[eSet][:str] == "D"
+#			X[xSet][:xpx] = X[xSet][:data]'*E[ySet][:iVarStr]*X[xSet][:data]
+			X[xSet][:xpx] = X[xSet][:data]'*(E[ySet][:iVarStr].*X[xSet][:data])
+			X[xSet][:Xp] = transpose(X[xSet][:data].*E[ySet][:iVarStr])
+		else 
+			X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
+			X[xSet][:Xp] = transpose(X[xSet][:data])
+		end
+		X[xSet][:lhs] = zeros(X[xSet][:nCol])
+		X[xSet][:rhs] = zeros(X[xSet][:nCol])
+
+                if xSet in keys(summaryStat)
+	  		X[xSet][:lhs] .= isa(summaryStat[xSet].v,Array{Float64,1}) ? inv.(summaryStat[xSet].v) : inv.(diag(summaryStat[xSet].v))
+			X[xSet][:rhs] .= isa(summaryStat[xSet].v,Array{Float64,1}) ? inv.(summaryStat[xSet].v) .* (summaryStat[xSet].m)  : inv.(diag(summaryStat[xSet].v)) .* (summaryStat[xSet].m)
+                end
+
+		if isa(X[xSet][:xpx],Matrix{Float64})
+#			println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
+			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
+		end
+	end
+end
+
+function MMEX!(X,eSet::Tuple,E,blocks,modelInformation,summaryStat)
+	println("eSet is a Tuple")
+	blockX!(X,eSet,blocks,modelInformation)
         for xSet in keys(X)
 		println("eSet: $eSet xSet: $xSet")
 		if E[eSet][:str] == "D"
