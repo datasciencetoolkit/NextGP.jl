@@ -77,11 +77,11 @@ function MMEX!(X,b,eSet::Symbol,E,blocks,modelInformation,summaryStat)
 		if E[eSet][:str] == "D"
 			X[xSet][:xpx] = X[xSet][:data]'*(E[ySet][:iVarStr].*X[xSet][:data])
 			#X[xSet][:Xp] = transpose(X[xSet][:data].*E[ySet][:iVarStr])
-			X[xSet][:Xp] = map(i -> transpose(nowX[:,i].*E[eSet][:iVarStr]), axes(nowX, 2))
+			X[xSet][:Xp] = map(i -> transpose(X[xSet][:data][:,i].*E[eSet][:iVarStr]), axes(X[xSet][:data], 2))
 		else 
 			X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
 			#X[xSet][:Xp] = transpose(X[xSet][:data])
-			X[xSet][:Xp] = map(i -> transpose(nowX[:,i]), axes(nowX, 2))
+			X[xSet][:Xp] = map(i -> transpose(X[xSet][:data][:,i]), axes(X[xSet][:data], 2))
 		end
 
 		#summary statistics
