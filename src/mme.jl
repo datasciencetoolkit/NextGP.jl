@@ -50,51 +50,34 @@ end
 	Order of variables within blocks is always the same as in the model definition, not defined by the user in each block.
 	==#
 
-
+#single-trait
 function MMEX!(X,eSet::Symbol,E,blocks,modelInformation,summaryStat)
-	println("eSet is a SYMBOL")
-	blockX!(X,eSet,blocks,modelInformation)
-        for xSet in keys(X)
-		println("eSet: $eSet xSet: $xSet")
-		if E[eSet][:str] == "D"
-#			X[xSet][:xpx] = X[xSet][:data]'*E[ySet][:iVarStr]*X[xSet][:data]
-			X[xSet][:xpx] = X[xSet][:data]'*(E[ySet][:iVarStr].*X[xSet][:data])
-			X[xSet][:Xp] = transpose(X[xSet][:data].*E[ySet][:iVarStr])
-		else 
-			X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
-			X[xSet][:Xp] = transpose(X[xSet][:data])
-		end
-		X[xSet][:lhs] = zeros(X[xSet][:nCol])
-		X[xSet][:rhs] = zeros(X[xSet][:nCol])
-
-                if xSet in keys(summaryStat)
-	  		X[xSet][:lhs] .= isa(summaryStat[xSet].v,Array{Float64,1}) ? inv.(summaryStat[xSet].v) : inv.(diag(summaryStat[xSet].v))
-			X[xSet][:rhs] .= isa(summaryStat[xSet].v,Array{Float64,1}) ? inv.(summaryStat[xSet].v) .* (summaryStat[xSet].m)  : inv.(diag(summaryStat[xSet].v)) .* (summaryStat[xSet].m)
-                end
-
-		if isa(X[xSet][:xpx],Matrix{Float64})
-#			println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
-			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
-		end
-	end
-end
-
-function MMEX!(X,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 	println("eSet is a Tuple")
 	blockX!(X,eSet,blocks,modelInformation)
+	b = []
+	posXcounter += 0
         for xSet in keys(X)
+		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
+		X[xSet][:pos] = posXcounter
+		tempxpx = []
+		nowX = X[xSet][:data]
 		println("eSet: $eSet xSet: $xSet")
 		if E[eSet][:str] == "D"
-#			X[xSet][:xpx] = X[xSet][:data]'*E[ySet][:iVarStr]*X[xSet][:data]
-			X[xSet][:xpx] = X[xSet][:data]'*(E[ySet][:iVarStr].*X[xSet][:data])
-			X[xSet][:Xp] = transpose(X[xSet][:data].*E[ySet][:iVarStr])
-		else 
-			X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
-			X[xSet][:Xp] = transpose(X[xSet][:data])
+			for c in eachcol(nowX)
+				push!(tempxpx,sum(c.*E[eSet][:iVarStr].*c))
+			end
+			X[xSet][:Xp] = map(i -> transpose(nowX[:,i].*E[eSet][:iVarStr]), axes(nowX, 2))
+		else
+			for c in eachcol(nowX)
+				push!(tempxpx,dot(c,c))
+			end
+			X[xSet][:Xp] = map(i -> transpose(nowX[:,i]), axes(nowX, 2))			
 		end
+		X[xSet][:xpx] = tempxpx
+
+		#summary statistics
 		X[xSet][:lhs] = zeros(X[xSet][:nCol])
 		X[xSet][:rhs] = zeros(X[xSet][:nCol])
-
                 if xSet in keys(summaryStat)
 	  		X[xSet][:lhs] .= isa(summaryStat[xSet].v,Array{Float64,1}) ? inv.(summaryStat[xSet].v) : inv.(diag(summaryStat[xSet].v))
 			X[xSet][:rhs] .= isa(summaryStat[xSet].v,Array{Float64,1}) ? inv.(summaryStat[xSet].v) .* (summaryStat[xSet].m)  : inv.(diag(summaryStat[xSet].v)) .* (summaryStat[xSet].m)
@@ -106,6 +89,26 @@ function MMEX!(X,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 		end
 	end
 end
+
+
+			M[pSet][:pos] = posMcounter
+			tempmpm = []
+			nowM = M[pSet][:data]
+
+			if E[:str] == "D"
+				for c in eachcol(nowM)
+					push!(tempmpm,sum(c.*E[:iVarStr].*c))
+				end
+				M[pSet][:Mp] = map(i -> transpose(nowM[:,i].*E[:iVarStr]), axes(nowM, 2))
+			else
+				for c in eachcol(nowM)
+					push!(tempmpm,dot(c,c))
+				end
+				M[pSet][:Mp] = map(i -> transpose(nowM[:,i]), axes(nowM, 2))
+			end			
+
+			M[pSet][:mpm] = tempmpm
+			
 
 
 
@@ -160,19 +163,15 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 			MMEX!(X,eSet,E,blocks,modelInformation,summaryStat)
 		end
 	elseif !isequal(length(collect(keys(E))),1) && all(typeof.(collect(keys(E))) .<: Symbol)
+		for eSet in keys(E)
+			MMEX!(X,eSet,E,blocks,modelInformation,summaryStat)
+		end
 		println("model is a multi-population model where measurements/observations are from different individuals")
 	else 	throw(ArgumentError("Could not understand the type of your model"))
 
 	end
 
-	#Positions of parameters for each variable and blocks for speed. b is a column vector.
-	countXCol = 0
-	for xSet in keys(X)
-		nCol = X[xSet][:nCol]
-          	X[xSet][:pos] = (countXCol+1):(countXCol+nCol)
-		countXCol += nCol
-        end
-	countXCol = 0
+	
 
 	###Allow no fixed effects
 	isempty(keys(X)) ? b = [] : b = zeros(sum(getindex.(getindex.(Ref(X), keys(X)),:nCol)))
