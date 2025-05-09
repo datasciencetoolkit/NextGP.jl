@@ -55,7 +55,7 @@ function MMEX!(X,eSet::Symbol,E,blocks,modelInformation,summaryStat)
 	println("eSet is a Tuple")
 	blockX!(X,eSet,blocks,modelInformation)
 	b = []
-	posXcounter += 0
+	posXcounter = 0
         for xSet in keys(X)
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
 		X[xSet][:pos] = posXcounter
