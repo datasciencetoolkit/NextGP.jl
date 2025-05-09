@@ -46,9 +46,12 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 		rhs      = getindex(X[xSet].Xp,X[xSet].pos)*ycorr.*iVarE .+ X[xSet].rhs
 		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
 		meanMu   = lhs\rhs
+
+		println("b: $b")
 		sampledX = rand(Normal(meanMu[],sqrt(inv(lhs[]))))
 		println("sampledX: $sampledX")
 		println("b for this X: $(b[X[xSet].pos])")
+		
                 b[X[xSet].pos] = rand(Normal(meanMu[],sqrt(inv(lhs[]))))
 		ycorr    .-= X[xSet].data .* b[X[xSet].pos]
 	else
