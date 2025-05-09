@@ -87,8 +87,9 @@ function MMEX!(X,eSet::Symbol,E,blocks,modelInformation,summaryStat)
 #			println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
 			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
 		end
-		println("X[xSet][:nCol]: $X[xSet][:nCol]")
+		println("X[xSet][:nCol]: $(X[xSet][:nCol])")
 		push!(b,zeros(Float64,1,X[xSet][:nCol]))
+		println("b: $b")
 		tempxpx = 0
 		nowX = 0
 	end
