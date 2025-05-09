@@ -59,6 +59,7 @@ function MMEX!(X,eSet::Symbol,E,blocks,modelInformation,summaryStat)
         for xSet in keys(X)
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
 		X[xSet][:pos] = posXcounter
+		println("X[xSet][:pos]: $(X[xSet][:pos])")
 		tempxpx = []
 		nowX = X[xSet][:data]
 		println("eSet: $eSet xSet: $xSet")
