@@ -139,8 +139,8 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	end
 	varCovE!(E,priorVCV)
 
-	println("E $E")
-	println("varE $varE")
+	#println("E $E")
+	#println("varE $varE")
 
 	###################################
 	
@@ -156,6 +156,9 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 		end
 	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
 		println("model is a multi-trait model where measurements/observations are from the same individuals")
+		for eSet in keys(E)
+			MMEX!(X,eSet,E,blocks,modelInformation,summaryStat)
+		end
 	elseif !isequal(length(collect(keys(E))),1) && all(typeof.(collect(keys(E))) .<: Symbol)
 		println("model is a multi-population model where measurements/observations are from different individuals")
 	else 	throw(ArgumentError("Could not understand the type of your model"))
