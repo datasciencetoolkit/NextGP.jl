@@ -90,6 +90,7 @@ function MMEX!(X,b,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 	println("eSet: $eSet is a Tuple")
 	blockX!(X,eSet,blocks,modelInformation)
 	posXcounter = 0
+	println("X: X")
         for xSet in keys(X)
 		println("MMEX: $xSet")
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
@@ -107,6 +108,7 @@ function MMEX!(X,b,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 			X[xSet][:Xp] = ones(length(eSet),1) .* map(i -> transpose(nowX[:,i].*E[eSet][:iVarStr]), axes(nowX, 2))
 		else
 			for c in eachcol(nowX)
+				#tempM = hcat.(eachcol.(getindex.(getindex.(Ref(X), xSet),:data))...)
 				#I compute x'X so that for each effect (column), I have both xpx and xpX stored! 
 				push!(tempxpx,ones(length(eSet),length(eSet)).*sum(c.*c))
 				push!(tempxpX,sum(c.*nowX,dims=1))
