@@ -39,6 +39,8 @@ end
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict,ySet::Symbol)
 	iVarE = inv(varE[ySet])
 	if length(b[X[xSet].pos])==1
+		println("sampling xSet: $xSet")
+		println("X[xSet].Xp: $(X[xSet].Xp)")
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
 		rhs      = dot(X[xSet].Xp,ycorr).*iVarE .+ X[xSet].rhs
 		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
