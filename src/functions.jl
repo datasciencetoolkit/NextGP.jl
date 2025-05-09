@@ -36,7 +36,7 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,iVar
 end
 
 # NEW with D and with Wang's Trick
-function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict,ySet::Symbol)
+function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b,ycorr::Vector,varE::Dict,ySet::Symbol)
 	iVarE = inv(varE[ySet])
 	if X[xSet].nCol==1
 		println("sampling xSet $xSet at POS: $(X[xSet].pos)")
