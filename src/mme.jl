@@ -59,10 +59,8 @@ function MMEX!(X,eSet::Symbol,E,blocks,modelInformation,summaryStat)
         for xSet in keys(X)
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
 		X[xSet][:pos] = posXcounter
-		println("X[xSet][:pos]: $(X[xSet][:pos])")
 		tempxpx = []
 		nowX = X[xSet][:data]
-		println("eSet: $eSet xSet: $xSet")
 		if E[eSet][:str] == "D"
 			for c in eachcol(nowX)
 				push!(tempxpx,sum(c.*E[eSet][:iVarStr].*c))
@@ -88,7 +86,6 @@ function MMEX!(X,eSet::Symbol,E,blocks,modelInformation,summaryStat)
 #			println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
 			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
 		end
-		println("X[xSet][:nCol]: $(X[xSet][:nCol])")
 		push!(b,zeros(Float64,1,X[xSet][:nCol]))
 		println("b: $b")
 		tempxpx = 0
