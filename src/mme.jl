@@ -58,22 +58,6 @@ function MMEX!(X,b,eSet::Symbol,E,blocks,modelInformation,summaryStat)
         for xSet in keys(X)
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
 		X[xSet][:pos] = posXcounter
-		
-		#tempxpx = []
-		#nowX = X[xSet][:data]
-		#if E[eSet][:str] == "D"
-		#	for c in eachcol(nowX)
-		#		push!(tempxpx,sum(c.*E[eSet][:iVarStr].*c))
-		#	end
-		#	X[xSet][:Xp] = map(i -> transpose(nowX[:,i].*E[eSet][:iVarStr]), axes(nowX, 2))
-		#else
-		#	for c in eachcol(nowX)
-		#		push!(tempxpx,dot(c,c))
-		#	end
-		#	X[xSet][:Xp] = map(i -> transpose(nowX[:,i]), axes(nowX, 2))			
-		#end
-		#X[xSet][:xpx] = tempxpx
-
 		if E[eSet][:str] == "D"
 			X[xSet][:xpx] = X[xSet][:data]'*(E[ySet][:iVarStr].*X[xSet][:data])
 			X[xSet][:Xp] = transpose(X[xSet][:data].*E[ySet][:iVarStr])
@@ -96,6 +80,58 @@ function MMEX!(X,b,eSet::Symbol,E,blocks,modelInformation,summaryStat)
 #			println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
 			X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
 		end
+		push!(b,zeros(Float64,X[xSet][:nCol],1))
+	end
+end
+
+
+#multi-trait
+function MMEX!(X,b,eSet::Tuple,E,blocks,modelInformation,summaryStat)
+	println("eSet: $eSet is a Tuple")
+	blockX!(X,eSet,blocks,modelInformation)
+	posXcounter = 0
+        for xSet in keys(X)
+		println("MMEX: $xSet")
+		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
+		X[xSet][:pos] = posXcounter
+		
+		tempxpx = []
+		tempxpX = []
+		nowX = X[xSet][:data]
+		if E[eSet][:str] == "D"
+			for c in eachcol(nowX)
+				#I compute x'X so that for each effect (column), I have both xpx and xpX stored! 
+				push!(tempxpx,Matrix(I*sum(c.*E[eSet][:iVarStr].*c),length(eSet)))
+				push!(tempxpX,sum(c.*E[eSet][:iVarStr].*nowX,dims=1))
+			end
+			X[xSet][:Xp] = ones(length(eSet),1) .* map(i -> transpose(nowX[:,i].*E[eSet][:iVarStr]), axes(nowX, 2))
+		#else
+		end
+		println("tempxpx: $tempxpx")
+		println("tempxpX: $tempxpX")
+		println("Xp: $(X[xSet][:Xp])")
+		#	for c in eachcol(nowX)
+		#		push!(tempxpx,dot(c,c))
+		#	end
+		#	X[xSet][:Xp] = map(i -> transpose(nowX[:,i]), axes(nowX, 2))			
+		#end
+		#X[xSet][:xpx] = tempxpx
+
+		#if E[eSet][:str] == "D"
+		#	X[xSet][:xpx] = X[xSet][:data]'*(E[ySet][:iVarStr].*X[xSet][:data])
+		#	X[xSet][:Xp] = transpose(X[xSet][:data].*E[ySet][:iVarStr])
+		#else 
+		#	X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
+		#	X[xSet][:Xp] = transpose(X[xSet][:data])
+		#end
+
+		#summary statistics
+		
+
+		#if isa(X[xSet][:xpx],Matrix{Float64})
+		#	println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
+		#	X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
+		#end
 		push!(b,zeros(Float64,X[xSet][:nCol],1))
 		tempxpx = 0
 		nowX = 0
