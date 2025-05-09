@@ -96,43 +96,34 @@ function MMEX!(X,b,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
 		X[xSet][:pos] = posXcounter
 		
-		tempxpx = []
-		tempxpX = []
-		nowX = X[xSet][:data]
-		if E[eSet][:str] == "D"
-			for c in eachcol(nowX)
-				#I compute x'X so that for each effect (column), I have both xpx and xpX stored! 
-				push!(tempxpx,ones(length(eSet),length(eSet)).*sum(c.*E[eSet][:iVarStr].*c))
-				push!(tempxpX,sum(c.*E[eSet][:iVarStr].*nowX,dims=1))
-			end
-			X[xSet][:Xp] = ones(length(eSet),1) .* map(i -> transpose(nowX[:,i].*E[eSet][:iVarStr]), axes(nowX, 2))
-		else
-			for c in eachcol(nowX)
-				#tempM = hcat.(eachcol.(getindex.(getindex.(Ref(X), xSet),:data))...)
-				#I compute x'X so that for each effect (column), I have both xpx and xpX stored! 
-				push!(tempxpx,ones(length(eSet),length(eSet)).*sum(c.*c))
-				push!(tempxpX,sum(c.*nowX,dims=1))
-			end
-			X[xSet][:Xp] = [map(i -> transpose(nowX[:,i]), axes(nowX, 2)) for col in 1:length(eSet)]
-		end
-		#println("tempxpx: $tempxpx")
-		#println("tempxpX: $tempxpX")
-		#println("Xp: $(X[xSet][:Xp])")
-		#	for c in eachcol(nowX)
-		#		push!(tempxpx,dot(c,c))
-		#	end
-		#	X[xSet][:Xp] = map(i -> transpose(nowX[:,i]), axes(nowX, 2))			
-		#end
-		#X[xSet][:xpx] = tempxpx
-
+		xCol2Repeat = ntuple(i->:b,length(eSet))
+		tempX = hcat.(eachcol.(getindex.(getindex.(Ref(X), xCol2Repeat),:data))...)
+		X[pSet][:data] = tempX
+		
+		#Matrix of matrixces. XpX is its diagonals (each are matrix also)	
+		X[xSet][:XpX] = hcat([[x'*tempX[j] for j in 1:length(tempX)] for x in tempX]...)
+		X[pSet][:Xp]  = transpose.(tempX)
+		tempX = 0
+		
 		#if E[eSet][:str] == "D"
-		#	X[xSet][:xpx] = X[xSet][:data]'*(E[ySet][:iVarStr].*X[xSet][:data])
-		#	X[xSet][:Xp] = transpose(X[xSet][:data].*E[ySet][:iVarStr])
-		#else 
-		#	X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
-		#	X[xSet][:Xp] = transpose(X[xSet][:data])
+		#	for c in eachcol(nowX)
+		#		#I compute x'X so that for each effect (column), I have both xpx and xpX stored! 
+		#		push!(tempxpx,ones(length(eSet),length(eSet)).*sum(c.*E[eSet][:iVarStr].*c))
+		#		push!(tempxpX,sum(c.*E[eSet][:iVarStr].*nowX,dims=1))
+		#	end
+		#	X[xSet][:Xp] = ones(length(eSet),1) .* map(i -> transpose(nowX[:,i].*E[eSet][:iVarStr]), axes(nowX, 2))
+		#else
+		#	for c in eachcol(nowX)
+		#		#tempM = hcat.(eachcol.(getindex.(getindex.(Ref(X), xSet),:data))...)
+		#		#I compute x'X so that for each effect (column), I have both xpx and xpX stored! 
+		#		push!(tempxpx,ones(length(eSet),length(eSet)).*sum(c.*c))
+		#		push!(tempxpX,sum(c.*nowX,dims=1))
+		#	end
+		#	X[xSet][:Xp] = [map(i -> transpose(nowX[:,i]), axes(nowX, 2)) for col in 1:length(eSet)]
 		#end
-
+		
+		
+		
 		#summary statistics
 		
 
@@ -140,9 +131,7 @@ function MMEX!(X,b,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 		#	println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
 		#	X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
 		#end
-		push!(b,zeros(Float64,X[xSet][:nCol],1))
-		tempxpx = 0
-		nowX = 0
+		push!(b,zeros(Float64,X[xSet][:nCol],length(eSet)))
 	end
 end
 
