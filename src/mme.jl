@@ -108,7 +108,7 @@ function MMEX!(X,b,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 		else
 			for c in eachcol(nowX)
 				#I compute x'X so that for each effect (column), I have both xpx and xpX stored! 
-				push!(tempxpx,Matrix(I*sum(c.*c),length(eSet),length(eSet)))
+				push!(tempxpx,ones(length(eSet),length(eSet)).*sum(c.*c))
 				push!(tempxpX,sum(c.*nowX,dims=1))
 			end
 			X[xSet][:Xp] = ones(length(eSet),1) .* map(i -> transpose(nowX[:,i]), axes(nowX, 2))
