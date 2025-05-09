@@ -40,21 +40,16 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 	iVarE = inv(varE[ySet])
 	if X[xSet].nCol==1
 		println("sampling xSet: $xSet")
-		println("X[xSet].data: $(X[xSet].data)")
-		println("b[X[xSet].pos]: $(b[X[xSet].pos])")
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
 		rhs      = getindex(X[xSet].Xp,X[xSet].pos)*ycorr.*iVarE .+ X[xSet].rhs
 		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
-		meanMu   = lhs\rhs
-
-		println("b: $b")
-		sampledX = rand(Normal(meanMu[],sqrt(inv(lhs[]))))
-		println("sampledX: $sampledX")
-		println("b for this X: $(b[X[xSet].pos])")
-		
+		meanMu   = lhs\rhs		
                 b[X[xSet].pos] = rand(Normal(meanMu[],sqrt(inv(lhs[]))))
 		ycorr    .-= X[xSet].data .* b[X[xSet].pos]
 	else
+		println("sampling xSet: $xSet")
+		println("X[xSet].data: $(X[xSet].data)")
+		println("b[X[xSet].pos]: $(b[X[xSet].pos])")
 		ycorr    .+= X[xSet].data*b[X[xSet].pos]
 		b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,iVarE)
 		ycorr    .-= X[xSet].data*b[X[xSet].pos]
