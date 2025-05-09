@@ -40,7 +40,7 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 	iVarE = inv(varE[ySet])
 	if length(b[X[xSet].pos])==1
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
-		rhs      = (X[xSet].Xp*ycorr).*iVarE .+ X[xSet].rhs
+		rhs      = dot(X[xSet].Xp,ycorr).*iVarE .+ X[xSet].rhs
 		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
 		meanMu   = lhs\rhs			
                 b[X[xSet].pos] .= rand(Normal(meanMu[],sqrt(inv(lhs[]))))
