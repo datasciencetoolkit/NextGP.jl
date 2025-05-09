@@ -91,27 +91,6 @@ function MMEX!(X,eSet::Symbol,E,blocks,modelInformation,summaryStat)
 end
 
 
-			M[pSet][:pos] = posMcounter
-			tempmpm = []
-			nowM = M[pSet][:data]
-
-			if E[:str] == "D"
-				for c in eachcol(nowM)
-					push!(tempmpm,sum(c.*E[:iVarStr].*c))
-				end
-				M[pSet][:Mp] = map(i -> transpose(nowM[:,i].*E[:iVarStr]), axes(nowM, 2))
-			else
-				for c in eachcol(nowM)
-					push!(tempmpm,dot(c,c))
-				end
-				M[pSet][:Mp] = map(i -> transpose(nowM[:,i]), axes(nowM, 2))
-			end			
-
-			M[pSet][:mpm] = tempmpm
-			
-
-
-
 #main sampler
 function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) #maybe later use modelInformation
 		
