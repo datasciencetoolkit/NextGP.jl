@@ -90,7 +90,7 @@ function MMEX!(X,b,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 	println("eSet: $eSet is a Tuple")
 	blockX!(X,eSet,blocks,modelInformation)
 	posXcounter = 0
-	println("X: X")
+	println("X: $X")
         for xSet in keys(X)
 		println("MMEX: $xSet")
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
@@ -115,9 +115,9 @@ function MMEX!(X,b,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 			end
 			X[xSet][:Xp] = [map(i -> transpose(nowX[:,i]), axes(nowX, 2)) for col in 1:length(eSet)]
 		end
-		println("tempxpx: $tempxpx")
-		println("tempxpX: $tempxpX")
-		println("Xp: $(X[xSet][:Xp])")
+		#println("tempxpx: $tempxpx")
+		#println("tempxpX: $tempxpX")
+		#println("Xp: $(X[xSet][:Xp])")
 		#	for c in eachcol(nowX)
 		#		push!(tempxpx,dot(c,c))
 		#	end
