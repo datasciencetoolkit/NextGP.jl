@@ -58,20 +58,31 @@ function MMEX!(X,b,eSet::Symbol,E,blocks,modelInformation,summaryStat)
         for xSet in keys(X)
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
 		X[xSet][:pos] = posXcounter
-		tempxpx = []
-		nowX = X[xSet][:data]
+		
+		#tempxpx = []
+		#nowX = X[xSet][:data]
+		#if E[eSet][:str] == "D"
+		#	for c in eachcol(nowX)
+		#		push!(tempxpx,sum(c.*E[eSet][:iVarStr].*c))
+		#	end
+		#	X[xSet][:Xp] = map(i -> transpose(nowX[:,i].*E[eSet][:iVarStr]), axes(nowX, 2))
+		#else
+		#	for c in eachcol(nowX)
+		#		push!(tempxpx,dot(c,c))
+		#	end
+		#	X[xSet][:Xp] = map(i -> transpose(nowX[:,i]), axes(nowX, 2))			
+		#end
+		#X[xSet][:xpx] = tempxpx
+
 		if E[eSet][:str] == "D"
-			for c in eachcol(nowX)
-				push!(tempxpx,sum(c.*E[eSet][:iVarStr].*c))
-			end
+			X[xSet][:xpx] = X[xSet][:data]'*(E[ySet][:iVarStr].*X[xSet][:data])
+			#X[xSet][:Xp] = transpose(X[xSet][:data].*E[ySet][:iVarStr])
 			X[xSet][:Xp] = map(i -> transpose(nowX[:,i].*E[eSet][:iVarStr]), axes(nowX, 2))
-		else
-			for c in eachcol(nowX)
-				push!(tempxpx,dot(c,c))
-			end
-			X[xSet][:Xp] = map(i -> transpose(nowX[:,i]), axes(nowX, 2))			
+		else 
+			X[xSet][:xpx] = X[xSet][:data]'X[xSet][:data]
+			#X[xSet][:Xp] = transpose(X[xSet][:data])
+			X[xSet][:Xp] = map(i -> transpose(nowX[:,i]), axes(nowX, 2))
 		end
-		X[xSet][:xpx] = tempxpx
 
 		#summary statistics
 		X[xSet][:lhs] = zeros(X[xSet][:nCol])
