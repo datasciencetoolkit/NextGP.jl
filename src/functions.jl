@@ -22,7 +22,7 @@ export sampleZ!
 function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,iVarE)
 	#iVarE = inv(varE)
 	bVec = deepcopy(b[X[xSet].pos])
-	Yi = getindex(X[xSet].Xp,X[xSet].pos)*ycorr.*iVarE #computation of X'ycorr*iVarE for ALL  rhsb
+	Yi = (X[xSet].Xp*ycorr).*iVarE #computation of X'ycorr*iVarE for ALL  rhsb
 	nCol = length(bVec)
 	for i in 1:nCol
         	bVec[i] = 0.0 #also excludes the effect from iMat! Nice trick.
