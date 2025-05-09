@@ -111,7 +111,7 @@ function MMEX!(X,b,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 				push!(tempxpx,ones(length(eSet),length(eSet)).*sum(c.*c))
 				push!(tempxpX,sum(c.*nowX,dims=1))
 			end
-			X[xSet][:Xp] = ones(length(eSet),1) .* map(i -> transpose(nowX[:,i]), axes(nowX, 2))
+			X[xSet][:Xp] = [map(i -> transpose(nowX[:,i]), axes(nowX, 2)) for col in 1:length(eSet)]
 		end
 		println("tempxpx: $tempxpx")
 		println("tempxpX: $tempxpX")
