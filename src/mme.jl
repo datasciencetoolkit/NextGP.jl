@@ -101,7 +101,7 @@ function MMEX!(X,b,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 		if E[eSet][:str] == "D"
 			for c in eachcol(nowX)
 				#I compute x'X so that for each effect (column), I have both xpx and xpX stored! 
-				push!(tempxpx,Matrix(I*sum(c.*E[eSet][:iVarStr].*c),length(eSet)))
+				push!(tempxpx,ones(length(eSet),length(eSet)).*sum(c.*E[eSet][:iVarStr].*c))
 				push!(tempxpX,sum(c.*E[eSet][:iVarStr].*nowX,dims=1))
 			end
 			X[xSet][:Xp] = ones(length(eSet),1) .* map(i -> transpose(nowX[:,i].*E[eSet][:iVarStr]), axes(nowX, 2))
