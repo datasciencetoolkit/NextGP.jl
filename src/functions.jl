@@ -40,8 +40,8 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 	iVarE = inv(varE[ySet])
 	if length(X[xSet].nCol)==1
 		println("sampling xSet: $xSet")
-		println("X[xSet].Xp: $(X[xSet].Xp)")
-		println("X[xSet].Xp: $(getindex(X[xSet].Xp,X[xSet].pos))")
+		println("X[xSet].data: $(X[xSet].data)")
+		println("b[X[xSet].pos]: $(b[X[xSet].pos])")
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
 		rhs      = getindex(X[xSet].Xp,X[xSet].pos)*ycorr.*iVarE .+ X[xSet].rhs
 		lhs      = X[xSet].xpx .*iVarE .+ X[xSet].lhs
