@@ -132,7 +132,7 @@ function MMEX!(X,b,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 		#	println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
 		#	X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
 		#end
-		push!(b,zeros(Float64,X[xSet][:nCol],length(eSet)))
+		push!(b,zeros(Float64,length(eSet),X[xSet][:nCol])) #now b is a nTrait*nCol matrix
 	end
 end
 
