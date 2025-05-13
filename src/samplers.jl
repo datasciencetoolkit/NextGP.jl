@@ -43,7 +43,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 			#end
 
 			#[println("sampling $xSet") for xSet in keys(yModel) if isa(yModel[xSet],FixedEffect)]
-			[sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if isa(yModel[xSet],FixedEffect)]
+			[sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if isa(yModel[xSet],FixedEffect) && isa(eSet,Symbol)]
 			
 			#sample random effects and variances
 			for zSet in keys(Z)
