@@ -56,7 +56,7 @@ end
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,varE::Dict,ySet::Tuple)
 	iVarE = inv(varE[ySet])
 	println("ycorr: $ycorr")
-	for i in 1:length(ySet)
+	for i in 1:X[xSet].nCol
 		println("X[xSet].data[i]: $(X[xSet].data[i])")
 		println("b[X[xSet].pos][i]: $(b[X[xSet].pos][i])")
 		ycorr .+= X[xSet].data[i] .* b[X[xSet].pos][i]
