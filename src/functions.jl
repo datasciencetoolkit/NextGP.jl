@@ -39,7 +39,7 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 	bVec = deepcopy(b[X[xSet].pos])
 	println("iVarE: $iVarE")
 	for i in 1:X[xSet].nCol
-		Yi = [BLAS.dot(X[xSet].data[:,i],sum(ycorr .* iVarE[[i],:],dims=2)) for i in 1:size(ycorr,2)]
+		Yi = [BLAS.dot(X[xSet].data[i],sum(ycorr .* iVarE[[i],:],dims=2)) for i in 1:size(ycorr,2)]
 		println("i: $i Yi $Yi")
 		println("bVec: $bVec")
         	bVec[i] .= 0.0 #also excludes the effect from iMat! Nice trick.
