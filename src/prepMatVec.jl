@@ -94,7 +94,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
 			#[E[k] = Dict{Any,Any}() for (k,v) in modelLHSTerms]
 			E[Tuple(collect(keys(modelLHSTerms)))] = Dict{Any,Any}()
-			modelInformation[Tuple(collect(keys(modelLHSTerms)))] = keys(modelRHSTerms)
+			modelInformation[Tuple(collect(keys(modelLHSTerms)))] = modelRHSTerms #keys(modelRHSTerms)
 		end
 	elseif length(f) > 1
 		Y = [] #Matrix(undef,0,length(f))
