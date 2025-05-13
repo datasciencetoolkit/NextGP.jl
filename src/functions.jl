@@ -553,13 +553,22 @@ function sampleVarBetaR(scalem,dfm,sumS,nLoci)::Float64
 end
 
 #Sample residual variance
-function sampleVarE!(eSet,E,varE,yCorVec,nRecords)
+function sampleVarE!(eSet::Symbol,E,varE,yCorVec,nRecords)
 	#println("eSet in varE $eSet")
 	#println("E in varE $E")
 	if E[eSet].str == "D"
 		varE[eSet] = (E[eSet].df*E[eSet].scale + sum(E[eSet].iVarStr.*(yCorVec.^2)))/rand(Chisq(E[eSet].df + nRecords))
 	else varE[eSet] = (E[eSet].df*E[eSet].scale + BLAS.dot(yCorVec,yCorVec))/rand(Chisq(E[eSet].df + nRecords))
 	end
+end
+
+#Sample residual variance
+function sampleVarE!(eSet::Tuple,E,varE,yCorVec,nRecords)
+	#println("eSet in varE $eSet")
+	println("E in varE $E")
+	Se = yCorVec'yCorVec
+	println("Se: $Se")
+	return rand(InverseWishart(E[eSet].df + nRecords, E[eSet].scale + Se))	
 end
 					
 # +1 is for beta(1,1) prior
