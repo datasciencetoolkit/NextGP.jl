@@ -39,12 +39,13 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 	bVec = deepcopy(b[X[xSet].pos])
 	println("X[xSet].Xp: $(X[xSet].Xp)")
 	println("iVarE: $iVarE")
-	Yi = (X[xSet].Xp*ycorr).*iVarE #computation of X'ycorr*iVarE for ALL  rhsb
-	println("Yi: $(Yi)")
-	nCol = length(bVec)
-	for i in 1:nCol
-        	bVec[i] = 0.0 #also excludes the effect from iMat! Nice trick.
-		rhsb = Yi[i] - dot(view(X[xSet].xpx,i,:),bVec)*iVarE
+	for i in 1:X[xSet].nCol
+		Yi = [BLAS.dot(xp[i,:],sum(ycorr .* iVarE[[i],:],dims=2)) for i in 1:size(ycorr,2)]
+		println("i: $i Yi $Yi")
+		println("bVec: $bVec")
+        	bVec[i] .= 0.0 #also excludes the effect from iMat! Nice trick.
+		println("bVec: $bVec")
+		rhsb = Yi - dot(view(X[xSet].xpx,i,:),bVec)*iVarE
                 lhsb = getindex(X[xSet].xpx,i,i)*iVarE
 		invLhsb = 1.0/lhsb
                 meanb = invLhsb*rhsb
