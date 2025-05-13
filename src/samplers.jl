@@ -42,6 +42,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 			#	sampleX!(xSet,X,b,ycorr,varE,ySet)
 			#end
 
+			println("samplers.jl: $ySet $yModel $(yModel[xSet]) $(isa(ySet,Symbol))")
 			#[println("sampling $xSet") for xSet in keys(yModel) if isa(yModel[xSet],FixedEffect)]
 			[sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if (isa(ySet,Symbol) && isa(yModel[xSet],FixedEffect))]
 			
