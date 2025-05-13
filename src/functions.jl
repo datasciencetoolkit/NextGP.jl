@@ -37,19 +37,18 @@ end
 
 function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVarE)
 	bVec = deepcopy(b[X[xSet].pos])
-	println("X[xSet].Xp: $(X[xSet].Xp)")
 	println("iVarE: $iVarE")
 	for i in 1:X[xSet].nCol
-		Yi = [BLAS.dot(xp[i,:],sum(ycorr .* iVarE[[i],:],dims=2)) for i in 1:size(ycorr,2)]
+		Yi = [BLAS.dot(X[xSet].data[:,i],sum(ycorr .* iVarE[[i],:],dims=2)) for i in 1:size(ycorr,2)]
 		println("i: $i Yi $Yi")
 		println("bVec: $bVec")
         	bVec[i] .= 0.0 #also excludes the effect from iMat! Nice trick.
 		println("bVec: $bVec")
-		rhsb = Yi - dot(view(X[xSet].xpx,i,:),bVec)*iVarE
-                lhsb = getindex(X[xSet].xpx,i,i)*iVarE
-		invLhsb = 1.0/lhsb
-                meanb = invLhsb*rhsb
-                bVec[i] = rand(Normal(meanb,sqrt(invLhsb)))
+		#rhsb = Yi - dot(view(X[xSet].xpx,i,:),bVec)*iVarE
+                #lhsb = getindex(X[xSet].xpx,i,i)*iVarE
+		#invLhsb = 1.0/lhsb
+                #meanb = invLhsb*rhsb
+                #bVec[i] = rand(Normal(meanb,sqrt(invLhsb)))
         end
 	return bVec
 end
