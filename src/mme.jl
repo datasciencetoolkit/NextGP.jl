@@ -97,7 +97,7 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 		xCol2Repeat = ntuple(i->xSet,length(eSet))
 		println("xCol2Repeat: $xCol2Repeat")
 		tempX = hcat.(eachcol.(getindex.(getindex.(Ref(X), xCol2Repeat),:data))...)
-		X[xSet][:data] = tempX
+		X[xSet][:data] = hcat(tempX...)
 		
 		#Matrix of matrixces. XpX is its diagonals (each are matrix also)	
 		X[xSet][:XpX] = hcat([[x'*tempX[j] for j in 1:length(tempX)] for x in tempX]...)
