@@ -41,7 +41,7 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 	for j in 1:X[xSet].nCol
 		println("X[xSet].data: $(X[xSet].data)")
 		println("X[xSet].dataI: $(X[xSet].data[j])")
-		Yj = [BLAS.dot(X[xSet].data[j][t],sum(ycorr .* iVarE[[t],:],dims=2)) for t in 1:size(ycorr,2)]
+		Yj = [BLAS.dot(X[xSet].data[j][:,t],sum(ycorr .* iVarE[[t],:],dims=2)) for t in 1:size(ycorr,2)]
 		println("j: $j Yj $Yj")
 		println("bVec: $bVec")
         	bVec[j] .= 0.0 #also excludes the effect from iMat! Nice trick.
