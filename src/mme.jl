@@ -176,6 +176,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	########
 
 	b = []
+	posXcounter = 0
 	
 	if isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Symbol
 		println("model is a single-trait model")
