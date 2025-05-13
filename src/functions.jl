@@ -54,12 +54,13 @@ end
 
 # NEW with D and with Wang's Trick (ySet::Tuple)
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,varE::Dict,ySet::Tuple)
-		iVarE = inv(varE[ySet])
-		println("ycorr: $ycorr")
-		println("X[xSet].data: $(X[xSet].data)")
-		println("b[X[xSet].pos] $(b[X[xSet].pos])")
-		println("X[xSet].data .* b[X[xSet].pos] $(X[xSet].data .* b[X[xSet].pos])")
-		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
+	iVarE = inv(varE[ySet])
+	println("ycorr: $ycorr")
+	for i in 1:length(ySet)
+		ycorr[:,i] .+= X[xSet].data .* b[X[xSet].pos][i]
+	end
+	println("ycorr: $ycorr")
+		#ycorr    .+= X[xSet].data .* b[X[xSet].pos]
 		#b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,iVarE)
 		#ycorr    .-= X[xSet].data*b[X[xSet].pos]
 end
