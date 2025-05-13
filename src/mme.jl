@@ -102,7 +102,7 @@ function MMEX!(X,b,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 		
 		#Matrix of matrixces. XpX is its diagonals (each are matrix also)	
 		X[xSet][:XpX] = hcat([[x'*tempX[j] for j in 1:length(tempX)] for x in tempX]...)
-		X[xSet][:XpX] = [reduce(hcat, xpX[i,:]) for i in 1:X[xSet][:nCol]]
+		X[xSet][:XpX] = [reduce(hcat, X[xSet][:XpX][i,:]) for i in 1:X[xSet][:nCol]]
 		X[xSet][:Xp]  = transpose.(tempX)
 		tempX = 0
 		
