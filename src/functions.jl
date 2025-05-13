@@ -35,6 +35,24 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,iVar
 	return bVec
 end
 
+function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVarE)
+	bVec = deepcopy(b[X[xSet].pos])
+	println("X[xSet].Xp: $(X[xSet].Xp)")
+	println("iVarE: $iVarE")
+	Yi = (X[xSet].Xp*ycorr).*iVarE #computation of X'ycorr*iVarE for ALL  rhsb
+	println("Yi: $(Yi)")
+	nCol = length(bVec)
+	for i in 1:nCol
+        	bVec[i] = 0.0 #also excludes the effect from iMat! Nice trick.
+		rhsb = Yi[i] - dot(view(X[xSet].xpx,i,:),bVec)*iVarE
+                lhsb = getindex(X[xSet].xpx,i,i)*iVarE
+		invLhsb = 1.0/lhsb
+                meanb = invLhsb*rhsb
+                bVec[i] = rand(Normal(meanb,sqrt(invLhsb)))
+        end
+	return bVec
+end
+
 # NEW with D and with Wang's Trick (ySet::Symbol)
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict,ySet::Symbol)
 	iVarE = inv(varE[ySet])
@@ -61,10 +79,13 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,varE
 		println("b[X[xSet].pos][i]: $(b[X[xSet].pos][i])")
 		ycorr .+= X[xSet].data[i] .* b[X[xSet].pos][i]
 	end
+	b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,iVarE)
+	for i in 1:X[xSet].nCol
+		println("X[xSet].data[i]: $(X[xSet].data[i])")
+		println("b[X[xSet].pos][i]: $(b[X[xSet].pos][i])")
+		ycorr .+= X[xSet].data[i] .* b[X[xSet].pos][i]
+	end
 	println("ycorr: $ycorr")
-		#ycorr    .+= X[xSet].data .* b[X[xSet].pos]
-		#b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,iVarE)
-		#ycorr    .-= X[xSet].data*b[X[xSet].pos]
 end
 
 #sample random effects
