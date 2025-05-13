@@ -39,6 +39,8 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 	bVec = deepcopy(b[X[xSet].pos])
 	println("iVarE: $iVarE")
 	for i in 1:X[xSet].nCol
+		println("X[xSet].data: $(X[xSet].data)")
+		println("X[xSet].dataI: $(X[xSet].data[i])")
 		Yi = [BLAS.dot(X[xSet].data[i],sum(ycorr .* iVarE[[i],:],dims=2)) for i in 1:size(ycorr,2)]
 		println("i: $i Yi $Yi")
 		println("bVec: $bVec")
