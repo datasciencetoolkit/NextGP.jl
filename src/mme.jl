@@ -99,11 +99,11 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 
 		tempX = hcat.(eachcol.(getindex.(getindex.(Ref(X), xCol2Repeat),:data))...)
 		X[xSet][:data] = tempX #array of arrays where each array is a column in X[:xSet] for two traits size n*2 each of the arrays in the arrays]
-		#push!(b,zeros(Float64,length(eSet),X[xSet][:nCol]))
 		push!(b,[zeros(Float64,1,length(eSet)) for j in 1:X[xSet][:nCol]]) #is an array of arrays also!
 						
 		#Matrix of matrixces	
 		X[xSet][:XpX] = hcat([[x'*tempX[j] for j in 1:length(tempX)] for x in tempX]...)
+		println("X[xSet][:XpX]: $(X[xSet][:XpX])")
 		#X[xSet][:XpX] = [reduce(hcat, X[xSet][:XpX][i,:]) for i in 1:X[xSet][:nCol]]
 		#X[xSet][:Xp]  = transpose.(tempX)
 		
