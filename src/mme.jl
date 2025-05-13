@@ -94,7 +94,8 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
 		X[xSet][:pos] = posXcounter
 		
-		xCol2Repeat = ntuple(i->:b,length(eSet))
+		xCol2Repeat = ntuple(i->xSet,length(eSet))
+		println("xCol2Repeat: $xCol2Repeat")
 		tempX = hcat.(eachcol.(getindex.(getindex.(Ref(X), xCol2Repeat),:data))...)
 		X[xSet][:data] = tempX
 		
