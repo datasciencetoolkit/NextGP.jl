@@ -51,10 +51,9 @@ end
 	==#
 
 #single-trait
-function MMEX!(X,b,eSet::Symbol,E,blocks,modelInformation,summaryStat)
+function MMEX!(X,b,posXcounter,eSet::Symbol,E,blocks,modelInformation,summaryStat)
 	println("eSet is a Tuple")
 	blockX!(X,eSet,blocks,modelInformation)
-	posXcounter = 0
         for xSet in keys(X)
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
 		X[xSet][:pos] = posXcounter
@@ -86,10 +85,9 @@ end
 
 
 #multi-trait
-function MMEX!(X,b,eSet::Tuple,E,blocks,modelInformation,summaryStat)
+function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat)
 	println("eSet: $eSet is a Tuple")
 	blockX!(X,eSet,blocks,modelInformation)
-	posXcounter = 0
 	println("X: $X")
         for xSet in keys(X)
 		println("MMEX: $xSet")
