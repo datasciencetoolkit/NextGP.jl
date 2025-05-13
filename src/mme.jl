@@ -96,6 +96,9 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 		
 		xCol2Repeat = ntuple(i->xSet,length(eSet))
 		println("xCol2Repeat: $xCol2Repeat")
+
+		println("XDATA: $(X)")
+		
 		tempX = hcat.(eachcol.(getindex.(getindex.(Ref(X), xCol2Repeat),:data))) #hcat.(eachcol.(getindex.(getindex.(Ref(X), xCol2Repeat),:data))...)
 
 		println("tempX: $tempX")
