@@ -35,7 +35,7 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,iVar
 	return bVec
 end
 
-# NEW with D and with Wang's Trick
+# NEW with D and with Wang's Trick (ySet::Symbol)
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict,ySet::Symbol)
 	iVarE = inv(varE[ySet])
 	if X[xSet].nCol==1
@@ -50,6 +50,15 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 		b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,iVarE)
 		ycorr    .-= X[xSet].data*b[X[xSet].pos]
 	end
+end
+
+# NEW with D and with Wang's Trick
+function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict,ySet::Tuple)
+	iVarE = inv(varE[ySet])
+		println("yCorr: $yCorr")
+		ycorr    .+= X[xSet].data*b[X[xSet].pos]
+		#b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,iVarE)
+		#ycorr    .-= X[xSet].data*b[X[xSet].pos]
 end
 
 #sample random effects
