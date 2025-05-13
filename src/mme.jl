@@ -98,11 +98,14 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 		println("xCol2Repeat: $xCol2Repeat")
 		tempX = eachcol.(getindex.(getindex.(Ref(X), xCol2Repeat),:data)) #hcat.(eachcol.(getindex.(getindex.(Ref(X), xCol2Repeat),:data))...)
 		X[xSet][:data] = tempX
+		println("tempX: $tempX")
+		
 		
 		#Matrix of matrixces. XpX is its diagonals (each are matrix also)	
-		X[xSet][:XpX] = hcat([[x'*tempX[j] for j in 1:length(tempX)] for x in tempX]...)
-		X[xSet][:XpX] = [reduce(hcat, X[xSet][:XpX][i,:]) for i in 1:X[xSet][:nCol]]
-		X[xSet][:Xp]  = transpose.(tempX)
+		#X[xSet][:XpX] = hcat([[x'*tempX[j] for j in 1:length(tempX)] for x in tempX]...)
+		#X[xSet][:XpX] = [reduce(hcat, X[xSet][:XpX][i,:]) for i in 1:X[xSet][:nCol]]
+		#X[xSet][:Xp]  = transpose.(tempX)
+		
 		tempX = 0
 		
 		#if E[eSet][:str] == "D"
