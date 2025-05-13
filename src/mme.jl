@@ -99,11 +99,12 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 
 		tempX = hcat.(eachcol.(getindex.(getindex.(Ref(X), xCol2Repeat),:data))...)
 		X[xSet][:data] = tempX #array of arrays where each array is a column in X[:xSet] for two traits n*2 each of the arrays in the arrays]
-		push!(b,zeros(Float64,length(eSet),X[xSet][:nCol]))
+		#push!(b,zeros(Float64,length(eSet),X[xSet][:nCol]))
+		push!(b,[zeros(Float64,1,length(eSet)) for j in 1:X[xSet][:nCol]]) #is an array of arrays also!
 						
 		#Matrix of matrixces	
 		X[xSet][:XpX] = hcat([[x'*tempX[j] for j in 1:length(tempX)] for x in tempX]...)
-		X[xSet][:XpX] = [reduce(hcat, X[xSet][:XpX][i,:]) for i in 1:X[xSet][:nCol]]
+		#X[xSet][:XpX] = [reduce(hcat, X[xSet][:XpX][i,:]) for i in 1:X[xSet][:nCol]]
 		X[xSet][:Xp]  = transpose.(tempX)
 		
 		tempX = 0
@@ -134,7 +135,8 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 		#	println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
 		#	X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
 		#end
-		push!(b,zeros(Float64,length(eSet),X[xSet][:nCol])) #now b is a nTrait*nCol matrix
+		
+		#push!(b,zeros(Float64,length(eSet),X[xSet][:nCol])) #now b is a nTrait*nCol matrix
 	end
 end
 
