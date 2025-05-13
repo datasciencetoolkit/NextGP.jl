@@ -31,6 +31,9 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 		
 		#sample residual variance
 		for (ySet,yModel) in modelInformation
+			println("model information $modelInformation")
+			println("ySet: $ySet")
+			println("yModel: $yModel")
 
 			#sample error variance all at once!!!
 			sampleVarE!(ySet,E,varE,ycorr,nData)
