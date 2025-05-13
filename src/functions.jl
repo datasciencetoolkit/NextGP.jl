@@ -40,7 +40,7 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 	println("iVarE: $iVarE")
 	for j in 1:X[xSet].nCol
 		println("X[xSet].data: $(X[xSet].data)")
-		println("X[xSet].dataI: $(X[xSet].data[i])")
+		println("X[xSet].dataI: $(X[xSet].data[j])")
 		Yj = [BLAS.dot(X[xSet].data[j][t],sum(ycorr .* iVarE[[t],:],dims=2)) for t in 1:size(ycorr,2)]
 		println("j: $j Yj $Yj")
 		println("bVec: $bVec")
