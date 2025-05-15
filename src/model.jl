@@ -50,15 +50,27 @@ function getLHSTerms(f;pre=preserved)
 	return modelLHSTerms
 end
 
-function getRHSTerms(f;pre=preserved)
+function getRHSTerms(f;pre=preserved) #there is nothing i call as "pre"? should be corrected. Also above...
 	modelRHSTerms = Dict()
-	for term in filter(!in(preserved), f.rhs.args)
+	if isa(f.rhs,Expr)
+		for term in filter(!in(preserved), f.rhs.args)
+			!isacall(term) && isa(term,Int) ? modelRHSTerms[Symbol("Intercept$term")] = ConstantTerm(term) : nothing
+			!isacall(term) && isa(term,Symbol) ? modelRHSTerms[term] = DataTerm(term) : nothing
+			isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) == *) ? modelRHSTerms[term] = InteractionTerm(term.args[2:end]) : nothing
+			isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) != *) ? modelRHSTerms[term] = FunctionTerm(term.args[1],term.args[2]) : nothing
+			isacall(term) && (term.args[1] == :PED) ? modelRHSTerms[term.args[2]]=PED(term.args[2:end]...) : nothing
+			isacall(term) && (term.args[1] == :SNP) ? modelRHSTerms[term.args[2]]=SNP(term.args[2:end]...) : nothing	
+		end
+	elseif isa(f.rhs,Symbol)
 		!isacall(term) && isa(term,Int) ? modelRHSTerms[Symbol("Intercept$term")] = ConstantTerm(term) : nothing
 		!isacall(term) && isa(term,Symbol) ? modelRHSTerms[term] = DataTerm(term) : nothing
 		isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) == *) ? modelRHSTerms[term] = InteractionTerm(term.args[2:end]) : nothing
 		isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) != *) ? modelRHSTerms[term] = FunctionTerm(term.args[1],term.args[2]) : nothing
 		isacall(term) && (term.args[1] == :PED) ? modelRHSTerms[term.args[2]]=PED(term.args[2:end]...) : nothing
 		isacall(term) && (term.args[1] == :SNP) ? modelRHSTerms[term.args[2]]=SNP(term.args[2:end]...) : nothing	
+	else nothing #maybe throw error
 	end
 	return modelRHSTerms
 end
+
+
