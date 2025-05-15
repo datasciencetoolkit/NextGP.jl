@@ -44,10 +44,10 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
         	bVec[j] .= 0.0 #also excludes the effect from iMat! Nice trick.
 		foreach(k -> push!(rhsb0,k.*iVarE), X[xSet].XpX[[j],:]) 
 		rhsb = Yj - sum(rhsb0.*bVec')
-                #lhsb = getindex(X[xSet].xpx,i,i)*iVarE
-		#invLhsb = 1.0/lhsb
-                #meanb = invLhsb*rhsb
-                #bVec[i] = rand(Normal(meanb,sqrt(invLhsb)))
+                lhsb = getindex(X[xSet].XpX,i,i).*iVarE
+		invLhsb = rhsb\lhsb
+                meanb = invLhsb*rhsb
+                bVec[i] = rand(MvNormal(meanb,invLhsb))
         end
 	return bVec
 end
