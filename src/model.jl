@@ -25,9 +25,7 @@ function show(io::IO, m::lmm)
 	    		println(" $term")
 		end
 	elseif isa(m.rhs,Symbol)
-		for term in filter(!in(preserved), m.rhs)
-	    		println(" $term")
-		end
+	    	println(" $(m.rhs)")
 	else nothing #error should be
 	end
 end
