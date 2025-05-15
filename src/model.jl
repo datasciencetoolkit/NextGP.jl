@@ -1,6 +1,6 @@
 #include("types.jl")
 
-macro model(expr::Union{Expr,Symbol},data::String)
+macro model(expr::Expr,data::String)
       M = LMM(expr,data)
       m = lmm(M.data,M.model,M.model.args...)
       return m
