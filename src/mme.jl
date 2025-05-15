@@ -1,13 +1,4 @@
-module mme
 
-
-using Distributions, LinearAlgebra
-using StatsBase
-using Printf
-using CSV
-using DataFrames
-using DataStructures
-using PrettyTables
 
 include("outFiles.jl")
 include("misc.jl")
@@ -636,4 +627,3 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	
 end
 
-end
