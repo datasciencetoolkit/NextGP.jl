@@ -44,15 +44,10 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
         	bVec[j] .= 0.0 #also excludes the effect from iMat! Nice trick.
 		foreach(k -> push!(rhsj0,k.*iVarE), X[xSet].XpX[[j],:]) 
 		rhsj = Yj - sum(rhsj0.*bVec')
-		println("rhsj: $rhsj")
+		println("getindex(X[xSet].XpX,j,j): $(getindex(X[xSet].XpX,j,j))")
                 lhsj = getindex(X[xSet].XpX,j,j).*iVarE
 		invLhsj = inv(lhsj)
-		println("invLhsj: $invLhsj")
                 meanj = invLhsj*rhsj
-		println("meanj: $meanj")
-		#est = rand(MvNormal(vec(meanj),invLhsj))
-		#println("est: $(est)")
-		#println("bVec[j]: $(bVec[j])")
                 bVec[j] .= reshape(rand(MvNormal(vec(meanj),invLhsj)),1,size(ycorr,2)) # i convert vector to matrix here
         end
 	return bVec
@@ -78,7 +73,6 @@ end
 # NEW with D and with Wang's Trick (ySet::Tuple)
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,varE::Dict,ySet::Tuple)
 	iVarE = inv(varE[ySet])
-	println("ycorr: $ycorr")
 	for i in 1:X[xSet].nCol
 		ycorr .+= X[xSet].data[i] .* b[X[xSet].pos][i]
 	end
@@ -86,7 +80,6 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,varE
 	for i in 1:X[xSet].nCol
 		ycorr .-= X[xSet].data[i] .* b[X[xSet].pos][i]
 	end
-	println("ycorr: $ycorr")
 end
 
 #sample random effects
