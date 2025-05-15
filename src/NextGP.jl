@@ -27,7 +27,8 @@ export Random,PED,SNP,BayesPRType,SummaryStatistics
 
 include("misc.jl")
 include("outFiles.jl")
-
+include("functions.jl")
+using .functions
 include("model.jl")
 export @model
 include("prepMatVec.jl")
