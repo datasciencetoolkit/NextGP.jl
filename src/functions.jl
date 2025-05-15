@@ -42,7 +42,9 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 		Yj = [BLAS.dot(X[xSet].data[j][:,t],sum(ycorr .* iVarE[[t],:],dims=2)) for t in 1:size(ycorr,2)]
         	bVec[j] .= 0.0 #also excludes the effect from iMat! Nice trick.
 		#foreach(k -> push!(rhsj0,k.*iVarE), X[xSet].XpX[[j],:])
-		println(hcat(X[xSet].XpX[[j],:]...))
+		rr = hcat(X[xSet].XpX[[j],:].*iVarE...)*vec(hcat(bVec...))
+		println(rr)
+		println(Yj)
 		#rhsj = Yj - sum(rhsj0.*bVec')
                 lhsj = getindex(X[xSet].XpX,j,j).*iVarE
 		invLhsj = inv(lhsj)
