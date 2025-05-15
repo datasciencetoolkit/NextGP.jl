@@ -35,6 +35,7 @@ function blockX!(X,eSet,blocks,modelInformation) #LHS is a Tuple
 			modelInformation[eSet] = push!(collect(values(modelInformation[eSet])),blk)
 			println("modelInformation $modelInformation EXTENDED")
 			for d in blk
+				println("deleting $d")
 				delete!(X,d)
 			end
 			modelInformation[eSet] = filter!(e->e∉blk,collect(values(modelInformation[eSet])))
