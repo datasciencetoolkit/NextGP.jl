@@ -39,15 +39,11 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 	bVec = deepcopy(b[X[xSet].pos])
 	println("iVarE: $iVarE")
 	for j in 1:X[xSet].nCol
+		rhsb0 = []
 		Yj = [BLAS.dot(X[xSet].data[j][:,t],sum(ycorr .* iVarE[[t],:],dims=2)) for t in 1:size(ycorr,2)]
-		println("bVec: $bVec")
         	bVec[j] .= 0.0 #also excludes the effect from iMat! Nice trick.
-		println("bVec: $bVec")
-		#println("X[xSet].XpX: X[xSet].XpX")
-		#rhsb = Yi - dot(view(X[xSet].xpx,i,:),bVec)*iVarE
-		println("[X[xSet].XpX[[j],:][k].*iVarE for k in 1:X[xSet].nCol]: $([X[xSet].XpX[[j],:][k].*iVarE for k in 1:X[xSet].nCol])")
-		println("bVec': $(bVec')")
-		rhsb = Yj - sum([X[xSet].XpX[[j],:][k].*iVarE for k in 1:X[xSet].nCol].*bVec',dims=2)[]
+		foreach(k -> push!(rhsb0,k.*iVarE), X[xSet].XpX[[j],:]) 
+		rhsb = Yj - sum(rhsb0.*bVec')
                 #lhsb = getindex(X[xSet].xpx,i,i)*iVarE
 		#invLhsb = 1.0/lhsb
                 #meanb = invLhsb*rhsb
