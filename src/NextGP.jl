@@ -12,6 +12,13 @@ export show #import is in misc
 using DataFrames
 using CategoricalArrays
 using Printf
+using Distributions 
+using LinearAlgebra
+using StatsBase
+using Printf
+using CSV
+using DataStructures
+using PrettyTables
 
 include("types.jl")
 #exporting run-time equivalent of functions
