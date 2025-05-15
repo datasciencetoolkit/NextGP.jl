@@ -23,7 +23,6 @@ export getMME!
 
 function blockX!(X,eSet,blocks,modelInformation) #LHS is a Tuple
 	println("dealing trait $eSet")
-	println("modelInformation $modelInformation IN")
 	if haskey(blocks, eSet)
 		println("blocking variables $blocks for trait $eSet")
 		for blk in blocks[eSet]
@@ -54,8 +53,8 @@ end
 #single-trait
 function MMEX!(X,b,posXcounter,eSet::Symbol,E,blocks,modelInformation,summaryStat)
 	println("eSet is a Symbol")
-	blockX!(X,eSet,blocks,modelInformation)
 	println("X: $X")
+	blockX!(X,eSet,blocks,modelInformation)
         for xSet in keys(X)
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
 		X[xSet][:pos] = posXcounter
