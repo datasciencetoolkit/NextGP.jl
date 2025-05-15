@@ -38,8 +38,9 @@ function blockX!(X,eSet,blocks,modelInformation) #LHS is a Tuple
 			for d in blk
 				println("deleting $d")
 				delete!(X,d)
+				delete!(modelInformation[eSet],d)
 			end
-			modelInformation[eSet] = filter!(e->e∉blk,collect(values(modelInformation[eSet])))
+			#modelInformation[eSet] = filter!(e->e∉blk,collect(values(modelInformation[eSet])))
 			println("modelInformation $modelInformation FINAL")
 		end
 	else println("NO blocking is performed for trait $eSet")
