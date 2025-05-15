@@ -51,11 +51,8 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 				               		
         		#print
 			if iter in these2Keep
-				println("b: $b")
-				println("hcat(b...): $(hcat(b...))")
-				println("hcat(hcat(b...)...): $(hcat(hcat(b...)...))")
-				inOut.outMCMC(outPut,"b_$ySet",hcat(hcat(b...)...)) #multi-trait version
-				inOut.outMCMC(outPut,"varE_$ySet",hcat(varE[ySet]...)) #multi-trait version
+				inOut.outMCMC(outPut,"b_$ySet",vcat(b...)')
+				inOut.outMCMC(outPut,"varE_$ySet",hcat(varE[ySet]...))
 			
 				for zSet in keys(Z)
 					if isa(zSet,Union{Expr,Symbol})
