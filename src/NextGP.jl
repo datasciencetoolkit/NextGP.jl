@@ -19,6 +19,7 @@ using Printf
 using CSV
 using DataStructures
 using PrettyTables
+using ProgressMeter
 
 include("types.jl")
 #exporting run-time equivalent of functions
