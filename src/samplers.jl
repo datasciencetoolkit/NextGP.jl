@@ -3,7 +3,7 @@
 
 #using Distributions, LinearAlgebra
 #using StatsBase
-using Printf
+#using Printf
 #using CSV
 #using DataFrames
 #using DataStructures
@@ -14,8 +14,8 @@ using ProgressMeter
 #include("misc.jl")
 #include("types.jl")
 
-include("functions.jl")
-using .functions
+#include("functions.jl")
+#using .functions
 
 
 export runSampler!
