@@ -47,6 +47,7 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 		rr = hcat(rhsj0...)*vec(hcat(bVec...))
 		println(rr)
 		println(Yj)
+		rhsj = Yj - rr
 		#rhsj = Yj - sum(rhsj0.*bVec')
                 lhsj = getindex(X[xSet].XpX,j,j).*iVarE
 		invLhsj = inv(lhsj)
