@@ -73,6 +73,8 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,varE
 	iVarE = inv(varE[ySet])
 	for i in 1:X[xSet].nCol
 		#ycorr .+= X[xSet].data[i] .* b[X[xSet].pos][i]
+		println("i: $i b[X[xSet].pos][i]")
+		println("X[xSet].data[:,i]: $(X[xSet].data[:,i])")
 		ycorr .+= X[xSet].data[:,i] .* b[X[xSet].pos][i]
 	end
 	b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,iVarE)
