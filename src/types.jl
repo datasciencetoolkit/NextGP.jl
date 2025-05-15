@@ -47,6 +47,10 @@ struct FunctionTerm <: FixedEffect
     cols::Union{Symbol,Expr} 	
 end
 
+struct BlockTerm <: FixedEffect
+    block::Tuple{Vararg{Symbol}}
+end
+
 struct PedigreeTerm <: RandomGeneticEffect
     var::Union{Symbol,Expr}
     path::Union{Matrix{Float64},String}
