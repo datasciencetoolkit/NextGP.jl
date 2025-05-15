@@ -19,10 +19,17 @@ end
 
 import Base.show #also export!!!
 function show(io::IO, m::lmm)
-		println("MODEL: \n $(m.model) \nLHS: \n $(m.lhs) \nRHS:")
+	println("MODEL: \n $(m.model) \nLHS: \n $(m.lhs) \nRHS:")
+	if isa(m.rhs,Expr)
 		for term in filter(!in(preserved), m.rhs.args)
-		    	println(" $term")
+	    		println(" $term")
 		end
+	elseif isa(m.rhs,Symbol)
+		for term in filter(!in(preserved), m.rhs)
+	    		println(" $term")
+		end
+	else nothing #error should be
+	end
 end
 
 preserved = [:*,:+, :~, :-, :|, :/]
