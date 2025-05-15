@@ -596,7 +596,7 @@ function sampleVarE!(eSet::Tuple,E,varE,yCorVec,nRecords)
 	println("E in varE $E")
 	Se = yCorVec'yCorVec
 	println("Se: $Se")
-	return rand(InverseWishart(E[eSet].df + nRecords, E[eSet].scale + Se))	
+	return rand(InverseWishart(E[eSet].df + nRecords, convert(Array,Symmetric(E[eSet].scale + Se))))
 end
 					
 # +1 is for beta(1,1) prior
