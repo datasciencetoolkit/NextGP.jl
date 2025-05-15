@@ -22,6 +22,7 @@ export getMME!
 
 
 function blockX!(X,eSet,blocks,modelInformation) #LHS is a Tuple
+	println("modelInformation $modelInformation")
 	println("dealing trait $eSet")
 	if haskey(blocks, eSet)
 		println("blocking variables $blocks for trait $eSet")
