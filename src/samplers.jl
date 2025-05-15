@@ -18,7 +18,7 @@ using ProgressMeter
 #using .functions
 
 
-export runSampler!
+#export runSampler!
 
 #main sampler
 function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,varBeta,delta,chainLength,burnIn,outputFreq,outPut)
