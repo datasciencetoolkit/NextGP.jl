@@ -39,13 +39,11 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 	bVec = deepcopy(b[X[xSet].pos])
 	println("iVarE: $iVarE")
 	for j in 1:X[xSet].nCol
-		println("X[xSet].data: $(X[xSet].data)")
-		println("X[xSet].dataI: $(X[xSet].data[j])")
 		Yj = [BLAS.dot(X[xSet].data[j][:,t],sum(ycorr .* iVarE[[t],:],dims=2)) for t in 1:size(ycorr,2)]
-		println("j: $j Yj $Yj")
 		println("bVec: $bVec")
         	bVec[j] .= 0.0 #also excludes the effect from iMat! Nice trick.
 		println("bVec: $bVec")
+		println("X[xSet].xpx: X[xSet].xpx")
 		#rhsb = Yi - dot(view(X[xSet].xpx,i,:),bVec)*iVarE
                 #lhsb = getindex(X[xSet].xpx,i,i)*iVarE
 		#invLhsb = 1.0/lhsb
@@ -77,14 +75,10 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,varE
 	iVarE = inv(varE[ySet])
 	println("ycorr: $ycorr")
 	for i in 1:X[xSet].nCol
-		println("X[xSet].data[i]: $(X[xSet].data[i])")
-		println("b[X[xSet].pos][i]: $(b[X[xSet].pos][i])")
 		ycorr .+= X[xSet].data[i] .* b[X[xSet].pos][i]
 	end
 	b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,iVarE)
 	for i in 1:X[xSet].nCol
-		println("X[xSet].data[i]: $(X[xSet].data[i])")
-		println("b[X[xSet].pos][i]: $(b[X[xSet].pos][i])")
 		ycorr .+= X[xSet].data[i] .* b[X[xSet].pos][i]
 	end
 	println("ycorr: $ycorr")
