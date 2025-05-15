@@ -102,12 +102,12 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 		push!(b,[zeros(Float64,1,length(eSet)) for j in 1:X[xSet][:nCol]]) #is an array of arrays also!
 						
 		#Matrix of matrixces	
-		X[xSet][:XpX] = hcat([[x'*tempX[j] for j in 1:length(tempX)] for x in tempX]...) #returns a big matrix of k'k!
-		#X[xSet][:XpX] = [[x'*tempX[j] for j in 1:length(tempX)] for x in tempX] #returns k array of arrays of t*t!
-		println("X[xSet][:XpX]: $(X[xSet][:XpX])")
-		#X[xSet][:XpX] = [reduce(hcat, X[xSet][:XpX][i,:]) for i in 1:X[xSet][:nCol]]
+		#X[xSet][:XpX] = hcat([[x'*tempX[j] for j in 1:length(tempX)] for x in tempX]...) #returns a big matrix of k'k!
+		X[xSet][:XpX] = [[x'*tempX[j] for j in 1:length(tempX)] for x in tempX] #returns k array of arrays of t*t!
+		X[xSet][:XpX] = [reduce(hcat, X[xSet][:XpX][i,:]) for i in 1:X[xSet][:nCol]]
 		#X[xSet][:Xp]  = transpose.(tempX)
-		
+		println("X[xSet][:XpX]: $(X[xSet][:XpX])")
+
 		tempX = 0
 		
 		#if E[eSet][:str] == "D"
