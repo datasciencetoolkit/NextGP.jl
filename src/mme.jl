@@ -54,6 +54,7 @@ end
 function MMEX!(X,b,posXcounter,eSet::Symbol,E,blocks,modelInformation,summaryStat)
 	println("eSet is a Symbol")
 	blockX!(X,eSet,blocks,modelInformation)
+	println("X: $X")
         for xSet in keys(X)
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
 		X[xSet][:pos] = posXcounter
