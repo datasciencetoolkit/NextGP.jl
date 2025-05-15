@@ -35,9 +35,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 			sampleVarE!(ySet,E,varE,ycorr,nData)
 			
 			#sample fixed effects
-			println("ycorr before sampling: $ycorr")
 			[sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if isa(yModel[xSet],FixedEffect)] #(isa(ySet,Symbol) && isa(yModel[xSet],FixedEffect))
-			println("ycorr before sampling: $ycorr")
 
 			#sample random effects and variances
 			for zSet in keys(Z)
@@ -53,6 +51,9 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 				               		
         		#print
 			if iter in these2Keep
+				println("b: $b")
+				println("hcat(b...): $(hcat(b...))")
+				println("hcat(hcat(b...)...): $(hcat(hcat(b...)...))")
 				inOut.outMCMC(outPut,"b_$ySet",hcat(hcat(b...)...)) #multi-trait version
 				inOut.outMCMC(outPut,"varE_$ySet",hcat(varE[ySet]...)) #multi-trait version
 			
