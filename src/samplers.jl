@@ -32,10 +32,12 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 		#sample residual variance
 		for (ySet,yModel) in modelInformation
 			#sample error variance all at once!!!
+			println("varE: $(varE[ySet])")
 			sampleVarE!(ySet,E,varE,ycorr,nData)
+			println("varE: $(varE[ySet])")
 			
 			#sample fixed effects
-			[sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if isa(yModel[xSet],FixedEffect)] #(isa(ySet,Symbol) && isa(yModel[xSet],FixedEffect))
+			[sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if isa(yModel[xSet],FixedEffect)] 
 			#[println("sampling xSet $xSet") for xSet in keys(yModel) if isa(yModel[xSet],FixedEffect)] #(isa(ySet,Symbol) && isa(yModel[xSet],FixedEffect))
 
 			#sample random effects and variances
