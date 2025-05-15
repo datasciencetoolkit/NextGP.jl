@@ -37,14 +37,12 @@ end
 
 function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVarE)
 	bVec = deepcopy(b[X[xSet].pos])
-	println("iVarE: $iVarE")
 	for j in 1:X[xSet].nCol
 		rhsj0 = []
 		Yj = [BLAS.dot(X[xSet].data[j][:,t],sum(ycorr .* iVarE[[t],:],dims=2)) for t in 1:size(ycorr,2)]
         	bVec[j] .= 0.0 #also excludes the effect from iMat! Nice trick.
 		foreach(k -> push!(rhsj0,k.*iVarE), X[xSet].XpX[[j],:]) 
 		rhsj = Yj - sum(rhsj0.*bVec')
-		println("getindex(X[xSet].XpX,j,j): $(getindex(X[xSet].XpX,j,j))")
                 lhsj = getindex(X[xSet].XpX,j,j).*iVarE
 		invLhsj = inv(lhsj)
                 meanj = invLhsj*rhsj
@@ -585,11 +583,8 @@ end
 
 #Sample residual variance
 function sampleVarE!(eSet::Tuple,E,varE,yCorVec,nRecords)
-	#println("eSet in varE $eSet")
-	println("E in varE $E")
 	Se = yCorVec'yCorVec
-	println("Se: $Se")
-	return rand(InverseWishart(E[eSet].df + nRecords, convert(Array,Symmetric(E[eSet].scale + Se))))
+	varE[eSet] = rand(InverseWishart(E[eSet].df + nRecords, convert(Array,Symmetric(E[eSet].scale + Se))))
 end
 					
 # +1 is for beta(1,1) prior
