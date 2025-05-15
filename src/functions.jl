@@ -43,7 +43,7 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 		println("bVec: $bVec")
         	bVec[j] .= 0.0 #also excludes the effect from iMat! Nice trick.
 		println("bVec: $bVec")
-		println("X[xSet].xpx: X[xSet].xpx")
+		#println("X[xSet].XpX: X[xSet].XpX")
 		#rhsb = Yi - dot(view(X[xSet].xpx,i,:),bVec)*iVarE
                 #lhsb = getindex(X[xSet].xpx,i,i)*iVarE
 		#invLhsb = 1.0/lhsb
