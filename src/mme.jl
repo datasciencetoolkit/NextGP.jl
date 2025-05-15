@@ -149,7 +149,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 		
         #some info
 	nRand = length(Z)
-	nData = length(Y)
+	nData = size(Y,1)
 	nMarkerSets = length(M)
         
 	#initial computations and settings
