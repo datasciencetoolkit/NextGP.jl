@@ -43,7 +43,7 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
         	bVec[j] .= 0.0 #also excludes the effect from iMat! Nice trick.
 		foreach(k -> push!(rhsj0,k.*iVarE), X[xSet].XpX[[j],:])
 		println("size rhsj0: $(hcat(rhsj0...))")
-		println("size vec(hcat(bVec...) $(vec(hcat(bVec...))")
+		println("size vec(hcat(bVec...) $(vec(hcat(bVec...)))")
 		rr = hcat(rhsj0...)*vec(hcat(bVec...))
 		println(rr)
 		println(Yj)
