@@ -53,7 +53,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 				               		
         		#print
 			if iter in these2Keep
-				inOut.outMCMC(outPut,"b_$ySet",hcat(b...)) ### currently no path is provided!!!!
+				inOut.outMCMC(outPut,"b_$ySet",hcat(hcat(b...)...)) ### currently no path is provided!!!!
 				inOut.outMCMC(outPut,"varE_$ySet",varE[ySet])
 			
 				for zSet in keys(Z)
