@@ -33,7 +33,7 @@ function blockX!(X,eSet,blocks,modelInformation) #LHS is a Tuple
 			X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
 			X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
 			X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
-			modelInformation[eSet][blk] = FixedEffect(blk)  #push!(collect(values(modelInformation[eSet])),blk)
+			modelInformation[eSet][blk] = BlockTerm(blk)  #push!(collect(values(modelInformation[eSet])),blk)
 			println("modelInformation $modelInformation EXTENDED")
 			for d in blk
 				println("deleting $d")
