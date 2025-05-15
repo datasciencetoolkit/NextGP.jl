@@ -7,7 +7,7 @@
 #using CSV
 #using DataFrames
 #using DataStructures
-using ProgressMeter
+#using ProgressMeter
 #using PrettyTables
 
 #include("outFiles.jl")
