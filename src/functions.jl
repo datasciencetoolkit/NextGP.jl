@@ -54,7 +54,6 @@ end
 # NEW with D and with Wang's Trick (ySet::Symbol)
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict,ySet::Symbol)
 	iVarE = inv(varE[ySet])
-	println("iVarE in sampleX $iVarE")
 	if X[xSet].nCol==1
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
 		rhs      = dot(X[xSet].Xp,ycorr).*iVarE .+ X[xSet].rhs
@@ -72,6 +71,7 @@ end
 # NEW with D and with Wang's Trick (ySet::Tuple)
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,varE::Dict,ySet::Tuple)
 	iVarE = inv(varE[ySet])
+	println("iVarE in $xSet $iVarE")
 	for i in 1:X[xSet].nCol
 		ycorr .+= X[xSet].data[i] .* b[X[xSet].pos][i]
 	end
