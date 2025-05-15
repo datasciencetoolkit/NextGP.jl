@@ -39,18 +39,18 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 	bVec = deepcopy(b[X[xSet].pos])
 	println("iVarE: $iVarE")
 	for j in 1:X[xSet].nCol
-		rhsb0 = []
+		rhsj0 = []
 		Yj = [BLAS.dot(X[xSet].data[j][:,t],sum(ycorr .* iVarE[[t],:],dims=2)) for t in 1:size(ycorr,2)]
         	bVec[j] .= 0.0 #also excludes the effect from iMat! Nice trick.
-		foreach(k -> push!(rhsb0,k.*iVarE), X[xSet].XpX[[j],:]) 
-		rhsb = Yj - sum(rhsb0.*bVec')
-		println("rhsb: $rhsb")
-                lhsb = getindex(X[xSet].XpX,j,j).*iVarE
-		invLhsb = inv(lhsb)
-		println("invLhsb: $invLhsb")
-                meanb = invLhsb*rhsb
-		println("meanb: $meanb")
-                bVec[i] = rand(MvNormal(vec(meanb),invLhsb))
+		foreach(k -> push!(rhsj0,k.*iVarE), X[xSet].XpX[[j],:]) 
+		rhsj = Yj - sum(rhsj0.*bVec')
+		println("rhsj: $rhsj")
+                lhsj = getindex(X[xSet].XpX,j,j).*iVarE
+		invLhsj = inv(lhsj)
+		println("invLhsj: $invLhsj")
+                meanj = invLhsj*rhsj
+		println("meanj: $meanj")
+                bVec[j] = rand(MvNormal(vec(meanj),invLhsj))
         end
 	return bVec
 end
