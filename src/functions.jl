@@ -84,7 +84,7 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,varE
 	end
 	b[X[xSet].pos] .= sampleb!(xSet,X,b,ycorr,iVarE)
 	for i in 1:X[xSet].nCol
-		ycorr .+= X[xSet].data[i] .* b[X[xSet].pos][i]
+		ycorr .-= X[xSet].data[i] .* b[X[xSet].pos][i]
 	end
 	println("ycorr: $ycorr")
 end
