@@ -46,8 +46,8 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 		rhsb = Yj - sum(rhsb0.*bVec')
 		println("rhsb: $rhsb")
                 lhsb = getindex(X[xSet].XpX,j,j).*iVarE
-		println("invLhsb: $invLhsb")
 		invLhsb = inv(lhsb)
+		println("invLhsb: $invLhsb")
                 meanb = invLhsb*rhsb
 		println("meanb: $meanb")
                 bVec[i] = rand(MvNormal(meanb,invLhsb))
