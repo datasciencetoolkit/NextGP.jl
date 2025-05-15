@@ -45,6 +45,8 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 		println("bVec: $bVec")
 		#println("X[xSet].XpX: X[xSet].XpX")
 		#rhsb = Yi - dot(view(X[xSet].xpx,i,:),bVec)*iVarE
+		println("[X[xSet].XpX[[j],:][k].*iVarE for k in 1:X[xSet].nCol]: $([X[xSet].XpX[[j],:][k].*iVarE for k in 1:X[xSet].nCol])")
+		println("bVec': $(bVec')")
 		rhsb = Yj - sum([X[xSet].XpX[[j],:][k].*iVarE for k in 1:X[xSet].nCol].*bVec',dims=2)[]
                 #lhsb = getindex(X[xSet].xpx,i,i)*iVarE
 		#invLhsb = 1.0/lhsb
