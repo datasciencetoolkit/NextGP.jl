@@ -62,6 +62,7 @@ function getRHSTerms(f;pre=preserved) #there is nothing i call as "pre"? should 
 			isacall(term) && (term.args[1] == :SNP) ? modelRHSTerms[term.args[2]]=SNP(term.args[2:end]...) : nothing	
 		end
 	elseif isa(f.rhs,Symbol)
+		term = f.rhs
 		!isacall(term) && isa(term,Int) ? modelRHSTerms[Symbol("Intercept$term")] = ConstantTerm(term) : nothing
 		!isacall(term) && isa(term,Symbol) ? modelRHSTerms[term] = DataTerm(term) : nothing
 		isacall(term) && isdefined(Base, term.args[1]) && (getproperty(Main, term.args[1]) isa Function) && (getproperty(Main, term.args[1]) == *) ? modelRHSTerms[term] = InteractionTerm(term.args[2:end]) : nothing
