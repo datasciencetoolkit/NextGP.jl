@@ -46,7 +46,7 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
                 lhsj = getindex(X[xSet].XpX,j,j).*iVarE
 		invLhsj = inv(lhsj)
                 meanj = invLhsj*rhsj
-                bVec[j] .= reshape(rand(MvNormal(vec(meanj),invLhsj)),1,size(ycorr,2)) # i convert vector to matrix here
+                bVec[j] .= reshape(rand(MvNormal(vec(meanj),convert(Array,Symmetric(invLhsj)))),1,size(ycorr,2)) # i convert vector to matrix here
         end
 	return bVec
 end
@@ -54,6 +54,7 @@ end
 # NEW with D and with Wang's Trick (ySet::Symbol)
 function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict,ySet::Symbol)
 	iVarE = inv(varE[ySet])
+	println("iVarE in sampleX $iVarE")
 	if X[xSet].nCol==1
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
 		rhs      = dot(X[xSet].Xp,ycorr).*iVarE .+ X[xSet].rhs
