@@ -23,6 +23,8 @@ include("outFiles.jl")
 include("model.jl")
 export @model
 include("prepMatVec.jl")
+include("mme.jl")
+include("samplers.jl")
 include("MCMC.jl")
 
 include("GRN.jl")
