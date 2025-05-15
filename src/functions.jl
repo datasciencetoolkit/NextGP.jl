@@ -50,7 +50,10 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 		println("invLhsj: $invLhsj")
                 meanj = invLhsj*rhsj
 		println("meanj: $meanj")
-                bVec[j] .= rand(MvNormal(vec(meanj),invLhsj))
+		est = rand(MvNormal(vec(meanj),invLhsj))
+		println("est: $(est)")
+		println("bVec[j]: $(bVec[j])")
+                #bVec[j] .= rand(MvNormal(vec(meanj),invLhsj))
         end
 	return bVec
 end
