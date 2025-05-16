@@ -621,7 +621,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 
 	
 	[inOut.outMCMC(outPut,"varE_$eSet",["e_$eSet"]) for eSet in keys(E) if isa(eSet,Symbol)]
-	[inOut.outMCMC(outPut,"varE_$eSet",hcat(["$(c[1])_$(c[2])" for c in collect(Iterators.product(1:length(eSet), 1:length(eSet)))]...)) for eSet in keys(E) if isa(eSet,Symbol)]
+	[inOut.outMCMC(outPut,"varE_$eSet",hcat(["$(c[1])_$(c[2])" for c in collect(Iterators.product(1:length(eSet), 1:length(eSet)))]...)) for eSet in keys(E) if isa(eSet,Tuple{Vararg{Symbol}})]
 
 	
 	##########
