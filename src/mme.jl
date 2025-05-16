@@ -563,7 +563,9 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	
 	isempty(blocks) ? levelsX = hcat(vcat([value[:levels] for (key, value) in X]...)...) : levelsX = hcat(vcat([vcat(value[:levels]) for (key, value) in X]...)...)
 
-	[inOut.outMCMC(outPut,"b_$eSet",levelsX) for eSet in keys(E)]
+	[inOut.outMCMC(outPut,"b_$eSet",levelsX) for eSet in keys(E) if isa(eSet,Symbol)]
+	[inOut.outMCMC(outPut,"b_$eSet",hcat(["$(l)_".*String.(hcat(eSet...)) for l in levelsX]...)) for eSet in keys(E) if isa(eSet,Tuple{Vararg{Symbol}})]
+	
 	
 	#check for correlated RE
         for zSet in keys(Z)
