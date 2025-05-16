@@ -32,14 +32,16 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 		#sample residual variance
 		for (ySet,yModel) in modelInformation
 			#sample error variance all at once!!!
-			println("varE: $(varE[ySet])")
 			sampleVarE!(ySet,E,varE,ycorr,nData)
-			println("varE: $(varE[ySet])")
 			
 			#sample fixed effects
 			[sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if isa(yModel[xSet],FixedEffect)] 
-			#[println("sampling xSet $xSet") for xSet in keys(yModel) if isa(yModel[xSet],FixedEffect)] #(isa(ySet,Symbol) && isa(yModel[xSet],FixedEffect))
 
+
+
+
+
+			
 			#sample random effects and variances
 			for zSet in keys(Z)
 	        		sampleZ!(zSet,Z,u,ycorr,varE,varU)	
@@ -52,9 +54,10 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 				M[mSet].funct(mSet,M,beta,delta,ycorr,varE,varBeta)
 			end
 				               		
-        		#print
+        		#WRITE TO FILES
 			if iter in these2Keep
-				inOut.outMCMC(outPut,"b_$ySet",vcat(b...)')
+				println("b: $b")
+				inOut.outMCMC(outPut,"b_$ySet",hcat(b...))
 				inOut.outMCMC(outPut,"varE_$ySet",hcat(varE[ySet]...))
 			
 				for zSet in keys(Z)
