@@ -56,8 +56,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 				               		
         		#WRITE TO FILES
 			if iter in these2Keep
-				println("b: $b")
-				inOut.outMCMC(outPut,"b_$ySet",hcat(b...))
+				inOut.outMCMC(outPut,"b_$ySet",hcat(vcat(b...)...))
 				inOut.outMCMC(outPut,"varE_$ySet",hcat(varE[ySet]...))
 			
 				for zSet in keys(Z)
