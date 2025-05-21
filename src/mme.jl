@@ -101,6 +101,7 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 		#Matrix of matrixces	
 		X[xSet][:XpX] = hcat([[x'*tempX[j] for j in 1:length(tempX)] for x in tempX]...) #returns a big matrix of k'k!
 		println("size XpX: $xSet $(size(X[xSet][:XpX]))")
+		
 		#X[xSet][:XpX] = [[x'*tempX[j] for j in 1:length(tempX)] for x in tempX] #returns k array of arrays of t*t!
 		#println("X[xSet][:XpX]: $(X[xSet][:XpX])")
 		#X[xSet][:XpX] = [reduce(hcat, X[xSet][:XpX][i,:]) for i in 1:X[xSet][:nCol]]
