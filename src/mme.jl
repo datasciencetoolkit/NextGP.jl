@@ -131,13 +131,7 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 		
 		#summary statistics
 		
-
-		#if isa(X[xSet][:xpx],Matrix{Float64})
-		#	println("diag: $(diag(X[xSet][:xpx])) added to diag: $(minimum(abs.(diag(X[xSet][:xpx]))))")
-		#	X[xSet][:xpx] += Matrix(I*minimum(abs.(diag(X[xSet][:xpx])./10000)),size(X[xSet][:xpx]))
-		#end
-		
-		#push!(b,zeros(Float64,length(eSet),X[xSet][:nCol])) #now b is a nTrait*nCol matrix
+		[X[xSet][:XpX][x] += Matrix(I*minimum(abs.(diag(X[xSet][:XpX][x])./10000)),size(X[xSet][:XpX][x])) for x in CartesianIndices(size(X[xSet][:XpX]) if isa(X[xSet][:xpx][],Matrix{Float64})]
 	end
 end
 
