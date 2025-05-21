@@ -135,100 +135,16 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 	end
 end
 
-
-#main sampler
-function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) #maybe later use modelInformation
-		
-        #some info
-	nRand = length(Z)
-	nData = size(Y,1)
-	nMarkerSets = length(M)
-        
-	#initial computations and settings
-	
-	ycorr = deepcopy(Y)
-
-	priorVCV = convert(Dict{ExprOrSymbolOrTuple, Any},priorVCV)
-	
-	
-	varU = Dict{Any,Any}() #for storage
-	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
-	varE = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
-
-	######## 
-	#E (is per trait information up until now)
-	########
-
-
-	#set up varCov for e
-	for eSet in keys(E)
-		setVarCovStrE!(eSet,E,priorVCV,nData,varE)
-	end
-	varCovE!(E,priorVCV)
-
-	#println("E $E")
-	#println("varE $varE")
-
-	###################################
-	
-	
-	######## 
-	#X and b
-	########
-
-	b = []
-	posXcounter = 0
-	
-	if isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Symbol
-		println("model is a single-trait model")
-		for eSet in keys(E)
-			MMEX!(X,b,posXcounter,eSet,E,blocks,modelInformation,summaryStat)
-		end
-	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
-		println("model is a multi-trait model where measurements/observations are from the same individuals")
-		for eSet in keys(E)
-			MMEX!(X,b,posXcounter,eSet,E,blocks,modelInformation,summaryStat)
-		end
-	elseif !isequal(length(collect(keys(E))),1) && all(typeof.(collect(keys(E))) .<: Symbol)
-		for eSet in keys(E)
-			MMEX!(X,b,posXcounter,eSet,E,blocks,modelInformation,summaryStat)
-		end
-		println("model is a multi-population model where measurements/observations are from different individuals")
-	else 	throw(ArgumentError("Could not understand the type of your model"))
-
-	end
-
-	
-
-	###Allow no fixed effects
-	#isempty(keys(X)) ? b = [] : b = zeros(sum(getindex.(getindex.(Ref(X), keys(X)),:nCol)))
-	##This is not really nFix, but the "blocks" of fixed effects
-        nFix  = length(X)
-
-	###################################
-	
-	### 
-	#Z and u
-	###
-	
-	u = []	
-	posZcounter = 0
-
-	#set up varCov for e
+#single-trait
+#for multi-trait it will be, zSet::Union{Tuple{Tuple{Vararg{Symbol}}} #check potential overlap with single-trait
+function MMEZ!(Z,u,posZcounter,zSet::Union{Symbol,Tuple{Vararg{Symbol}},modelInformation,summaryStat)
 	for zSet in keys(Z)
-		setVarCovStrZ!(zSet,Z,priorVCV,nData,varZ)
-	end
-	varCovE!(E,priorVCV)
-	
-	for zSet in keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
 		#symbol :ID or expression :(1|ID)
 		if (isa(zSet,Symbol) || isa(zSet,Expr)) && in(zSet,keys(Z))
 			posZcounter += 1
 			Z[zSet][:pos] = posZcounter
 			tempzpz = []
 			nowZ = Z[zSet][:data]
-			
-			setVarCovStrU!(zSet,Z,priorVCV,varU_prior)
 			
 			if E[:str] == "D"
 				for c in eachcol(nowZ)
@@ -312,8 +228,116 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
                 	Z[zSet][:lhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) : inv.(diag(summaryStat[zSet].v))
                         Z[zSet][:rhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
                 end
-		setVarCovStr!(zSet,Z,priorVCV,varU_prior)
 	end
+end
+
+
+#main sampler
+function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) #maybe later use modelInformation
+		
+        #some info
+	nRand = length(Z)
+	nData = size(Y,1)
+	nMarkerSets = length(M)
+        
+	#initial computations and settings
+	
+	ycorr = deepcopy(Y)
+
+	priorVCV = convert(Dict{ExprOrSymbolOrTuple, Any},priorVCV)
+	
+	
+	varU = Dict{Any,Any}() #for storage
+	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
+	varE = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
+
+	######## 
+	#E (is per trait information up until now)
+	########
+
+
+	#set up varCov for e
+	for eSet in keys(E)
+		setVarCovStrE!(eSet,E,priorVCV,nData,varE)
+	end
+	varCovE!(E,priorVCV)
+
+	#println("E $E")
+	#println("varE $varE")
+
+	###################################
+	
+	
+	######## 
+	#X and b
+	########
+
+	b = []
+	posXcounter = 0
+	
+	if isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Symbol
+		println("model is a single-trait model")
+		for eSet in keys(E)
+			MMEX!(X,b,posXcounter,eSet,E,blocks,modelInformation,summaryStat)
+		end
+	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
+		println("model is a multi-trait model where measurements/observations are from the same individuals")
+		for eSet in keys(E)
+			MMEX!(X,b,posXcounter,eSet,E,blocks,modelInformation,summaryStat)
+		end
+	elseif !isequal(length(collect(keys(E))),1) && all(typeof.(collect(keys(E))) .<: Symbol)
+		for eSet in keys(E)
+			MMEX!(X,b,posXcounter,eSet,E,blocks,modelInformation,summaryStat)
+		end
+		println("model is a multi-population model where measurements/observations are from different individuals")
+	else 	throw(ArgumentError("Could not understand the type of your model"))
+
+	end
+
+	
+
+	###Allow no fixed effects
+	#isempty(keys(X)) ? b = [] : b = zeros(sum(getindex.(getindex.(Ref(X), keys(X)),:nCol)))
+	##This is not really nFix, but the "blocks" of fixed effects
+        nFix  = length(X)
+
+	###################################
+	
+	### 
+	#Z and u
+	###
+	
+	u = []	
+	posZcounter = 0
+
+	#set up varCov for e
+	for zSet in keys(Z)
+		setVarCovStrZ!(zSet,Z,priorVCV,varZ)
+	end
+	varCovZ!(Z,priorVCV)
+
+	if isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Symbol
+		println("model is a single-trait model")
+		for zSet in keys(Z)
+			MMEZ!(Z,u,posZcounter,zSet,Z,modelInformation,summaryStat)
+		end
+	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
+		println("model is a multi-trait model where measurements/observations are from the same individuals")
+		for zSet in keys(Z)
+			MMEZ!(Z,u,posZcounter,zSet,Z,modelInformation,summaryStat)
+		end
+	elseif !isequal(length(collect(keys(E))),1) && all(typeof.(collect(keys(E))) .<: Symbol)
+		for zSet in keys(Z)
+			MMEZ!(Z,u,posZcounter,zSet,Z,modelInformation,summaryStat)
+		end
+		println("model is a multi-population model where measurements/observations are from different individuals")
+	else 	throw(ArgumentError("Could not understand the type of your model"))
+
+	end
+
+	
+
+	
 
 	##set up varCov for u
 	##varCovZ!(Z,priorVCV,varU_prior,varU)
