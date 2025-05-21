@@ -211,11 +211,15 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	#Z and u
 	###
 	
-	u = []
-
-	#matrices are ready
-	
+	u = []	
 	posZcounter = 0
+
+	#set up varCov for e
+	for zSet in keys(Z)
+		setVarCovStrZ!(zSet,Z,priorVCV,nData,varZ)
+	end
+	varCovE!(E,priorVCV)
+	
 	for zSet in keys(filter(p -> p.first!=:e, priorVCV)) # excluding :e keys(priorVCV)
 		#symbol :ID or expression :(1|ID)
 		if (isa(zSet,Symbol) || isa(zSet,Expr)) && in(zSet,keys(Z))
