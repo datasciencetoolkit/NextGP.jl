@@ -73,27 +73,55 @@ function varCovE!(E,priorVCV)
 end
 
 #set up (co)variance structures for U
-
-function setVarCovStrU!(zSet::ExprOrSymbolOrTuple,Z::Dict,priorVCV,varU::Dict)
+#single-trait
+function setVarCovStrU!(zSet::Union{Symbol,Tuple{Vararg{Symbol}}},Z::Dict,priorVCV,varU::Dict)
 	if haskey(priorVCV,zSet)	
-		if ismissing(priorVCV[zSet].str) || priorVCV[zSet].str=="I" 
+		if isempty(priorVCV[zSet].str) || priorVCV[zSet].str=="I" 
 			printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
-			Z[zSet][:iVarStr] = Matrix(1.0I,Z[zSet][:dims][2],Z[zSet][:dims][2])
+			Z[zSet][:iVarStr] = [] #Matrix(1.0I,Z[zSet][:dims][2],Z[zSet][:dims][2])
 		elseif priorVCV[zSet].str=="A"
 			printstyled("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used\n"; color = :green)
 			isa(zSet,Tuple) ? Z[zSet][:iVarStr] = Z[zSet[1]][:iVarStr] : Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
 		elseif priorVCV[zSet].str=="G"
                         printstyled("prior var-cov structure for $zSet is G. Computed G matrix will be used\n"; color = :green)
 			isa(zSet,Tuple) ? Z[zSet][:iVarStr] = Z[zSet[1]][:iVarStr] : Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
-		else 	Z[zSet][:iVarStr] = inv(priorVCV[zSet].str)
+		else 	
+			error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
 		end
-		varU[zSet] = priorVCV[zSet].v
 	else	
 		printstyled("prior var-cov for $zSet is empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
-		varU[zSet] = 100
-		priorVCV[zSet] = Random("I",100)
-		Z[zSet][:iVarStr] = Matrix(1.0I,Z[zSet][:dims][2],Z[zSet][:dims][2])
+		Z[zSet][:str] = "I"
+		Z[zSet][:iVarStr] = []
+		#just add to priors
+		priorVCV[zSet] = Random("I",Matrix(100.0I,length(zSet),length(zSet)))
 	end
+	varU[zSet] = priorVCV[zSet].v
+end
+
+#set up (co)variance structures for U
+#multi-trait
+function setVarCovStrU!(zSet::Tuple{Vararg{Tuple{Vararg{Symbol}}}},Z::Dict,priorVCV,varU::Dict)
+	if haskey(priorVCV,zSet)	
+		if isempty(priorVCV[zSet].str) || priorVCV[zSet].str=="I" 
+			printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
+			Z[zSet][:iVarStr] = [] #Matrix(1.0I,Z[zSet][:dims][2],Z[zSet][:dims][2])
+		elseif priorVCV[zSet].str=="A"
+			printstyled("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used\n"; color = :green)
+			isa(zSet,Tuple) ? Z[zSet][:iVarStr] = Z[zSet[1]][:iVarStr] : Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
+		elseif priorVCV[zSet].str=="G"
+                        printstyled("prior var-cov structure for $zSet is G. Computed G matrix will be used\n"; color = :green)
+			isa(zSet,Tuple) ? Z[zSet][:iVarStr] = Z[zSet[1]][:iVarStr] : Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
+		else 	
+			error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
+		end
+	else	
+		printstyled("prior var-cov for $zSet is empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
+		Z[zSet][:str] = "I"
+		Z[zSet][:iVarStr] = []
+		#just add to priors
+		priorVCV[zSet] = Random("I",Matrix(100.0I,length(zSet),length(zSet)))
+	end
+	varU[zSet] = priorVCV[zSet].v
 end
 
 #df, shape, scale...															
