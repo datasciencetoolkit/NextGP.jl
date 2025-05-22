@@ -137,12 +137,15 @@ end
 
 #single-trait
 #for multi-trait it will be, zSet::Union{Tuple{Tuple{Vararg{Symbol}}} #check potential overlap with single-trait
-function MMEZ!(Z,u,posZcounter,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},modelInformation,summaryStat)
+function MMEZ!(Z,u,posZcounter,eSet::Tuple,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},modelInformation,summaryStat)
 	for zSet in keys(Z)
 		#symbol :ID or expression :(1|ID)
 		if (isa(zSet,Symbol) || isa(zSet,Expr)) && in(zSet,keys(Z))
 			posZcounter += 1
 			Z[zSet][:pos] = posZcounter
+			
+			
+			
 			tempzpz = []
 			nowZ = Z[zSet][:data]
 			
