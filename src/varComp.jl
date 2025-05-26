@@ -72,6 +72,7 @@ function varCovE!(E,priorVCV)
 #   	end
 end
 
+
 #set up (co)variance structures for U
 #single-trait
 function setVarCovStrU!(eSet::Symbol,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},Z::Dict,priorVCV,varU::Dict)
