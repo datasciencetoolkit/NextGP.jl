@@ -139,7 +139,9 @@ end
 #for multi-trait it will be, zSet::Union{Tuple{Tuple{Vararg{Symbol}}} #check potential overlap with single-trait
 function MMEZ!(Z,u,posZcounter,eSet::Tuple,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},modelInformation,summaryStat)
 	#more like blockX function, but a bit different as the way ot forms data structures.
-	
+	correlate = hcat(filter!(!isempty, unique([[keya for keya in keys(a) if (isa(keya,Tuple) && in(keyz,keya))] for keyz in keys(Z)]))...)
+	#need to implement here data preparation w/o correlation
+
 	
 	for zSet in keys(Z)
 		#symbol :ID or expression :(1|ID)
