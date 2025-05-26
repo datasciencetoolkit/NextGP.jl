@@ -138,6 +138,9 @@ end
 #single-trait
 #for multi-trait it will be, zSet::Union{Tuple{Tuple{Vararg{Symbol}}} #check potential overlap with single-trait
 function MMEZ!(Z,u,posZcounter,eSet::Tuple,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},modelInformation,summaryStat)
+	#more like blockX function, but a bit different as the way ot forms data structures.
+	
+	
 	for zSet in keys(Z)
 		#symbol :ID or expression :(1|ID)
 		if (isa(zSet,Symbol) || isa(zSet,Expr)) && in(zSet,keys(Z))
