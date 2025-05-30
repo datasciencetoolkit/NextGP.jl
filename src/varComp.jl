@@ -10,7 +10,6 @@ function setVarCovStrE!(eSet::Symbol,E,priorVCV,nData,varE)
 		elseif isa(priorVCV[eSet].str,Vector) # D
 				E[eSet][:str] = "D"
 				E[eSet][:iVarStr] = inv.(priorVCV[eSet].str) #inv(Diagonal(priorVCV[eSet].str))
-#				error("var-cov structure \"D\" has not been implemented yet")
 				printstyled("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used\n"; color = :green)
 		else 
 				error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
@@ -37,7 +36,7 @@ function setVarCovStrE!(eSet::Tuple{Vararg{Symbol}},E,priorVCV,nData,varE)
 		elseif isa(priorVCV[eSet].str,Vector) # D
 				E[eSet][:str] = "D"
 				E[eSet][:iVarStr] = inv.(priorVCV[eSet].str) #inv(Diagonal(priorVCV[eSet].str))
-#				error("var-cov structure \"D\" has not been implemented yet")
+				error("var-cov structure \"D\" has not been implemented yet")
 				printstyled("prior var-cov structure for \"e\" is \"D\". User provided \"D\" matrix (d_ii = 1/w_ii) will be used\n"; color = :green)
 		else 
 				error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
