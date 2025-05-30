@@ -8,11 +8,11 @@ include("designMat.jl")
 #all int are made categorical
 function prepData!(inputData,f)
 	#make in categorical
-	for n in Symbol.(names(inputData))
-		if isa(inputData[!,n],Vector{Int})
-                	inputData[!,n] = CategoricalArray(inputData[!,n])
-        	end
-        end
+	#for n in Symbol.(names(inputData))
+	#	if isa(inputData[!,n],Vector{Int})
+        #        	inputData[!,n] = CategoricalArray(inputData[!,n])
+        #	end
+        #end
 
 	#center cont. covariates	
 	for n in Symbol.(names(inputData))
