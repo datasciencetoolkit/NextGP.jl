@@ -16,7 +16,7 @@
 * `nChain`,`nBurn` and `nThin` are the chain length, burn-in period, and the thining interval used for the MCMC sampling
 * Users can define coding of their variables (e.g. full dummy coding) by providing `myHints`. Check `StatsModels.jl`'s manual for [`categorical data`](https://juliastats.org/StatsModels.jl/latest/contrasts/#Modeling-categorical-data) could be useful.  
 """
-runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol,Any}(),blockThese=Dict{Symbol,Any}(),outFolder="outMCMC",VCV=Dict{Union{Expr,Symbol,Tuple}, Any}(),userPedData=[],summaryStat=Dict{Any,Any}())
+runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol,Any}(),blockThese=Dict{Symbol,Any}(),outFolder="outMCMC",VCV=Dict{Union{Expr,Symbol,Tuple}, Any}(),summaryStat=Dict{Any,Any}())
 
 	if length(model)==1 && isa(model[1].lhs,Symbol)
 		println("I AM A lmm")
@@ -31,7 +31,7 @@ runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol
 
 	folderHandler(outFolder)
 
-	#Y,X,Z,M,E,modelInformation = prepMatVec.prep(model,path2ped=userPedData,priorVCV=VCV)
+	#Y,X,Z,M,E,modelInformation = prepMatVec.prep(model,priorVCV=VCV)
 	Y,X,Z,M,E,modelInformation = prep(model,path2ped=userPedData,priorVCV=VCV)
 
 	modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,varBeta,delta = getMME!(Y,X,Z,M,E,blockThese,VCV,summaryStat,modelInformation,outFolder)
