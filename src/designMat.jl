@@ -46,7 +46,7 @@ function makeXCat(tempData::Vector,col::Symbol)
 	###DUMMY CODING
 	dictCol,codedCol = dropLevel(dictCol,codedCol;refKey=[])
 	#return Dict(:data=>codedCol,:map=>[],:method=>"FixedEffects",:nCol=>size(codedCol,2),:levels=>"$col"*":".*keys(dictCol)) #works for CategoricalArrays
-	return Dict(:data=>codedCol,:map=>[],:method=>"FixedEffects",:nCol=>size(codedCol,2),:levels=>hcat(["$(col):k" for k in keys(dictCol)]...))
+	return Dict(:data=>codedCol,:map=>[],:method=>"FixedEffects",:nCol=>size(codedCol,2),:levels=>hcat(["$(col):$(k)" for k in keys(dictCol)]...))
 end
 
 
