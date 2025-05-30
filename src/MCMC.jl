@@ -32,7 +32,7 @@ runLMEM = function(model...;nChain=10000,nBurn=1000,nThin=10,myHints=Dict{Symbol
 	folderHandler(outFolder)
 
 	#Y,X,Z,M,E,modelInformation = prepMatVec.prep(model,priorVCV=VCV)
-	Y,X,Z,M,E,modelInformation = prep(model,path2ped=userPedData,priorVCV=VCV)
+	Y,X,Z,M,E,modelInformation = prep(model,priorVCV=VCV)
 
 	modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,varBeta,delta = getMME!(Y,X,Z,M,E,blockThese,VCV,summaryStat,modelInformation,outFolder)
 
