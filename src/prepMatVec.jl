@@ -86,7 +86,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 		if length(modelLHSTerms) == 1
 			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			inputData = prepData!(inputData,f[1])
-			inputData,Ainv = usePedigree!(path2ped,inputData)
+			#inputData,Ainv = usePedigree!(path2ped,inputData)
 			Y = makeX(inputData,f[1].lhs)[:data]
 			E[f[1].lhs] = Dict{Any,Any}()
 			modelInformation[collect(keys(modelLHSTerms))[]] = modelRHSTerms#keys(modelRHSTerms)
@@ -104,7 +104,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 		for (i,fi) in enumerate(f)
 			println("reading $i $fi")
 			inputData = CSV.read(fi.data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
-			inputData,Ainv = usePedigree!(path2ped,inputData)
+			#inputData,Ainv = usePedigree!(path2ped,inputData)
 			LHSfi = getLHSTerms(fi)
 			println("LHSfi: $LHSfi")
 			RHSfi = getRHSTerms(fi)
@@ -152,7 +152,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			end
 			thisM = 0
 		elseif isa(v,PedigreeTerm)
-			IDs,thisZ = ranMat(k, :ID, userData4ran, pedigree)
+			IDs,thisZ = ranMat(k, :ID, inputData, pedigree)
 			ids = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
 			Z[k] = Dict(:data=>thisZ,:method=>"BLUP",:str=>"A",:iVarStr=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
 			push!(summarize,[k,"PED",typeof(thisZ),size(thisZ,2)])
