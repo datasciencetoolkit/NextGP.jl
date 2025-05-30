@@ -62,7 +62,7 @@ function makeX(df::DataFrame,col::Symbol)
 		Xnow = Dict(:data=>tempData,:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>String(col))
 	elseif isa(tempData,Vector{Int64})
 		#println("tempData is a Int")
-		Xnow = makeXCat(tempData)
+		Xnow = makeXCat(tempData,col)
 	end
 	return Xnow
 end
