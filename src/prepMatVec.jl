@@ -26,6 +26,7 @@ function prepData!(inputData,f)
 end
 
 #can modify inputData #Need to avoid modifications as I read the ped multiple times given multiple random effects read ot multiple times
+#no ID,Sire,Dam in the pedigree File
 function usePedigree!(path2ped,inputData)
 	#read pedigree
 	if isempty(path2ped)
