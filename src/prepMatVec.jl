@@ -52,7 +52,7 @@ function usePedigree!(path2ped,inputData)
 	#original id within pedigree
 	#seemed to be IDs for only phenotyped ones????? from the ranMat()	
 	#idRE = OrderedDict{Any,Any}()
-	return inputData,Ainv
+	return inputData,pedigree,Ainv
 end
 
 
@@ -152,7 +152,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			end
 			thisM = 0
 		elseif isa(v,PedigreeTerm)
-			inputData,Ainv = usePedigree!(v.path,inputData)
+			inputData,pedigree,Ainv = usePedigree!(v.path,inputData)
 			IDs,thisZ = ranMat(k, :ID, inputData, pedigree)
 			ids = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
 			Z[k] = Dict(:data=>thisZ,:method=>"BLUP",:str=>"A",:iVarStr=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
