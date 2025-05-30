@@ -57,13 +57,13 @@ function makeX(df::DataFrame,col::Symbol)
 	tempData = df[!,col]
 	println("tempData: $tempData")
 	if isa(tempData,Vector{String})
-		println("tempData is a String")
+		#println("tempData is a String")
 		Xnow = makeXCat(tempData,col)
 	elseif isa(tempData,Vector{Float64})
-		println("tempData is a Float")
+		#println("tempData is a Float")
 		Xnow = Dict(:data=>tempData,:map=>[],:method=>"FixedEffects",:nCol=>1,:levels=>String(col))
 	elseif isa(tempData,Vector{Int64})
-		println("tempData is a Int")
+		#println("tempData is a Int")
 		Xnow = makeXCat(tempData,col)
 	end
 	return Xnow
