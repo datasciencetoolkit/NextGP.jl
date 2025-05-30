@@ -57,7 +57,7 @@ struct PedigreeTerm <: RandomGeneticEffect
 end
 
 #runtime equivalent but does nothing
-PED(var::Union{Symbol,Expr},path::Union{Matrix{Float64},String}) = PedTerm(var,path)
+PED(var::Union{Symbol,Expr},path::Union{Matrix{Float64},String}) = PedigreeTerm(var,path)
 
 struct GenomicTerm
     name::Symbol
