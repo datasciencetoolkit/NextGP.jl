@@ -25,7 +25,7 @@ function prepData!(inputData,f)
 	return inputData
 end
 
-#can modify inputData
+#can modify inputData #Need to avoid modifications as I read the ped multiple times given multiple random effects read ot multiple times
 function usePedigree!(path2ped,inputData)
 	#read pedigree
 	if isempty(path2ped)
@@ -152,6 +152,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			end
 			thisM = 0
 		elseif isa(v,PedigreeTerm)
+			inputData,Ainv = usePedigree!(v.path,inputData)
 			IDs,thisZ = ranMat(k, :ID, inputData, pedigree)
 			ids = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
 			Z[k] = Dict(:data=>thisZ,:method=>"BLUP",:str=>"A",:iVarStr=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
