@@ -5,6 +5,7 @@ using CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTable
 include("misc.jl")
 include("designMat.jl")
 
+#all int are made categorical
 function prepData!(inputData,f)
 	#make in categorical
 	for n in Symbol.(names(inputData))
