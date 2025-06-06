@@ -138,10 +138,12 @@ end
 #single-trait
 #for multi-trait it will be, zSet::Union{Tuple{Tuple{Vararg{Symbol}}} #check potential overlap with single-trait
 function MMEZ!(Z,u,posZcounter,eSet::Tuple,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},priorVCV,modelInformation,summaryStat)
-	#more like blockX function, but a bit different as the way ot forms data structures.
+	#more like blockX function, but a bit different as the way it forms data structures.
 	correlate = hcat(filter!(!isempty, unique([[keya for keya in keys(priorVCV) if (isa(keya,Tuple) && in(keyz,keya))] for keyz in keys(Z)]))...)
 	#need to implement here data preparation w/o correlation
-
+	if !isempty(correlate)
+		println("No Correlated Random effects")
+	end
 	
 	for zSet in keys(Z)
 		#symbol :ID or expression :(1|ID)
@@ -329,17 +331,20 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 
 	if isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Symbol
 		println("model is a single-trait model")
-		for zSet in keys(Z)
-			MMEZ!(Z,u,posZcounter,zSet,Z,priorVCV,modelInformation,summaryStat)
+		for eSet in keys(E)
+			MMEZ!(Z,u,posZcounter,eSet,priorVCV,modelInformation,summaryStat)
+			#MMEZ!(Z,u,posZcounter,zSet,Z,priorVCV,modelInformation,summaryStat)
 		end
 	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
 		println("model is a multi-trait model where measurements/observations are from the same individuals")
-		for zSet in keys(Z)
-			MMEZ!(Z,u,posZcounter,zSet,Z,priorVCV,modelInformation,summaryStat)
+		for eSet in keys(E)
+			MMEZ!(Z,u,posZcounter,eSet,priorVCV,modelInformation,summaryStat)
+			#MMEZ!(Z,u,posZcounter,zSet,Z,priorVCV,modelInformation,summaryStat)
 		end
 	elseif !isequal(length(collect(keys(E))),1) && all(typeof.(collect(keys(E))) .<: Symbol)
-		for zSet in keys(Z)
-			MMEZ!(Z,u,posZcounter,zSet,Z,priorVCV,modelInformation,summaryStat)
+		for eSet in keys(E)
+			MMEZ!(Z,u,posZcounter,eSet,priorVCV,modelInformation,summaryStat)
+			#MMEZ!(Z,u,posZcounter,zSet,Z,priorVCV,modelInformation,summaryStat)
 		end
 		println("model is a multi-population model where measurements/observations are from different individuals")
 	else 	throw(ArgumentError("Could not understand the type of your model"))
