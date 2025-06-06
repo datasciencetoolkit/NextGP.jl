@@ -321,20 +321,15 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	u = []	
 	posZcounter = 0
 
-	#set up varCov for U
-	for eSet in keys(E)
-		for zSet in keys(Z)
-			setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
-			#setVarCovStrZ!(zSet,Z,priorVCV,varZ)
-		end
-	end
-	varCovZ!(Z,priorVCV)
-
+	
 	if isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Symbol
 		println("model is a single-trait model")
 		for eSet in keys(E)
 			MMEZ!(Z,u,posZcounter,eSet,priorVCV,modelInformation,summaryStat)
-			#MMEZ!(Z,u,posZcounter,zSet,Z,priorVCV,modelInformation,summaryStat)
+			for zSet in keys(Z)
+				setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
+			end
+			varCovZ!(Z,priorVCV)
 		end
 	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
 		println("model is a multi-trait model where measurements/observations are from the same individuals")
