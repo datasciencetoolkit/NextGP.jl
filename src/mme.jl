@@ -143,6 +143,7 @@ function MMEZ!(Z,u,posZcounter,eSet::Symbol,priorVCV,modelInformation,summarySta
 	#need to implement here data preparation w/o correlation
 	if isempty(correlate)
 		println("No Correlated Random effects")
+	else println("Correlating $correlate for $eSet")
 	end
 	
 	for zSet in keys(Z)
