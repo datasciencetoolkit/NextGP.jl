@@ -143,26 +143,22 @@ function MMEZ!(Z,u,posZcounter,eSet::Symbol,priorVCV,modelInformation,summarySta
 	#need to implement here data preparation w/o correlation
 	if isempty(correlate)
 		println("No Correlated Random effects")
-	else println("Correlating $correlate for $eSet")
+	else 
+		for zSet in correlate
+			println("Correlating $correlate for $eSet")
+			Z[zSet] = Dict{Symbol, Any}() #now Z has Dict(s) for the correlated effects
+		end
 	end
-	
 	for zSet in keys(Z)
-		#symbol :ID or expression :(1|ID)
-		if (isa(zSet,Symbol) || isa(zSet,Expr)) && in(zSet,keys(Z))
-			posZcounter += 1
-			Z[zSet][:pos] = posZcounter
-			
-			
-			
+		posZcounter += 1
+		Z[zSet][:pos] = posZcounter
+		if isa(zSet,Symbol) || isa(zSet,Expr) #symbol :ID or expression :(1|ID)
 			tempzpz = []
 			nowZ = Z[zSet][:data]
-			
-			if E[:str] == "D"
+			if E[eSet][:str] == "D"
 				for c in eachcol(nowZ)
-#					push!(tempzpz,dot(c,E[:iVarStr],c))
 					push!(tempzpz,sum(c.*E[:iVarStr].*c))
 				end
-#				Z[zSet][:Zp]  = transpose(nowZ)*E[:iVarStr]
 				Z[zSet][:Zp]  = transpose(nowZ.*E[:iVarStr])
 			else
 				for c in eachcol(nowZ)
@@ -174,72 +170,43 @@ function MMEZ!(Z,u,posZcounter,eSet::Symbol,priorVCV,modelInformation,summarySta
 			u = push!(u,zeros(Float64,1,size(nowZ,2)))
 			nowZ = 0
 			tempzpz = 0
-
-			#summary statistics
-			Z[zSet][:lhs] = zeros(size(nowZ,2))
-			Z[zSet][:rhs] = zeros(size(nowZ,2))
-                        if zSet in keys(summaryStat)
-                                Z[zSet][:lhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) : inv.(diag(summaryStat[zSet].v))
-                                Z[zSet][:rhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
-                        end
-			
-		#tuple of symbols (:ID,:Dam)
-		elseif (isa(zSet,Tuple{Vararg{Symbol}})) && all((in).(zSet,Ref(keys(Z)))) #if all elements are available # all([zSet .in Ref(keys(Z))])
-			Z[zSet] = Dict{Symbol, Any}()
-#			Z[zSet][:pos] = collect((posZcounter+1):(posZcounter+length(zSet)))
-#			posZcounter += length(zSet)
-			posZcounter += 1
-			Z[zSet][:pos] = posZcounter
+		elseif isa(zSet,Tuple)
 			u = push!(u,zeros(Float64,length(zSet),size(Z[zSet[1]][:data],2)))
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
 			#same Z for all components in a single-trait model get only first column! Z[zSet][:data] = getindex.(tempZ,:,1)
 			Z[zSet][:data] = tempZ
-			
-			setVarCovStrU!(zSet,Z,priorVCV,varU_prior)
-			
 			Z[zSet][:str] = Z[zSet[1]][:str] 
-			
 			for d in zSet
-                       		delete!(Z,d)
+                    	   	delete!(Z,d)
                		end
-
 			###WEIGHTED SHOULD BE ADAAPTED HERE#################
 			Z[zSet][:zpz]  = MatByMat.(tempZ)
 			Z[zSet][:Zp]   = transpose.(tempZ)
-
-
-			
-			#lhs is already zero as only mpm + "nothing" is  given
-			#rhs is for now only for convenience
-			Z[zSet][:rhs] = [zeros(length(zSet)) for i in 1:length(Z[zSet][:levels])]
-			if zSet in keys(summaryStat)
-				error("Not available to use summary statistics in correlated effects")
-                        	#SummaryStat[pSet].v == Array{Float64,1} ? zpz[pSet] += inv.(SummaryStat[pSet].v) : zpz[pSet] += inv.(diag(SummaryStat[pSet].v))
-                        	#SummaryStat[pSet].v == Array{Float64,1} ? rhsZ[pSet] = inv.(SummaryStat[pSet].v) .* (SummaryStat[pSet].m)  : rhsZ[pSet] = inv.(diag(SummaryStat[pSet].v)) .* (SummaryStat[pSet].m)
-                	end
 			tempZ = 0
+		else throw(ArgumentError("Could not understand the type of $zSet in Z"))
+			
 		end
-	end
+	end	
 	
-	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
-		posZcounter += 1
-		Z[zSet][:pos] = posZcounter
-		printstyled("No prior was provided for $pSet, but it was not included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
-		tempzpz = []
-		nowZ = Z[zSet][:data]
-		for c in eachcol(nowZ)
-			push!(tempzpz,c'c)					
-		end
-		Z[zSet][:Zp]  = transpose(nowZ)						
-		Z[zSet][:zpz] = tempzpz
-		Z[zSet][:lhs] = zeros(size(nowZ,2))
-		Z[zSet][:rhs] = zeros(size(nowZ,2))
-		if zSet in keys(summaryStat)
-                	Z[zSet][:lhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) : inv.(diag(summaryStat[zSet].v))
-                        Z[zSet][:rhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
-                end
-	end
+#	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
+#		posZcounter += 1
+#		Z[zSet][:pos] = posZcounter
+#		printstyled("No prior was provided for $pSet, but it was not included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
+#		tempzpz = []
+#		nowZ = Z[zSet][:data]
+#		for c in eachcol(nowZ)
+#			push!(tempzpz,c'c)					
+#		end
+#		Z[zSet][:Zp]  = transpose(nowZ)						
+#		Z[zSet][:zpz] = tempzpz
+#		Z[zSet][:lhs] = zeros(size(nowZ,2))
+#		Z[zSet][:rhs] = zeros(size(nowZ,2))
+#		if zSet in keys(summaryStat)
+#                	Z[zSet][:lhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) : inv.(diag(summaryStat[zSet].v))
+#                        Z[zSet][:rhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
+#                end
+#	end
 end
 
 
