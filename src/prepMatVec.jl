@@ -14,14 +14,10 @@ function prepData!(inputData,f)
         #	end
         #end
 
-	println("f $f")
-	println("f1: $(f[1])")
-	println(f[1].lhs)
-
 	
 	#center cont. covariates	
 	for n in Symbol.(names(inputData))
-		if n !== Symbol(repr(f.lhs))
+		if n !== f.lhs #Symbol(repr(f.lhs))
         		if typeof(inputData[!,n]).==Array{Float64, 1} || typeof(inputData[!,n]).==Array{Float32, 1}
                 		inputData[!,n] .-= mean(inputData[!,n],dims=1)
                		 end
