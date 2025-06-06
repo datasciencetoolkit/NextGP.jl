@@ -135,9 +135,9 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 	end
 end
 
-#single-trait
+#single-trait zSet::Union{Symbol,Tuple{Vararg{Symbol}}}
 #for multi-trait it will be, zSet::Union{Tuple{Tuple{Vararg{Symbol}}} #check potential overlap with single-trait
-function MMEZ!(Z,u,posZcounter,eSet::Tuple,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},priorVCV,modelInformation,summaryStat)
+function MMEZ!(Z,u,posZcounter,eSet::Symbol,priorVCV,modelInformation,summaryStat)
 	#more like blockX function, but a bit different as the way it forms data structures.
 	correlate = hcat(filter!(!isempty, unique([[keya for keya in keys(priorVCV) if (isa(keya,Tuple) && in(keyz,keya))] for keyz in keys(Z)]))...)
 	#need to implement here data preparation w/o correlation
