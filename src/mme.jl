@@ -318,9 +318,12 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	u = []	
 	posZcounter = 0
 
-	#set up varCov for e
-	for zSet in keys(Z)
-		setVarCovStrZ!(zSet,Z,priorVCV,varZ)
+	#set up varCov for U
+	for eSet in keys(E)
+		for zSet in keys(Z)
+			setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
+			#setVarCovStrZ!(zSet,Z,priorVCV,varZ)
+	end
 	end
 	varCovZ!(Z,priorVCV)
 
