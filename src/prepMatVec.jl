@@ -132,6 +132,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
 
 	pedigree = []
+	Ainv = []
 
         for (k,v) in modelRHSTerms
 		if isa(v,GenomicTerm)			
