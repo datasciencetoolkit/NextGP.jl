@@ -155,7 +155,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			end
 			thisM = 0
 		elseif isa(v,PedigreeTerm)
-			if isempty(Main,pedigree)
+			if isempty(pedigree)
 				println("pedigree is being computed for $k")
 				inputData,pedigree,Ainv = usePedigree!(v.path,inputData)
 			else 
