@@ -15,7 +15,7 @@ struct lmm
 	model::Expr
 	sym::Any
 	lhs::Union{Symbol,Expr}
-	rhs::Union{Symbol,Expr}
+	rhs::Union{Int64,Symbol,Expr}
 end
 
 #a general model structure with data added to the model
