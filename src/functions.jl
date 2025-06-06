@@ -116,7 +116,7 @@ end
 #end
 
 #Uni Main
-function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,ySet::Symbol,varU::Dict)
+function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Dict,ySet::Symbol,varU::Dict)
         #for each random effect
 	iVarE = inv(varE[ySet])
 	ycorr .+= Z[zSet].data*u[Z[zSet].pos]'
