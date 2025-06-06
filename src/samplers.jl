@@ -44,9 +44,9 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 
 			
 			#sample random effects and variances
-			for zSet in keys(Z)
-	        		sampleZ!(zSet,Z,u,ycorr,varE,ySet,varU)	
-			end
+			#for zSet in keys(Z)
+	        	#	sampleZ!(zSet,Z,u,ycorr,varE,ySet,varU)	
+			#end
 		
 	
 			#sample marker effects and variances
