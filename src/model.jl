@@ -61,7 +61,7 @@ function getRHSTerms(f;pre=preserved) #there is nothing i call as "pre"? should 
 			isacall(term) && (term.args[1] == :PED) ? modelRHSTerms[term.args[2]]=PED(term.args[2:end]...) : nothing
 			isacall(term) && (term.args[1] == :SNP) ? modelRHSTerms[term.args[2]]=SNP(term.args[2:end]...) : nothing	
 		end
-	elseif isa(f.rhs,Symbol)
+	elseif isa(f.rhs,Symbol) || isa(f.rhs,Int64) #using 1 or 2... for constant term only models
 		term = f.rhs
 		!isacall(term) && isa(term,Int) ? modelRHSTerms[Symbol("Intercept$term")] = ConstantTerm(term) : nothing
 		!isacall(term) && isa(term,Symbol) ? modelRHSTerms[term] = DataTerm(term) : nothing
