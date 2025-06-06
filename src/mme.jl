@@ -141,7 +141,7 @@ function MMEZ!(Z,u,posZcounter,eSet::Symbol,priorVCV,modelInformation,summarySta
 	#more like blockX function, but a bit different as the way it forms data structures.
 	correlate = hcat(filter!(!isempty, unique([[keya for keya in keys(priorVCV) if (isa(keya,Tuple) && in(keyz,keya))] for keyz in keys(Z)]))...)
 	#need to implement here data preparation w/o correlation
-	if !isempty(correlate)
+	if isempty(correlate)
 		println("No Correlated Random effects")
 	end
 	
