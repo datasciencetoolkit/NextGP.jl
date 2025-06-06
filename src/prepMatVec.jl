@@ -154,8 +154,10 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			thisM = 0
 		elseif isa(v,PedigreeTerm)
 			if !@isdefined(pedigree)
+				println("pedigree is being computed for $k")
 				inputData,pedigree,Ainv = usePedigree!(v.path,inputData)
-			else nothing
+			else 
+				println("pedigree is defined already for k")#nothing
 			end
 			IDs,thisZ = ranMat(k, :ID, inputData, pedigree)
 			ids = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
