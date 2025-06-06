@@ -154,6 +154,9 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			thisM = 0
 		elseif isa(v,PedigreeTerm)
 			inputData,pedigree,Ainv = usePedigree!(v.path,inputData)
+			println("term $v")
+			println("inputData $inputData")
+			println("pedigree $pedigree")
 			IDs,thisZ = ranMat(k, :ID, inputData, pedigree)
 			ids = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
 			Z[k] = Dict(:data=>thisZ,:method=>"BLUP",:str=>"A",:iVarStr=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
