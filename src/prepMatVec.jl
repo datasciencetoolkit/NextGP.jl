@@ -159,6 +159,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			if isempty(pedigree)
 				println("pedigree is being computed for $k")
 				inputData,pedigree,Ainv = usePedigree!(v.path,inputData)
+				println("Ainv: $Ainv")
 			else 
 				println("pedigree is defined already for k")#nothing
 			end
