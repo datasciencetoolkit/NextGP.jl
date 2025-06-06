@@ -187,6 +187,7 @@ function MMEZ!(Z,u,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,summaryS
 		else throw(ArgumentError("Could not understand the type of $zSet in Z"))
 			
 		end
+		setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
 	end	
 	
 #	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
@@ -293,11 +294,8 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 		println("model is a single-trait model")
 		for eSet in keys(E)
 			MMEZ!(Z,u,posZcounter,eSet,E,priorVCV,modelInformation,summaryStat)
-			for zSet in keys(Z)
-				setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
-			end
-			varCovZ!(Z,priorVCV)
 		end
+		varCovZ!(Z,priorVCV)
 	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
 		println("model is a multi-trait model where measurements/observations are from the same individuals")
 		for eSet in keys(E)
