@@ -137,7 +137,7 @@ end
 
 #single-trait zSet::Union{Symbol,Tuple{Vararg{Symbol}}}
 #for multi-trait it will be, zSet::Union{Tuple{Tuple{Vararg{Symbol}}} #check potential overlap with single-trait
-function MMEZ!(Z,u,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,summaryStat)
+function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,summaryStat)
 	#more like blockX function, but a bit different as the way it forms data structures.
 	correlate = hcat(filter!(!isempty, unique([[keya for keya in keys(priorVCV) if (isa(keya,Tuple) && in(keyz,keya))] for keyz in keys(Z)]))...)
 	#need to implement here data preparation w/o correlation
@@ -293,19 +293,17 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	if isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Symbol
 		println("model is a single-trait model")
 		for eSet in keys(E)
-			MMEZ!(Z,u,posZcounter,eSet,E,priorVCV,modelInformation,summaryStat)
+			MMEZ!(Z,u,varU,posZcounter,eSet,E,priorVCV,modelInformation,summaryStat)
 		end
 		varCovZ!(Z,priorVCV)
 	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
 		println("model is a multi-trait model where measurements/observations are from the same individuals")
 		for eSet in keys(E)
-			MMEZ!(Z,u,posZcounter,eSet,priorVCV,modelInformation,summaryStat)
-			#MMEZ!(Z,u,posZcounter,zSet,Z,priorVCV,modelInformation,summaryStat)
+			MMEZ!(Z,u,varU,posZcounter,eSet,priorVCV,modelInformation,summaryStat)
 		end
 	elseif !isequal(length(collect(keys(E))),1) && all(typeof.(collect(keys(E))) .<: Symbol)
 		for eSet in keys(E)
-			MMEZ!(Z,u,posZcounter,eSet,priorVCV,modelInformation,summaryStat)
-			#MMEZ!(Z,u,posZcounter,zSet,Z,priorVCV,modelInformation,summaryStat)
+			MMEZ!(Z,u,varU,posZcounter,eSet,priorVCV,modelInformation,summaryStat)
 		end
 		println("model is a multi-population model where measurements/observations are from different individuals")
 	else 	throw(ArgumentError("Could not understand the type of your model"))
