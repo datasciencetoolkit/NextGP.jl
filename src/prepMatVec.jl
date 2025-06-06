@@ -131,6 +131,8 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 	#summarize input
 	summarize = DataFrame(Variable=Any[],Term=Any[],Type=Any[],Levels=Int32[])
 
+	pedigree = []
+
         for (k,v) in modelRHSTerms
 		if isa(v,GenomicTerm)			
 			thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
@@ -153,7 +155,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			end
 			thisM = 0
 		elseif isa(v,PedigreeTerm)
-			if !isdefined(Main,:pedigree)
+			if isempty(Main,pedigree)
 				println("pedigree is being computed for $k")
 				inputData,pedigree,Ainv = usePedigree!(v.path,inputData)
 			else 
