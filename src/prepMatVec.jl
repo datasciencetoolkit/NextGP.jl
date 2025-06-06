@@ -14,6 +14,11 @@ function prepData!(inputData,f)
         #	end
         #end
 
+	println("f $f")
+	println("f1: $f[1]")
+	println("f1lhs $(f[1].lhs)")
+
+	
 	#center cont. covariates	
 	for n in Symbol.(names(inputData))
 		if n !== Symbol(repr(f.lhs))
