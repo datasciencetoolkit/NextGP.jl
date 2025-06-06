@@ -15,7 +15,7 @@ function prepData!(inputData,f)
         #end
 
 	println("f $f")
-	println("f1: $f[1]")
+	println("f1: $(f[1])")
 	println(f[1].lhs)
 
 	
