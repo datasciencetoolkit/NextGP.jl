@@ -6,7 +6,7 @@ include("misc.jl")
 include("designMat.jl")
 
 #all int are made categorical
-function prepData!(inputData,f)
+function prepData!(inputData,formula)
 	#make in categorical
 	#for n in Symbol.(names(inputData))
 	#	if isa(inputData[!,n],Vector{Int})
@@ -15,9 +15,9 @@ function prepData!(inputData,f)
         #end
 
 	
-	#center cont. covariates	
+	#center cont. covariates CURRENTLY ONLY APPLIES TO SINGLE-TRAIT ANALYSIS
 	for n in Symbol.(names(inputData))
-		if n !== f.lhs #Symbol(repr(f.lhs))
+		if n !== formula.lhs
         		if typeof(inputData[!,n]).==Array{Float64, 1} || typeof(inputData[!,n]).==Array{Float32, 1}
                 		inputData[!,n] .-= mean(inputData[!,n],dims=1)
                		 end
