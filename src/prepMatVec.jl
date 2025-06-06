@@ -87,14 +87,12 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 		if length(modelLHSTerms) == 1
 			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			inputData = prepData!(inputData,f[1])
-			#inputData,Ainv = usePedigree!(path2ped,inputData)
 			Y = makeX(inputData,f[1].lhs)[:data]
 			E[f[1].lhs] = Dict{Any,Any}()
 			modelInformation[collect(keys(modelLHSTerms))[]] = modelRHSTerms#keys(modelRHSTerms)
 		elseif length(modelLHSTerms) > 1
 			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
-			#[E[k] = Dict{Any,Any}() for (k,v) in modelLHSTerms]
 			E[Tuple(collect(keys(modelLHSTerms)))] = Dict{Any,Any}()
 			modelInformation[Tuple(collect(keys(modelLHSTerms)))] = modelRHSTerms #keys(modelRHSTerms)
 		end
@@ -105,7 +103,6 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 		for (i,fi) in enumerate(f)
 			println("reading $i $fi")
 			inputData = CSV.read(fi.data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
-			#inputData,Ainv = usePedigree!(path2ped,inputData)
 			LHSfi = getLHSTerms(fi)
 			println("LHSfi: $LHSfi")
 			RHSfi = getRHSTerms(fi)
@@ -124,8 +121,8 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 
 	#println(modelLHSTerms)
 	#println(modelRHSTerms)
-	#println(inputData)
-	println(E)
+	println("inputData $inputData")
+	#println(E)
 
 	
 	#summarize input
