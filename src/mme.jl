@@ -586,14 +586,13 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 #		end
 #	end	
 
-	[inOut.outMCMC(outPut,"u$zSet",[Z[zSet][:levels]]) for eSet in keys(E) if isa(eSet,Symbol)]
-	[inOut.outMCMC(outPut,"u$zSet",[Z[zSet][:levels]]) for eSet in keys(E) if isa(eSet,Expr)]
-	[(inOut.outMCMC(outPut,"u$z",[Z[zSet][:levels]]) for z in zSet) for eSet in keys(E) if isa(eSet,Tuple)]
+	[((inOut.outMCMC(outPut,"u$zSet_eSet",[Z[zSet][:levels]]) for zSet in keys(Z)) if isa(zSet,Union{Symbol,Expr})) for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
+	[((inOut.outMCMC(outPut,"u$z_eSet",[Z[zSet][:levels]]) for z in zSet) for zSet in keys(Z) if isa(zSet),Tuple) for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
 
 	
-	[inOut.outMCMC(outPut,"varU$zSet",[String(zSet)]) for eSet in keys(E) if isa(eSet,Symbol)] #[] to have it as one row
-	[inOut.outMCMC(outPut,"varU$zSet",[join(zSet.args)[2:end]]) for eSet in keys(E) if isa(eSet,Expr)] #[] to have it as one row
-	[inOut.outMCMC(outPut,"varU$zSet",[join(String.(vcat(zSet...)),"_").*hcat(["_$i" for i in 1:(length(zSet)^2)]...)]) for eSet in keys(E) if isa(eSet,Tuple)]
+	[(inOut.outMCMC(outPut,"varU$zSet",[String(zSet)]) for zSet in keys(Z) if isa(zSet,Symbol)) for eSet in keys(E) if isa(eSet,Symbol)] #[] to have it as one row
+	[(inOut.outMCMC(outPut,"varU$zSet",[join(zSet.args)[2:end]]) for zSet in keys(Z) if isa(zSet,Expr)) for eSet in keys(E) if isa(eSet,Symbol)] #[] to have it as one row	
+	[(inOut.outMCMC(outPut,"varU$zSet",[join(String.(vcat(zSet...)),"_").*hcat(["_$i" for i in 1:(length(zSet)^2)]...)])) for zSet in keys(Z) for eSet in keys(E) if isa(eSet,Tuple)]
 	
 	#arbitrary marker names
 	for mSet in keys(M)
