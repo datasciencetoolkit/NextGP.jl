@@ -588,7 +588,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 
 	#need to adapt model related Z's, below does it for all Z for all equation! Check what E has and what is eSEt
 	[[inOut.outMCMC(outPut,"u$zSet$eSet",[Z[zSet][:levels]]) for zSet in keys(Z) if isa(zSet,Union{Symbol,Expr})] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
-	[[[inOut.outMCMC(outPut,"u$zSet$eSet",[Z[zSet][:levels]]) for z in zSet] for zSet in keys(Z) if isa(zSet),Tuple)] for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
+	[[[inOut.outMCMC(outPut,"u$zSet$eSet",[Z[zSet][:levels]]) for z in zSet] for zSet in keys(Z) if isa(zSet,Tuple)] for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
 
 	
 	[(inOut.outMCMC(outPut,"varU$zSet",[String(zSet)]) for zSet in keys(Z) if isa(zSet,Symbol)) for eSet in keys(E) if isa(eSet,Symbol)] #[] to have it as one row
