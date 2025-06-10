@@ -586,7 +586,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 #		end
 #	end	
 
-	[((inOut.outMCMC(outPut,"u$zSet_eSet",[Z[zSet][:levels]]) for zSet in keys(Z)) if isa(zSet,Union{Symbol,Expr})) for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
+	[((inOut.outMCMC(outPut,"u$(zSet)_eSet",[Z[zSet][:levels]]) for zSet in keys(Z)) if isa(zSet,Union{Symbol,Expr})) for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
 	[((inOut.outMCMC(outPut,"u$z_eSet",[Z[zSet][:levels]]) for z in zSet) for zSet in keys(Z) if isa(zSet),Tuple) for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
 
 	
