@@ -145,6 +145,7 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 		for zSet in correlate
 			println("Correlating $correlate for $eSet")
 			Z[zSet] = Dict{Symbol, Any}() #now Z has Dict(s) for the correlated effects
+			Z[zSet][:iVarStr] = Z[zSet[1]][:iVarStr]
 		end
 	end
 	for zSet in keys(Z)
