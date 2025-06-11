@@ -27,13 +27,11 @@ function blockX!(X,eSet,blocks,modelInformation) #LHS is a Tuple
 			X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
 			X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
 			modelInformation[eSet][blk] = BlockTerm(blk)  #push!(collect(values(modelInformation[eSet])),blk)
-			#println("modelInformation $modelInformation EXTENDED")
 			for d in blk
 				println("deleting $d")
 				delete!(X,d)
 				delete!(modelInformation[eSet],d)
 			end
-			#modelInformation[eSet] = filter!(e->e∉blk,collect(values(modelInformation[eSet])))
 			println("modelInformation $modelInformation FINAL")
 		end
 	else println("NO blocking is performed for trait $eSet")
@@ -187,8 +185,8 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 		else throw(ArgumentError("Could not understand the type of $zSet in Z"))
 			
 		end
-		println("KEYS OF Z: $(keys(Z)")
-		#setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
+		println("KEYS OF Z: $(keys(Z))")
+		setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
 		#println("ZZZZZ after set: $Z")
 	end	
 	
