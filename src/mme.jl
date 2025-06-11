@@ -150,7 +150,9 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 	for zSet in keys(Z)
 		posZcounter += 1
 		Z[zSet][:pos] = posZcounter
-		if (isa(zSet,Symbol) || isa(zSet,Expr)) && !any(in.(zSet,correlate)) #symbol :ID or expression :(1|ID)
+		#if any(in.(zSet,correlate))
+		#	continue
+		if (isa(zSet,Symbol) || isa(zSet,Expr)) #symbol :ID or expression :(1|ID)
 			tempzpz = []
 			nowZ = Z[zSet][:data]
 			if E[eSet][:str] == "D"
@@ -185,10 +187,13 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 		else throw(ArgumentError("Could not understand the type of $zSet in Z"))
 			
 		end
-		println("KEYS OF Z: $(keys(Z))")
-		setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
+		#println("KEYS OF Z: $(keys(Z))")
 		#println("ZZZZZ after set: $Z")
-	end	
+	end
+
+	for zSet in keys(Z)
+		setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
+	end
 	
 #	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
 #		posZcounter += 1
