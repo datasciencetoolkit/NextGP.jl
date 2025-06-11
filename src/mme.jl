@@ -157,9 +157,9 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 			nowZ = Z[zSet][:data]
 			if E[eSet][:str] == "D"
 				for c in eachcol(nowZ)
-					push!(tempzpz,sum(c.*E[:iVarStr].*c))
+					push!(tempzpz,sum(c.*E[eSet][:iVarStr].*c))
 				end
-				Z[zSet][:Zp]  = transpose(nowZ.*E[:iVarStr])
+				Z[zSet][:Zp]  = transpose(nowZ.*E[eSet][:iVarStr])
 			else
 				for c in eachcol(nowZ)
 					push!(tempzpz,dot(c,c))
