@@ -15,19 +15,19 @@ include("varComp.jl")
 
 
 function blockX!(X,eSet,blocks,modelInformation) #LHS is a Tuple
-	println("modelInformation $modelInformation")
-	println("dealing trait $eSet")
+	#println("modelInformation $modelInformation")
+	#println("dealing trait $eSet")
 	if haskey(blocks, eSet)
-		println("blocking variables $blocks for trait $eSet")
+		#println("blocking variables $blocks for trait $eSet")
 		for blk in blocks[eSet]
-			println("blocking variable $blk for trait $eSet")
+			#println("blocking variable $blk for trait $eSet")
 			X[blk] = Dict{Symbol, Any}()
 			X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
 			X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
 			X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
 			X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
 			modelInformation[eSet][blk] = BlockTerm(blk)  #push!(collect(values(modelInformation[eSet])),blk)
-			println("modelInformation $modelInformation EXTENDED")
+			#println("modelInformation $modelInformation EXTENDED")
 			for d in blk
 				println("deleting $d")
 				delete!(X,d)
@@ -48,8 +48,8 @@ end
 
 #single-trait
 function MMEX!(X,b,posXcounter,eSet::Symbol,E,blocks,modelInformation,summaryStat)
-	println("eSet is a Symbol")
-	println("X: $X")
+	#println("eSet is a Symbol")
+	#println("X: $X")
 	blockX!(X,eSet,blocks,modelInformation)
         for xSet in keys(X)
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
@@ -83,16 +83,16 @@ end
 
 #multi-trait
 function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat)
-	println("eSet: $eSet is a Tuple")
+	#println("eSet: $eSet is a Tuple")
 	blockX!(X,eSet,blocks,modelInformation)
-	println("X: $X")
+	#println("X: $X")
         for xSet in keys(X)
-		println("MMEX: $xSet")
+		#println("MMEX: $xSet")
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
 		X[xSet][:pos] = posXcounter
 		
 		xCol2Repeat = ntuple(i->xSet,length(eSet))
-		println("xCol2Repeat: $xCol2Repeat")
+		#println("xCol2Repeat: $xCol2Repeat")
 
 		tempX = hcat.(eachcol.(getindex.(getindex.(Ref(X), xCol2Repeat),:data))...)
 		X[xSet][:data] = tempX #array of arrays where each array is a column in X[:xSet] for two traits size n*2 each of the arrays in the arrays]
@@ -100,7 +100,7 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 						
 		#Matrix of matrixces	
 		X[xSet][:XpX] = hcat([[x'*tempX[j] for j in 1:length(tempX)] for x in tempX]...) #returns a big matrix of k'k!
-		println("size XpX: $xSet $(size(X[xSet][:XpX]))")
+		#println("size XpX: $xSet $(size(X[xSet][:XpX]))")
 		
 		#X[xSet][:XpX] = [[x'*tempX[j] for j in 1:length(tempX)] for x in tempX] #returns k array of arrays of t*t!
 		#println("X[xSet][:XpX]: $(X[xSet][:XpX])")
@@ -187,9 +187,9 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 		else throw(ArgumentError("Could not understand the type of $zSet in Z"))
 			
 		end
-		println("ZZZZZ: $Z")
+		#println("ZZZZZ: $Z")
 		setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
-		println("ZZZZZ after set: $Z")
+		#println("ZZZZZ after set: $Z")
 	end	
 	
 #	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
