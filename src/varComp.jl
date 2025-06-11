@@ -75,6 +75,8 @@ end
 #set up (co)variance structures for U
 #single-trait
 function setVarCovStrU!(eSet::Symbol,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},Z::Dict,priorVCV,varU::Dict)
+	println("SETTING VARCOV FOR $zSet")
+	println("priorVCV: $priorVCV")
 	if haskey(priorVCV,zSet)	
 		if isempty(priorVCV[zSet].str) || priorVCV[zSet].str=="I" 
 			printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
