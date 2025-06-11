@@ -150,8 +150,8 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 	for zSet in keys(Z)
 		posZcounter += 1
 		Z[zSet][:pos] = posZcounter
-		#if any(in.(zSet,correlate))
-		#	continue
+		if any(in.(zSet,correlate))
+			continue
 		if (isa(zSet,Symbol) || isa(zSet,Expr)) #symbol :ID or expression :(1|ID)
 			tempzpz = []
 			nowZ = Z[zSet][:data]
@@ -190,7 +190,7 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 		#println("KEYS OF Z: $(keys(Z))")
 		#println("ZZZZZ after set: $Z")
 	end
-
+	println("KEYS OF Z: $(keys(Z))")
 	for zSet in keys(Z)
 		setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
 	end
