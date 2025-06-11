@@ -243,7 +243,8 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	end
 	varCovE!(E,priorVCV)
 
-	#println("E $E")
+	println("E $E")
+	println("modelInformation $modelInformation")
 	#println("varE $varE")
 
 	###################################
