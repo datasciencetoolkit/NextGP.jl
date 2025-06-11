@@ -94,7 +94,7 @@ function setVarCovStrU!(eSet::Symbol,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},Z
 	else	
 		printstyled("prior var-cov for $zSet is empty. An identity matrix will be used with mean=0 and variance=100\n"; color = :green)
 		Z[zSet][:str] = "I"
-		Z[zSet][:iVarStr] = []
+		Z[zSet][:iVarStr] = Matrix(1.0I,Z[zSet][:dims][2],Z[zSet][:dims][2])
 		#just add to priors
 		priorVCV[zSet] = isa(zSet,Tuple) ? Random("I",Matrix(100.0I,length(zSet),length(zSet))) : Random("I",100.0)
 	end
