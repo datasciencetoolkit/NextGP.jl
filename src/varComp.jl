@@ -83,10 +83,10 @@ function setVarCovStrU!(eSet::Symbol,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},Z
 			Z[zSet][:iVarStr] = Matrix(1.0I,Z[zSet][:dims][2],Z[zSet][:dims][2])
 		elseif priorVCV[zSet].str=="A"
 			printstyled("prior var-cov structure for $zSet is A. Computed A matrix (from pedigree file) will be used\n"; color = :green)
-			isa(zSet,Tuple) ? Z[zSet][:iVarStr] = Z[zSet[1]][:iVarStr] : Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
+			#isa(zSet,Tuple) ? Z[zSet][:iVarStr] = Z[zSet[1]][:iVarStr] : Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
 		elseif priorVCV[zSet].str=="G"
                         printstyled("prior var-cov structure for $zSet is G. Computed G matrix will be used\n"; color = :green)
-			isa(zSet,Tuple) ? Z[zSet][:iVarStr] = Z[zSet[1]][:iVarStr] : Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
+			#isa(zSet,Tuple) ? Z[zSet][:iVarStr] = Z[zSet[1]][:iVarStr] : Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
 		else 	
 			error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
 		end
@@ -96,7 +96,7 @@ function setVarCovStrU!(eSet::Symbol,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},Z
 		Z[zSet][:str] = "I"
 		Z[zSet][:iVarStr] = []
 		#just add to priors
-		priorVCV[zSet] = Random("I",Matrix(100.0I,length(zSet),length(zSet)))
+		priorVCV[zSet] = isa(zSet,Tuple) ? Random("I",Matrix(100.0I,length(zSet),length(zSet))) : Random("I",100.0)
 	end
 	varU[zSet] = priorVCV[zSet].v
 end
