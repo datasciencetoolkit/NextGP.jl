@@ -146,7 +146,7 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 			println("Correlating $correlate for $eSet")
 			Z[zSet] = Dict{Symbol, Any}() #now Z has Dict(s) for the correlated effects
 			Z[zSet][:iVarStr] = Z[zSet[1]][:iVarStr]
-			modelInformation[eSet][zSet] = RandomGeneticEffect(zSet)
+			modelInformation[eSet][zSet] = CorrelatedPedigreeTerm(zSet)
 		end
 	end
 	
