@@ -187,7 +187,7 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 		else throw(ArgumentError("Could not understand the type of $zSet in Z"))
 			
 		end
-		#println("ZZZZZ: $Z")
+		#println("KEYS OF Z: $(keys(Z)")
 		setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
 		#println("ZZZZZ after set: $Z")
 	end	
