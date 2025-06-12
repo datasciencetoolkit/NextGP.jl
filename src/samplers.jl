@@ -54,7 +54,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 				inOut.outMCMC(outPut,"varE_$ySet",hcat(varE[ySet]...))
 
 				[[inOut.outMCMC(outPut,"u$zSet$eSet",u[Z[zSet].pos]) for zSet in keys(Z) if (isa(zSet,Union{Symbol,Expr}) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
-				[[[inOut.outMCMC(outPut,"u"*join([String.(zSet)...])*"$eSet",hcat(u[Z[zSet].pos]...)) for z in zSet] for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single-trait multiple comp
+				[[inOut.outMCMC(outPut,"u"*join([String.(zSet)...])*"$eSet",hcat(u[Z[zSet].pos]...)) for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single-trait multiple comp
 				
 				
 				#for zSet in keys(Z)
