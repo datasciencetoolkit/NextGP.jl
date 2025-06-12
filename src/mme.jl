@@ -175,7 +175,6 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 			nowZ = 0
 			tempzpz = 0
 		elseif isa(zSet,Tuple)
-			u = push!(u,zeros(Float64,length(zSet),size(Z[zSet[1]][:data],2)))
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
 			#same Z for all components in a single-trait model get only first column! Z[zSet][:data] = getindex.(tempZ,:,1)
@@ -185,6 +184,8 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
                     	   	delete!(Z,d)
 				delete!(modelInformation[eSet],d)
                		end
+			println("size(Z[zSet][:data] in MME: $(size(Z[zSet][:data]))")
+			u = push!(u,zeros(Float64,length(zSet),size(Z[zSet][:data],2)))
 			###WEIGHTED SHOULD BE ADAAPTED HERE#################
 			Z[zSet][:zpz]  = MatByMat.(tempZ)
 			Z[zSet][:Zp]   = transpose.(tempZ)
