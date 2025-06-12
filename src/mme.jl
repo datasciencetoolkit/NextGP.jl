@@ -187,9 +187,7 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
                     	   	delete!(Z,d)
 				delete!(modelInformation[eSet],d)
                		end
-			println("length(Z[zSet][:data] in MME: $(length(Z[zSet][:data]))")
-			println("size(Z[zSet][:data],2): $(size(Z[zSet][:data],2))")
-			u = push!(u,zeros(Float64,length(zSet),size(Z[zSet][:data],2)))
+			u = push!(u,zeros(Float64,length(zSet),length(Z[zSet][:data])))
 			###WEIGHTED SHOULD BE ADAAPTED HERE#################
 			Z[zSet][:zpz]  = MatByMat.(tempZ)
 			Z[zSet][:Zp]   = transpose.(tempZ)
