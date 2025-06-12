@@ -599,13 +599,10 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 #	end	
 
 	[[inOut.outMCMC(outPut,"u$zSet$eSet",[Z[zSet][:levels]]) for zSet in keys(Z) if (isa(zSet,Union{Symbol,Expr}) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
-	#this prints all u into one file
-	println("Z[zSet][:levels]: $(Z[:ID][:levels])")
-	println("[Z[zSet][:levels]]: $([Z[:ID][:levels]])")
-	println("hcat([Z[:ID][:levels]]...)")
 	
-	[[inOut.outMCMC(outPut,"u$zSet$eSet",hcat([Z[zSet][:levels]]...)) for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
-	#this prints all u into sepeerate files
+	#this prints all u into one file ID_in1,Dam_ind1,ID_ind2,Dam_ind2.... order
+	[[inOut.outMCMC(outPut,"u$zSet$eSet",hcat(vcat([Array([String.(zSet)...].*i) for i in Z[zSet][:levels]]...)...)) for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
+	#this prints all u into seperate files
 	#[[[inOut.outMCMC(outPut,"u$zSet$eSet",[Z[zSet][:levels]]) for z in zSet] for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
 
 	
