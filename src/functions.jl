@@ -109,7 +109,10 @@ function sampleU(zSet::Tuple,Z::Dict,iVarE::Float64,varU::Dict,u::Vector,ycorr::
 		setindex!(uVec,[0;0],:,i)
 		println("Z[zSet].Zp: $(Z[zSet].Zp)")
 		println("Z[zSet].Zp[i]: $(Z[zSet].Zp[i])")
-		Yi = Z[zSet].Zp[i]*ycorr.*iVarE		
+		println("yCorr: $ycorr")
+		Yi = Z[zSet].Zp[i]*ycorr.*iVarE	
+		println("Yi: $Yi")
+		println("kron(view(Z[zSet].iVarStr,[i],:),iVarU)*vec(uVec): $(kron(view(Z[zSet].iVarStr,[i],:),iVarU)*vec(uVec))")
 		rhsU = Yi - kron(view(Z[zSet].iVarStr,[i],:),iVarU)*vec(uVec)
                 invLhsU = inv((getindex(Z[zSet].zpz,i).*iVarE) + (view(Z[zSet].iVarStr,i,i).*iVarU))
                 meanU = invLhsU*rhsU
