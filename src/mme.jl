@@ -151,12 +151,13 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 	end
 	
 	for zSet in keys(Z)
-		posZcounter += 1
-		Z[zSet][:pos] = posZcounter
 		if (isa(zSet,Symbol) || isa(zSet,Expr)) #symbol :ID or expression :(1|ID)
 			if any(in.(zSet,correlate))
 				continue
 			end
+			posZcounter += 1
+			Z[zSet][:pos] = posZcounter
+			
 			tempzpz = []
 			nowZ = Z[zSet][:data]
 			if E[eSet][:str] == "D"
