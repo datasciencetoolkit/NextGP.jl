@@ -40,15 +40,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 			#sample random effects
 			#println("$ySet,$yModel")
 			[sampleZ!(zSet,Z,u,ycorr,varE,ySet,varU) for zSet in keys(yModel) if isa(yModel[zSet],RandomEffect)] 
-
-
-
-			
-			#sample random effects and variances
-			#for zSet in keys(Z)
-	        	#	sampleZ!(zSet,Z,u,ycorr,varE,ySet,varU)	
-			#end
-		
+	
 	
 			#sample marker effects and variances
 			for mSet in keys(M)
@@ -60,19 +52,23 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 			if iter in these2Keep
 				inOut.outMCMC(outPut,"b_$ySet",hcat(vcat(b...)...))
 				inOut.outMCMC(outPut,"varE_$ySet",hcat(varE[ySet]...))
-			
-				for zSet in keys(Z)
-					if isa(zSet,Union{Expr,Symbol})
-						inOut.outMCMC(outPut,"u$zSet",u[Z[zSet].pos])
-					elseif isa(zSet,Tuple)
-						pCounter = 1
-						for p in zSet
-							#zSet2print = zSet[p]
-							inOut.outMCMC(outPut,"u$p",u[Z[zSet].pos][[pCounter],:])
-							pCounter += 1
-						end
-					end
-                        	end
+
+				[[inOut.outMCMC(outPut,"u$zSet$eSet",u[Z[zSet].pos]) for zSet in keys(Z) if (isa(zSet,Union{Symbol,Expr}) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
+				[[[inOut.outMCMC(outPut,"u$zSet$eSet",u[Z[zSet].pos]) for z in zSet] for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
+				
+				
+				#for zSet in keys(Z)
+				#	if isa(zSet,Union{Expr,Symbol})
+				#		inOut.outMCMC(outPut,"u$zSet",u[Z[zSet].pos])
+				#	elseif isa(zSet,Tuple)
+				#		pCounter = 1
+				#		for p in zSet
+				#			#zSet2print = zSet[p]
+				#			inOut.outMCMC(outPut,"u$p",u[Z[zSet].pos][[pCounter],:])
+				#			pCounter += 1
+				#		end
+				#	end
+                        	#end
 
 				for zSet in keys(Z)
 					inOut.outMCMC(outPut,"varU$zSet",hcat(reduce(hcat,varU[zSet])...))
