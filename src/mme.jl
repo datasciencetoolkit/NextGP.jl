@@ -601,14 +601,14 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	[[inOut.outMCMC(outPut,"u$zSet$eSet",[Z[zSet][:levels]]) for zSet in keys(Z) if (isa(zSet,Union{Symbol,Expr}) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
 	
 	#this prints all u into one file ID_in1,Dam_ind1,ID_ind2,Dam_ind2.... order
-	[[inOut.outMCMC(outPut,"u$zSet$eSet",hcat(vcat([Array([String.(zSet)...].*i) for i in Z[zSet][:levels]]...)...)) for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
+	[[inOut.outMCMC(outPut,"u$zSet$eSet",hcat(vcat([Array([String.(zSet)...].*i) for i in Z[zSet][:levels]]...)...)) for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single-trait multiple comp
 	#this prints all u into seperate files
 	#[[[inOut.outMCMC(outPut,"u$zSet$eSet",[Z[zSet][:levels]]) for z in zSet] for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
 
 	
-	[(inOut.outMCMC(outPut,"varU$zSet",[String(zSet)]) for zSet in keys(Z) if isa(zSet,Symbol)) for eSet in keys(E) if isa(eSet,Symbol)] #[] to have it as one row
-	[(inOut.outMCMC(outPut,"varU$zSet",[join(zSet.args)[2:end]]) for zSet in keys(Z) if isa(zSet,Expr)) for eSet in keys(E) if isa(eSet,Symbol)] #[] to have it as one row	
-	[(inOut.outMCMC(outPut,"varU$zSet",[join(String.(vcat(zSet...)),"_").*hcat(["_$i" for i in 1:(length(zSet)^2)]...)])) for zSet in keys(Z) for eSet in keys(E) if isa(eSet,Tuple)]
+	#[(inOut.outMCMC(outPut,"varU$zSet",[String(zSet)]) for zSet in keys(Z) if isa(zSet,Symbol)) for eSet in keys(E) if isa(eSet,Symbol)] #[] to have it as one row
+	#[(inOut.outMCMC(outPut,"varU$zSet",[join(zSet.args)[2:end]]) for zSet in keys(Z) if isa(zSet,Expr)) for eSet in keys(E) if isa(eSet,Symbol)] #[] to have it as one row	
+	#[(inOut.outMCMC(outPut,"varU$zSet",[join(String.(vcat(zSet...)),"_").*hcat(["_$i" for i in 1:(length(zSet)^2)]...)])) for zSet in keys(Z) for eSet in keys(E) if isa(eSet,Tuple)]
 	
 	#arbitrary marker names
 	for mSet in keys(M)
