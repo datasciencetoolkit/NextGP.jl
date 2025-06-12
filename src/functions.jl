@@ -100,7 +100,7 @@ function sampleU(zSet::Union{Expr,Symbol},Z::Dict,iVarE::Float64,varU::Dict,u::V
 	return uVec
 end
 
-Multiple U correlated, no D
+#Multiple U correlated, no D
 function sampleU(zSet::Tuple,Z::Dict,iVarE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
 	nCol = size(uVec,2)
