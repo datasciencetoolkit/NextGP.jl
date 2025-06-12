@@ -108,7 +108,6 @@ function sampleU(zSet::Tuple,Z::Dict,iVarE::Float64,varU::Dict,u::Vector,ycorr::
 	for i in 1:nCol
 		setindex!(uVec,[0;0],:,i)
 		Yi = Z[zSet].Zp[i]*ycorr.*iVarE	
-		println("Yi: $Yi")
 		rhsU = Yi - kron(view(Z[zSet].iVarStr,[i],:),iVarU)*vec(uVec)
                 invLhsU = inv((getindex(Z[zSet].zpz,i).*iVarE) + (view(Z[zSet].iVarStr,i,i).*iVarU))
                 meanU = invLhsU*rhsU
@@ -130,12 +129,8 @@ end
 #Multiple U correlated, no D
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Dict,ySet::Symbol,varU::Dict)
 	iVarE = inv(varE[ySet])
-	println("u[Z[zSet].pos]: $(u[Z[zSet].pos])")
 	nCol = size(u[Z[zSet].pos],2)
-	println("nCol: $nCol")
 	for i in 1:nCol
-		println("Z[zSet].data[i]: $(Z[zSet].data[i])")
-		println("getindex(u[Z[zSet].pos],:,i): $(getindex(u[Z[zSet].pos],:,i))")
 		ycorr .+= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
 	end
 	u[Z[zSet].pos] .= sampleU(zSet,Z,iVarE,varU,u,ycorr)
