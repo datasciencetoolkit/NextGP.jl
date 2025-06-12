@@ -107,7 +107,7 @@ function sampleU(zSet::Tuple,Z::Dict,iVarE::Float64,varU::Dict,u::Vector,ycorr::
 	iVarU = inv(varU[zSet])
 	for i in 1:nCol
 		setindex!(uVec,[0;0],:,i)
-		println("Z[zSet].Zp: $(Z[zSet].Zp[i])")
+		println("Z[zSet].Zp: $(Z[zSet].Zp)")
 		println("Z[zSet].Zp[i]: $(Z[zSet].Zp[i])")
 		Yi = Z[zSet].Zp[i]*ycorr.*iVarE		
 		rhsU = Yi - kron(view(Z[zSet].iVarStr,[i],:),iVarU)*vec(uVec)
@@ -131,11 +131,9 @@ end
 #Multiple U correlated, no D
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Dict,ySet::Symbol,varU::Dict)
 	iVarE = inv(varE[ySet])
-	println("Z[zSet]: $(Z[zSet])")
-	println("Z[zSet].pos: $(Z[zSet].pos)")
 	println("u[Z[zSet].pos]: $(u[Z[zSet].pos])")
-	println("size(u[Z[zSet].pos])")
 	nCol = size(u[Z[zSet].pos],2)
+	println("nCol: $nCol")
 	for i in 1:nCol
 		println("Z[zSet].data[i]: $(Z[zSet].data[i])")
 		println("getindex(u[Z[zSet].pos],:,i): $(getindex(u[Z[zSet].pos],:,i))")
