@@ -137,6 +137,8 @@ function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Dic
 	println("size(u[Z[zSet].pos])")
 	nCol = size(u[Z[zSet].pos],2)
 	for i in 1:nCol
+		println("Z[zSet].data[i]: $(Z[zSet].data[i])")
+		println("getindex(u[Z[zSet].pos],:,i): $(getindex(u[Z[zSet].pos],:,i))")
 		ycorr .+= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
 	end
 	u[Z[zSet].pos] .= sampleU(zSet,Z,iVarE,varU,u,ycorr)
