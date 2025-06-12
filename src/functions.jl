@@ -129,6 +129,9 @@ end
 #Multiple U correlated, no D
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Dict,ySet::Symbol,varU::Dict)
 	iVarE = inv(varE[ySet])
+	println("Z[zSet].pos: $(Z[zSet].pos)")
+	println("u[Z[zSet].pos]: $(u[Z[zSet].pos])")
+	println("size(u[Z[zSet].pos])")
 	nCol = size(u[Z[zSet].pos],2)
 	for i in 1:nCol
 		ycorr .+= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
