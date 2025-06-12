@@ -81,8 +81,9 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,varE
 	end
 end
 
+## Single-trait
 #sample random effects
-#Univariate model, D, no-correlation
+#Single U, D, no-correlation
 function sampleU(zSet::Union{Expr,Symbol},Z::Dict,iVarE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
 	iVarU = 1/varU[zSet]
@@ -99,23 +100,23 @@ function sampleU(zSet::Union{Expr,Symbol},Z::Dict,iVarE::Float64,varU::Dict,u::V
 	return uVec
 end
 
-#Mul u no D
-#function sampleU(zSet::Tuple,Z::Dict,varE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
-#	uVec = deepcopy(u[Z[zSet].pos])
-#	nCol = size(uVec,2)
-#	iVarU = inv(varU[zSet])
-#	for i in 1:nCol
-#		setindex!(uVec,[0;0],:,i)
-#		Yi = Z[zSet].Zp[i]*ycorr		
-#		rhsU = (Yi./varE) - kron(view(Z[zSet].iVarStr,[i],:),iVarU)*vec(uVec)
-#                invLhsU = inv((getindex(Z[zSet].zpz,i)./varE) + (view(Z[zSet].iVarStr,i,i).*iVarU))
-#                meanU = invLhsU*rhsU
-#		setindex!(uVec,rand(MvNormal(meanU,convert(Array,Symmetric(invLhsU)))),:,i)
-#        end
-#	return uVec
-#end
+Multiple U correlated, no D
+function sampleU(zSet::Tuple,Z::Dict,iVarE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
+	uVec = deepcopy(u[Z[zSet].pos])
+	nCol = size(uVec,2)
+	iVarU = inv(varU[zSet])
+	for i in 1:nCol
+		setindex!(uVec,[0;0],:,i)
+		Yi = Z[zSet].Zp[i]*ycorr		
+		rhsU = (Yi.*iVarE) - kron(view(Z[zSet].iVarStr,[i],:),iVarU)*vec(uVec)
+                invLhsU = inv((getindex(Z[zSet].zpz,i).*iVarE) + (view(Z[zSet].iVarStr,i,i).*iVarU))
+                meanU = invLhsU*rhsU
+		setindex!(uVec,rand(MvNormal(meanU,convert(Array,Symmetric(invLhsU)))),:,i)
+        end
+	return uVec
+end
 
-#Uni Main
+#Single U Main with D
 function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Dict,ySet::Symbol,varU::Dict)
         #for each random effect
 	iVarE = inv(varE[ySet])
@@ -125,18 +126,19 @@ function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float
 	varU[zSet] = sampleVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])		
 end
 
-#Mul Main no D
-#function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Float64,varU::Dict)
-#	nCol = size(u[Z[zSet].pos],2)
-#	for i in 1:nCol
-#		ycorr .+= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
-#	end
-#	u[Z[zSet].pos] .= sampleU(zSet,Z,varE,varU,u,ycorr)
-#	varU[zSet] = sampleCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
-#	for i in 1:nCol
-#		ycorr .-= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
-#	end
-#end
+#Multiple U correlated, no D
+function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Dict,ySet::Symbol,varU::Dict)
+	iVarE = inv(varE[ySet])
+	nCol = size(u[Z[zSet].pos],2)
+	for i in 1:nCol
+		ycorr .+= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
+	end
+	u[Z[zSet].pos] .= sampleU(zSet,Z,iVarE,varU,u,ycorr)
+	varU[zSet] = sampleCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
+	for i in 1:nCol
+		ycorr .-= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
+	end
+end
 
 
 
