@@ -155,7 +155,7 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 			if any(in.(zSet,correlate))
 				continue
 			end
-			posZcounter += 1
+			posZcounter += 1 #should be here to aovid correlated ones having a positive first than be removed
 			Z[zSet][:pos] = posZcounter
 			
 			tempzpz = []
@@ -176,6 +176,8 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 			nowZ = 0
 			tempzpz = 0
 		elseif isa(zSet,Tuple)
+			posZcounter += 1
+			Z[zSet][:pos] = posZcounter
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
 			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
 			#same Z for all components in a single-trait model get only first column! Z[zSet][:data] = getindex.(tempZ,:,1)
