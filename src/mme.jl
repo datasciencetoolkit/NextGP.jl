@@ -598,9 +598,15 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 #		end
 #	end	
 
-	#need to adapt model related Z's, below does it for all Z for all equation! Check what E has and what is eSEt
 	[[inOut.outMCMC(outPut,"u$zSet$eSet",[Z[zSet][:levels]]) for zSet in keys(Z) if (isa(zSet,Union{Symbol,Expr}) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
-	[[[inOut.outMCMC(outPut,"u$zSet$eSet",[Z[zSet][:levels]]) for z in zSet] for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
+	#this prints all u into one file
+	println("Z[zSet][:levels]: $(Z[zSet][:levels])")
+	println("[Z[zSet][:levels]]: $([Z[zSet][:levels]])")
+	println("hcat([Z[zSet][:levels]]...)")
+	
+	[[inOut.outMCMC(outPut,"u$zSet$eSet",hcat([Z[zSet][:levels]]...)) for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
+	#this prints all u into sepeerate files
+	#[[[inOut.outMCMC(outPut,"u$zSet$eSet",[Z[zSet][:levels]]) for z in zSet] for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
 
 	
 	[(inOut.outMCMC(outPut,"varU$zSet",[String(zSet)]) for zSet in keys(Z) if isa(zSet,Symbol)) for eSet in keys(E) if isa(eSet,Symbol)] #[] to have it as one row
