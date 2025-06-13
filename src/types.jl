@@ -59,10 +59,29 @@ end
 #runtime equivalent but does nothing
 PED(var::Union{Symbol,Expr},path::Union{Matrix{Float64},String}) = PedigreeTerm(var,path)
 
-struct GenomicTerm
+struct GenomicTerm <: RandomMarkerEffect
     name::Symbol
     path::String
     map::String
+end
+
+struct RandomEffectType <: RandomEffect
+    str::Any
+    v::Union{Matrix{Float64},Vector{Float64},Float64}
+    type::Int
+end
+
+"""
+        function Random(str,v)
+* `str` is either `I` for identity matrix, or `D` for weighted residuals
+* `v` is an estimate of the variance
+"""
+Random(str::Any,v::Union{Matrix{Float64},Float64};type=1) = RandomEffectType(str,v,type)
+
+
+struct SummaryStatistics
+    m::Union{Vector{Float64},Float64}
+    v::Union{Vector{Float64},Matrix{Float64},Float64}
 end
 
 struct CorrelatedPedigreeTerm <: RandomGeneticEffect
@@ -196,23 +215,6 @@ end
 """
 BayesLV(v::Float64,f::LMM,covariates::DataFrame,varZeta::Float64;name="BayesLV",estimateVarZeta::Union{Float64,Bool}=false) = BayesLogVarType(v,f,covariates,varZeta,name,estimateVarZeta)
 
-struct RandomEffectType <: RandomEffect
-    str::Any
-    v::Union{Matrix{Float64},Vector{Float64},Float64}
-    type::Int
-end
 
-"""
-        function Random(str,v)
-* `str` is either `I` for identity matrix, or `D` for weighted residuals
-* `v` is an estimate of the variance
-"""
-Random(str::Any,v::Union{Matrix{Float64},Float64};type=1) = RandomEffectType(str,v,type)
-
-
-struct SummaryStatistics
-    m::Union{Vector{Float64},Float64}
-    v::Union{Vector{Float64},Matrix{Float64},Float64}
-end
 
 
