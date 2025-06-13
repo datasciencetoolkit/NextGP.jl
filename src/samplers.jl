@@ -44,9 +44,6 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 			#sample marker effects and variances
 			isempty(M) ? nothing : [M[mSet].funct(mSet,M,beta,delta,ycorr,varE,varBeta,ySet) for mSet in keys(yModel) if isa(yModel[mSet],RandomEffect)] 
 			
-#			for mSet in keys(M)
-#				M[mSet].funct(mSet,M,beta,delta,ycorr,varE,varBeta)
-#			end
 				               		
         		#WRITE TO FILES
 			if iter in these2Keep
@@ -61,34 +58,37 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 					inOut.outMCMC(outPut,"varU$zSet",hcat(reduce(hcat,varU[zSet])...))
 				end
 			
+				[[inOut.outMCMC(outPut,"beta$mSet$eSet",beta[M[mSet].pos]) for mSet in keys(M) if (isa(mSet,Union{Symbol,Expr}) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
+				[[inOut.outMCMC(outPut,"delta$mSet$eSet",delta[M[mSet].pos]) for mSet in keys(M) if (isa(mSet,Union{Symbol,Expr}) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
+
+				#for mSet in keys(M)
+				#	if isa(mSet,Symbol)
+				#		inOut.outMCMC(outPut,"beta$mSet",beta[M[mSet].pos])
+				#		inOut.outMCMC(outPut,"delta$mSet",delta[M[mSet].pos])
+				#		if in(M[mSet].method,["BayesB","BayesC","BayesR"])
+				#			inOut.outMCMC(outPut,"pi$mSet",[M[mSet].piHat])	
+				#		end
+				#		if in(M[mSet].method,["BayesRCπ","BayesRCplus"])
+				#			inOut.outMCMC(outPut,"pi$mSet",[vcat(M[mSet].piHat...)])
+				#			inOut.outMCMC(outPut,"annot$mSet",[M[mSet].annotCat])	
+				#		end
+				#		if in(M[mSet].method,["BayesLV"])
+				#			inOut.outMCMC(outPut,"c$mSet",[vcat(M[mSet].c...)])
+				#			inOut.outMCMC(outPut,"varZeta$mSet",M[mSet].varZeta)
+				#		end
+				#	elseif isa(mSet,Tuple)
+				#		for p in M[mSet].pos
+				#			mSet2print = mSet[p]
+				#			inOut.outMCMC(outPut,"beta$mSet2print",beta[p])	
+				#		end
+				#	end
+                        	#end
 
 				for mSet in keys(M)
-					if isa(mSet,Symbol)
-						inOut.outMCMC(outPut,"beta$mSet",beta[M[mSet].pos])
-						inOut.outMCMC(outPut,"delta$mSet",delta[M[mSet].pos])
-						if in(M[mSet].method,["BayesB","BayesC","BayesR"])
-							inOut.outMCMC(outPut,"pi$mSet",[M[mSet].piHat])	
-						end
-						if in(M[mSet].method,["BayesRCπ","BayesRCplus"])
-							inOut.outMCMC(outPut,"pi$mSet",[vcat(M[mSet].piHat...)])
-							inOut.outMCMC(outPut,"annot$mSet",[M[mSet].annotCat])	
-						end
-						if in(M[mSet].method,["BayesLV"])
-							inOut.outMCMC(outPut,"c$mSet",[vcat(M[mSet].c...)])
-							inOut.outMCMC(outPut,"varZeta$mSet",M[mSet].varZeta)
-						end
-					elseif isa(mSet,Tuple)
-						for p in M[mSet].pos
-							mSet2print = mSet[p]
-							inOut.outMCMC(outPut,"beta$mSet2print",beta[p])	
-						end
-					end
-                        	end
-
-				for pSet in keys(M)
-					inOut.outMCMC(outPut,"var$(pSet)",hcat(reduce(hcat,varBeta[pSet])...))
-					inOut.outMCMC(outPut,"scale$(pSet)",hcat(reduce(hcat,M[pSet].scale)...))
+					inOut.outMCMC(outPut,"var$(mSet)",hcat(reduce(hcat,varBeta[mSet])...))
+					inOut.outMCMC(outPut,"scale$(mSet)",hcat(reduce(hcat,M[mSet].scale)...))
 				end
+				
 			end #end output freq.
 		end #end ySet
 	end #end iter
