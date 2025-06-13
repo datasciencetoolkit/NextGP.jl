@@ -278,6 +278,8 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 				
 			beta = push!(beta,zeros(Float64,1,M[mSet][:dims][2]))
 			delta = push!(delta,ones(Int64,1,M[mSet][:dims][2]))
+
+			println("M: $M")
 			
 			stBWGR!(M,mSet,priorVCV,beta)
 	
