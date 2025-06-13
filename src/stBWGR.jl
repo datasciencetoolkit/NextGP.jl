@@ -2,7 +2,7 @@ function stBWGR!(M,mSet,priorVCV,beta)
 	if !haskey(priorVCV,mSet)
 		M[mSet][:method] = "BayesPR"
 		M[mSet][:funct] = sampleBayesPR!
-		theseRegions = [1:r for r in size(nowM,2)]
+		theseRegions = [1:r for r in M[mSet][:dims][2]]
 		M[mSet][:regionArray] = theseRegions
 		M[mSet][:nVarCov] = length(theseRegions)
 	else
@@ -12,11 +12,11 @@ function stBWGR!(M,mSet,priorVCV,beta)
 			if isempty(M[mSet][:map])		
 				if priorVCV[mSet].r == 1
 					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with 1 SNP region size\n"; color = :green)
-					theseRegions = [r:r for r in 1:size(nowM,2)]
+					theseRegions = [r:r for r in 1:M[mSet][:dims][2]]
 					M[mSet][:regionArray] = theseRegions
 				elseif priorVCV[mSet].r == 9999
 					printstyled("No map was provided. Running Bayesian Random Regression (BRR) with all SNP as 1 region\n"; color = :green)
-					theseRegions = [1:r for r in size(nowM,2)]
+					theseRegions = [1:r for r in M[mSet][:dims][2]]
 					M[mSet][:regionArray] = theseRegions
 				else throw(ArgumentError("Please enter a valid region size (1 or 9999) or provide a map file"))
 				end
@@ -32,7 +32,7 @@ function stBWGR!(M,mSet,priorVCV,beta)
 #					M[mSet][:logPiOut]    = log(1.0 .- priorVCV[mSet].pi)
 			M[mSet][:method]      = "BayesB"
 			M[mSet][:funct]       = sampleBayesB!
-			theseRegions          = [r:r for r in 1:size(nowM,2)]
+			theseRegions          = [r:r for r in 1:M[mSet][:dims][2]]
 			M[mSet][:regionArray] = theseRegions
 			M[mSet][:nVarCov]     = length(theseRegions)
 			M[mSet][:estPi]       = priorVCV[mSet].estimatePi
@@ -44,7 +44,7 @@ function stBWGR!(M,mSet,priorVCV,beta)
 #					M[mSet][:logPiOut]    = log(1.0 .- priorVCV[mSet].pi)
 			M[mSet][:method]      = "BayesC"
 			M[mSet][:funct] = sampleBayesC!
-			theseRegions          = [r:r for r in 1:size(nowM,2)]
+			theseRegions          = [r:r for r in 1:M[mSet][:dims][2]]
 			M[mSet][:regionArray] = theseRegions
 			M[mSet][:nVarCov]     = 1
 			M[mSet][:estPi]       = priorVCV[mSet].estimatePi
@@ -55,7 +55,7 @@ function stBWGR!(M,mSet,priorVCV,beta)
 			M[mSet][:vClass]      = priorVCV[mSet].class
 			M[mSet][:method]      = "BayesR"
 			M[mSet][:funct]       = sampleBayesR!
-			theseRegions          = [r:r for r in 1:size(nowM,2)]
+			theseRegions          = [r:r for r in 1:M[mSet][:dims][2]]
 			M[mSet][:regionArray] = theseRegions
 			M[mSet][:nVarCov]     = 1
 			M[mSet][:estPi]       = priorVCV[mSet].estimatePi
@@ -64,7 +64,7 @@ function stBWGR!(M,mSet,priorVCV,beta)
 			M[mSet][:vClass]      = priorVCV[mSet].class
 			M[mSet][:method]      = "BayesRCπ"
 			M[mSet][:funct]       = sampleBayesRCπ!
-			theseRegions          = [r:r for r in 1:size(nowM,2)]
+			theseRegions          = [r:r for r in 1:M[mSet][:dims][2]]
 			M[mSet][:regionArray] = theseRegions
 			M[mSet][:nVarCov]     = size(priorVCV[mSet].annot,2)
 			M[mSet][:logPi]       = [log.(priorVCV[mSet].pi) for i in 1:M[mSet][:nVarCov]]
@@ -84,7 +84,7 @@ function stBWGR!(M,mSet,priorVCV,beta)
 			M[mSet][:vClass]      = priorVCV[mSet].class
 			M[mSet][:method]      = "BayesRCplus"
 			M[mSet][:funct]       = sampleBayesRCplus!
-			theseRegions          = [r:r for r in 1:size(nowM,2)]
+			theseRegions          = [r:r for r in 1:M[mSet][:dims][2]]
 			M[mSet][:regionArray] = theseRegions
 			M[mSet][:nVarCov]     = size(priorVCV[mSet].annot,2)
 			M[mSet][:logPi]       = [log.(priorVCV[mSet].pi) for i in 1:M[mSet][:nVarCov]]
@@ -97,7 +97,7 @@ function stBWGR!(M,mSet,priorVCV,beta)
 		elseif priorVCV[mSet].name == "BayesLV"
 			M[mSet][:method]      = "BayesLV"
 			M[mSet][:funct]       = sampleBayesLV!
-			theseRegions          = [r:r for r in 1:size(nowM,2)]
+			theseRegions          = [r:r for r in 1:M[mSet][:dims][2]]
 			M[mSet][:regionArray] = theseRegions
 			M[mSet][:nVarCov]     = length(theseRegions)
 					#logVar can be created in a smarter way, maybe together with var??...
