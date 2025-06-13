@@ -450,7 +450,26 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	delta = []
 	posMcounter = 0
 
-	
+	if isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Symbol
+		println("model is a single-trait model")
+		for eSet in keys(E)
+			MMEM!(M,beta,varBeta,posMcounter,eSet,E,priorVCV,modelInformation,summaryStat)
+		end
+		varCovM!(M,priorVCV,varBeta)
+	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
+		println("model is a multi-trait model where measurements/observations are from the same individuals")
+#		for eSet in keys(E)
+#			MMEM!(M,beta,varBeta,posMcounter,eSet,E,priorVCV,modelInformation,summaryStat)
+#		end
+	elseif !isequal(length(collect(keys(E))),1) && all(typeof.(collect(keys(E))) .<: Symbol)
+		for eSet in keys(E)
+#			MMEM!(M,beta,varBeta,posMcounter,eSet,E,priorVCV,modelInformation,summaryStat)
+		end
+		println("model is a multi-population model where measurements/observations are from different individuals")
+	else 	throw(ArgumentError("Could not understand the type of your model"))
+	end	
+
+		
 
 	##set up varCov for markers
 	varCovM!(M,priorVCV,varBeta)	
