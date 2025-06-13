@@ -127,7 +127,6 @@ function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float
 end
 
 #Multiple U correlated, no D
-####TURNED OF VARIANCE EST
 function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Dict,ySet::Symbol,varU::Dict)
 	iVarE = inv(varE[ySet])
 	nCol = size(u[Z[zSet].pos],2)
@@ -135,7 +134,7 @@ function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Dic
 		ycorr .+= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
 	end
 	u[Z[zSet].pos] .= sampleU(zSet,Z,iVarE,varU,u,ycorr)
-	#varU[zSet] = sampleCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
+	varU[zSet] = sampleCoVarU(Z[zSet].iVarStr,Z[zSet].scale,Z[zSet].df,u[Z[zSet].pos])
 	for i in 1:nCol
 		ycorr .-= Z[zSet].data[i]*getindex(u[Z[zSet].pos],:,i)
 	end
