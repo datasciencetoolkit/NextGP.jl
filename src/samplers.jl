@@ -43,7 +43,8 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 	
 	
 			#sample marker effects and variances
-			isempty(M) ? nothing : [M[mSet].funct(mSet,M,beta,delta,ycorr,varE,varBeta) for mSet in keys(yModel) if isa(yModel[mSet],RandomEffect)] 
+			isempty(M) ? nothing : [M[mSet].funct(mSet,M,beta,delta,ycorr,varE,varBeta,ySet) for mSet in keys(yModel) if isa(yModel[mSet],RandomEffect)] 
+			isempty(M) ? nothing : [println("yModel[mSet] $(yModel[mSet])") for mSet in keys(yModel) if isa(yModel[mSet],RandomEffect)] 
 			
 #			for mSet in keys(M)
 #				M[mSet].funct(mSet,M,beta,delta,ycorr,varE,varBeta)
