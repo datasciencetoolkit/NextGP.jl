@@ -142,18 +142,16 @@ end
 
 #set up (co)variance priors for markers
 #structure comes from method chosen, so it is not here.
-
+#df, shape, scale...	
 function varCovM!(M,priorVCV,varBeta)
 	#df
 	for mSet ∈ keys(M)
 		M[mSet][:df] = haskey(priorVCV,mSet) ? 3.0+size(priorVCV[mSet].v,1) : 4.0
-	end
 	#scale
 	#when hyper-parameters are estimated, all models will have only one estimate. Not per SNP, for now!
 	#But in general, all models get same prior anyways.
-        for mSet ∈ keys(M)
 		if haskey(priorVCV,mSet)
-                	nMComp = size(priorVCV[mSet].v,1)
+        		nMComp = size(priorVCV[mSet].v,1)
 			if priorVCV[mSet].params==false
 				println("hyperparameters are fixed")
 				M[mSet][:params] = false
@@ -167,17 +165,8 @@ function varCovM!(M,priorVCV,varBeta)
 			M[mSet][:params] = false
 			nMComp = 1
 			M[mSet][:scale] = 0.05 * (M[mSet][:df]-2.0)/(M[mSet][:df]) #I make float and array of float
-		end
-
-		#for storage
-        	for mSet ∈ keys(M)
-			if haskey(priorVCV,mSet)
-                		varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]]
-			else
-			varBeta[mSet] = [0.05 for i in 1:M[mSet][:nVarCov]]
-			end
-        	end
-        end
+		end	
+	end
 end
 
 
