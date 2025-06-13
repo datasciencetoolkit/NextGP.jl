@@ -310,8 +310,8 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 			MMEZ!(Z,u,varU,posZcounter,eSet,E,priorVCV,modelInformation,summaryStat)
 		end
 		varCovZ!(Z,priorVCV)
-#	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
-#		println("model is a multi-trait model where measurements/observations are from the same individuals")
+	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
+		println("model is a multi-trait model where measurements/observations are from the same individuals")
 #		for eSet in keys(E)
 #			MMEZ!(Z,u,varU,posZcounter,eSet,priorVCV,modelInformation,summaryStat)
 #		end
