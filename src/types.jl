@@ -56,10 +56,6 @@ struct PedigreeTerm <: RandomGeneticEffect
     path::Union{Matrix{Float64},String}
 end
 
-struct CorrelatedPedigreeTerm <: RandomGeneticEffect
-    correlated::Tuple{Vararg{Symbol}}
-end
-
 #runtime equivalent but does nothing
 PED(var::Union{Symbol,Expr},path::Union{Matrix{Float64},String}) = PedigreeTerm(var,path)
 
@@ -67,6 +63,14 @@ struct GenomicTerm
     name::Symbol
     path::String
     map::String
+end
+
+struct CorrelatedPedigreeTerm <: RandomGeneticEffect
+    correlated::Tuple{Vararg{Symbol}}
+end
+
+struct CorrelatedMarkerTerm <: RandomMarkerEffect
+    correlated::Tuple{Vararg{Symbol}}
 end
 
 """
