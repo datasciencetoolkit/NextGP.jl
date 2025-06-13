@@ -133,7 +133,7 @@ function MMEX!(X,b,posXcounter,eSet::Tuple,E,blocks,modelInformation,summaryStat
 	end
 end
 
-#single-trait zSet::Union{Symbol,Tuple{Vararg{Symbol}}}
+#single-trait zSet::Union{Symbol,Tuple{Vararg{Symbol}}} allows for correlated effects 
 #for multi-trait it will be, zSet::Union{Tuple{Tuple{Vararg{Symbol}}} #check potential overlap with single-trait
 function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,summaryStat)
 	#more like blockX function, but a bit different as the way it forms data structures.
@@ -175,6 +175,115 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 			u = push!(u,zeros(Float64,1,size(nowZ,2)))
 			nowZ = 0
 			tempzpz = 0
+		elseif isa(zSet,Tuple)
+			posZcounter += 1
+			Z[zSet][:pos] = posZcounter
+			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
+			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
+			#same Z for all components in a single-trait model get only first column! Z[zSet][:data] = getindex.(tempZ,:,1)
+			Z[zSet][:data] = tempZ
+			Z[zSet][:str] = Z[zSet[1]][:str] 
+			for d in zSet
+                    	   	delete!(Z,d)
+				delete!(modelInformation[eSet],d)
+               		end
+			u = push!(u,zeros(Float64,length(zSet),length(Z[zSet][:data])))
+			###WEIGHTED SHOULD BE ADAAPTED HERE#################
+			Z[zSet][:zpz]  = MatByMat.(tempZ)
+			Z[zSet][:Zp]   = transpose.(tempZ)
+			tempZ = 0
+		else throw(ArgumentError("Could not understand the type of $zSet in Z"))
+			
+		end
+		#println("KEYS OF Z: $(keys(Z))")
+		#println("ZZZZZ after set: $Z")
+	end
+	println("KEYS OF Z: $(keys(Z))")
+	for zSet in keys(Z)
+		setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
+	end
+	
+#	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
+#		posZcounter += 1
+#		Z[zSet][:pos] = posZcounter
+#		printstyled("No prior was provided for $pSet, but it was not included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
+#		tempzpz = []
+#		nowZ = Z[zSet][:data]
+#		for c in eachcol(nowZ)
+#			push!(tempzpz,c'c)					
+#		end
+#		Z[zSet][:Zp]  = transpose(nowZ)						
+#		Z[zSet][:zpz] = tempzpz
+#		Z[zSet][:lhs] = zeros(size(nowZ,2))
+#		Z[zSet][:rhs] = zeros(size(nowZ,2))
+#		if zSet in keys(summaryStat)
+#                	Z[zSet][:lhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) : inv.(diag(summaryStat[zSet].v))
+#                        Z[zSet][:rhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
+#                end
+#	end
+end
+
+#single-trait, allows for correlated effects
+function MMEM!(M,beta,varBeta,posMcounter,eSet::Symbol,E,priorVCV,modelInformation,summaryStat)
+	#more like blockX function, but a bit different as the way it forms data structures.
+	correlate = hcat(filter!(!isempty, unique([[keya for keya in keys(priorVCV) if (isa(keya,Tuple) && in(keyz,keya))] for keyz in keys(M)]))...)
+	#need to implement here data preparation w/o correlation
+	if isempty(correlate)
+		println("No Correlated Marker effects")
+	else 
+		for mSet in correlate
+			println("Correlating $correlate for $eSet")
+			M[mSet] = Dict{Symbol, Any}() #now M has Dict(s) for the correlated effects
+			#M[mSet][:iVarStr] = M[mSet[1]][:iVarStr]
+			modelInformation[eSet][mSet] = CorrelatedMarkerTerm(mSet)
+		end
+	end
+	
+	for mSet in keys(M)
+		if (isa(mSet,Symbol)
+			if any(in.(mSet,correlate))
+				continue
+			end
+			posMcounter += 1 #should be here to aovid correlated ones having a positive first than be removed
+			M[mSet][:pos] = posMcounter
+			
+			tempmpm = []
+			nowM = M[pSet][:data]
+			if E[:str] == "D"
+				for c in eachcol(nowM)
+					push!(tempmpm,sum(c.*E[:iVarStr].*c))
+				end
+				M[pSet][:Mp] = map(i -> transpose(nowM[:,i].*E[:iVarStr]), axes(nowM, 2))
+			else
+				for c in eachcol(nowM)
+					push!(tempmpm,dot(c,c))
+				end
+				M[pSet][:Mp] = map(i -> transpose(nowM[:,i]), axes(nowM, 2))
+			end			
+
+			M[pSet][:mpm] = tempmpm
+
+			nowM = 0
+			tempmpm = 0
+			
+			#summary statistics
+			M[pSet][:lhs] = zeros(M[pSet][:dims][2])
+			M[pSet][:rhs] = zeros(M[pSet][:dims][2])
+			if pSet in keys(summaryStat)
+                       		M[pSet][:lhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) : inv.(diag(summaryStat[pSet].v))
+				M[pSet][:rhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+				####Deal with N(0,0)
+				M[pSet][:lhs][isinf.(M[pSet][:lhs])].= 0.0
+				M[pSet][:rhs][isnan.(M[pSet][:rhs])].= 0.0
+			end
+				
+			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
+			delta = push!(delta,ones(Int64,1,M[pSet][:dims][2]))
+			
+
+			METHOD SELECTION
+
+				
 		elseif isa(zSet,Tuple)
 			posZcounter += 1
 			Z[zSet][:pos] = posZcounter
