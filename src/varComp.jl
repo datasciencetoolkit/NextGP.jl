@@ -143,7 +143,7 @@ end
 #set up (co)variance priors for markers
 #structure comes from method chosen, so it is not here.
 #df, shape, scale...	
-function varCovM!(M,priorVCV,varBeta)
+function varCovM!(M,priorVCV)
 	#df
 	for mSet ∈ keys(M)
 		M[mSet][:df] = haskey(priorVCV,mSet) ? 3.0+size(priorVCV[mSet].v,1) : 4.0
