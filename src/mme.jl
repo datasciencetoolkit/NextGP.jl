@@ -281,10 +281,8 @@ function MMEM!(M,beta,varBeta,posMcounter,eSet::Symbol,E,priorVCV,modelInformati
 			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
 			delta = push!(delta,ones(Int64,1,M[pSet][:dims][2]))
 			
-
-			METHOD SELECTION
-
-				
+			stBWGR!(M,mSet,priorVCV,beta)
+	
 		elseif isa(zSet,Tuple)
 			posZcounter += 1
 			Z[zSet][:pos] = posZcounter
