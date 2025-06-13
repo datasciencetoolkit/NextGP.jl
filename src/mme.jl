@@ -7,7 +7,7 @@
 include("varComp.jl")
 include("stBWGR.jl")
 
-#function name attached to genomic component, such as M[pSet][:funct] = sampleBayesC!
+#function name attached to genomic component, such as M[mSet][:funct] = sampleBayesC!
 #include("functions.jl")
 
 #using .functions
@@ -205,7 +205,7 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 #	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
 #		posZcounter += 1
 #		Z[zSet][:pos] = posZcounter
-#		printstyled("No prior was provided for $pSet, but it was not included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
+#		printstyled("No prior was provided for $mSet, but it was not included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
 #		tempzpz = []
 #		nowZ = Z[zSet][:data]
 #		for c in eachcol(nowZ)
@@ -247,37 +247,37 @@ function MMEM!(M,beta,varBeta,posMcounter,eSet::Symbol,E,priorVCV,modelInformati
 			M[mSet][:pos] = posMcounter
 			
 			tempmpm = []
-			nowM = M[pSet][:data]
+			nowM = M[mSet][:data]
 			if E[:str] == "D"
 				for c in eachcol(nowM)
 					push!(tempmpm,sum(c.*E[:iVarStr].*c))
 				end
-				M[pSet][:Mp] = map(i -> transpose(nowM[:,i].*E[:iVarStr]), axes(nowM, 2))
+				M[mSet][:Mp] = map(i -> transpose(nowM[:,i].*E[:iVarStr]), axes(nowM, 2))
 			else
 				for c in eachcol(nowM)
 					push!(tempmpm,dot(c,c))
 				end
-				M[pSet][:Mp] = map(i -> transpose(nowM[:,i]), axes(nowM, 2))
+				M[mSet][:Mp] = map(i -> transpose(nowM[:,i]), axes(nowM, 2))
 			end			
 
-			M[pSet][:mpm] = tempmpm
+			M[mSet][:mpm] = tempmpm
 
 			nowM = 0
 			tempmpm = 0
 			
 			#summary statistics
-			M[pSet][:lhs] = zeros(M[pSet][:dims][2])
-			M[pSet][:rhs] = zeros(M[pSet][:dims][2])
-			if pSet in keys(summaryStat)
-                       		M[pSet][:lhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) : inv.(diag(summaryStat[pSet].v))
-				M[pSet][:rhs] .= isa(summaryStat[pSet].v,Array{Float64,1}) ? inv.(summaryStat[pSet].v) .* (summaryStat[pSet].m)  : inv.(diag(summaryStat[pSet].v)) .* (summaryStat[pSet].m)
+			M[mSet][:lhs] = zeros(M[mSet][:dims][2])
+			M[mSet][:rhs] = zeros(M[mSet][:dims][2])
+			if mSet in keys(summaryStat)
+                       		M[mSet][:lhs] .= isa(summaryStat[mSet].v,Array{Float64,1}) ? inv.(summaryStat[mSet].v) : inv.(diag(summaryStat[mSet].v))
+				M[mSet][:rhs] .= isa(summaryStat[mSet].v,Array{Float64,1}) ? inv.(summaryStat[mSet].v) .* (summaryStat[mSet].m)  : inv.(diag(summaryStat[mSet].v)) .* (summaryStat[mSet].m)
 				####Deal with N(0,0)
-				M[pSet][:lhs][isinf.(M[pSet][:lhs])].= 0.0
-				M[pSet][:rhs][isnan.(M[pSet][:rhs])].= 0.0
+				M[mSet][:lhs][isinf.(M[mSet][:lhs])].= 0.0
+				M[mSet][:rhs][isnan.(M[mSet][:rhs])].= 0.0
 			end
 				
-			beta = push!(beta,zeros(Float64,1,M[pSet][:dims][2]))
-			delta = push!(delta,ones(Int64,1,M[pSet][:dims][2]))
+			beta = push!(beta,zeros(Float64,1,M[mSet][:dims][2]))
+			delta = push!(delta,ones(Int64,1,M[mSet][:dims][2]))
 			
 			stBWGR!(M,mSet,priorVCV,beta)
 	
