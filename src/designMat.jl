@@ -55,7 +55,7 @@ end
 function makeX(df::DataFrame,col::Symbol)
 	println("processing $col")
 	tempData = df[!,col]
-	println("tempData: $tempData")
+	#println("tempData: $tempData")
 	if isa(tempData,Vector{String})
 		#println("tempData is a String")
 		Xnow = makeXCat(tempData,col)
