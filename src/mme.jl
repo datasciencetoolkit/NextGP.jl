@@ -5,6 +5,7 @@
 #include("types.jl")
 
 include("varComp.jl")
+include("stBWGR.jl")
 
 #function name attached to genomic component, such as M[pSet][:funct] = sampleBayesC!
 #include("functions.jl")
