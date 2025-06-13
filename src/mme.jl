@@ -248,11 +248,11 @@ function MMEM!(M,beta,varBeta,posMcounter,eSet::Symbol,E,priorVCV,modelInformati
 			
 			tempmpm = []
 			nowM = M[mSet][:data]
-			if E[:str] == "D"
+			if E[eSet][:str] == "D"
 				for c in eachcol(nowM)
-					push!(tempmpm,sum(c.*E[:iVarStr].*c))
+					push!(tempmpm,sum(c.*E[eSet][:iVarStr].*c))
 				end
-				M[mSet][:Mp] = map(i -> transpose(nowM[:,i].*E[:iVarStr]), axes(nowM, 2))
+				M[mSet][:Mp] = map(i -> transpose(nowM[:,i].*E[eSet][:iVarStr]), axes(nowM, 2))
 			else
 				for c in eachcol(nowM)
 					push!(tempmpm,dot(c,c))
