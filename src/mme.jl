@@ -524,36 +524,39 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	
 	#this prints all u into one file ID_in1,Dam_ind1,ID_ind2,Dam_ind2.... order
 	[[inOut.outMCMC(outPut,"u"*join([String.(zSet)...])*"$eSet",hcat(vcat([Array([String.(zSet)...].*i) for i in Z[zSet][:levels]]...)...)) for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single-trait multiple comp
-	#this prints all u into seperate files
-	#[[[inOut.outMCMC(outPut,"u$zSet$eSet",[Z[zSet][:levels]]) for z in zSet] for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Tuple)] #single-trait multiple comp
-
+	
 	
 	#[(inOut.outMCMC(outPut,"varU$zSet",[String(zSet)]) for zSet in keys(Z) if isa(zSet,Symbol)) for eSet in keys(E) if isa(eSet,Symbol)] #[] to have it as one row
 	#[(inOut.outMCMC(outPut,"varU$zSet",[join(zSet.args)[2:end]]) for zSet in keys(Z) if isa(zSet,Expr)) for eSet in keys(E) if isa(eSet,Symbol)] #[] to have it as one row	
 	#[(inOut.outMCMC(outPut,"varU$zSet",[join(String.(vcat(zSet...)),"_").*hcat(["_$i" for i in 1:(length(zSet)^2)]...)])) for zSet in keys(Z) for eSet in keys(E) if isa(eSet,Tuple)]
-	
+
 	#arbitrary marker names
-	for mSet in keys(M)
-		if isa(mSet,Symbol)
-			inOut.outMCMC(outPut,"beta$mSet",hcat(M[mSet][:levels]...))
-			inOut.outMCMC(outPut,"delta$mSet",hcat(M[mSet][:levels]...))
-			if in(M[mSet][:method],["BayesB","BayesC","BayesR"])
-				inOut.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:length(M[mSet][:vClass])]]) #[] to have it as one row
-			elseif in(M[mSet][:method],["BayesRCπ","BayesRCplus"])
-				npis = length(M[mSet][:vClass])*M[mSet][:nVarCov]
-				inOut.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:npis]]) #[] to have it as one row
-				inOut.outMCMC(outPut,"annot$mSet",hcat(M[mSet][:levels]...))
-			elseif in(M[mSet][:method],["BayesLV"])
-				inOut.outMCMC(outPut,"c$mSet",[["c$v" for v in 1:(length(M[mSet][:c]))]]) #[] to have it as one row
-				inOut.outMCMC(outPut,"varZeta$mSet",["varZeta"])
-			end
-		elseif isa(mSet,Tuple)
-			for m in mSet
-   				inOut.outMCMC(outPut,"beta$m",hcat(M[mSet][:levels]...))
-				inOut.outMCMC(outPut,"delta$m",hcat(M[mSet][:levels]...))
-			end
-		end
-        end
+	#beta
+	[[inOut.outMCMC(outPut,"u$mSet$eSet",[M[mSet][:levels]]) for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait
+	
+
+	#arbitrary marker names
+	#for mSet in keys(M)
+	#	if isa(mSet,Symbol)
+	#		inOut.outMCMC(outPut,"beta$mSet",hcat(M[mSet][:levels]...))
+	#		inOut.outMCMC(outPut,"delta$mSet",hcat(M[mSet][:levels]...))
+	#		if in(M[mSet][:method],["BayesB","BayesC","BayesR"])
+	#			inOut.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:length(M[mSet][:vClass])]]) #[] to have it as one row
+	#		elseif in(M[mSet][:method],["BayesRCπ","BayesRCplus"])
+	#			npis = length(M[mSet][:vClass])*M[mSet][:nVarCov]
+	#			inOut.outMCMC(outPut,"pi$mSet",[["pi$v" for v in 1:npis]]) #[] to have it as one row
+	#			inOut.outMCMC(outPut,"annot$mSet",hcat(M[mSet][:levels]...))
+	#		elseif in(M[mSet][:method],["BayesLV"])
+	#			inOut.outMCMC(outPut,"c$mSet",[["c$v" for v in 1:(length(M[mSet][:c]))]]) #[] to have it as one row
+	#			inOut.outMCMC(outPut,"varZeta$mSet",["varZeta"])
+	#		end
+	#	elseif isa(mSet,Tuple)
+	#		for m in mSet
+   	#			inOut.outMCMC(outPut,"beta$m",hcat(M[mSet][:levels]...))
+	#			inOut.outMCMC(outPut,"delta$m",hcat(M[mSet][:levels]...))
+	#		end
+	#	end
+        #end
 	
 	for mSet in keys(varBeta)
 		isa(mSet, Symbol) ? nameM_VCV = ["reg_$r" for r in 1:M[mSet][:nVarCov]] : nameM_VCV = vcat([["reg_$(i)_$j" for j in 1:size(M[mSet][:scale],2)^2] for i in 1:M[mSet][:nRegions]]...)
