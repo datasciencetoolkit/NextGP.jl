@@ -239,7 +239,7 @@ function MMEM!(M,beta,varBeta,posMcounter,eSet::Symbol,E,priorVCV,modelInformati
 	end
 	
 	for mSet in keys(M)
-		if (isa(mSet,Symbol)
+		if (isa(mSet,Symbol))
 			if any(in.(mSet,correlate))
 				continue
 			end
