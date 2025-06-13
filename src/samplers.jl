@@ -35,11 +35,11 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 			sampleVarE!(ySet,E,varE,ycorr,nData)
 			
 			#sample fixed effects
-			[sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if isa(yModel[xSet],FixedEffect)] 
+			isempty(X) ? nothing : [sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if isa(yModel[xSet],FixedEffect)] 
 
 			#sample random effects
 			#println("$ySet,$yModel")
-			[sampleZ!(zSet,Z,u,ycorr,varE,ySet,varU) for zSet in keys(yModel) if isa(yModel[zSet],RandomEffect)] 
+			isempty(Z) ? nothing : [sampleZ!(zSet,Z,u,ycorr,varE,ySet,varU) for zSet in keys(yModel) if isa(yModel[zSet],RandomEffect)] 
 	
 	
 			#sample marker effects and variances
