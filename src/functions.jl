@@ -147,12 +147,12 @@ end
 
 ##### Component-wise, seperated functions for symbol and tuple
 
-function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Symbol)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
 	local lambda::Float64
-	iVarE = 1/varE
+	iVarE = 1/varE[ySet]
 	for (r,theseLoci) in enumerate(M[mSet].regionArray)
 		regionSize::Int64 = length(theseLoci)
 		iVarBeta = 1/varBeta[mSet][r]
@@ -173,14 +173,15 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 end
 	
 ##### Component-wise, seperated functions for symbol and tuple
-function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Symbol)
+	iVarE = 1/varE[ySet]
 	for (r,theseLoci) in enumerate(M[mSet].regionArray)
 		regionSize = length(theseLoci)
 		invB = inv(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
 			ycorr .+= M[mSet].data[locus]*getindex.(beta[M[mSet].pos],locus)
-			RHS = ((getindex(M[mSet].Mp,locus)*ycorr)./varE)
-			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus)./varE) .+ invB)
+			RHS = ((getindex(M[mSet].Mp,locus)*ycorr).*iVarE)
+			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus).*iVarE) .+ invB)
 			meanBETA::Array{Float64,1} = invLHS*RHS
 			setindex!.(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
 			ycorr .-= M[mSet].data[locus]*getindex.(beta[M[mSet].pos],locus)	
