@@ -196,10 +196,8 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 		else throw(ArgumentError("Could not understand the type of $zSet in Z"))
 			
 		end
-		#println("KEYS OF Z: $(keys(Z))")
-		#println("ZZZZZ after set: $Z")
 	end
-	println("KEYS OF Z: $(keys(Z))")
+
 	for zSet in keys(Z)
 		setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
 	end
@@ -306,10 +304,17 @@ function MMEM!(M,beta,varBeta,posMcounter,eSet::Symbol,E,priorVCV,modelInformati
 		#println("KEYS OF Z: $(keys(Z))")
 		#println("ZZZZZ after set: $Z")
 	end
-	println("KEYS OF Z: $(keys(Z))")
-	for zSet in keys(Z)
-		setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
-	end
+
+        for mSet ∈ keys(M)
+		if haskey(priorVCV,mSet)
+                	varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]]
+		else
+			varBeta[mSet] = [0.05 for i in 1:M[mSet][:nVarCov]]
+		end
+        end
+
+	
+		
 	
 #	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
 #		posZcounter += 1
@@ -432,16 +437,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 
 	end
 
-	
-
-	
-
-	##set up varCov for u
-	##varCovZ!(Z,priorVCV,varU_prior,varU)
 																		
-												
-        ####
-																					
 
 	#ADD MARKERS
 	# read map file and make regions
@@ -455,7 +451,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 		for eSet in keys(E)
 			MMEM!(M,beta,varBeta,posMcounter,eSet,E,priorVCV,modelInformation,summaryStat)
 		end
-		varCovM!(M,priorVCV,varBeta)
+		varCovM!(M,priorVCV)
 	elseif isequal(length(collect(keys(E))),1) && typeof(collect(keys(E))[]) <: Tuple
 		println("model is a multi-trait model where measurements/observations are from the same individuals")
 #		for eSet in keys(E)
