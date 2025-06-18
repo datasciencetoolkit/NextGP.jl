@@ -285,22 +285,22 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 	
 		elseif isa(mSet,Tuple)
 			posZcounter += 1
-			Z[zSet][:pos] = posZcounter
-			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
-			tempZ = hcat.(eachcol.(getindex.(getindex.(Ref(Z), zSet),:data))...)
-			#same Z for all components in a single-trait model get only first column! Z[zSet][:data] = getindex.(tempZ,:,1)
-			Z[zSet][:data] = tempZ
-			Z[zSet][:str] = Z[zSet[1]][:str] 
-			for d in zSet
-                    	   	delete!(Z,d)
+			M[mSet][:pos] = posMcounter
+			M[mSet][:levels] = first(getindex.(getindex.(Ref(M),mSet),:levels))
+			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), mSet),:data))...)	
+			M[mSet][:data] = tempM
+			maps = getindex.(getindex.(Ref(M),mSet),:map)
+			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[pSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
+			for d in mSet
+                    	   	delete!(M,d)
 				delete!(modelInformation[eSet],d)
                		end
-			u = push!(u,zeros(Float64,length(zSet),length(Z[zSet][:data])))
+			u = push!(u,zeros(Float64,length(mSet),length(M[mSet][:data])))
 			###WEIGHTED SHOULD BE ADAAPTED HERE#################
-			Z[zSet][:zpz]  = MatByMat.(tempZ)
-			Z[zSet][:Zp]   = transpose.(tempZ)
-			tempZ = 0
-		else throw(ArgumentError("Could not understand the type of $zSet in Z"))
+			M[mSet][:mpm]  = MatByMat.(tempM)
+			M[mSet][:Mp]   = transpose.(tempM)
+			tempM = 0
+		else throw(ArgumentError("Could not understand the type of $mSet in M"))
 			
 		end
 		#println("KEYS OF Z: $(keys(Z))")
