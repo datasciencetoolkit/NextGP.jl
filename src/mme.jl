@@ -283,7 +283,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 			
 			stBWGR!(M,mSet,priorVCV,beta)
 	
-		elseif isa(zSet,Tuple)
+		elseif isa(mSet,Tuple)
 			posZcounter += 1
 			Z[zSet][:pos] = posZcounter
 			Z[zSet][:levels] = first(getindex.(getindex.(Ref(Z),zSet),:levels))
