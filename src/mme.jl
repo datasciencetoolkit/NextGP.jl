@@ -303,9 +303,11 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 		end
 		#println("KEYS OF Z: $(keys(Z))")
 		#println("ZZZZZ after set: $Z")
+
+		stBWGR!(M,mSet,priorVCV,beta)
 	end
 
-	stBWGR!(M,mSet,priorVCV,beta)
+	
 
         for mSet ∈ keys(M)
 		if haskey(priorVCV,mSet)
