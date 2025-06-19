@@ -296,6 +296,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 				delete!(modelInformation[eSet],d)
                		end
 			beta = push!(beta,zeros(Float64,length(mSet),length(M[mSet][:data])))
+			println("size of BETA: $(size.(beta))")
 			###WEIGHTED SHOULD BE ADAAPTED HERE#################
 			M[mSet][:mpm]  = MatByMat.(tempM)
 			M[mSet][:Mp]   = transpose.(tempM)
