@@ -307,6 +307,8 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 		#println("ZZZZZ after set: $Z")
 
 		stBWGR!(M,mSet,priorVCV,beta)
+
+		M[mSet] :method=>"SNP",:str=>"I",:iVarStr=>[]
 	end
 
 	
