@@ -281,8 +281,6 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 
 			println("M: $(keys(M))")
 			
-			stBWGR!(M,mSet,priorVCV,beta)
-	
 		elseif isa(mSet,Tuple)
 			posMcounter += 1
 			M[mSet][:pos] = posMcounter
@@ -306,6 +304,8 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 		#println("KEYS OF Z: $(keys(Z))")
 		#println("ZZZZZ after set: $Z")
 	end
+
+	stBWGR!(M,mSet,priorVCV,beta)
 
         for mSet ∈ keys(M)
 		if haskey(priorVCV,mSet)
