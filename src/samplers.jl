@@ -58,8 +58,11 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 					inOut.outMCMC(outPut,"varU$zSet",hcat(reduce(hcat,varU[zSet])...))
 				end
 			
-				[[inOut.outMCMC(outPut,"beta$mSet$eSet",beta[M[mSet].pos]) for mSet in keys(M) if (isa(mSet,Union{Symbol,Expr}) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
-				[[inOut.outMCMC(outPut,"delta$mSet$eSet",delta[M[mSet].pos]) for mSet in keys(M) if (isa(mSet,Union{Symbol,Expr}) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
+				[[inOut.outMCMC(outPut,"beta$mSet$eSet",beta[M[mSet].pos]) for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
+				[[inOut.outMCMC(outPut,"delta$mSet$eSet",delta[M[mSet].pos]) for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait
+
+				[[[inOut.outMCMC(outPut,"beta$m$eSet",beta[M[mSet].pos][p,:]) for (p,m) in enumerate(mSet)] for mSet in keys(M) if (isa(mSet,Tuple{vararg{Symbol}}) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single-trait multiple comp	
+
 
 				#for mSet in keys(M)
 				#	if isa(mSet,Symbol)
