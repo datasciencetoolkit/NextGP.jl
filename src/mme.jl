@@ -285,7 +285,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 			posMcounter += 1
 			M[mSet][:pos] = posMcounter
 			M[mSet][:levels] = first(getindex.(getindex.(Ref(M),mSet),:levels))
-			M[mSet][:dims] = first(M[mSet][:dims])
+			M[mSet][:dims] = first(getindex.(getindex.(Ref(M),mSet),:dims))
 			println("M[mSet][:dims] $(M[mSet][:dims])")
 			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), mSet),:data))...)	
 			M[mSet][:data] = tempM
