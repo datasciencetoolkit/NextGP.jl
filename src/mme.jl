@@ -290,7 +290,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), mSet),:data))...)	
 			M[mSet][:data] = tempM
 			maps = getindex.(getindex.(Ref(M),mSet),:map)
-			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[pSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
+			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[mSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
 			for d in mSet
                     	   	delete!(M,d)
 				delete!(modelInformation[eSet],d)
