@@ -295,7 +295,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
                     	   	delete!(M,d)
 				delete!(modelInformation[eSet],d)
                		end
-			u = push!(u,zeros(Float64,length(mSet),length(M[mSet][:data])))
+			beta = push!(beta,zeros(Float64,length(mSet),length(M[mSet][:data])))
 			###WEIGHTED SHOULD BE ADAAPTED HERE#################
 			M[mSet][:mpm]  = MatByMat.(tempM)
 			M[mSet][:Mp]   = transpose.(tempM)
