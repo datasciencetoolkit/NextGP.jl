@@ -568,7 +568,6 @@ function sampleVarBetaPR(scalem,dfm,whichLoci,regionSize)::Float64
 end
 
 function sampleVarCovBetaPR(scalem,dfm,whichLoci,regionSize)
-	println("size whichLoci: $(size(whichLoci))")
 	Sb = whichLoci*whichLoci'
 	return rand(InverseWishart(dfm + regionSize, scalem + Sb))
 end
