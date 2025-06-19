@@ -308,7 +308,8 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 
 		stBWGR!(M,mSet,priorVCV,beta)
 
-		M[mSet] :method=>"SNP",:str=>"I",:iVarStr=>[]
+		#M[mSet][:nRe] 
+		#:method=>"SNP",:str=>"I",:iVarStr=>[]
 	end
 
 	
@@ -567,7 +568,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
         #end
 	
 	for mSet in keys(varBeta)
-		isa(mSet, Symbol) ? nameM_VCV = ["reg_$r" for r in 1:M[mSet][:nVarCov]] : nameM_VCV = vcat([["reg_$(i)_$j" for j in 1:size(M[mSet][:scale],2)^2] for i in 1:M[mSet][:nRegions]]...)
+		isa(mSet, Symbol) ? nameM_VCV = ["reg_$r" for r in 1:M[mSet][:nVarCov]] : nameM_VCV = vcat([["reg_$(i)_$j" for j in 1:size(M[mSet][:scale],2)^2] for i in 1:M[mSet][:nVarCov]]...)
 		inOut.outMCMC(outPut,"var$mSet",[nameM_VCV]) #[] to have it as one row
 		####
 		isa(mSet, Symbol) ? nameM_VCV = "scale" : nameM_VCV = ["scale$i" for i in 1:size(vec(varBeta[mSet]))]
