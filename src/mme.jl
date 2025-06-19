@@ -308,8 +308,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 
 		stBWGR!(M,mSet,priorVCV,beta)
 
-		#M[mSet][:nRe] 
-		#:method=>"SNP",:str=>"I",:iVarStr=>[]
+		#M[mSet][:iVarStr] = [] 
 	end
 
 	
