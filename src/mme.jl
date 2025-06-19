@@ -540,6 +540,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	#arbitrary marker names
 	#beta
 	[[inOut.outMCMC(outPut,"beta$mSet$eSet",[M[mSet][:levels]]) for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait
+	[[[inOut.outMCMC(outPut,"beta$m$eSet",[M[mSet][:levels]]) for m in mSet] for mSet in keys(M) if (isa(mSet,Tupple) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait multi comp
 	#delta
 	[[inOut.outMCMC(outPut,"delta$mSet$eSet",[M[mSet][:levels]]) for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait
 
