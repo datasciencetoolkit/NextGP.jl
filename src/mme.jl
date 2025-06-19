@@ -284,7 +284,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 			stBWGR!(M,mSet,priorVCV,beta)
 	
 		elseif isa(mSet,Tuple)
-			posZcounter += 1
+			posMcounter += 1
 			M[mSet][:pos] = posMcounter
 			M[mSet][:levels] = first(getindex.(getindex.(Ref(M),mSet),:levels))
 			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), mSet),:data))...)	
