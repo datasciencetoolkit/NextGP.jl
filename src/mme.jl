@@ -360,9 +360,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 	else
 		for mSet in correlate #[m for set in correlate for m in set]
 			m2Set = ntuple(i->mSet,length(eSet))
-			println("m2Set $(m2Set)")
-			
-			println("Correlating $correlate for $eSet")
+			println("m2Set $(m2Set)")			
 			M[m2Set] = Dict{Symbol, Any}() #now M has Dict(s) for the correlated effects
 			#M[mSet][:iVarStr] = M[mSet[1]][:iVarStr]
 			modelInformation[eSet][mSet] = CorrelatedMarkerTerm(mSet)
@@ -372,49 +370,9 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 	println("new M set: $(keys(M))")
 	
 	for mSet in keys(M)
-		if (isa(mSet,Symbol))
-			if any(in.(mSet,correlate))
-				continue
-			end
-			posMcounter += 1 #should be here to aovid correlated ones having a positive first than be removed
-			M[mSet][:pos] = posMcounter
-			
-			tempmpm = []
-			nowM = M[mSet][:data]
-			if E[eSet][:str] == "D"
-				for c in eachcol(nowM)
-					push!(tempmpm,sum(c.*E[eSet][:iVarStr].*c))
-				end
-				M[mSet][:Mp] = map(i -> transpose(nowM[:,i].*E[eSet][:iVarStr]), axes(nowM, 2))
-			else
-				for c in eachcol(nowM)
-					push!(tempmpm,dot(c,c))
-				end
-				M[mSet][:Mp] = map(i -> transpose(nowM[:,i]), axes(nowM, 2))
-			end			
-
-			M[mSet][:mpm] = tempmpm
-
-			nowM = 0
-			tempmpm = 0
-			
-			#summary statistics
-			M[mSet][:lhs] = zeros(M[mSet][:dims][2])
-			M[mSet][:rhs] = zeros(M[mSet][:dims][2])
-			if mSet in keys(summaryStat)
-                       		M[mSet][:lhs] .= isa(summaryStat[mSet].v,Array{Float64,1}) ? inv.(summaryStat[mSet].v) : inv.(diag(summaryStat[mSet].v))
-				M[mSet][:rhs] .= isa(summaryStat[mSet].v,Array{Float64,1}) ? inv.(summaryStat[mSet].v) .* (summaryStat[mSet].m)  : inv.(diag(summaryStat[mSet].v)) .* (summaryStat[mSet].m)
-				####Deal with N(0,0)
-				M[mSet][:lhs][isinf.(M[mSet][:lhs])].= 0.0
-				M[mSet][:rhs][isnan.(M[mSet][:rhs])].= 0.0
-			end
-				
-			beta = push!(beta,zeros(Float64,1,M[mSet][:dims][2]))
-			delta = push!(delta,ones(Int64,1,M[mSet][:dims][2]))
-
-			println("M: $(keys(M))")
-			
-		elseif isa(mSet,Tuple)
+		println("mSet $mSet in keysM")
+		if isa(mSet,Tuple{Vararg{Symbol}})
+			println("mSet $mSet in TupleVarargSymbol")
 			posMcounter += 1
 			M[mSet][:pos] = posMcounter
 			M[mSet][:levels] = first(getindex.(getindex.(Ref(M),mSet),:levels))
@@ -437,8 +395,6 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 		else throw(ArgumentError("Could not understand the type of $mSet in M"))
 			
 		end
-		#println("KEYS OF Z: $(keys(Z))")
-		#println("ZZZZZ after set: $Z")
 
 		stBWGR!(M,mSet,priorVCV,beta)
 
