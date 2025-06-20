@@ -398,16 +398,17 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 			tempM = 0
 		elseif isa(mSet,Tuple{Vararg{Tuple{Vararg{Symbol}}}})
 			println("mSet $mSet is Tuple of Tuple")
+			m = Tuple(collect(Iterators.flatten((mSet))))
 			posMcounter += 1
 			M[mSet][:pos] = posMcounter
-			M[mSet][:levels] = first(getindex.(getindex.(Ref(M),mSet),:levels))
-			M[mSet][:dims] = first(getindex.(getindex.(Ref(M),mSet),:dims))
+			M[mSet][:levels] = first(getindex.(getindex.(Ref(M),m),:levels))
+			M[mSet][:dims] = first(getindex.(getindex.(Ref(M),m),:dims))
 			println("M[mSet][:dims] $(M[mSet][:dims])")
-			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), mSet),:data))...)	
+			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), m),:data))...)	
 			M[mSet][:data] = tempM
-			maps = getindex.(getindex.(Ref(M),mSet),:map)
+			maps = getindex.(getindex.(Ref(M),m),:map)
 			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[mSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
-			for d in mSet
+			for d in mSet #[m for set in correlate for m in set]
 				println("deleting $d in $mSet")
                     	   	delete!(M,d)
 				delete!(modelInformation[eSet],d)
