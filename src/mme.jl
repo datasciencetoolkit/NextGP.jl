@@ -350,9 +350,9 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 	#more like blockX function, but a bit different as the way it forms data structures.
 	println("INSIDE MMEM-multi!!!!")
 	correlate = hcat(filter!(!isempty, unique([[keya for keya in keys(priorVCV) if (isa(keya,Tuple) && in(keyz,keya))] for keyz in keys(M)]))...)
-	println("correlate")
+	println("correlate $correlate")
 	correlate2 = hcat(filter!(!isempty, [[keya for keya in keys(priorVCV) if (isa(keya,Tuple) && in(keyz,keya))] for keyz in keys(M)])...)
-	println("correlate2")
+	println("correlate2 $correlate2")
 
 	#need to implement here data preparation w/o correlation
 	if isempty(correlate)
