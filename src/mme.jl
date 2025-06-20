@@ -359,7 +359,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 		println("No Correlated Marker effects")
 	else
 		for mSet in correlate #[m for set in correlate for m in set]
-			m2Set = ntuple(i->mSet,length(eSet))
+			#m2Set = ntuple(i->mSet,length(eSet))
 			println("m2Set $(m2Set)")			
 			M[m2Set] = Dict{Symbol, Any}() #now M has Dict(s) for the correlated effects
 			#M[mSet][:iVarStr] = M[mSet[1]][:iVarStr]
