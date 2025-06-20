@@ -197,13 +197,13 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 		regionSize = length(theseLoci)
 		invB = inv(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
-			ycorr .+= M[mSet].data[locus]*getindex(beta[M[mSet].pos],:,locus)
+			ycorr .+= M[mSet].data[locus]*hcat(getindex(beta[M[mSet].pos],:,locus)...)
 			RHS = ((getindex(M[mSet].Mp,locus)*ycorr).*iVarE)
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus).*iVarE) .+ invB)
 			meanBETA::Array{Float64,1} = invLHS*RHS
 			beta[M[mSet].pos][:,locus] .= rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
 			#setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
-			ycorr .-= M[mSet].data[locus]*getindex(beta[M[mSet].pos],:,locus)	
+			ycorr .-= M[mSet].data[locus]*hcat(getindex(beta[M[mSet].pos],:,locus)...)	
 		end
 		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize)
 	end
