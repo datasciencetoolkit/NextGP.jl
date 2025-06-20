@@ -138,6 +138,8 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			#drops cols if any value is missing. Later should check map files etc..
 			thisM = thisM[:,.!(any.(ismissing, eachcol(thisM)))]
 			#
+			println("typeof(thisM) $(typeof(thisM))")
+			println(thisM[1:5,1:5])
 			thisM = Matrix{Float64}(thisM)
 			isempty(v.map) ? nowMap=[] : nowMap=v.map
 			
