@@ -371,8 +371,11 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 	
 	for mSet in keys(M)
 		println("typeof $mSet: $(typeof(mSet))")
-		if isa(mSet,Tuple{Vararg{Symbol}})
-			println("mSet $mSet in TupleVarargSymbol")
+		if isa(mSet,Symbol)
+			println("mSet $mSet is Symbol")
+			continue
+		elseif isa(mSet,Tuple{Vararg{Symbol}})
+			println("mSet $mSet is TupleVarargSymbol")
 			posMcounter += 1
 			M[mSet][:pos] = posMcounter
 			M[mSet][:levels] = first(getindex.(getindex.(Ref(M),mSet),:levels))
@@ -394,7 +397,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 			M[mSet][:Mp]   = transpose.(tempM)
 			tempM = 0
 		elseif isa(mSet,Tuple{Vararg{Tuple{Vararg{Symbol}}}})
-			println("mSet $mSet in Tuple of Tuple")
+			println("mSet $mSet is Tuple of Tuple")
 			posMcounter += 1
 			M[mSet][:pos] = posMcounter
 			M[mSet][:levels] = first(getindex.(getindex.(Ref(M),mSet),:levels))
