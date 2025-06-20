@@ -370,7 +370,6 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 	println("new M set: $(keys(M))")
 	
 	for mSet in keys(M)
-		println("mSet $mSet in keysM")
 		if isa(mSet,Tuple{Vararg{Symbol}})
 			println("mSet $mSet in TupleVarargSymbol")
 			posMcounter += 1
@@ -383,6 +382,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 			maps = getindex.(getindex.(Ref(M),mSet),:map)
 			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[mSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
 			for d in mSet
+				println("deleting $d in $mSet")
                     	   	delete!(M,d)
 				delete!(modelInformation[eSet],d)
                		end
@@ -392,6 +392,29 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 			M[mSet][:mpm]  = MatByMat.(tempM)
 			M[mSet][:Mp]   = transpose.(tempM)
 			tempM = 0
+		elseif isa(mSet,Tuple{Vararg{Tuple{Vararg{Symbol}}}})
+			println("mSet $mSet in Tuple of Tuple")
+			posMcounter += 1
+			M[mSet][:pos] = posMcounter
+			M[mSet][:levels] = first(getindex.(getindex.(Ref(M),mSet),:levels))
+			M[mSet][:dims] = first(getindex.(getindex.(Ref(M),mSet),:dims))
+			println("M[mSet][:dims] $(M[mSet][:dims])")
+			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), mSet),:data))...)	
+			M[mSet][:data] = tempM
+			maps = getindex.(getindex.(Ref(M),mSet),:map)
+			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[mSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
+			for d in mSet
+				println("deleting $d in $mSet")
+                    	   	delete!(M,d)
+				delete!(modelInformation[eSet],d)
+               		end
+			beta = push!(beta,zeros(Float64,length(mSet),length(M[mSet][:data])))
+			println("size of BETA: $(size.(beta))")
+			###WEIGHTED SHOULD BE ADAAPTED HERE#################
+			M[mSet][:mpm]  = MatByMat.(tempM)
+			M[mSet][:Mp]   = transpose.(tempM)
+			tempM = 0
+			
 		else throw(ArgumentError("Could not understand the type of $mSet in M"))
 			
 		end
