@@ -345,6 +345,134 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Symbol,E,priorVCV,modelInf
 #	end
 end
 
+#multi-trait, allows for correlated effects
+function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInformation,summaryStat)
+	#more like blockX function, but a bit different as the way it forms data structures.
+	println("INSIDE MMEM-multi!!!!")
+	correlate = hcat(filter!(!isempty, unique([[keya for keya in keys(priorVCV) if (isa(keya,Tuple) && in(keyz,keya))] for keyz in keys(M)]))...)
+	println("correlate")
+	correlate2 = hcat(filter!(!isempty, [[keya for keya in keys(priorVCV) if (isa(keya,Tuple) && in(keyz,keya))] for keyz in keys(M)])...)
+	println("correlate2")
+
+	#need to implement here data preparation w/o correlation
+	if isempty(correlate)
+		println("No Correlated Marker effects")
+	else 
+		for mSet in correlate
+			println("Correlating $correlate for $eSet")
+			M[mSet] = Dict{Symbol, Any}() #now M has Dict(s) for the correlated effects
+			#M[mSet][:iVarStr] = M[mSet[1]][:iVarStr]
+			modelInformation[eSet][mSet] = CorrelatedMarkerTerm(mSet)
+		end
+	end
+	
+	for mSet in keys(M)
+		if (isa(mSet,Symbol))
+			if any(in.(mSet,correlate))
+				continue
+			end
+			posMcounter += 1 #should be here to aovid correlated ones having a positive first than be removed
+			M[mSet][:pos] = posMcounter
+			
+			tempmpm = []
+			nowM = M[mSet][:data]
+			if E[eSet][:str] == "D"
+				for c in eachcol(nowM)
+					push!(tempmpm,sum(c.*E[eSet][:iVarStr].*c))
+				end
+				M[mSet][:Mp] = map(i -> transpose(nowM[:,i].*E[eSet][:iVarStr]), axes(nowM, 2))
+			else
+				for c in eachcol(nowM)
+					push!(tempmpm,dot(c,c))
+				end
+				M[mSet][:Mp] = map(i -> transpose(nowM[:,i]), axes(nowM, 2))
+			end			
+
+			M[mSet][:mpm] = tempmpm
+
+			nowM = 0
+			tempmpm = 0
+			
+			#summary statistics
+			M[mSet][:lhs] = zeros(M[mSet][:dims][2])
+			M[mSet][:rhs] = zeros(M[mSet][:dims][2])
+			if mSet in keys(summaryStat)
+                       		M[mSet][:lhs] .= isa(summaryStat[mSet].v,Array{Float64,1}) ? inv.(summaryStat[mSet].v) : inv.(diag(summaryStat[mSet].v))
+				M[mSet][:rhs] .= isa(summaryStat[mSet].v,Array{Float64,1}) ? inv.(summaryStat[mSet].v) .* (summaryStat[mSet].m)  : inv.(diag(summaryStat[mSet].v)) .* (summaryStat[mSet].m)
+				####Deal with N(0,0)
+				M[mSet][:lhs][isinf.(M[mSet][:lhs])].= 0.0
+				M[mSet][:rhs][isnan.(M[mSet][:rhs])].= 0.0
+			end
+				
+			beta = push!(beta,zeros(Float64,1,M[mSet][:dims][2]))
+			delta = push!(delta,ones(Int64,1,M[mSet][:dims][2]))
+
+			println("M: $(keys(M))")
+			
+		elseif isa(mSet,Tuple)
+			posMcounter += 1
+			M[mSet][:pos] = posMcounter
+			M[mSet][:levels] = first(getindex.(getindex.(Ref(M),mSet),:levels))
+			M[mSet][:dims] = first(getindex.(getindex.(Ref(M),mSet),:dims))
+			println("M[mSet][:dims] $(M[mSet][:dims])")
+			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), mSet),:data))...)	
+			M[mSet][:data] = tempM
+			maps = getindex.(getindex.(Ref(M),mSet),:map)
+			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[mSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
+			for d in mSet
+                    	   	delete!(M,d)
+				delete!(modelInformation[eSet],d)
+               		end
+			beta = push!(beta,zeros(Float64,length(mSet),length(M[mSet][:data])))
+			println("size of BETA: $(size.(beta))")
+			###WEIGHTED SHOULD BE ADAAPTED HERE#################
+			M[mSet][:mpm]  = MatByMat.(tempM)
+			M[mSet][:Mp]   = transpose.(tempM)
+			tempM = 0
+		else throw(ArgumentError("Could not understand the type of $mSet in M"))
+			
+		end
+		#println("KEYS OF Z: $(keys(Z))")
+		#println("ZZZZZ after set: $Z")
+
+		stBWGR!(M,mSet,priorVCV,beta)
+
+		#M[mSet][:iVarStr] = [] 
+	end
+
+	
+
+        for mSet ∈ keys(M)
+		if haskey(priorVCV,mSet)
+                	varBeta[mSet] = [priorVCV[mSet].v for i in 1:M[mSet][:nVarCov]]
+		else
+			varBeta[mSet] = [0.05 for i in 1:M[mSet][:nVarCov]]
+		end
+        end
+
+	
+		
+	
+#	for zSet in collect(keys(Z))[(!in).(keys(Z),Ref(keys(priorVCV)))]
+#		posZcounter += 1
+#		Z[zSet][:pos] = posZcounter
+#		printstyled("No prior was provided for $pSet, but it was not included in the data. It will be made uncorrelated with default priors\n"; color = :green)		
+#		tempzpz = []
+#		nowZ = Z[zSet][:data]
+#		for c in eachcol(nowZ)
+#			push!(tempzpz,c'c)					
+#		end
+#		Z[zSet][:Zp]  = transpose(nowZ)						
+#		Z[zSet][:zpz] = tempzpz
+#		Z[zSet][:lhs] = zeros(size(nowZ,2))
+#		Z[zSet][:rhs] = zeros(size(nowZ,2))
+#		if zSet in keys(summaryStat)
+#                	Z[zSet][:lhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) : inv.(diag(summaryStat[zSet].v))
+#                        Z[zSet][:rhs] .= isa(summaryStat[zSet].v,Array{Float64,1}) ? inv.(summaryStat[zSet].v) .* (summaryStat[zSet].m)  : inv.(diag(summaryStat[zSet].v)) .* (summaryStat[zSet].m)
+#                end
+#	end
+end
+
 
 #main sampler
 function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) #maybe later use modelInformation
