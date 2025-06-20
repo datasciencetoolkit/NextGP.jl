@@ -351,20 +351,23 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 	println("INSIDE MMEM-multi!!!!")
 	correlate = hcat(filter!(!isempty, unique([[keya for keya in keys(priorVCV) if (isa(keya,Tuple) && in(keyz,keya))] for keyz in keys(M)]))...)
 	println("correlate $correlate")
-	correlate2 = hcat(filter!(!isempty, [[keya for keya in keys(priorVCV) if (isa(keya,Tuple) && in(keyz,keya))] for keyz in keys(M)])...)
-	println("correlate2 $correlate2")
 
 	#need to implement here data preparation w/o correlation
 	if isempty(correlate)
 		println("No Correlated Marker effects")
-	else 
-		for mSet in correlate
+	else
+		for mSet in correlate #[m for set in correlate for m in set]
+			m2Set = ntuple(i->mSet,length(eSet))
+			println("m2Set $(m2Set)")
+			
 			println("Correlating $correlate for $eSet")
-			M[mSet] = Dict{Symbol, Any}() #now M has Dict(s) for the correlated effects
+			M[m2Set] = Dict{Symbol, Any}() #now M has Dict(s) for the correlated effects
 			#M[mSet][:iVarStr] = M[mSet[1]][:iVarStr]
 			modelInformation[eSet][mSet] = CorrelatedMarkerTerm(mSet)
 		end
 	end
+
+	println("new M set: $(keys(M))")
 	
 	for mSet in keys(M)
 		if (isa(mSet,Symbol))
