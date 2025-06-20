@@ -413,7 +413,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
                     	   	delete!(M,d)
 				delete!(modelInformation[eSet],d)
                		end
-			beta = push!(beta,zeros(Float64,length(mSet),length(M[mSet][:data])))
+			beta = push!(beta,[zeros(Float64,length(mSet),length(M[mSet][:data])) for i in 1:length(eSet)])
 			println("size of BETA: $(size.(beta))")
 			###WEIGHTED SHOULD BE ADAAPTED HERE#################
 			M[mSet][:mpm]  = MatByMat.(tempM)
