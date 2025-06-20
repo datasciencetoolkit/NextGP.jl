@@ -370,6 +370,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 	println("new M set: $(keys(M))")
 	
 	for mSet in keys(M)
+		println("typeof $mSet: $(typeof(mSet))")
 		if isa(mSet,Tuple{Vararg{Symbol}})
 			println("mSet $mSet in TupleVarargSymbol")
 			posMcounter += 1
