@@ -362,13 +362,13 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 			if isa(keya,Tuple{Vararg{Tuple{Vararg{Symbol}}}})
 				if all(in.(keym,keya))
 					println("$keym is in $keya")
-					push!(correlate,keym)
+					push!(correlate,keya)
 				else nothing
 				end
 			elseif isa(keya,Tuple{Vararg{Symbol}})
 				if in(keym,keya)
 					println("$keym is in $keya")
-					push!(correlate,keym)
+					push!(correlate,keya)
 				else nothing
 				end
 			else nothing #later throw error coz in MT models it is always Tuple
@@ -384,9 +384,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 		println("No Correlated Marker effects")
 	else
 		for mSet in correlate #[m for set in correlate for m in set]
-			#m2Set = ntuple(i->mSet,length(eSet))
-			println("m2Set $(m2Set)")			
-			M[m2Set] = Dict{Symbol, Any}() #now M has Dict(s) for the correlated effects
+			M[mSet] = Dict{Symbol, Any}() #now M has Dict(s) for the correlated effects
 			#M[mSet][:iVarStr] = M[mSet[1]][:iVarStr]
 			modelInformation[eSet][mSet] = CorrelatedMarkerTerm(mSet)
 		end
