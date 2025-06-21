@@ -360,13 +360,13 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 		for (keya,valuea) in priorVCV
 			println("$keya")
 			if isa(keya,Tuple{Vararg{Tuple{Vararg{Symbol}}}})
-				if all(in.(keyz,keya))
+				if all(in.(keym,keya))
 					println("$keym is in $keya")
 					push!(correlate,keym)
 				else nothing
 				end
 			elseif isa(keya,Tuple{Vararg{Symbol}})
-				if in(keyz,keya)
+				if in(keym,keya)
 					println("$keym is in $keya")
 					push!(correlate,keym)
 				else nothing
