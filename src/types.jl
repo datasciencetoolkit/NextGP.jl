@@ -89,7 +89,7 @@ struct CorrelatedPedigreeTerm <: RandomGeneticEffect
 end
 
 struct CorrelatedMarkerTerm <: RandomMarkerEffect
-    correlated::Tuple{Vararg{Symbol}}
+    correlated::Union{Tuple{Vararg{Symbol}},Tuple{Vararg{Tuple{Vararg{Symbol}}}}}
 end
 
 """
