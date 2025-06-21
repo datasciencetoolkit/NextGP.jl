@@ -356,8 +356,8 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 	#correlate = hcat(filter!(!isempty, unique([[keya for (keya,valuea) in priorVCV if ((isa(keya,Tuple) || isa(valuea.v,Matrix{Float64})) && in(keyz,keya))] for keyz in keys(M)]))...)
 	for keym in keys(M)
 		for (keya,valuea) in priorVCV 
-			if ((isa(keya,Tuple) || isa(valuea.v,Matrix{Float64}) && all(in.(keyz,keya))))
-				println("$keyz is in $keya")
+			if ((isa(keya,Tuple) || isa(valuea.v,Matrix{Float64}) && all(in.(keym,keya))))
+				println("$keym is in $keya")
 			end
 		end
 		
