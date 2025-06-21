@@ -354,13 +354,24 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 	#correlate = hcat(filter!(!isempty, unique([[keya for (keya,valuea) in priorVCV if ((isa(keya,Tuple) || isa(valuea.v,Matrix{Float64})) && all(in.(keyz,keya)))] for keyz in keys(M)]))...)
 	#Alternative as the above gives strange error I cannot produce
 	#correlate = hcat(filter!(!isempty, unique([[keya for (keya,valuea) in priorVCV if ((isa(keya,Tuple) || isa(valuea.v,Matrix{Float64})) && in(keyz,keya))] for keyz in keys(M)]))...)
+	correlate = []
 	for keym in keys(M)
 		println("$keym")
 		for (keya,valuea) in priorVCV
 			println("$keya")
-			if (isa(keya,Tuple) && all(in.(keym,keya)))
-				println("$keym is in $keya")
-			else nothing #later throw error as key can be only tuple for MT models
+			if isa(keya,Tuple{Vararg{Tuple{Vararg{Symbol}}}})
+				if all(in.(keyz,keya))
+					println("$keym is in $keya")
+					push!(correlate,keym)
+				else nothing
+				end
+			elseif isa(keya,Tuple{Vararg{Symbol}})
+				if in(keyz,keya)
+					println("$keym is in $keya")
+					push!(correlate,keym)
+				else nothing
+				end
+			else nothing #later throw error coz in MT models it is always Tuple
 			end
 		end
 		
