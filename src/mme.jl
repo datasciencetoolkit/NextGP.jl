@@ -377,6 +377,8 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 		
 	end
 
+	correlate = unique(correlate)
+	
 	println("correlate $correlate")
 
 	#need to implement here data preparation w/o correlation
@@ -384,7 +386,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 		println("No Correlated Marker effects")
 	else
 		for mSet in correlate #[m for set in correlate for m in set]
-			M[mSet] = Dict{Symbol, Any}() #now M has Dict(s) for the correlated effects
+			M[mSet] = Dict{Any, Any}() #now M has Dict(s) for the correlated effects
 			#M[mSet][:iVarStr] = M[mSet[1]][:iVarStr]
 			modelInformation[eSet][mSet] = CorrelatedMarkerTerm(mSet)
 		end
