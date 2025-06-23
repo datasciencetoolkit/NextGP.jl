@@ -214,7 +214,7 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Ma
 			println("RHS: $RHS")
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus).*iVarE) .+ invB)
 			println("invLHS: $invLHS")
-			meanBETA = invLHS*RHS
+			meanBETA = vec(invLHS*RHS)
 			println("meanBeta $meanBETA")
 			
 			#sampledBeta = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
