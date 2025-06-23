@@ -357,18 +357,14 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 	#correlate = hcat(filter!(!isempty, unique([[keya for (keya,valuea) in priorVCV if ((isa(keya,Tuple) || isa(valuea.v,Matrix{Float64})) && in(keyz,keya))] for keyz in keys(M)]))...)
 	correlate = []
 	for keym in keys(M)
-		println("$keym")
 		for (keya,valuea) in priorVCV
-			println("$keya")
 			if isa(keya,Tuple{Vararg{Tuple{Vararg{Symbol}}}})
 				if all(in.(keym,keya))
-					println("$keym is in $keya")
 					push!(correlate,keya)
 				else nothing
 				end
 			elseif isa(keya,Tuple{Vararg{Symbol}})
 				if in(keym,keya)
-					println("$keym is in $keya")
 					push!(correlate,keya)
 				else nothing
 				end
@@ -398,10 +394,8 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 	for mSet in keys(M)
 		println("typeof $mSet: $(typeof(mSet))")
 		if isa(mSet,Symbol)
-			println("mSet $mSet is Symbol")
 			continue
 		elseif isa(mSet,Tuple{Vararg{Symbol}})
-			println("mSet $mSet is TupleVarargSymbol")
 			posMcounter += 1
 			M[mSet][:pos] = posMcounter
 			M[mSet][:levels] = first(getindex.(getindex.(Ref(M),mSet),:levels))
