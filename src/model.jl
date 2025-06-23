@@ -38,7 +38,7 @@ isacall(exp::Symbol) = false
 
 #multi-trait
 function getLHSTerms(f;pre=preserved)
-	modelLHSTerms = Dict()
+	modelLHSTerms = OrderedDict()
 	if isa(f.lhs,Symbol) 
 		modelLHSTerms[f.lhs] = ResponseTerm(f.lhs)
 	elseif isa(f.lhs,Expr)
@@ -51,7 +51,7 @@ function getLHSTerms(f;pre=preserved)
 end
 
 function getRHSTerms(f;pre=preserved) #there is nothing i call as "pre"? should be corrected. Also above...
-	modelRHSTerms = Dict()
+	modelRHSTerms = OrderedDict()
 	if isa(f.rhs,Expr)
 		for term in filter(!in(preserved), f.rhs.args)
 			!isacall(term) && isa(term,Int) ? modelRHSTerms[Symbol("Intercept$term")] = ConstantTerm(term) : nothing
