@@ -1,7 +1,7 @@
 module functions
 
 
-using Distributions, LinearAlgebra
+using Distributions, LinearAlgebra, DataStructures
 using StatsBase
 #using Printf
 #using CSV
