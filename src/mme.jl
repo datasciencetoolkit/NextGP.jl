@@ -449,7 +449,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 			
 		end
 
-		stBWGR!(M,mSet,priorVCV,beta)
+		mtBWGR!(M,mSet,priorVCV,beta)
 
 		#M[mSet][:iVarStr] = [] 
 	end
