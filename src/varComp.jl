@@ -63,6 +63,7 @@ function varCovE!(E,priorVCV)
 		#priorVCV[eSet].v is a temporary solution
 		nEComp > 1 ? E[eSet][:scale] = priorVCV[eSet].v .* (E[eSet][:df]-nEComp-1.0)  : E[eSet][:scale] = priorVCV[eSet].v * (E[eSet][:df]-2.0)/E[eSet][:df] #I make float and array of float														
         end
+	println("E SET: $E")
 #	if priorVCV[:e].v==0.0
 #		priorVCV[:e].v  = 0.0005
 #       		E[:scale]     = 0.0005
