@@ -212,7 +212,7 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Ma
 			#end
 			RHS = ((getindex(M[mSet].Mp,locus)*ycorr).*iVarE)
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus).*iVarE) .+ invB)
-			meanBETA::Array{Float64,1} = invLHS*RHS
+			meanBETA::Array{Float64,2} = invLHS*RHS
 			
 			#sampledBeta = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
 			#println("beta[M[mSet].pos][i]: $size((beta[M[mSet].pos][i]))")
