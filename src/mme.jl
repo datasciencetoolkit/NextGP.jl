@@ -412,24 +412,24 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 			maps = getindex.(getindex.(Ref(M),mSet),:map)
 			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[mSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
 			for d in mSet
-				println("deleting $d in $mSet")
+				#println("deleting $d in $mSet")
                     	   	delete!(M,d)
 				delete!(modelInformation[eSet],d)
                		end
 			beta = push!(beta,zeros(Float64,length(mSet),length(M[mSet][:data])))
-			println("size of BETA: $(size.(beta))")
+			#println("size of BETA: $(size.(beta))")
 			###WEIGHTED SHOULD BE ADAAPTED HERE#################
 			M[mSet][:mpm]  = MatByMat.(tempM)
 			M[mSet][:Mp]   = transpose.(tempM)
 			tempM = 0
 		elseif isa(mSet,Tuple{Vararg{Tuple{Vararg{Symbol}}}})
-			println("mSet $mSet is Tuple of Tuple")
+			#println("mSet $mSet is Tuple of Tuple")
 			m = Tuple(collect(Iterators.flatten((mSet))))
 			posMcounter += 1
 			M[mSet][:pos] = posMcounter
 			M[mSet][:levels] = first(getindex.(getindex.(Ref(M),m),:levels))
 			M[mSet][:dims] = first(getindex.(getindex.(Ref(M),m),:dims))
-			println("M[mSet][:dims] $(M[mSet][:dims])")
+			#println("M[mSet][:dims] $(M[mSet][:dims])")
 			tempM = hcat.(eachcol.(getindex.(getindex.(Ref(M), m),:data))...)	
 			M[mSet][:data] = tempM
 			maps = getindex.(getindex.(Ref(M),m),:map)
@@ -440,7 +440,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 				delete!(modelInformation[eSet],d)
                		end
 			beta = push!(beta,[zeros(Float64,length(mSet),length(M[mSet][:data])) for i in 1:length(eSet)])
-			println("size of BETA: $(size.(beta))")
+			#println("size of BETA: $(size.(beta))")
 			###WEIGHTED SHOULD BE ADAAPTED HERE#################
 			M[mSet][:mpm]  = MatByMat.(tempM)
 			M[mSet][:Mp]   = transpose.(tempM)
@@ -449,6 +449,8 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 		else throw(ArgumentError("Could not understand the type of $mSet in M"))
 			
 		end
+
+		println("keys(M): $(keys(M))")
 
 		mtBWGR!(M,mSet,priorVCV,beta)
 
