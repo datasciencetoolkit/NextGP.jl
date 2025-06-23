@@ -47,8 +47,13 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 				               		
         		#WRITE TO FILES
 			if iter in these2Keep
-				inOut.outMCMC(outPut,"b_$ySet",hcat(vcat(b...)...))
-				inOut.outMCMC(outPut,"varE_$ySet",hcat(varE[ySet]...))
+				if isa(ySet,Symbol)
+					inOut.outMCMC(outPut,"b_$ySet",hcat(vcat(b...)...))
+					inOut.outMCMC(outPut,"varE_$ySet",hcat(varE[ySet]...))
+				elseif isa(ySet,Tuple)
+					inOut.outMCMC(outPut,"b_"*join(ySet, "_"),hcat(vcat(b...)...))
+					inOut.outMCMC(outPut,"varE_"*join(ySet, "_"),hcat(varE[ySet]...))
+				end
 
 				[[inOut.outMCMC(outPut,"u$zSet$eSet",u[Z[zSet].pos]) for zSet in keys(Z) if (isa(zSet,Union{Symbol,Expr}) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
 				[[inOut.outMCMC(outPut,"u"*join([String.(zSet)...])*"$eSet",hcat(u[Z[zSet].pos]...)) for zSet in keys(Z) if (isa(zSet,Tuple) && in(zSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single-trait multiple comp
@@ -90,8 +95,14 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
                         	#end
 
 				for mSet in keys(M)
-					inOut.outMCMC(outPut,"var$(mSet)",hcat(reduce(hcat,varBeta[mSet])...))
-					inOut.outMCMC(outPut,"scale$(mSet)",hcat(reduce(hcat,M[mSet].scale)...))
+					if isa(mSet,Symbol)
+						inOut.outMCMC(outPut,"var$(mSet)",hcat(reduce(hcat,varBeta[mSet])...))
+						inOut.outMCMC(outPut,"scale$(mSet)",hcat(reduce(hcat,M[mSet].scale)...))
+					elseif isa(mSet,Tuple)
+						inOut.outMCMC(outPut,"var_"*join(mSet, "_"),hcat(reduce(hcat,varBeta[mSet])...))
+						inOut.outMCMC(outPut,"scale_"*join(mSet, "_"),hcat(reduce(hcat,M[mSet].scale)...))
+
+					end
 				end
 				
 			end #end output freq.
