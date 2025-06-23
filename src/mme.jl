@@ -612,6 +612,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 		println("model is a multi-trait model where measurements/observations are from the same individuals")
 		for eSet in keys(E)
 			MMEM!(M,beta,varBeta,delta,posMcounter,eSet,E,priorVCV,modelInformation,summaryStat)
+			varCovM!(M,priorVCV)
 		end
 	elseif !isequal(length(collect(keys(E))),1) && all(typeof.(collect(keys(E))) .<: Symbol)
 		for eSet in keys(E)
