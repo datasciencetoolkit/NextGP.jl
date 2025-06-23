@@ -434,7 +434,7 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 			M[mSet][:data] = tempM
 			maps = getindex.(getindex.(Ref(M),m),:map)
 			(length(maps)==0 || all( ==(maps[1]), maps)) == true ? M[mSet][:map] = first(maps) : error("correlated marker sets must have the same map file!")
-			for d in mSet #[m for set in correlate for m in set]
+			for [d for d in mSet] #d in mSet
 				println("deleting $d in $mSet")
                     	   	delete!(M,d)
 				delete!(modelInformation[eSet],d)
