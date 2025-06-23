@@ -192,9 +192,7 @@ end
 
 ##### MULTI-TRAIT BAYESPR###########
 function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Matrix{Float64},varE::Dict,varBeta::Dict,ySet::Tuple)
-	println("Dealing with $mSet in BayesPR function")
 	iVarE = inv(varE[ySet])
-	println("M[mSet].pos: $(M[mSet].pos)")
 	for (r,theseLoci) in enumerate(M[mSet].regionArray)
 		regionSize = length(theseLoci)
 		invB = inv(varBeta[mSet][r]) 
@@ -209,10 +207,7 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Ma
 			RHS = sum(((getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2)
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus).*iVarE) .+ invB)
 			meanBETA = vec(invLHS*RHS)			
-			#sampledBeta = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
-			#beta[M[mSet].pos][:,locus] .= rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
 			setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),:,locus)
-			
 			if isa(mSet,Tuple{Vararg{Symbol}})
 				ycorr .-= M[mSet].data[locus]*getindex(beta[M[mSet].pos],:,locus)
 			end
