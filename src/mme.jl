@@ -509,7 +509,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	
 	
 	varU = Dict{Any,Any}() #for storage
-	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
+	varBeta = Dict{Union{Symbol,Tuple{Vararg{Symbol}},Tuple{Vararg{Tuple{Vararg{Symbol}}}}},Any}()
 	varE = Dict{Union{Symbol,Tuple{Vararg{Symbol}}},Any}()
 
 	######## 
