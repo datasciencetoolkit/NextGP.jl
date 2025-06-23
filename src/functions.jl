@@ -200,10 +200,6 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Ma
 		invB = inv(varBeta[mSet][r]) 
 		for locus in theseLoci::UnitRange{Int64}
 			if isa(mSet,Tuple{Vararg{Symbol}})
-				println("size y: $(size(ycorr))")
-				println("size M[mSet].data[locus]: $(size(M[mSet].data[locus]))")
-				println("size getindex(beta[M[mSet].pos],:,locus): $(size(getindex(beta[M[mSet].pos],:,locus)))")
-				println("getindex(beta[M[mSet].pos],:,locus) $(getindex(beta[M[mSet].pos],:,locus))")
 				ycorr .+= M[mSet].data[locus]*getindex(beta[M[mSet].pos],:,locus)
 			end
 			#for i in 1:length(ySet)
@@ -213,10 +209,9 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Ma
 			RHS = sum(((getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2)
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus).*iVarE) .+ invB)
 			meanBETA = vec(invLHS*RHS)			
-			sampledBeta = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
-			println("sampled beta: $sampledBeta")
-			beta[M[mSet].pos][:,locus] .= rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
-			#setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
+			#sampledBeta = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
+			#beta[M[mSet].pos][:,locus] .= rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
+			setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),:,locus)
 			
 			if isa(mSet,Tuple{Vararg{Symbol}})
 				ycorr .-= M[mSet].data[locus]*getindex(beta[M[mSet].pos],:,locus)
