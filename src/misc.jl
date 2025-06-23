@@ -223,6 +223,7 @@ folderHandler = function(outFolder)
 end
 
 myUnzip(d::Dict) = Dict(p.first => (;p.second...) for p in d)
+myUnzip(d::OrderedDict) = OrderedDict(p.first => (;p.second...) for p in d)
 myUnzip(d) = d
 
 """
