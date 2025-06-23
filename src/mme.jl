@@ -684,7 +684,8 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	[[inOut.outMCMC(outPut,"beta$mSet$eSet",[M[mSet][:levels]]) for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait
 	[[[inOut.outMCMC(outPut,"beta$m$eSet",[M[mSet][:levels]]) for m in mSet] for mSet in keys(M) if (isa(mSet,Tuple) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait multi comp
         println("ESET is: $([eSet for eSet in keys(E)])")
-	[[[inOut.outMCMC(outPut,"beta$m$eSet",beta[M[mSet][:pos]][[p],:]) for (p,m) in enumerate(mSet)] for mSet in keys(M) if (isa(mSet,Tuple{Vararg{Symbol}}))] for eSet in keys(E) if isa(eSet,Tuple)] #multi-trait only one correlated comp (:M1,M1) or (:M1,:M2...) but not ((:M1,:M2) and (:M3,:M4))	
+	#[[[inOut.outMCMC(outPut,"beta$m$eSet",beta[M[mSet][:pos]][[p],:]) for (p,m) in enumerate(mSet)] for mSet in keys(M) if (isa(mSet,Tuple{Vararg{Symbol}}))] for eSet in keys(E) if isa(eSet,Tuple)] #multi-trait only one correlated comp (:M1,M1) or (:M1,:M2...) but not ((:M1,:M2) and (:M3,:M4))	
+	[[[println("p $p and m $m") for (p,m) in enumerate(mSet)] for mSet in keys(M) if (isa(mSet,Tuple{Vararg{Symbol}}))] for eSet in keys(E) if isa(eSet,Tuple)] #multi-trait only one correlated comp (:M1,M1) or (:M1,:M2...) but not ((:M1,:M2) and (:M3,:M4))	
 
 	#delta
 	[[inOut.outMCMC(outPut,"delta$mSet$eSet",[M[mSet][:levels]]) for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait
