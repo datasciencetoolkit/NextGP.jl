@@ -204,8 +204,10 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 			#	println("ADDING TO trait $i")
 			#	ycorr[:,i] .+= M[mSet].data[locus]*hcat(getindex(beta[M[mSet].pos][i],:,locus)...)
 			#end
-			#RHS = vec(sum(((getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=1))
+			#RHS = (getindex(M[mSet].Mp,locus)*iVarE*ycorr)
+			println("RHS explicit: $RHS")
 			RHS = sum(((getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2)
+			println("RHS implicit: $RHS")
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus).*iVarE) .+ invB)
 			meanBETA = vec(invLHS*RHS)			
 			setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),:,locus)
