@@ -76,10 +76,10 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 	#I am assuming different variables names for each model. y1 = a1 + b1 +... and y2 = a2 + b2 +....
 	#Do I need OrderedDict anywhere for Tuple() related matrix for E
 	modelInformation = Dict{Any,Any}()
-	X = Dict{Any,Any}()
-	Z = Dict{Any,Any}()
-	M = Dict{Any,Any}()
-	E = Dict{Any,Any}()
+	X = OrderedDict{Any,Any}()
+	Z = OrderedDict{Any,Any}()
+	M = OrderedDict{Any,Any}()
+	E = OrderedDict{Any,Any}()
 	
 	if length(f) == 1 #both traits have the same model terms
 		modelRHSTerms = getRHSTerms(f[1])
