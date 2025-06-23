@@ -19,7 +19,7 @@ export sampleZ!
 
 ### NEW, Wang's trick
 
-function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,iVarE)
+function sampleb!(xSet::Union{Symbol,Tuple},X::OrderedDict,b::Vector,ycorr::Vector,iVarE)
 	#iVarE = inv(varE)
 	bVec = deepcopy(b[X[xSet].pos])
 	Yi = (X[xSet].Xp*ycorr).*iVarE #computation of X'ycorr*iVarE for ALL  rhsb
@@ -35,7 +35,7 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,iVar
 	return bVec
 end
 
-function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVarE)
+function sampleb!(xSet::Union{Symbol,Tuple},X::OrderedDict,b::Vector,ycorr::Matrix,iVarE)
 	bVec = deepcopy(b[X[xSet].pos])
 	for j in 1:X[xSet].nCol
 		rhsj0 = []
@@ -53,7 +53,7 @@ function sampleb!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,iVar
 end
 
 # NEW with D and with Wang's Trick (ySet::Symbol)
-function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE::Dict,ySet::Symbol)
+function sampleX!(xSet::Union{Symbol,Tuple},X::OrderedDict,b::Vector,ycorr::Vector,varE::Dict,ySet::Symbol)
 	iVarE = inv(varE[ySet])
 	if X[xSet].nCol==1
 		ycorr    .+= X[xSet].data .* b[X[xSet].pos]
@@ -70,7 +70,7 @@ function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Vector,varE
 end
 
 # NEW with D and with Wang's Trick (ySet::Tuple)
-function sampleX!(xSet::Union{Symbol,Tuple},X::Dict,b::Vector,ycorr::Matrix,varE::Dict,ySet::Tuple)
+function sampleX!(xSet::Union{Symbol,Tuple},X::OrderedDict,b::Vector,ycorr::Matrix,varE::Dict,ySet::Tuple)
 	iVarE = inv(varE[ySet])
 	for i in 1:X[xSet].nCol
 		ycorr .+= X[xSet].data[i] .* b[X[xSet].pos][i]
@@ -84,7 +84,7 @@ end
 ## Single-trait
 #sample random effects
 #Single U, D, no-correlation
-function sampleU(zSet::Union{Expr,Symbol},Z::Dict,iVarE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
+function sampleU(zSet::Union{Expr,Symbol},Z::OrderedDict,iVarE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
 	iVarU = 1/varU[zSet]
 	Yi = Z[zSet].Zp*ycorr*iVarE #computation of Z'*D^-1*ycorr*iVarE for ALL  rhsU
@@ -101,7 +101,7 @@ function sampleU(zSet::Union{Expr,Symbol},Z::Dict,iVarE::Float64,varU::Dict,u::V
 end
 
 #Multiple U correlated, no D
-function sampleU(zSet::Tuple,Z::Dict,iVarE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
+function sampleU(zSet::Tuple,Z::OrderedDict,iVarE::Float64,varU::Dict,u::Vector,ycorr::Vector{Float64})
 	uVec = deepcopy(u[Z[zSet].pos])
 	nCol = size(uVec,2)
 	iVarU = inv(varU[zSet])
@@ -117,7 +117,7 @@ function sampleU(zSet::Tuple,Z::Dict,iVarE::Float64,varU::Dict,u::Vector,ycorr::
 end
 
 #Single U Main with D
-function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Dict,ySet::Symbol,varU::Dict)
+function sampleZ!(zSet::Union{Expr,Symbol},Z::OrderedDict,u::Vector,ycorr::Vector{Float64},varE::Dict,ySet::Symbol,varU::Dict)
         #for each random effect
 	iVarE = inv(varE[ySet])
 	ycorr .+= Z[zSet].data*u[Z[zSet].pos]'
@@ -127,7 +127,7 @@ function sampleZ!(zSet::Union{Expr,Symbol},Z::Dict,u::Vector,ycorr::Vector{Float
 end
 
 #Multiple U correlated, no D
-function sampleZ!(zSet::Tuple,Z::Dict,u::Vector,ycorr::Vector{Float64},varE::Dict,ySet::Symbol,varU::Dict)
+function sampleZ!(zSet::Tuple,Z::OrderedDict,u::Vector,ycorr::Vector{Float64},varE::Dict,ySet::Symbol,varU::Dict)
 	iVarE = inv(varE[ySet])
 	nCol = size(u[Z[zSet].pos],2)
 	for i in 1:nCol
@@ -146,7 +146,7 @@ end
 
 ##### Component-wise, seperated functions for symbol and tuple
 
-function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Symbol)
+function sampleBayesPR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Symbol)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -172,7 +172,7 @@ function sampleBayesPR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::V
 end
 	
 ##### Component-wise, seperated functions for symbol and tuple
-function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Symbol)
+function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Symbol)
 	iVarE = 1/varE[ySet]
 	for (r,theseLoci) in enumerate(M[mSet].regionArray)
 		regionSize = length(theseLoci)
@@ -191,7 +191,7 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 end
 
 ##### MULTI-TRAIT BAYESPR###########
-function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Matrix{Float64},varE::Dict,varBeta::Dict,ySet::Tuple)
+function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Matrix{Float64},varE::Dict,varBeta::Dict,ySet::Tuple)
 	iVarE = inv(varE[ySet])
 	for (r,theseLoci) in enumerate(M[mSet].regionArray)
 		regionSize = length(theseLoci)
@@ -221,7 +221,7 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Ma
 	end
 end
 
-function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -265,7 +265,7 @@ function sampleBayesB!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	#println("scale after: $(M[mSet].scale)")
 end
 
-function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesC!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -310,7 +310,7 @@ function sampleBayesC!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	#println("scale after: $(M[mSet].scale)")
 end
 
-function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local meanBeta::Float64
 	nVarClass = length(M[mSet].vClass)
@@ -367,7 +367,7 @@ function sampleBayesR!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 	#println("scale after: $(M[mSet].scale)")
 end
 
-function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesRCπ!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local meanBeta::Float64
 	nAnnot    = nVarCov = M[mSet].nVarCov
@@ -442,7 +442,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr:
 	#println("scale after: $(M[mSet].scale)")
 end
 
-function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesRCplus!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local meanBeta::Float64
 	nAnnot    = nVarCov = M[mSet].nVarCov
@@ -505,7 +505,7 @@ function sampleBayesRCplus!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycor
 	#println("scale after: $(M[mSet].scale)")
 end
 
-function sampleBayesLV!(mSet::Symbol,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesLV!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
