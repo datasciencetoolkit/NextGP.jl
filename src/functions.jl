@@ -619,6 +619,8 @@ end
 #Sample residual variance
 function sampleVarE!(eSet::Tuple,E,varE,yCorVec,nRecords)
 	Se = yCorVec'yCorVec
+	println("eSet in sampleVarE: $eSet")
+	println("eSet in sampleVarE: $(E[eSet])")
 	varE[eSet] = rand(InverseWishart(E[eSet].df + nRecords, convert(Array,Symmetric(E[eSet].scale + Se))))
 end
 					
