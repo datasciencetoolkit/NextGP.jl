@@ -210,7 +210,7 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Ma
 			#	println("ADDING TO trait $i")
 			#	ycorr[:,i] .+= M[mSet].data[locus]*hcat(getindex(beta[M[mSet].pos][i],:,locus)...)
 			#end
-			RHS = sum(((getindex(M[mSet].Mp,locus)*ycorr).*iVarE),2)
+			RHS = sum(((getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2)
 			println("RHS: $RHS")
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus).*iVarE) .+ invB)
 			println("invLHS: $invLHS")
