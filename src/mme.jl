@@ -517,10 +517,6 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	end
 	varCovE!(E,priorVCV)
 
-	println("E $E")
-	println("modelInformation $modelInformation")
-	#println("varE $varE")
-
 	###################################
 	
 	
@@ -732,11 +728,21 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 
 	
 	##########
+
+	println("typeof(M): $(typeof(M))")
+	println("typeof(E): $(typeof(E))")
+	println("M: $M")
+	println("E: $E")
 	
 	X  = myUnzip(X)
 	Z  = myUnzip(Z)
 	M  = myUnzip(M)
 	E  = myUnzip(E) #(;E...)
+
+	println("typeof(M): $(typeof(M))")
+	println("typeof(E): $(typeof(E))")
+	println("M: $M")
+	println("E: $E")
 	
 	return modelInformation,ycorr, nData, E, varE, X, b, Z, u, varU, M,  beta, varBeta, delta
 	
