@@ -211,16 +211,12 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Ma
 			#	ycorr[:,i] .+= M[mSet].data[locus]*hcat(getindex(beta[M[mSet].pos][i],:,locus)...)
 			#end
 			RHS = sum(((getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2)
-			println("RHS: $RHS")
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus).*iVarE) .+ invB)
-			println("invLHS: $invLHS")
-			meanBETA = vec(invLHS*RHS)
-			println("meanBeta $meanBETA")
-			
-			#sampledBeta = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
-			#println("beta[M[mSet].pos][i]: $size((beta[M[mSet].pos][i]))")
-			
-			beta[M[mSet].pos][:,locus] .= setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
+			meanBETA = vec(invLHS*RHS)			
+			sampledBeta = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
+			println("sampled beta: $sampledBeta")
+			beta[M[mSet].pos][:,locus] .= rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
+			#setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
 			
 			if isa(mSet,Tuple{Vararg{Symbol}})
 				ycorr .-= M[mSet].data[locus]*getindex(beta[M[mSet].pos],:,locus)
