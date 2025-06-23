@@ -26,6 +26,6 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 			end
 			M[mSet][:nVarCov] = length(theseRegions)
 			M[mSet][:scale]   = []
-    end
-  end
+		end
+	end
 end
