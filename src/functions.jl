@@ -198,28 +198,19 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 		invB = inv(varBeta[mSet][r]) 
 		for locus in theseLoci::UnitRange{Int64}
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
-				#println("size(M[mSet].data[locus]): $(size(M[mSet].data[locus]))")
-				#println("size(getindex(beta[M[mSet].pos],:,locus)) $(size(getindex(beta[M[mSet].pos],:,locus)))")
-				#println("size(M[mSet].data[locus]*getindex(beta[M[mSet].pos],:,locus)) $size((M[mSet].data[locus]*getindex(beta[M[mSet].pos],:,locus)))")
-				println("getindex(beta[M[mSet].pos],:,locus): $(getindex(beta[M[mSet].pos],:,locus))")
-				println("getindex(beta[M[mSet].pos],:,locus): $(getindex(beta[M[mSet].pos],:,[locus]))")
-				ycorr .+= M[mSet].data[locus]*getindex(beta[M[mSet].pos],:,locus)
+				for i in 1:length(ySet)
+					ycorr[:,i] .+= M[mSet].data[locus][:,i]*getindex(beta[M[mSet].pos][i],i,locus)
+				end
 			end
-			#for i in 1:length(ySet)
-			#	println("ADDING TO trait $i")
-			#	ycorr[:,i] .+= M[mSet].data[locus]*hcat(getindex(beta[M[mSet].pos][i],:,locus)...)
-			#end
 			RHS = sum(((getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2)
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus).*iVarE) .+ invB)
 			meanBETA = vec(invLHS*RHS)			
 			setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),:,locus)
 			if isa(mSet,Tuple{Vararg{Symbol}})
-				ycorr .-= M[mSet].data[locus]*getindex(beta[M[mSet].pos],:,locus)
+				for i in 1:length(ySet)
+					ycorr[:,i] .-= M[mSet].data[locus][:,i]*getindex(beta[M[mSet].pos][i],i,locus)
+				end
 			end
-			#for i in 1:length(ySet)
-			#	println("DELETING FROM trait $i")
-			#	ycorr[:,i] .-= M[mSet].data[locus]*hcat(getindex(beta[M[mSet].pos][i],:,locus)...)
-			#end
 		end
 		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize)
 	end
