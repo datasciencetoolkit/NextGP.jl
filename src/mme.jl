@@ -728,18 +728,12 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 
 	
 	##########
-
-	println("typeof(M): $(typeof(M))")
-	println("typeof(E): $(typeof(E))")
 	
 	X  = myUnzip(X)
 	Z  = myUnzip(Z)
 	M  = myUnzip(M)
 	E  = myUnzip(E) #(;E...)
 
-	println("typeof(M): $(typeof(M))")
-	println("typeof(E): $(typeof(E))")
-	
 	return modelInformation,ycorr, nData, E, varE, X, b, Z, u, varU, M,  beta, varBeta, delta
 	
 end
