@@ -197,7 +197,7 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 		regionSize = length(theseLoci)
 		invB = inv(varBeta[mSet][r]) 
 		for locus in theseLoci::UnitRange{Int64}
-			if isa(mSet,Tuple{Vararg{Symbol}})
+			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
 				ycorr .+= M[mSet].data[locus]*getindex(beta[M[mSet].pos],:,locus)
 			end
 			#for i in 1:length(ySet)
@@ -619,8 +619,6 @@ end
 #Sample residual variance
 function sampleVarE!(eSet::Tuple,E,varE,yCorVec,nRecords)
 	Se = yCorVec'yCorVec
-	println("eSet in sampleVarE: $eSet")
-	println("eSet in sampleVarE: $(E[eSet])")
 	varE[eSet] = rand(InverseWishart(E[eSet].df + nRecords, convert(Array,Symmetric(E[eSet].scale + Se))))
 end
 					
