@@ -191,19 +191,29 @@ function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Ve
 end
 
 ##### MULTI-TRAIT BAYESPR###########
-function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Tuple)
-	iVarE = 1/varE[ySet]
+function sampleBayesPR!(mSet::Tuple,M::Dict,beta::Vector,delta::Vector,ycorr::Matrix{Float64},varE::Dict,varBeta::Dict,ySet::Tuple)
+	println("Dealing with $mSet in BayesPR function")
+	iVarE = inv(varE[ySet])
 	for (r,theseLoci) in enumerate(M[mSet].regionArray)
 		regionSize = length(theseLoci)
 		invB = inv(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
-			ycorr .+= M[mSet].data[locus]*hcat(getindex(beta[M[mSet].pos],:,locus)...)
+			for i in 1:length(ySet)
+				println("ADDING TO trait $i")
+				ycorr[:,i] .+= M[mSet].data[locus]*hcat(getindex(beta[M[mSet].pos],:,locus)...)
+			end
 			RHS = ((getindex(M[mSet].Mp,locus)*ycorr).*iVarE)
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus).*iVarE) .+ invB)
 			meanBETA::Array{Float64,1} = invLHS*RHS
-			beta[M[mSet].pos][:,locus] .= rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
+			sampledBeta = rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS))))
+			println("beta[M[mSet].pos][i]: $size((beta[M[mSet].pos][i]))")
+			
+			#beta[M[mSet].pos][:,locus] .= 
 			#setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),locus)
-			ycorr .-= M[mSet].data[locus]*hcat(getindex(beta[M[mSet].pos],:,locus)...)	
+			for i in 1:length(ySet)
+				println("DELETING FROM trait $i")
+				ycorr[:,i] .-= M[mSet].data[locus]*hcat(getindex(beta[M[mSet].pos],:,locus)...)
+			end
 		end
 		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize)
 	end
