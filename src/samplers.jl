@@ -32,7 +32,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 		#sample residual variance
 		for (ySet,yModel) in modelInformation
 			#sample error variance all at once!!!
-			#sampleVarE!(ySet,E,varE,ycorr,nData)
+			sampleVarE!(ySet,E,varE,ycorr,nData)
 			
 			#sample fixed effects
 			isempty(X) ? nothing : [sampleX!(xSet,X,b,ycorr,varE,ySet) for xSet in keys(yModel) if isa(yModel[xSet],FixedEffect)] 
