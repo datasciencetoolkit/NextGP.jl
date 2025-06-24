@@ -664,7 +664,7 @@ function sampleScaleDFofVar(varVec;abcde=[0.01,0,01,0.01,0.01,0.01])
 	iter=0	
 	while true
 		iter+=1
-		println(iter)
+		#println(iter)
 		global alphaHat = invdigamma((-logAHat+cHat*(log(d+n*alpha)-C))/(bHat))
 		if abs(alphaHat - alpha) >= 10e-8
 			alpha = alphaHat
