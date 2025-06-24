@@ -199,8 +199,6 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 		for locus in theseLoci::UnitRange{Int64}
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
 				for i in 1:length(ySet)
-					println("size(M[mSet].data[locus][:,i]) $(M[mSet].data[locus][:,i])")
-					println("getindex(beta[M[mSet].pos],i,locus) $(getindex(beta[M[mSet].pos],i,locus))")
 					ycorr[:,i] .+= M[mSet].data[locus][:,i]*getindex(beta[M[mSet].pos],i,locus)
 				end
 			end
