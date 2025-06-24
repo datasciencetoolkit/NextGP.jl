@@ -170,11 +170,10 @@ function sampleBayesPR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,y
 	#M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df,varBeta[mSet],M[mSet].nVarCov), 1) : nothing
 	println("length(varBeta[mSet]): $(length(varBeta[mSet]))")
 	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
-		println("estimating DF and SCALE")
 		dfEst,scaleEst = sampleScaleDFofVar(varBeta[mSet])
 		setindex!(M[mSet].scale, scaleEst, 1)
+		setindex!(M[mSet].df, dfEst, 1)
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
-		println("Cannot estimate hyperparameters for this model")
 	else println("What is WRONG???")
 	end
 	#println("scale after: $(M[mSet].scale)")
