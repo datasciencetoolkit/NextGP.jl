@@ -639,5 +639,33 @@ function sampleScaleOfVar(df,var,k)
 	#println("df: $df 1/var: $(1.0./var) lengthVar: $(length(var))")
 	return rand(Gamma(0.5*df*length(var)+1,1/(1+0.5*df*sum(1.0./var))))
 end
+
+function sampleScaleDFofVar(varVec;abcde=[0.01,0,01,0.01,0.01,0.01])
+	a,b,c,d,e = abcde
+	n = length(varVec)
+	mu = mean(varVec)
+	v = var(varVec)
+	alpha = ((mu^2)/v)+2
+	eHat = e+sum(1.0 ./ varVec)
+	logAHat = log(a) + sum(log.(varVec))
+	bHat = b + n
+	cHat = c + n
+	C = log(eHat)
+	iter=0	
+	while true
+		iter+=1
+		println(iter)
+		global alphaHat = invdigamma((-logAHat+cHat*(log(d+n*alpha)-C))/(bHat))
+		if abs(alphaHat - alpha) >= 10e-8
+			alpha = alphaHat
+		else
+			break
+		end
+	end
+	println(alphaHat," \n",alphaHat)
+	dHat = d + n*alphaHat
+	betaHat = dHat/eHat
+	return alphaHat,betaHat
+end
 							
 end
