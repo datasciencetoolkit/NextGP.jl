@@ -165,9 +165,6 @@ function sampleBayesPR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,y
 		end
 		@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],theseLoci),regionSize)
 	end
-	#println("scale before: $(M[mSet].scale)")
-	#println(M[mSet].df," ", varBeta[mSet]," ", length(M[mSet].mpm))
-	#M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df,varBeta[mSet],M[mSet].nVarCov), 1) : nothing
 	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
 		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
 		dfScaleInvChi = 2*dfIG
@@ -177,7 +174,6 @@ function sampleBayesPR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,y
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else println("What is WRONG???")
 	end
-	#println("scale after: $(M[mSet].scale)")
 end
 	
 ##### Component-wise, seperated functions for symbol and tuple
@@ -263,10 +259,15 @@ function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 		M[mSet].piHat .= [1.0-piIn piIn]
 		M[mSet].logPi .= log.([1.0-piIn piIn])
 	end
-	#println("scale before: $(M[mSet].scale)")
-	#println(M[mSet].df," ", varBeta[mSet]," ", length(M[mSet].mpm))
-	M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df,varBeta[mSet],M[mSet].nVarCov), 1) : nothing
-	#println("scale after: $(M[mSet].scale)")
+	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
+		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
+		dfScaleInvChi = 2*dfIG
+		scaleScaleInvChi = scaleIG/dfIG
+		setindex!(M[mSet].scale, scaleScaleInvChi, 1)
+		setindex!(M[mSet].df, dfScaleInvChi, 1)
+	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
+	else println("What is WRONG???")
+	end
 end
 
 function sampleBayesC!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
