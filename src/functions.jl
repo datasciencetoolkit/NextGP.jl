@@ -173,8 +173,8 @@ function sampleBayesPR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,y
 		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
 		dfScaleInvChi = 2*dfIG
 		scaleScaleInvChi = scaleIG/dfIG
-		setindex!(M[mSet].scale[1], scaleScaleInvChi, 1)
-		setindex!(M[mSet].df[1], dfScaleInvChi, 1)
+		setindex!(M[mSet].scale, scaleScaleInvChi, 1)
+		setindex!(M[mSet].df, dfScaleInvChi, 1)
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else println("What is WRONG???")
 	end
