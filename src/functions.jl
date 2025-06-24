@@ -1,6 +1,6 @@
 module functions
 
-
+using SpecialFunctions
 using Distributions, LinearAlgebra, DataStructures
 using StatsBase
 #using Printf
