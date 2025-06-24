@@ -97,7 +97,8 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 				for mSet in keys(M)
 					if isa(mSet,Symbol)
 						inOut.outMCMC(outPut,"var$(mSet)",hcat(reduce(hcat,varBeta[mSet])...))
-						inOut.outMCMC(outPut,"scale$(mSet)",hcat(reduce(hcat,M[mSet].scale)...))
+						inOut.outMCMC(outPut,"scale$(mSet)",hcat(reduce(hcat,M[mSet].scale)...)) #df and scale is only one value array, later all should be converted from arrays to Float in all package
+						inOut.outMCMC(outPut,"df$(mSet)",hcat(reduce(hcat,M[mSet].df)...))
 					elseif isa(mSet,Tuple)
 						inOut.outMCMC(outPut,"var_"*join(mSet, "_"),hcat(reduce(hcat,varBeta[mSet])...))
 						inOut.outMCMC(outPut,"scale_"*join(mSet, "_"),hcat(reduce(hcat,M[mSet].scale)...))
