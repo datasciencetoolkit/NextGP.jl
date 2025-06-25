@@ -221,7 +221,7 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 	end
 end
 
-function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict,ySet::Symbol)
+function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Symbol)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -272,7 +272,7 @@ end
 
 
 ##### MULTI-TRAIT BAYESB###########
-function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Matrix{Float64},varE::Float64,varBeta::Dict,ySet::Tuple)
+function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Matrix{Float64},varE::Dict,varBeta::Dict,ySet::Tuple)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -323,7 +323,7 @@ end
 
 
 
-function sampleBayesC!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesC!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Symbol)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -368,7 +368,7 @@ function sampleBayesC!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 	#println("scale after: $(M[mSet].scale)")
 end
 
-function sampleBayesR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Symbol)
 	local rhs::Float64
 	local meanBeta::Float64
 	nVarClass = length(M[mSet].vClass)
@@ -425,7 +425,7 @@ function sampleBayesR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 	#println("scale after: $(M[mSet].scale)")
 end
 
-function sampleBayesRCπ!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesRCπ!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Symbol)
 	local rhs::Float64
 	local meanBeta::Float64
 	nAnnot    = nVarCov = M[mSet].nVarCov
@@ -500,7 +500,7 @@ function sampleBayesRCπ!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector
 	#println("scale after: $(M[mSet].scale)")
 end
 
-function sampleBayesRCplus!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesRCplus!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Symbol)
 	local rhs::Float64
 	local meanBeta::Float64
 	nAnnot    = nVarCov = M[mSet].nVarCov
@@ -563,7 +563,7 @@ function sampleBayesRCplus!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vect
 	#println("scale after: $(M[mSet].scale)")
 end
 
-function sampleBayesLV!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesLV!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Symbol)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
