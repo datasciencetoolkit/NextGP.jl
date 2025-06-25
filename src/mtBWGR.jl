@@ -31,7 +31,7 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 			M[mSet][:gammaComb] = collect.(Iterators.product(fill(0:1, length(mSet))...) |> collect |> vec)
 			
 			for g in 1:length(M[mSet][:gammaComb])
-    				println("gamma $(M[mSet][:gammaComb][g]) has prior $(piDeltaPrior[g]) piDelta \n")
+    				println("gamma $(M[mSet][:gammaComb][g]) has prior $(priorVCV[mSet].pi[g]) piDelta \n")
 			end
 
 			deltaComb = Diagonal.(collect.(gammaComb)) #this is in matrix form [1 0 0;0 1 0;0 0 1]
