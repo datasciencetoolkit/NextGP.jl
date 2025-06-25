@@ -221,7 +221,7 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 	end
 end
 
-function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
+function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict,ySet::Symbol)
 	local rhs::Float64
 	local lhs::Float64
 	local meanBeta::Float64
@@ -269,6 +269,59 @@ function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 	else println("What is WRONG???")
 	end
 end
+
+
+##### MULTI-TRAIT BAYESB###########
+function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Matrix{Float64},varE::Float64,varBeta::Dict,ySet::Tuple)
+	local rhs::Float64
+	local lhs::Float64
+	local meanBeta::Float64
+	local lambda::Float64
+	nLoci = 0
+	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
+		iVarE = 1/varE
+		iVarBeta = 1/varBeta[mSet][r]
+		for locus in theseLoci::UnitRange{Int64}
+			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+			rrr = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #not rhs!
+			v0 = getindex(M[mSet].mpm,locus)*varE
+			v1 = (getindex(M[mSet].mpm,locus)^2)*varBeta[mSet][r] + v0
+        		logDelta0 = -0.5*(log(v0) + (rrr^2)/v0) + M[mSet].logPi[1]            # this locus not fitted
+			logDelta1 = -0.5*(log(v1) + (rrr^2)/v1) + M[mSet].logPi[2]             # this locus fitted       
+        		probDelta1 = 1.0/(1.0 + exp(logDelta0-logDelta1))
+			if rand() < probDelta1
+				setindex!(delta[M[mSet].pos],1,locus)
+				nLoci += 1
+				rhs = getindex(M[mSet].Mp,locus)*ycorr*iVarE + getindex(M[mSet].rhs,locus)
+				lhs = getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + iVarBeta
+				meanBeta = lhs\rhs
+				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
+				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
+				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),1)
+			else 
+				setindex!(beta[M[mSet].pos],0.0,locus)
+				setindex!(delta[M[mSet].pos],0,locus)
+				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df,[0.0],0)
+			end
+		end
+	end
+	if M[mSet].estPi == true 
+		piIn = samplePi(nLoci,M[mSet].dims[2]) #probability of in
+		M[mSet].piHat .= [1.0-piIn piIn]
+		M[mSet].logPi .= log.([1.0-piIn piIn])
+	end
+	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
+		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
+		dfScaleInvChi = 2*dfIG
+		scaleScaleInvChi = scaleIG/dfIG
+		setindex!(M[mSet].scale, scaleScaleInvChi, 1)
+		setindex!(M[mSet].df, dfScaleInvChi, 1)
+	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
+	else println("What is WRONG???")
+	end
+end
+
+
 
 function sampleBayesC!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Float64,varBeta::Dict)
 	local rhs::Float64
