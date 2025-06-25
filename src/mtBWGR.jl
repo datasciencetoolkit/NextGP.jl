@@ -34,7 +34,7 @@ function mtBWGR!(M,mSet,priorVCV,beta)
     				println("gamma $(M[mSet][:gammaComb][g]) has prior $(priorVCV[mSet].pi[g]) piDelta \n")
 			end
 
-			deltaComb = Diagonal.(collect.(gammaComb)) #this is in matrix form [1 0 0;0 1 0;0 0 1]
+			deltaComb = Diagonal.(collect.(M[mSet][:gammaComb])) #this is in matrix form [1 0 0;0 1 0;0 0 1]
 			
 			M[mSet][:method]      = "BayesB"
 			M[mSet][:funct]       = sampleBayesB!
