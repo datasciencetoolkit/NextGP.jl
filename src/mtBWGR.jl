@@ -27,7 +27,7 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 			M[mSet][:nVarCov] = length(theseRegions)
 			#M[mSet][:scale]   = []
 		elseif priorVCV[mSet].name == "BayesB"
-			M[mSet][:logPi]       = log.(priorVCV[mSet].pi)
+			#M[mSet][:logPi]       = log.(priorVCV[mSet].pi)
 			M[mSet][:gammaComb] = collect.(Iterators.product(fill(0:1, length(mSet))...) |> collect |> vec)
 			
 			for g in 1:length(M[mSet][:gammaComb])
