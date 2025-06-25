@@ -25,7 +25,7 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 				M[mSet][:regionArray] = theseRegions
 			end
 			M[mSet][:nVarCov] = length(theseRegions)
-			M[mSet][:scale]   = []
+			#M[mSet][:scale]   = []
 		elseif priorVCV[mSet].name == "BayesB"
 			M[mSet][:logPi]       = [log(1.0 .- priorVCV[mSet].pi) log(priorVCV[mSet].pi)] #not fitted, fitted
 			M[mSet][:method]      = "BayesB"
@@ -36,7 +36,7 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 			M[mSet][:estPi]       = priorVCV[mSet].estimatePi
 			M[mSet][:piHat]       = [1.0 .- priorVCV[mSet].pi priorVCV[mSet].pi] #not fitted, fitted
 			M[mSet][:vClass]      = [0 1] #2 variance class, one with own, one with null
-			M[mSet][:scale]   = []
+			#M[mSet][:scale]   = []
 		end
 	end
 end
