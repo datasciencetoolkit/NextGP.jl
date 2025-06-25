@@ -25,7 +25,7 @@ function stBWGR!(M,mSet,priorVCV,beta)
 				M[mSet][:regionArray] = theseRegions
 			end
 			M[mSet][:nVarCov] = length(theseRegions)
-			M[mSet][:scale]   = [] 
+			#M[mSet][:scale]   = [] 
 		elseif priorVCV[mSet].name == "BayesB"
 			M[mSet][:logPi]       = [log(1.0 .- priorVCV[mSet].pi) log(priorVCV[mSet].pi)] #not fitted, fitted
 #					M[mSet][:logPiIn]     = log(priorVCV[mSet].pi)
