@@ -228,6 +228,7 @@ function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 	local lambda::Float64
 	nLoci = 0
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
+		varE = varE[ySet]
 		iVarE = 1/varE[ySet]
 		iVarBeta = 1/varBeta[mSet][r]
 		for locus in theseLoci::UnitRange{Int64}
