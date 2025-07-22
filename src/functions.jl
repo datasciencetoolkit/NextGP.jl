@@ -246,11 +246,11 @@ function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 				meanBeta = lhs\rhs
 				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),1)
+				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],theseLoci),1)
 			else 
 				setindex!(beta[M[mSet].pos],0.0,locus)
 				setindex!(delta[M[mSet].pos],0,locus)
-				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df,[0.0],0)
+				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df[],[0.0],0)
 			end
 		end
 	end
@@ -356,7 +356,7 @@ function sampleBayesC!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 			end
 		end
 	end
-	@inbounds varBeta[mSet][1] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df,beta[M[mSet].pos],nLoci)
+	@inbounds varBeta[mSet][1] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df[],beta[M[mSet].pos],nLoci)
 	if M[mSet].estPi == true 
 		piIn = samplePi(nLoci,M[mSet].dims[2]) #probability of in
 		M[mSet].piHat .= [1.0-piIn piIn]
@@ -364,7 +364,7 @@ function sampleBayesC!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 	end
 	#println("scale before: $(M[mSet].scale)")
 	#println(M[mSet].df," ", varBeta[mSet]," ", length(M[mSet].mpm))
-	M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df,varBeta[mSet],M[mSet].nVarCov), 1) : nothing
+	M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df[],varBeta[mSet],M[mSet].nVarCov), 1) : nothing
 	#println("scale after: $(M[mSet].scale)")
 end
 
