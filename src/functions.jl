@@ -292,6 +292,9 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			end
 
 			tempGammaProb = zeros(length(M[mSet].gammaComb)) #to store prob
+
+			####delete later
+			expG = zeros(length(M[mSet].gammaComb))
 			
 			for thisGamma in 1:length(M[mSet].gammaComb)
                			C = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].mpm,locus)*M[mSet].deltaComb[thisGamma].*iVarE .+ iVarBeta
@@ -299,6 +302,10 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				rhsReg = vec(sum(((M[mSet][:deltaHat][locus]*getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2))
                 		nowProb = sqrt(det(invC)) * exp(rhsReg'*invC*rhsReg) * M[mSet].piHat[thisGamma]
                 		tempGammaProb[thisGamma] = nowProb
+
+				#delete later
+				expG[thisGamma] = rhsReg'*invC*rhsReg
+				
             		end
 			println("tempGammaProb: $(tempGammaProb)")
 			#println("argmax: $(argmax(tempGammaProb))")
