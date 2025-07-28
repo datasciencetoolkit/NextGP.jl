@@ -217,7 +217,7 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 				end
 			end
 		end
-		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale[1],M[mSet].df[1],getindex(beta[M[mSet].pos],:,theseLoci),regionSize)
+		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize)
 	end
 	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
 		#dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
@@ -330,7 +330,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				end
 			end
 		end
-		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),1)
+		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),1)
 	end
 	#println("storeCount: $storeCount")
 	if M[mSet].estPi == true 
@@ -442,7 +442,7 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			end
 		end
 	end
-	@inbounds varBeta[mSet][1] = sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],beta[M[mSet].pos],M[mSet].dims[2])
+	@inbounds varBeta[mSet][1] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df[],beta[M[mSet].pos],M[mSet].dims[2])
 	#println("storeCount: $storeCount")
 	if M[mSet].estPi == true 
 		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
