@@ -291,30 +291,19 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			end
 
 			tempGammaProb = zeros(length(M[mSet].gammaComb)) #to store prob
-			println("tempGammaProb: $tempGammaProb")
 			
 			for thisGamma in 1:length(M[mSet].gammaComb)
                			C = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].mpm,locus)*M[mSet].deltaComb[thisGamma] .+ (iVarBeta.*varE[ySet])
                 		invC = inv(C)
-				println("invC: $invC")
-				println("size getindex(M[mSet].Mp,locus): $(size(getindex(M[mSet].Mp,locus)))")
-				println("size: $(size(M[mSet][:deltaHat][locus]))")
-				println("size: $(size(ycorr))")
 				rhsReg = vec(sum((M[mSet][:deltaHat][locus]*getindex(M[mSet].Mp,locus)*ycorr),dims=2))
                 		#rhsReg = sum(M[mSet].deltaComb[thisGamma]*getindex(M[mSet].Mp,locus)*ycorr,1) #storeRegDelta[r] transpose is the same
-				println("rhsReg: $rhsReg")
                 		nowProb = sqrt(det(invC)) * exp(rhsReg'*invC*rhsReg) * M[mSet].piHat[thisGamma]
-				println("nowProb: $nowProb")
                 		tempGammaProb[thisGamma] = nowProb
             		end
 			prob4Region = tempGammaProb./sum(tempGammaProb)
 
 			myDelta = argmax(prob4Region)
             		M[mSet][:gammaHat][locus] = M[mSet].gammaComb[myDelta]
-			println("myDelta: $myDelta")
-			println("M[mSet].deltaComb[myDelta]: $(M[mSet].deltaComb[myDelta])")
-			println("typeof M[mSet][:deltaHat][locus]: $(M[mSet][:deltaHat][locus])")
-			println("typeof M[mSet].deltaComb[myDelta]: $(M[mSet].deltaComb[myDelta])")
             		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta]
             		storeCount[myDelta] += 1.0
 
@@ -332,6 +321,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		end
 		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),1)
 	end
+	println("storeCount: $storeCount")
 	if M[mSet].estPi == true 
 		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
 	end
@@ -680,10 +670,7 @@ function sampleVarBetaPR(scalem,dfm,whichLoci,regionSize)::Float64
 end
 
 function sampleVarCovBetaPR(scalem,dfm,whichLoci,regionSize)
-	println("scalem: $scalem")
-	println("whichLoci: $whichLoci")
 	Sb = whichLoci*whichLoci'
-	println("Sb: $Sb")
 	return rand(InverseWishart(dfm + regionSize, scalem + Sb))
 end
 				
