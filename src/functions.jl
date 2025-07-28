@@ -330,7 +330,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				end
 			end
 		end
-		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize)
+		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),1)
 	end
 	if M[mSet].estPi == true 
 		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
