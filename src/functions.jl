@@ -309,7 +309,6 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				println("M[mSet].piHat[thisGamma]: $(M[mSet].piHat[thisGamma])")
 				
             		end
-			println("expG: $expG")
 			println("tempGammaProb: $(tempGammaProb)")
 			#println("argmax: $(argmax(tempGammaProb))")
 			prob4Region = tempGammaProb./sum(tempGammaProb)
