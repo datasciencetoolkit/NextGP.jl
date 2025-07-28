@@ -217,7 +217,7 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 				end
 			end
 		end
-		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize)
+		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale[1],M[mSet].df[1],getindex(beta[M[mSet].pos],:,theseLoci),regionSize)
 	end
 	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
 		#dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
