@@ -281,8 +281,9 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	storeCount = zeros(length(M[mSet].gammaComb))
 	iVarE = inv(varE[ySet])
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
-		iVarBeta = inv(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
+
+			iVarBeta = inv(varBeta[mSet][locus])
 			
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
 				for i in 1:length(ySet)
@@ -299,7 +300,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
                 		nowProb = sqrt(det(invC)) * exp(rhsReg'*invC*rhsReg) * M[mSet].piHat[thisGamma]
                 		tempGammaProb[thisGamma] = nowProb
             		end
-			#println("tempGammaProb: $(tempGammaProb)")
+			println("tempGammaProb: $(tempGammaProb)")
 			#println("argmax: $(argmax(tempGammaProb))")
 			prob4Region = tempGammaProb./sum(tempGammaProb)
 
