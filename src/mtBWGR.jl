@@ -45,7 +45,7 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 			M[mSet][:nVarCov]     = length(theseRegions)
 			#gamma and delta estimates      
 			M[mSet][:gammaHat] = fill(M[mSet][:gammaComb][1],M[mSet][:dims][2])
-			M[mSet][:deltaHat]    = fill(ones(length(deltaComb)),M[mSet][:dims][2]) #priorVCV[mSet].pi ##this is fixed if estPi=false, or just a starting value if estPi=true
+			M[mSet][:deltaHat]    = fill(Matrix(Diagonal(ones(length(mSet)))),M[mSet][:dims][2]) #priorVCV[mSet].pi ##this is fixed if estPi=false, or just a starting value if estPi=true
 			#piDelta estimate store
 			M[mSet][:estPi]       = priorVCV[mSet].estimatePi
 			M[mSet][:piHat]       = fill(1/length(deltaComb),length(deltaComb))
