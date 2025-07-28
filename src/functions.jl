@@ -226,38 +226,51 @@ function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 	local lhs::Float64
 	local meanBeta::Float64
 	local lambda::Float64
-	nLoci = 0
+	storeCount = zeros(length(gammaComb))
 	iVarE = 1/varE[ySet]
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
-		iVarBeta = 1/varBeta[mSet][r]
+		iVarBeta = inv(varBeta[mSet][r])
 		for locus in theseLoci::UnitRange{Int64}
-			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-			rrr = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #not rhs!
-			v0 = getindex(M[mSet].mpm,locus)*varE[ySet]
-			v1 = (getindex(M[mSet].mpm,locus)^2)*varBeta[mSet][r] + v0
-        		logDelta0 = -0.5*(log(v0) + (rrr^2)/v0) + M[mSet].logPi[1]            # this locus not fitted
-			logDelta1 = -0.5*(log(v1) + (rrr^2)/v1) + M[mSet].logPi[2]             # this locus fitted       
-        		probDelta1 = 1.0/(1.0 + exp(logDelta0-logDelta1))
-			if rand() < probDelta1
-				setindex!(delta[M[mSet].pos],1,locus)
-				nLoci += 1
-				rhs = getindex(M[mSet].Mp,locus)*ycorr*iVarE + getindex(M[mSet].rhs,locus)
-				lhs = getindex(M[mSet].mpm,locus)*iVarE + getindex(M[mSet].lhs,locus) + iVarBeta
-				meanBeta = lhs\rhs
-				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
-				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],theseLoci),1)
-			else 
-				setindex!(beta[M[mSet].pos],0.0,locus)
-				setindex!(delta[M[mSet].pos],0,locus)
-				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df[],[0.0],0)
+			
+			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
+				for i in 1:length(ySet)
+					ycorr[:,i] .+= M[mSet].data[locus][:,i]*getindex(beta[M[mSet].pos],i,locus)
+				end
+			end
+
+			tempGammaProb = Array{Float64}(size(gammaComb,1)) #to store prob
+			
+			for thisGamma in 1:length(gammaComb)
+               			C = regDeltaComb[thisGamma]*getindex(M[mSet].mpm,locus)*regDeltaComb[thisGamma] .+ (invB.*varE[ySet])
+                		invC = inv(C)
+                		rhsReg = regDeltaComb[thisGamma]*getindex(M[mSet].Mp,locus)*ycorr #storeRegDelta[r] transpose is the same               
+                		nowProb = sqrt(det(invC)) * exp(rhsReg'*invC*rhsReg) * piDelta[thisGamma]
+                		tempGammaProb[thisGamma] = nowProb
+            		end
+			prob4Region = tempGammaProb./sum(tempGammaProb)
+
+			myDelta = indmax(prob4Region)
+            		storeGammaComb = gammaComb[myDelta]
+            		storeRegDelta[r] = regDeltaComb[myDelta]
+            		storeCount[myDelta] .+= 1.0
+
+			RHS = sum(((getindex(M[mSet].Mp,locus)*storeRegDelta[locus]*ycorr).*iVarE),dims=2)
+			invLHS::Array{Float64,2} = inv(storeRegDelta[locus]*(getindex(M[mSet].mpm,locus)*storeRegDelta[locus].*iVarE) .+ invB)
+			meanBETA = vec(invLHS*RHS)			
+			setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),:,locus)
+			
+
+			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
+				for i in 1:length(ySet)
+					ycorr[:,i] .+= M[mSet].data[locus][:,i]*getindex(beta[M[mSet].pos],i,locus)
+				end
 			end
 		end
+		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize)
 	end
 	if M[mSet].estPi == true 
-		piIn = samplePi(nLoci,M[mSet].dims[2]) #probability of in
-		M[mSet].piHat .= [1.0-piIn piIn]
-		M[mSet].logPi .= log.([1.0-piIn piIn])
+		piDelta .= rand(Dirichlet(storeCount.+1))
+		M[mSet].piHat .= piDelta
 	end
 	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
 		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
