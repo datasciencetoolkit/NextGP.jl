@@ -282,6 +282,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	iVarE = inv(varE[ySet])
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
 		iVarBeta = inv(varBeta[mSet][r])
+		println("iVarBeta: $iVarBeta")
 		for locus in theseLoci::UnitRange{Int64}
 			
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
