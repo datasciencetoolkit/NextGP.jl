@@ -228,13 +228,13 @@ function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 	local meanBeta::Float64
 	local lambda::Float64
 	nLoci = 0
+	iVarE = 1/varE[ySet]
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
-		iVarE = 1/varE[ySet]
 		iVarBeta = 1/varBeta[mSet][r]
 		for locus in theseLoci::UnitRange{Int64}
 			BLAS.axpy!(getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 			rrr = BLAS.dot(view(M[mSet].data,:,locus),ycorr) #not rhs!
-			v0 = getindex(M[mSet].mpm,locus)*varE
+			v0 = getindex(M[mSet].mpm,locus)*varE[ySet]
 			v1 = (getindex(M[mSet].mpm,locus)^2)*varBeta[mSet][r] + v0
         		logDelta0 = -0.5*(log(v0) + (rrr^2)/v0) + M[mSet].logPi[1]            # this locus not fitted
 			logDelta1 = -0.5*(log(v1) + (rrr^2)/v1) + M[mSet].logPi[2]             # this locus fitted       
