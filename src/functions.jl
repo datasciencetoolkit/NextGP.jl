@@ -306,7 +306,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
             		end
 			prob4Region = tempGammaProb./sum(tempGammaProb)
 
-			myDelta = indmax(prob4Region)
+			myDelta = argmax(prob4Region)
             		M[mSet][:gammaHat][locus] = M[mSet].gammaComb[myDelta]
             		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta]
             		storeCount[myDelta] .+= 1.0
