@@ -308,6 +308,8 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 
 			myDelta = argmax(prob4Region)
             		M[mSet][:gammaHat][locus] = M[mSet].gammaComb[myDelta]
+			println("myDelta: $myDelta")
+			println("M[mSet].deltaComb[myDelta]: $(M[mSet].deltaComb[myDelta])")
             		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta]
             		storeCount[myDelta] .+= 1.0
 
