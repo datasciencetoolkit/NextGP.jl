@@ -251,7 +251,7 @@ function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 			else 
 				setindex!(beta[M[mSet].pos],0.0,locus)
 				setindex!(delta[M[mSet].pos],0,locus)
-				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df,[0.0],0)
+				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df[],[0.0],0)
 			end
 		end
 	end
