@@ -35,6 +35,7 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 			end
 
 			deltaComb = Diagonal.(collect.(M[mSet][:gammaComb])) #this is in matrix form [1 0 0;0 1 0;0 0 1]
+			println("deltaComb: $deltaComb")
 			M[mSet][:deltaComb] = deltaComb
 			
 			M[mSet][:method]      = "BayesB"
