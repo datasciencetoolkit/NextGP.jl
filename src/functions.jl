@@ -299,24 +299,25 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
                			C = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].mpm,locus)*M[mSet].deltaComb[thisGamma].*iVarE .+ iVarBeta
                 		invC = inv(C)
 				rhsReg = vec(sum(((M[mSet][:deltaHat][locus]*getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2))
-                		nowProb = sqrt(det(invC)) * exp(rhsReg'*invC*rhsReg) * M[mSet].piHat[thisGamma]
-                		tempGammaProb[thisGamma] = nowProb
+                		
+				#nowProb = sqrt(det(invC)) * exp(rhsReg'*invC*rhsReg) * M[mSet].piHat[thisGamma]
+                		#tempGammaProb[thisGamma] = nowProb
 
+				logL = (-(0.5)*log*det(invC)) + (rhsReg'*invC*rhsReg) + log(M[mSet].piHat[thisGamma])
+				tempGammaProb[thisGamma] = exp(logL)
+				
 				#delete later
-				println("det(invC): $(det(invC))")
-				println("rhsReg: $rhsReg")
-				println("exp(rhsReg'*invC*rhsReg) $(exp(rhsReg'*invC*rhsReg))")
-				println("M[mSet].piHat[thisGamma]: $(M[mSet].piHat[thisGamma])")
+				#println("det(invC): $(det(invC))")
+				#println("rhsReg: $rhsReg")
+				#println("exp(rhsReg'*invC*rhsReg) $(exp(rhsReg'*invC*rhsReg))")
+				#println("M[mSet].piHat[thisGamma]: $(M[mSet].piHat[thisGamma])")
 				
             		end
 			println("tempGammaProb: $(tempGammaProb)")
-			#println("argmax: $(argmax(tempGammaProb))")
 			prob4Region = tempGammaProb./sum(tempGammaProb)
-
 			println("prob4Region: $prob4Region")
 
 			myDelta = rand(Categorical(prob4Region))
-			#myDelta = argmax(prob4Region)
 			
             		M[mSet][:gammaHat][locus] = M[mSet].gammaComb[myDelta]
             		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta]
