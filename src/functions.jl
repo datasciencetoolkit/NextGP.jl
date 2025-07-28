@@ -290,12 +290,12 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				end
 			end
 
-			tempGammaProb = Array{Float64}(size(gammaComb,1)) #to store prob
+			tempGammaProb = Array{Float64}(size(M[mSet].gammaComb,1)) #to store prob
 			
-			for thisGamma in 1:length(gammaComb)
-               			C = regDeltaComb[thisGamma]*getindex(M[mSet].mpm,locus)*regDeltaComb[thisGamma] .+ (invB.*varE[ySet])
+			for thisGamma in 1:length(M[mSet].gammaComb)
+               			C = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].mpm,locus)*M[mSet].deltaComb[thisGamma] .+ (invB.*varE[ySet])
                 		invC = inv(C)
-                		rhsReg = regDeltaComb[thisGamma]*getindex(M[mSet].Mp,locus)*ycorr #storeRegDelta[r] transpose is the same               
+                		rhsReg = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].Mp,locus)*ycorr #storeRegDelta[r] transpose is the same               
                 		nowProb = sqrt(det(invC)) * exp(rhsReg'*invC*rhsReg) * piDelta[thisGamma]
                 		tempGammaProb[thisGamma] = nowProb
             		end
@@ -318,11 +318,10 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				end
 			end
 		end
-		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize)
+		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize)
 	end
 	if M[mSet].estPi == true 
-		piDelta .= rand(Dirichlet(storeCount.+1))
-		M[mSet].piHat .= piDelta
+		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
 	end
 	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
 		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
