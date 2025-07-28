@@ -293,7 +293,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			tempGammaProb = zeros(size(M[mSet].gammaComb,1)) #to store prob
 			
 			for thisGamma in 1:length(M[mSet].gammaComb)
-               			C = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].mpm,locus)*M[mSet].deltaComb[thisGamma] .+ (invB.*varE[ySet])
+               			C = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].mpm,locus)*M[mSet].deltaComb[thisGamma] .+ (iVarBeta.*varE[ySet])
                 		invC = inv(C)
                 		rhsReg = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].Mp,locus)*ycorr #storeRegDelta[r] transpose is the same               
                 		nowProb = sqrt(det(invC)) * exp(rhsReg'*invC*rhsReg) * M[mSet].piHat[thisGamma]
@@ -307,7 +307,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
             		storeCount[myDelta] .+= 1.0
 
 			RHS = sum(((getindex(M[mSet].Mp,locus)*M[mSet][:deltaHat][locus]*ycorr).*iVarE),dims=2)
-			invLHS::Array{Float64,2} = inv(M[mSet][:deltaHat][locus]*(getindex(M[mSet].mpm,locus)*M[mSet][:deltaHat][locus].*iVarE) .+ invB)
+			invLHS::Array{Float64,2} = inv(M[mSet][:deltaHat][locus]*(getindex(M[mSet].mpm,locus)*M[mSet][:deltaHat][locus].*iVarE) .+ iVarBeta)
 			meanBETA = vec(invLHS*RHS)			
 			setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),:,locus)
 			
