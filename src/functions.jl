@@ -278,7 +278,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	local lhs::Float64
 	local meanBeta::Float64
 	local lambda::Float64
-	storeCount = zeros(length(gammaComb))
+	storeCount = zeros(length(M[mSet].gammaComb))
 	iVarE = 1/varE[ySet]
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
 		iVarBeta = inv(varBeta[mSet][r])
@@ -302,8 +302,8 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			prob4Region = tempGammaProb./sum(tempGammaProb)
 
 			myDelta = indmax(prob4Region)
-            		storeGammaComb = gammaComb[myDelta]
-            		storeRegDelta[r] = regDeltaComb[myDelta]
+            		storeGammaComb = M[mSet].gammaComb[myDelta]
+            		storeRegDelta[locus] = M[mSet].deltaComb[myDelta]
             		storeCount[myDelta] .+= 1.0
 
 			RHS = sum(((getindex(M[mSet].Mp,locus)*storeRegDelta[locus]*ycorr).*iVarE),dims=2)
