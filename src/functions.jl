@@ -290,7 +290,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				end
 			end
 
-			tempGammaProb = Array{Float64}(size(M[mSet].gammaComb,1)) #to store prob
+			tempGammaProb = zeros(size(M[mSet].gammaComb,1)) #to store prob
 			
 			for thisGamma in 1:length(M[mSet].gammaComb)
                			C = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].mpm,locus)*M[mSet].deltaComb[thisGamma] .+ (invB.*varE[ySet])
