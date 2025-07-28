@@ -42,13 +42,13 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 			theseRegions          = [r:r for r in 1:M[mSet][:dims][2]]
 			M[mSet][:regionArray] = theseRegions
 			M[mSet][:nVarCov]     = length(theseRegions)
-			#gamma estimates      
+			#gamma and delta estimates      
 			M[mSet][:gammaHat] = fill(M[mSet][:gammaComb][1],M[mSet][:dims][2])
+			M[mSet][:deltaHat]    = priorVCV[mSet].pi ##this is fixed if estPi=false, or just a starting value if estPi=true
 			#piDelta estimate store
 			M[mSet][:estPi]       = priorVCV[mSet].estimatePi
-			M[mSet][:piHat]       = priorVCV[mSet].pi ##this is fixed if estPi=false, or just a starting value if estPi=true
 			M[mSet][:vClass]      = [0 1] #2 variance class, one with own, one with null
-			#M[mSet][:scale]   = []
+			#M[mSet][:scale]      = []
 		end
 	end
 end
