@@ -297,6 +297,9 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
                			C = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].mpm,locus)*M[mSet].deltaComb[thisGamma] .+ (iVarBeta.*varE[ySet])
                 		invC = inv(C)
 				println("invC: $invC")
+				println("size getindex(M[mSet].Mp,locus): $(size(getindex(M[mSet].Mp,locus)))")
+				println("size: $(size(M[mSet][:deltaHat][locus]))")
+				println("size: $(size(ycorr))")
 				rhsReg = vec(sum(((getindex(M[mSet].Mp,locus)*M[mSet][:deltaHat][locus]*ycorr)),dims=2))
                 		#rhsReg = sum(M[mSet].deltaComb[thisGamma]*getindex(M[mSet].Mp,locus)*ycorr,1) #storeRegDelta[r] transpose is the same
 				println("rhsReg: $rhsReg")
