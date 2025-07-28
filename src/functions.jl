@@ -303,11 +303,8 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			#println("argmax: $(argmax(tempGammaProb))")
 			prob4Region = tempGammaProb./sum(tempGammaProb)
 
-			categoricalSampling = rand(Categorical(prob4Region))
-			println("categoricalSampling: $categoricalSampling")
-
-			myDelta = argmax(prob4Region)
-			println("myDelta: $myDelta")
+			myDelta = rand(Categorical(prob4Region))
+			#myDelta = argmax(prob4Region)
 			
             		M[mSet][:gammaHat][locus] = M[mSet].gammaComb[myDelta]
             		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta]
