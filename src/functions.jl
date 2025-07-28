@@ -304,7 +304,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
                 		#tempGammaProb[thisGamma] = nowProb
 
 				logL = (-(0.5)*log(det(invC))) + (rhsReg'*invC*rhsReg) + log(M[mSet].piHat[thisGamma])
-				tempGammaProb[thisGamma] = exp(logL)
+				tempGammaProb[thisGamma] = logL
 				
 				#delete later
 				#println("det(invC): $(det(invC))")
@@ -316,8 +316,8 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			println("tempGammaProb: $(tempGammaProb)")
 			prob4Region = tempGammaProb./sum(tempGammaProb)
 			println("prob4Region: $prob4Region")
-
 			myDelta = rand(Categorical(prob4Region))
+			#myDelta = rand(Categorical(prob4Region))
 			
             		M[mSet][:gammaHat][locus] = M[mSet].gammaComb[myDelta]
             		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta]
