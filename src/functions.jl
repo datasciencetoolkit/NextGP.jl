@@ -296,8 +296,11 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			for thisGamma in 1:length(M[mSet].gammaComb)
                			C = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].mpm,locus)*M[mSet].deltaComb[thisGamma] .+ (iVarBeta.*varE[ySet])
                 		invC = inv(C)
-                		rhsReg = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].Mp,locus)*ycorr #storeRegDelta[r] transpose is the same               
+				println("invC: $invC")
+                		rhsReg = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].Mp,locus)*ycorr #storeRegDelta[r] transpose is the same
+				println("rhsReg: $rhsReg")
                 		nowProb = sqrt(det(invC)) * exp(rhsReg'*invC*rhsReg) * M[mSet].piHat[thisGamma]
+				println("nowProb: $nowProb")
                 		tempGammaProb[thisGamma] = nowProb
             		end
 			prob4Region = tempGammaProb./sum(tempGammaProb)
