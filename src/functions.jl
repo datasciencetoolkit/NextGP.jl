@@ -318,7 +318,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
             		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta]
             		storeCount[myDelta] += 1.0
 
-			RHS = sum(((getindex(M[mSet].Mp,locus)*M[mSet][:deltaHat][locus]*ycorr).*iVarE),dims=2)
+			RHS = sum(((M[mSet][:deltaHat][locus]*getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2)
 			invLHS::Array{Float64,2} = inv(M[mSet][:deltaHat][locus]*(getindex(M[mSet].mpm,locus)*M[mSet][:deltaHat][locus].*iVarE) .+ iVarBeta)
 			meanBETA = vec(invLHS*RHS)			
 			setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),:,locus)
