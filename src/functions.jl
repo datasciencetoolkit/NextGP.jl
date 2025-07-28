@@ -394,7 +394,7 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
 		for locus in theseLoci::UnitRange{Int64}
 
-			iVarBeta = inv(varBeta[mSet][locus])
+			iVarBeta = inv(varBeta[mSet][1])
 			
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
 				for i in 1:length(ySet)
