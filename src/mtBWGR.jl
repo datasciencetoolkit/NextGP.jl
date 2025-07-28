@@ -51,6 +51,31 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 			M[mSet][:piHat]       = priorVCV[mSet].pi #add when not available
 			M[mSet][:vClass]      = [0 1] #2 variance class, one with own, one with null
 			#M[mSet][:scale]      = []
+		elseif priorVCV[mSet].name == "BayesC"
+			#M[mSet][:logPi]       = log.(priorVCV[mSet].pi)
+			M[mSet][:gammaComb] = collect.(Iterators.product(fill(0:1, length(mSet))...) |> collect |> vec)
+			
+			for g in 1:length(M[mSet][:gammaComb])
+    				println("gamma $(M[mSet][:gammaComb][g]) has prior $(priorVCV[mSet].pi[g]) piDelta \n")
+			end
+
+			deltaComb = Vector(Diagonal.(collect.(M[mSet][:gammaComb]))) #this is in matrix form [1 0 0;0 1 0;0 0 1]
+			println("deltaComb: $deltaComb")
+			M[mSet][:deltaComb] = deltaComb
+			
+			M[mSet][:method]      = "BayesC"
+			M[mSet][:funct]       = sampleBayesC!
+			theseRegions          = [r:r for r in 1:M[mSet][:dims][2]]
+			M[mSet][:regionArray] = theseRegions
+			M[mSet][:nVarCov]     = length(theseRegions)
+			#gamma and delta estimates      
+			M[mSet][:gammaHat] = fill(ones(length(mSet)),M[mSet][:dims][2])
+			M[mSet][:deltaHat]    = fill(Matrix(Diagonal(ones(length(mSet)))),M[mSet][:dims][2]) #priorVCV[mSet].pi ##this is fixed if estPi=false, or just a starting value if estPi=true
+			#piDelta estimate store
+			M[mSet][:estPi]       = priorVCV[mSet].estimatePi
+			M[mSet][:piHat]       = priorVCV[mSet].pi #add when not available
+			M[mSet][:vClass]      = [0 1] #2 variance class, one with own, one with null
+			#M[mSet][:scale]      = []
 		end
 	end
 end
