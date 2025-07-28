@@ -292,8 +292,6 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			end
 
 			tempGammaProb = zeros(length(M[mSet].gammaComb)) #to store prob
-
-			####delete later
 			
 			for thisGamma in 1:length(M[mSet].gammaComb)
                			C = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].mpm,locus)*M[mSet].deltaComb[thisGamma].*iVarE .+ iVarBeta
@@ -383,6 +381,72 @@ function sampleBayesC!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 	M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df[],varBeta[mSet],M[mSet].nVarCov), 1) : nothing
 	#println("scale after: $(M[mSet].scale)")
 end
+
+
+##### MULTI-TRAIT BAYESC###########
+function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Matrix{Float64},varE::Dict,varBeta::Dict,ySet::Tuple)
+	local rhs::Float64
+	local lhs::Float64
+	local meanBeta::Float64
+	local lambda::Float64
+	storeCount = zeros(length(M[mSet].gammaComb))
+	iVarE = inv(varE[ySet])
+	for (r,theseLoci) in enumerate(M[mSet].regionArray) #theseLoci is always as 1:1,2:2 for BayesB, so r=locus
+		for locus in theseLoci::UnitRange{Int64}
+
+			iVarBeta = inv(varBeta[mSet][locus])
+			
+			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
+				for i in 1:length(ySet)
+					ycorr[:,i] .+= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
+				end
+			end
+
+			tempGammaProb = zeros(length(M[mSet].gammaComb)) #to store prob
+			
+			for thisGamma in 1:length(M[mSet].gammaComb)
+               			C = M[mSet].deltaComb[thisGamma]*getindex(M[mSet].mpm,locus)*M[mSet].deltaComb[thisGamma].*iVarE .+ iVarBeta
+                		invC = inv(C)
+				rhsReg = vec(sum(((M[mSet][:deltaHat][locus]*getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2))
+				logL = -(0.5)*log(det(invC) + (rhsReg'*invC*rhsReg)) + log(M[mSet].piHat[thisGamma])
+				tempGammaProb[thisGamma] = exp(logL)
+            		end
+			prob4Region = tempGammaProb./sum(tempGammaProb)
+			myDelta = rand(Categorical(prob4Region))
+			
+            		M[mSet][:gammaHat][locus] = M[mSet].gammaComb[myDelta]
+            		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta]
+            		storeCount[myDelta] += 1.0
+
+			RHS = vec(sum(((M[mSet][:deltaHat][locus]*getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2))
+			invLHS::Array{Float64,2} = inv(M[mSet][:deltaHat][locus]*(getindex(M[mSet].mpm,locus)*M[mSet][:deltaHat][locus].*iVarE) .+ iVarBeta)
+			meanBETA = vec(invLHS*RHS)			
+			setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),:,locus)
+			
+
+			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
+				for i in 1:length(ySet)
+					ycorr[:,i] .-= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
+				end
+			end
+		end
+	end
+	@inbounds varBeta[mSet][1] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df[],beta[M[mSet].pos],M[mSet].dims[2])
+	#println("storeCount: $storeCount")
+	if M[mSet].estPi == true 
+		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
+	end
+	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
+		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
+		dfScaleInvChi = 2*dfIG
+		scaleScaleInvChi = scaleIG/dfIG
+		setindex!(M[mSet].scale, scaleScaleInvChi, 1)
+		setindex!(M[mSet].df, dfScaleInvChi, 1)
+	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
+	else nothing
+	end
+end
+
 
 function sampleBayesR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,ycorr::Vector{Float64},varE::Dict,varBeta::Dict,ySet::Symbol)
 	local rhs::Float64
