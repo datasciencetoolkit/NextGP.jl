@@ -310,6 +310,8 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
             		M[mSet][:gammaHat][locus] = M[mSet].gammaComb[myDelta]
 			println("myDelta: $myDelta")
 			println("M[mSet].deltaComb[myDelta]: $(M[mSet].deltaComb[myDelta])")
+			println("typeof M[mSet][:deltaHat][locus]: $(M[mSet][:deltaHat][locus])")
+			println("typeof M[mSet].deltaComb[myDelta]: $M[mSet].deltaComb[myDelta]")
             		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta]
             		storeCount[myDelta] .+= 1.0
 
