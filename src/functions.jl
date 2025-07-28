@@ -229,6 +229,7 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 		println("scaleEst: $(scaleEst)")
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else println("What is WRONG???")
+	end
 end
 
 
