@@ -304,6 +304,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
                 		tempGammaProb[thisGamma] = nowProb
 
 				#delete later
+				println("all: $([invC sqrt(det(invC)) exp(rhsReg'*invC*rhsReg) M[mSet].piHat[thisGamma]])")
 				expG[thisGamma] = rhsReg'*invC*rhsReg
 				
             		end
