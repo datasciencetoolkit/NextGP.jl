@@ -163,14 +163,14 @@ function sampleBayesPR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,y
 			setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 			BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
 		end
-		@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],theseLoci),regionSize)
+		@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),regionSize)
 	end
 	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
 		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
 		dfScaleInvChi = 2*dfIG
 		scaleScaleInvChi = scaleIG/dfIG
-		setindex!(M[mSet].scale, scaleScaleInvChi, 1)
-		setindex!(M[mSet].df, dfScaleInvChi, 1)
+		M[mSet].scale = scaleScaleInvChi
+		M[mSet].df = dfScaleInvChi
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else println("What is WRONG???")
 	end
@@ -217,7 +217,7 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 				end
 			end
 		end
-		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize)
+		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize)
 	end
 	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
 		#dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
@@ -258,11 +258,11 @@ function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 				meanBeta = lhs\rhs
 				setindex!(beta[M[mSet].pos],sampleBeta(meanBeta, lhs),locus)
 				BLAS.axpy!(-1.0*getindex(beta[M[mSet].pos],locus),view(M[mSet].data,:,locus),ycorr)
-				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],theseLoci),1)
+				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],theseLoci),1)
 			else 
 				setindex!(beta[M[mSet].pos],0.0,locus)
 				setindex!(delta[M[mSet].pos],0,locus)
-				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df[],[0.0],0)
+				@inbounds varBeta[mSet][r] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,[0.0],0)
 			end
 		end
 	end
@@ -275,8 +275,8 @@ function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
 		dfScaleInvChi = 2*dfIG
 		scaleScaleInvChi = scaleIG/dfIG
-		setindex!(M[mSet].scale, scaleScaleInvChi, 1)
-		setindex!(M[mSet].df, dfScaleInvChi, 1)
+		M[mSet].scale = scaleScaleInvChi
+		M[mSet].df = dfScaleInvChi
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else println("What is WRONG???")
 	end
@@ -330,7 +330,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				end
 			end
 		end
-		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),1)
+		@inbounds varBeta[mSet][r] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),1)
 	end
 	#println("storeCount: $storeCount")
 	if M[mSet].estPi == true 
@@ -340,8 +340,8 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
 		dfScaleInvChi = 2*dfIG
 		scaleScaleInvChi = scaleIG/dfIG
-		setindex!(M[mSet].scale, scaleScaleInvChi, 1)
-		setindex!(M[mSet].df, dfScaleInvChi, 1)
+		M[mSet].scale = scaleScaleInvChi
+		M[mSet].df = dfScaleInvChi
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else nothing
 	end
@@ -381,7 +381,7 @@ function sampleBayesC!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 			end
 		end
 	end
-	@inbounds varBeta[mSet][1] = sampleVarBetaPR(M[mSet].scale[],M[mSet].df[],beta[M[mSet].pos],nLoci)
+	@inbounds varBeta[mSet][1] = sampleVarBetaPR(M[mSet].scale,M[mSet].df,beta[M[mSet].pos],nLoci)
 	if M[mSet].estPi == true 
 		piIn = samplePi(nLoci,M[mSet].dims[2]) #probability of in
 		M[mSet].piHat .= [1.0-piIn piIn]
@@ -389,7 +389,7 @@ function sampleBayesC!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 	end
 	#println("scale before: $(M[mSet].scale)")
 	#println(M[mSet].df," ", varBeta[mSet]," ", length(M[mSet].mpm))
-	M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df[],varBeta[mSet],M[mSet].nVarCov), 1) : nothing
+	M[mSet].params==true ? setindex!(M[mSet].scale, sampleScaleOfVar(M[mSet].df,varBeta[mSet],M[mSet].nVarCov), 1) : nothing
 	#println("scale after: $(M[mSet].scale)")
 end
 
@@ -442,7 +442,7 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			end
 		end
 	end
-	@inbounds varBeta[mSet][1] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df[],beta[M[mSet].pos],M[mSet].dims[2])
+	@inbounds varBeta[mSet][1] = sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,beta[M[mSet].pos],M[mSet].dims[2])
 	#println("storeCount: $storeCount")
 	if M[mSet].estPi == true 
 		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
@@ -451,8 +451,8 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
 		dfScaleInvChi = 2*dfIG
 		scaleScaleInvChi = scaleIG/dfIG
-		setindex!(M[mSet].scale, scaleScaleInvChi, 1)
-		setindex!(M[mSet].df, dfScaleInvChi, 1)
+		M[mSet].scale = scaleScaleInvChi
+		M[mSet].df = dfScaleInvChi
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else nothing
 	end
