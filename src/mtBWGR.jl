@@ -48,7 +48,7 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 			M[mSet][:deltaHat]    = fill(Matrix(Diagonal(ones(length(mSet)))),M[mSet][:dims][2]) #priorVCV[mSet].pi ##this is fixed if estPi=false, or just a starting value if estPi=true
 			#piDelta estimate store
 			M[mSet][:estPi]       = priorVCV[mSet].estimatePi
-			M[mSet][:piHat]       = fill(1/length(deltaComb),length(deltaComb))
+			M[mSet][:piHat]       = fill(priorVCV[mSet].pi,length(deltaComb))
 			M[mSet][:vClass]      = [0 1] #2 variance class, one with own, one with null
 			#M[mSet][:scale]      = []
 		end
