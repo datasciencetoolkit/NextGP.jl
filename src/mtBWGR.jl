@@ -47,6 +47,7 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 			M[mSet][:deltaHat]    = priorVCV[mSet].pi ##this is fixed if estPi=false, or just a starting value if estPi=true
 			#piDelta estimate store
 			M[mSet][:estPi]       = priorVCV[mSet].estimatePi
+			M[mSet][:piHat]       = 
 			M[mSet][:vClass]      = [0 1] #2 variance class, one with own, one with null
 			#M[mSet][:scale]      = []
 		end
