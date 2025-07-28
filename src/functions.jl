@@ -298,9 +298,6 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				rhsReg = vec(sum(((M[mSet][:deltaHat][locus]*getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2))
                 		nowProb = sqrt(det(invC)) * exp(rhsReg'*invC*rhsReg) * M[mSet].piHat[thisGamma]
                 		tempGammaProb[thisGamma] = nowProb
-				println("invC: $invC")
-				println("rhsReg: $rhsReg")
-				println("nowProb: $nowProb")
             		end
 			println("tempGammaProb: $(tempGammaProb)")
 			println("argmax: $(argmax(tempGammaProb))")
