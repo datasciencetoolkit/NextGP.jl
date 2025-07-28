@@ -316,7 +316,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			println("typeof M[mSet][:deltaHat][locus]: $(M[mSet][:deltaHat][locus])")
 			println("typeof M[mSet].deltaComb[myDelta]: $(M[mSet].deltaComb[myDelta])")
             		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta]
-            		storeCount[myDelta] .+= 1.0
+            		storeCount[myDelta] += 1.0
 
 			RHS = sum(((getindex(M[mSet].Mp,locus)*M[mSet][:deltaHat][locus]*ycorr).*iVarE),dims=2)
 			invLHS::Array{Float64,2} = inv(M[mSet][:deltaHat][locus]*(getindex(M[mSet].mpm,locus)*M[mSet][:deltaHat][locus].*iVarE) .+ iVarBeta)
