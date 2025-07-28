@@ -313,11 +313,9 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				#println("M[mSet].piHat[thisGamma]: $(M[mSet].piHat[thisGamma])")
 				
             		end
-			println("tempGammaProb: $(tempGammaProb)")
+			tempGammaProb = exp.(tempGammaProb)
 			prob4Region = tempGammaProb./sum(tempGammaProb)
-			println("prob4Region: $prob4Region")
 			myDelta = rand(Categorical(prob4Region))
-			#myDelta = rand(Categorical(prob4Region))
 			
             		M[mSet][:gammaHat][locus] = M[mSet].gammaComb[myDelta]
             		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta]
