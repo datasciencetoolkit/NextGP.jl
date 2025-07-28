@@ -286,7 +286,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
 				for i in 1:length(ySet)
-					ycorr[:,i] .+= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus]*getindex(beta[M[mSet].pos],i,locus)
+					ycorr[:,i] .+= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
 				end
 			end
 
@@ -323,7 +323,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
 				for i in 1:length(ySet)
-					ycorr[:,i] .-= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus]*getindex(beta[M[mSet].pos],i,locus)
+					ycorr[:,i] .-= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
 				end
 			end
 		end
