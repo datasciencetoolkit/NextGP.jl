@@ -286,7 +286,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
 				for i in 1:length(ySet)
-					ycorr[:,i] .+= M[mSet].data[locus][:,i]*getindex(beta[M[mSet].pos],i,locus)
+					ycorr[:,i] .+= M[mSet].data[locus][:,i]*M[mSet][:deltaHat][locus]*getindex(beta[M[mSet].pos],i,locus)
 				end
 			end
 
@@ -302,19 +302,19 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			prob4Region = tempGammaProb./sum(tempGammaProb)
 
 			myDelta = indmax(prob4Region)
-            		storeGammaComb = M[mSet].gammaComb[myDelta]
-            		storeRegDelta[locus] = M[mSet].deltaComb[myDelta]
+            		M[mSet][:gammaHat][locus] = M[mSet].gammaComb[myDelta]
+            		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta]
             		storeCount[myDelta] .+= 1.0
 
-			RHS = sum(((getindex(M[mSet].Mp,locus)*storeRegDelta[locus]*ycorr).*iVarE),dims=2)
-			invLHS::Array{Float64,2} = inv(storeRegDelta[locus]*(getindex(M[mSet].mpm,locus)*storeRegDelta[locus].*iVarE) .+ invB)
+			RHS = sum(((getindex(M[mSet].Mp,locus)*M[mSet][:deltaHat][locus]*ycorr).*iVarE),dims=2)
+			invLHS::Array{Float64,2} = inv(M[mSet][:deltaHat][locus]*(getindex(M[mSet].mpm,locus)*M[mSet][:deltaHat][locus].*iVarE) .+ invB)
 			meanBETA = vec(invLHS*RHS)			
 			setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),:,locus)
 			
 
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
 				for i in 1:length(ySet)
-					ycorr[:,i] .+= M[mSet].data[locus][:,i]*getindex(beta[M[mSet].pos],i,locus)
+					ycorr[:,i] .+= M[mSet].data[locus][:,i]*M[mSet][:deltaHat][locus]*getindex(beta[M[mSet].pos],i,locus)
 				end
 			end
 		end
