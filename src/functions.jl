@@ -300,6 +300,8 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
                 		nowProb = sqrt(det(invC)) * exp(rhsReg'*invC*rhsReg) * M[mSet].piHat[thisGamma]
                 		tempGammaProb[thisGamma] = nowProb
             		end
+			println("tempGammaProb: $(tempGammaProb)")
+			println("argmax: $(argmax(tempGammaProb))")
 			prob4Region = tempGammaProb./sum(tempGammaProb)
 
 			myDelta = argmax(prob4Region)
