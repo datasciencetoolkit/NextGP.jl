@@ -303,7 +303,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				#nowProb = sqrt(det(invC)) * exp(rhsReg'*invC*rhsReg) * M[mSet].piHat[thisGamma]
                 		#tempGammaProb[thisGamma] = nowProb
 
-				logL = (-(0.5)*log(det(invC)) + (rhsReg'*invC*rhsReg)) + log(M[mSet].piHat[thisGamma])
+				logL = -(0.5)*log(det(invC) + (rhsReg'*invC*rhsReg)) + log(M[mSet].piHat[thisGamma])
 				tempGammaProb[thisGamma] = logL
 				
 				#delete later
