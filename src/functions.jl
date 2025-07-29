@@ -219,13 +219,13 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 		end
 		@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize) 
 	end
-	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
+	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
 		#dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
 		#dfScaleInvChi = 2*dfIG
 		#scaleScaleInvChi = scaleIG/dfIG
 		#setindex!(M[mSet].scale, scaleScaleInvChi, 1)
 		#setindex!(M[mSet].df, dfScaleInvChi, 1)
-		scaleEst = rand(InverseWishart(5 + length(varBeta[mSet]), sum(inv.(varBeta[mSet])) + zeros(2,2)))
+		scaleEst = rand(InverseWishart(5 + length(varBeta[mSet]), sum(inv.(varBeta[mSet])) + M[mSet].priorScale))
 		println("scaleEst: $(scaleEst)")
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else println("What is WRONG???")
