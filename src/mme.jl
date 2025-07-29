@@ -718,7 +718,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 			inOut.outMCMC(outPut,"scale$mSet",["scale"]) #[] to have it as one row
 			inOut.outMCMC(outPut,"df$mSet",["df"]) #[] to have it as one row
 		elseif isa(mSet, Tuple)
-			nameM_VCV = vcat([["reg_$(i)_$j" for j in 1:size(M[mSet][:scale],2)^2] for i in 1:M[mSet][:nVarCov]]...)
+			nameM_VCV = vcat([["reg_$(i)_$j" for j in 1:length(mSet)^2] for i in 1:M[mSet][:nVarCov]]...)
 			inOut.outMCMC(outPut,"var_"*join(mSet, "_"),[nameM_VCV]) #[] to have it as one row
 			nameM_VCV = ["scale$i" for i in 1:M[mSet][:nVarCov]] #size(vec(varBeta[mSet]))
 			inOut.outMCMC(outPut,"scale_"*join(mSet, "_"),[nameM_VCV]) #[] to have it as one row
