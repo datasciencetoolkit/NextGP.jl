@@ -161,6 +161,7 @@ function varCovM!(M,priorVCV)
 				M[mSet][:params] = true
 				M[mSet][:scale] = nMComp>1 ? [priorVCV[mSet].v .* (M[mSet][:df]-nMComp-1.0)]  : [priorVCV[mSet].v * (M[mSet][:df]-2.0)/(M[mSet][:df])] #I make array of float and float
 				M[mSet][:df] = [M[mSet][:df]] #need to make array
+				M[mSet][:priorScale] = M[mSet][:scale][]
 			end
 		else
 			M[mSet][:params] = false
