@@ -225,7 +225,7 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 		#scaleScaleInvChi = scaleIG/dfIG
 		#setindex!(M[mSet].scale, scaleScaleInvChi, 1)
 		#setindex!(M[mSet].df, dfScaleInvChi, 1)
-		scaleEst = rand(InverseWishart(5 + length(varBeta[mSet]), sum(inv.(varBeta[mSet])) + M[mSet].priorScale))
+		scaleEst = rand(InverseWishart(5, mean(inv.(varBeta[mSet])) + M[mSet].priorScale))
 		println("scaleEst: $(scaleEst)")
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else println("What is WRONG???")
@@ -336,12 +336,13 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	if M[mSet].estPi == true 
 		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
 	end
-	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
-		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
-		dfScaleInvChi = 2*dfIG
-		scaleScaleInvChi = scaleIG/dfIG
-		setindex!(M[mSet].scale, scaleScaleInvChi,1)
-		setindex!(M[mSet].df, dfScaleInvChi,1)
+	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
+		#dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
+		#dfScaleInvChi = 2*dfIG
+		#scaleScaleInvChi = scaleIG/dfIG
+		#setindex!(M[mSet].scale, scaleScaleInvChi,1)
+		#setindex!(M[mSet].df, dfScaleInvChi,1)
+		scaleEst = rand(InverseWishart(5, mean(inv.(varBeta[mSet])) + M[mSet].priorScale))
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else nothing
 	end
@@ -448,12 +449,13 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	if M[mSet].estPi == true 
 		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
 	end
-	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
-		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
-		dfScaleInvChi = 2*dfIG
-		scaleScaleInvChi = scaleIG/dfIG
-		setindex!(M[mSet].scale, scaleScaleInvChi,1)
-		setindex!(M[mSet].df, dfScaleInvChi,1)
+	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
+		#dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
+		#dfScaleInvChi = 2*dfIG
+		#scaleScaleInvChi = scaleIG/dfIG
+		#setindex!(M[mSet].scale, scaleScaleInvChi,1)
+		#setindex!(M[mSet].df, dfScaleInvChi,1)
+		scaleEst = rand(InverseWishart(5, inv.(varBeta[mSet]) + M[mSet].priorScale))
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else nothing
 	end
