@@ -455,7 +455,7 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		#scaleScaleInvChi = scaleIG/dfIG
 		#setindex!(M[mSet].scale, scaleScaleInvChi,1)
 		#setindex!(M[mSet].df, dfScaleInvChi,1)
-		scaleEst = rand(InverseWishart(5, inv.(varBeta[mSet]) + M[mSet].priorScale))
+		scaleEst = rand(InverseWishart(5, inv(varBeta[mSet][1]) + M[mSet].priorScale))
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else nothing
 	end
