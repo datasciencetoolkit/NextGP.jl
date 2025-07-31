@@ -299,9 +299,11 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			iVarBeta = inv(varBeta[mSet][locus])
 			
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
-				for i in 1:length(ySet)
-					ycorr[:,i] .+= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
-				end
+				#for i in 1:length(ySet)
+				#	ycorr[:,i] .+= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
+				#end
+				ycorr .+= M[mSet].data[locus].*M[mSet][:gammaHat][locus].*beta[M[mSet].pos][:,locus]'
+
 			end
 
 			tempGammaProb = zeros(length(M[mSet].gammaComb)) #to store prob
@@ -327,9 +329,10 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			
 
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
-				for i in 1:length(ySet)
-					ycorr[:,i] .-= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
-				end
+				#for i in 1:length(ySet)
+				#	ycorr[:,i] .-= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
+				#end
+				ycorr .-= M[mSet].data[locus].*M[mSet][:gammaHat][locus].*beta[M[mSet].pos][:,locus]'
 			end
 		end
 		@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),1) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),1) 
@@ -411,9 +414,10 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			iVarBeta = inv(varBeta[mSet][1])
 			
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
-				for i in 1:length(ySet)
-					ycorr[:,i] .+= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
-				end
+				#for i in 1:length(ySet)
+				#	ycorr[:,i] .+= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
+				#end
+				ycorr .+= M[mSet].data[locus].*M[mSet][:gammaHat][locus].*beta[M[mSet].pos][:,locus]'
 			end
 
 			tempGammaProb = zeros(length(M[mSet].gammaComb)) #to store prob
@@ -439,9 +443,10 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			
 
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
-				for i in 1:length(ySet)
-					ycorr[:,i] .-= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
-				end
+				#for i in 1:length(ySet)
+				#	ycorr[:,i] .-= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
+				#end
+				ycorr .-= M[mSet].data[locus].*M[mSet][:gammaHat][locus].*beta[M[mSet].pos][:,locus]'
 			end
 		end
 	end
