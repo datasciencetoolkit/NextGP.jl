@@ -1,3 +1,5 @@
+vec2Mat(d) = reshape(d,1,length(d))
+
 function mtBWGR!(M,mSet,priorVCV,beta)
 	if !haskey(priorVCV,mSet)
 		M[mSet][:method] = "BayesPR"
@@ -55,6 +57,11 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 			#M[mSet][:logPi]       = log.(priorVCV[mSet].pi)
 			M[mSet][:gammaComb] = collect.(Iterators.product(fill(0:1, length(mSet))...) |> collect |> vec)
 			
+			for g in 1:length(M[mSet][:gammaComb])
+    				println("gamma $(M[mSet][:gammaComb][g]) has prior $(priorVCV[mSet].pi[g]) piDelta \n")
+			end
+
+			M[mSet][:gammaComb] = vec2Mat.(M[mSet][:gammaComb])
 			for g in 1:length(M[mSet][:gammaComb])
     				println("gamma $(M[mSet][:gammaComb][g]) has prior $(priorVCV[mSet].pi[g]) piDelta \n")
 			end
