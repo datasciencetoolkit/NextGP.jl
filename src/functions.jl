@@ -206,6 +206,7 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 				for i in 1:length(ySet)
 					ycorr[:,i] .+= M[mSet].data[locus][:,i]*getindex(beta[M[mSet].pos],i,locus)
 				end
+				#@time ycorr .+= M[mSet].data[locus].*beta[M[mSet].pos][:,locus]'
 			end
 			RHS = sum(((getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2)
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus).*iVarE) .+ invB)
