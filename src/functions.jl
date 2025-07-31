@@ -417,11 +417,7 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				#for i in 1:length(ySet)
 				#	ycorr[:,i] .+= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
 				#end
-				println("gammaHat Locus: $(M[mSet][:gammaHat][locus])")
-				println("size $size(M[mSet][:gammaHat][locus])")
-				println("M[mSet][:gammaHat][locus].*beta[M[mSet].pos][:,locus]': $(M[mSet][:gammaHat][locus].*beta[M[mSet].pos][:,locus]')")
-				println("beta[M[mSet].pos][:,locus]'.*M[mSet][:gammaHat][locus]: $(beta[M[mSet].pos][:,locus]'.*M[mSet][:gammaHat][locus])")
-				ycorr .+= M[mSet].data[locus].*(M[mSet][:gammaHat][locus].*beta[M[mSet].pos][:,locus]')
+				ycorr .+= M[mSet].data[locus].*M[mSet][:gammaHat][locus].*beta[M[mSet].pos][:,locus]'
 			end
 
 			tempGammaProb = zeros(length(M[mSet].gammaComb)) #to store prob
@@ -450,7 +446,7 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				#for i in 1:length(ySet)
 				#	ycorr[:,i] .-= M[mSet].data[locus][:,i]*M[mSet][:gammaHat][locus][i]*getindex(beta[M[mSet].pos],i,locus)
 				#end
-				ycorr .-= M[mSet].data[locus].*(M[mSet][:gammaHat][locus].*beta[M[mSet].pos][:,locus]')
+				ycorr .-= M[mSet].data[locus].*M[mSet][:gammaHat][locus].*beta[M[mSet].pos][:,locus]'
 			end
 		end
 	end
