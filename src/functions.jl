@@ -203,19 +203,20 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 		invB = inv(varBeta[mSet][r]) 
 		for locus in theseLoci::UnitRange{Int64}
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
-				for i in 1:length(ySet)
-					ycorr[:,i] .+= M[mSet].data[locus][:,i]*getindex(beta[M[mSet].pos],i,locus)
-				end
-				#@time ycorr .+= M[mSet].data[locus].*beta[M[mSet].pos][:,locus]'
+				#for i in 1:length(ySet)
+				#	ycorr[:,i] .+= M[mSet].data[locus][:,i]*getindex(beta[M[mSet].pos],i,locus)
+				#end
+				ycorr .+= M[mSet].data[locus].*beta[M[mSet].pos][:,locus]'
 			end
 			RHS = sum(((getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2)
 			invLHS::Array{Float64,2} = inv((getindex(M[mSet].mpm,locus).*iVarE) .+ invB)
 			meanBETA = vec(invLHS*RHS)			
 			setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),:,locus)
 			if isa(mSet,Tuple{Vararg{Symbol}})
-				for i in 1:length(ySet)
-					ycorr[:,i] .-= M[mSet].data[locus][:,i]*getindex(beta[M[mSet].pos],i,locus)
-				end
+				#for i in 1:length(ySet)
+				#	ycorr[:,i] .-= M[mSet].data[locus][:,i]*getindex(beta[M[mSet].pos],i,locus)
+				#end
+				ycorr .-= M[mSet].data[locus].*beta[M[mSet].pos][:,locus]'
 			end
 		end
 		@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize) 
@@ -331,7 +332,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				end
 			end
 		end
-		@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),1) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),1) 
+		@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),1) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),1) 
 	end
 	#println("storeCount: $storeCount")
 	if M[mSet].estPi == true 
@@ -444,7 +445,7 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			end
 		end
 	end
-	@inbounds varBeta[mSet][1] = M[mSet].params==true ? sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],beta[M[mSet].pos],M[mSet].dims[2]) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df[],beta[M[mSet].pos],M[mSet].dims[2]) 
+	@inbounds varBeta[mSet][1] = M[mSet].params==true ? sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],beta[M[mSet].pos],M[mSet].dims[2]) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,beta[M[mSet].pos],M[mSet].dims[2]) 
 
 	#println("storeCount: $storeCount")
 	if M[mSet].estPi == true 
