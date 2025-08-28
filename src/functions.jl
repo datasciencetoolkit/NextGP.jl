@@ -170,7 +170,7 @@ function sampleBayesPR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,y
 		dfScaleInvChi = 2*dfIG
 		scaleScaleInvChi = scaleIG/dfIG
 		#println("scaleIG: $(scaleIG) dfIG: $(dfIG)")
-		#println("scale: $(scaleScaleInvChi) df: $(dfScaleInvChi)")
+		println("scale: $(scaleScaleInvChi) df: $(dfScaleInvChi)")
 		setindex!(M[mSet].scale, scaleScaleInvChi,1)
 		setindex!(M[mSet].df, dfScaleInvChi,1)
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
