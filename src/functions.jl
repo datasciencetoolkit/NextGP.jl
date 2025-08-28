@@ -810,7 +810,7 @@ function sampleScaleDFofVar(varVec;abcde=[4.0,0,01,0.01,0.01,0.01])
 	a,b,c,d,e = abcde
 	n = length(varVec)
 	mu = mean(varVec)
-	v = var(varVec)
+	v = var(varVec,corrected=true)
 	alpha = ((mu^2)/v)+2
 	eHat = e+sum(1.0 ./ varVec)
 	logAHat = log(a) + sum(log.(varVec))
