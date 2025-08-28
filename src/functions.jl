@@ -806,7 +806,7 @@ function sampleScaleOfVar(df,var,k)
 	return rand(Gamma(0.5*df*length(var)+1,1/(1+0.5*df*sum(1.0./var))))
 end
 
-function sampleScaleDFofVar(varVec;abcde=[1.0,0,01,0.01,0.01,0.01])
+function sampleScaleDFofVar(varVec;abcde=[2.0,0,01,0.01,0.01,0.01])
 	a,b,c,d,e = abcde
 	n = length(varVec)
 	mu = mean(varVec)
@@ -822,7 +822,7 @@ function sampleScaleDFofVar(varVec;abcde=[1.0,0,01,0.01,0.01,0.01])
 		iter+=1
 		#println(iter)
 		global alphaHat = invdigamma((-logAHat+cHat*(log(d+n*alpha)-C))/(bHat))
-		if abs(alphaHat - alpha) >= 10e-8
+		if abs(alphaHat - alpha) >= 10e-6
 			alpha = alphaHat
 		else
 			break
