@@ -274,10 +274,10 @@ function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 		M[mSet].logPi .= log.([1.0-piIn piIn])
 	end
 	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
-		#inMarkers = findall(>(0),delta[M[mSet].pos])
-		#inMarkers = getindex.(inMarkers,2)
-		#dfIG,scaleIG = sampleScaleDFofVar(getindex(varBeta[mSet],inMarkers))
-		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
+		inMarkers = findall(>(0),delta[M[mSet].pos])
+		inMarkers = getindex.(inMarkers,2)
+		dfIG,scaleIG = sampleScaleDFofVar(getindex(varBeta[mSet],inMarkers))
+		#dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
 		dfScaleInvChi = 2*dfIG
 		scaleScaleInvChi = scaleIG/dfIG
 		setindex!(M[mSet].scale, scaleScaleInvChi,1)
@@ -807,7 +807,7 @@ function sampleScaleOfVar(df,var,k)
 	return rand(Gamma(0.5*df*length(var)+1,1/(1+0.5*df*sum(1.0./var))))
 end
 
-function sampleScaleDFofVar(varVec;abcde=[5.0,0,01,0.01,0.01,0.01])
+function sampleScaleDFofVar(varVec;abcde=[10.0,0,01,0.01,0.01,0.01])
 	a,b,c,d,e = abcde
 	n = length(varVec)
 	mu = mean(varVec)
