@@ -278,6 +278,7 @@ function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
 		inMarkers = findall(>(0),delta[M[mSet].pos])
 		inMarkers = getindex.(inMarkers,2)
+		println("n markers: $(length(inMarkers))")
 		dfIG,scaleIG = sampleScaleDFofVar(getindex(varBeta[mSet],inMarkers))
 		#dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
 		dfScaleInvChi = 2*dfIG
@@ -810,6 +811,7 @@ function sampleScaleOfVar(df,var,k)
 end
 
 function sampleScaleDFofVar(varVec;abcde=[4.0,0,01,0.01,0.01,0.01])
+	println("length(varVec:): $(length(varVec))")
 	a,b,c,d,e = abcde
 	n = length(varVec)
 	mu = mean(varVec)
