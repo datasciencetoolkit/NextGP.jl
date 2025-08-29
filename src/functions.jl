@@ -807,7 +807,7 @@ function sampleScaleOfVar(df,var,k)
 	return rand(Gamma(0.5*df*length(var)+1,1/(1+0.5*df*sum(1.0./var))))
 end
 
-function sampleScaleDFofVar(varVec;abcde=[1.0,0,01,0.01,0.01,0.01])
+function sampleScaleDFofVar(varVec;abcde=[10.0,0,01,0.01,0.01,0.01])
 	a,b,c,d,e = abcde
 	n = length(varVec)
 	mu = mean(varVec)
