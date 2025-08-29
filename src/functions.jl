@@ -169,8 +169,6 @@ function sampleBayesPR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,y
 		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
 		dfScaleInvChi = 2*dfIG
 		scaleScaleInvChi = scaleIG/dfIG
-		#println("scaleIG: $(scaleIG) dfIG: $(dfIG)")
-		println("scale: $(scaleScaleInvChi) df: $(dfScaleInvChi)")
 		setindex!(M[mSet].scale, scaleScaleInvChi,1)
 		setindex!(M[mSet].df, dfScaleInvChi,1)
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
@@ -809,7 +807,7 @@ function sampleScaleOfVar(df,var,k)
 	return rand(Gamma(0.5*df*length(var)+1,1/(1+0.5*df*sum(1.0./var))))
 end
 
-function sampleScaleDFofVar(varVec;abcde=[4.0,0,01,0.01,0.01,0.01])
+function sampleScaleDFofVar(varVec;abcde=[1.0,0,01,0.01,0.01,0.01])
 	a,b,c,d,e = abcde
 	n = length(varVec)
 	mu = mean(varVec)
