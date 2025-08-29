@@ -276,7 +276,9 @@ function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 		M[mSet].logPi .= log.([1.0-piIn piIn])
 	end
 	if (M[mSet].params==true) && (length(varBeta[mSet]) > 1)
-		dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
+		inMarkers = findall(>(0),delta[M[mSet].pos])
+		dfIG,scaleIG = sampleScaleDFofVar(getindex(varBeta[mSet],inMarkers))
+		#dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
 		dfScaleInvChi = 2*dfIG
 		scaleScaleInvChi = scaleIG/dfIG
 		setindex!(M[mSet].scale, scaleScaleInvChi,1)
