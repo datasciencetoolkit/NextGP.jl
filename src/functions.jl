@@ -172,7 +172,7 @@ function sampleBayesPR!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,y
 		setindex!(M[mSet].scale, scaleScaleInvChi,1)
 		setindex!(M[mSet].df, dfScaleInvChi,1)
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
-	else println("What is WRONG???")
+	else nothing #println("What is WRONG???")
 	end
 end
 	
@@ -230,7 +230,7 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 		scaleEst = rand(InverseWishart(5, mean(inv.(varBeta[mSet])) + inv(M[mSet].priorScale)))
 		println("scaleEst: $(scaleEst)")
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
-	else println("What is WRONG???")
+	else nothing #println("What is WRONG???")
 	end
 end
 
@@ -283,7 +283,7 @@ function sampleBayesB!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,yc
 		setindex!(M[mSet].scale, scaleScaleInvChi,1)
 		setindex!(M[mSet].df, dfScaleInvChi,1)
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
-	else println("What is WRONG???")
+	else nothing #println("What is WRONG???")
 	end
 end
 
