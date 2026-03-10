@@ -69,7 +69,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 				[[[inOut.outMCMC(outPut,"beta$m$eSet",beta[M[mSet].pos][[p],:]) for (p,m) in enumerate(mSet)] for mSet in keys(M) if (isa(mSet,Tuple{Vararg{Symbol}}) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single-trait multiple comp
 				#[[[inOut.outMCMC(outPut,"beta$m$eSet",beta[M[mSet].pos][[p],:]) for (p,m) in enumerate(mSet)] for mSet in keys(M) if (isa(mSet,Tuple{Vararg{Tuple{Vararg{Symbol}}}}) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Tuple)] #multi-trait only one correlated comp	
 				[[[inOut.outMCMC(outPut,"beta$m$(eSet[p])",beta[M[mSet].pos][[p],:]) for (p,m) in enumerate(mSet)] for mSet in keys(M) if (isa(mSet,Tuple{Vararg{Symbol}}))] for eSet in keys(E) if isa(eSet,Tuple)] #multi-trait only one correlated comp (:M1,M1) or (:M1,:M2...) but not ((:M1,:M2) and (:M3,:M4))
-				[[[inOut.outMCMC(outPut,"delta$m$(eSet[p])",deltaHat[M[mSet].pos][[p],:]) for (p,m) in enumerate(mSet)] for mSet in keys(M) if (isa(mSet,Tuple{Vararg{Symbol}}))] for eSet in keys(E) if isa(eSet,Tuple)] #multi-trait only one correlated comp (:M1,M1) or (:M1,:M2...) but not ((:M1,:M2) and (:M3,:M4))
+				[[[inOut.outMCMC(outPut,"delta$m$(eSet[p])",M[mSet][:gammaHat][M[mSet].pos][[p],:]) for (p,m) in enumerate(mSet)] for mSet in keys(M) if (isa(mSet,Tuple{Vararg{Symbol}}))] for eSet in keys(E) if isa(eSet,Tuple)] #multi-trait only one correlated comp (:M1,M1) or (:M1,:M2...) but not ((:M1,:M2) and (:M3,:M4))
 
 
 				#for mSet in keys(M)
