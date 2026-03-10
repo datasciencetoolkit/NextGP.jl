@@ -357,6 +357,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			tempdf += dfScaleInvChi
 		end
 		setindex!(M[mSet].df, tempdf/length(mSet),1)
+		println("SAMPLED DF: $(M[mSet].df)")
 
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else nothing
