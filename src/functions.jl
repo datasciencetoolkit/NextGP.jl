@@ -356,8 +356,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			dfScaleInvChi = 2*dfIG
 			tempdf += dfScaleInvChi+1
 		end
-		setindex!(M[mSet].df, tempdf/length(mSet),1)
-		println("SAMPLED DF: $(M[mSet].df)")
+		setindex!(M[mSet].df, rand(3.0:5.0),1)
 
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else nothing
@@ -481,8 +480,7 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			dfScaleInvChi = 2*dfIG
 			tempdf += dfScaleInvChi+1
 		end
-		setindex!(M[mSet].df, tempdf/length(mSet),1)
-		println("SAMPLED DF: $(M[mSet].df)")
+		setindex!(M[mSet].df, rand(3.0:5.0),1)
 		
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 	else nothing
