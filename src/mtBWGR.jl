@@ -50,7 +50,7 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 			theseRegions          = [r:r for r in 1:M[mSet][:dims][2]]
 			M[mSet][:regionArray] = theseRegions
 			M[mSet][:nVarCov]     = length(theseRegions)
-			#gamma and delta estimates      
+			#gamma and delta estimates, gamma is a vector, deltaHat is a matrix      
 			M[mSet][:gammaHat] = fill(ones(1,length(mSet)),M[mSet][:dims][2])
 			M[mSet][:deltaHat]    = fill(Matrix(Diagonal(ones(length(mSet)))),M[mSet][:dims][2]) #priorVCV[mSet].pi ##this is fixed if estPi=false, or just a starting value if estPi=true
 			#piDelta estimate store
@@ -80,7 +80,7 @@ function mtBWGR!(M,mSet,priorVCV,beta)
 			theseRegions          = [r:r for r in 1:M[mSet][:dims][2]]
 			M[mSet][:regionArray] = theseRegions
 			M[mSet][:nVarCov]     = 1
-			#gamma and delta estimates      
+			#gamma and delta estimates, gamma is a vector, deltaHat is a matrix      
 			M[mSet][:gammaHat]    = fill(ones(1,length(mSet)),M[mSet][:dims][2])
 			M[mSet][:deltaHat]    = fill(Matrix(Diagonal(ones(length(mSet)))),M[mSet][:dims][2]) #priorVCV[mSet].pi ##this is fixed if estPi=false, or just a starting value if estPi=true
 			#piDelta estimate store
