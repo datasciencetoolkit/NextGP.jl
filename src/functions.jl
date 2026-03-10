@@ -445,7 +445,7 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),:,locus)
 			#println("delta for this locus: $(M[mSet][:deltaHat][locus])")
 			#println("gamma for this locus: $(M[mSet][:gammaHat][locus])")
-			setindex!(delta[M[mSet].pos],M[mSet][:gammaHat][locus],:,locus)
+			#setindex!(delta[M[mSet].pos],M[mSet][:gammaHat][locus],:,locus)
 
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
 				#for i in 1:length(ySet)
