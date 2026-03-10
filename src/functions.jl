@@ -350,6 +350,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 
 		tempdf = 0
 		for m in 1:length(mSet)
+			println("in MArkers: $(getindex.(M[mSet][:gammaHat],m))")
 			inMarkers = findall(>(0),getindex.(M[mSet][:gammaHat],m))
 			inMarkers = getindex.(inMarkers,2)
 			dfIG,scaleIG = sampleScaleDFofVar(getindex.(getindex(varBeta[mSet],inMarkers),m,m))
