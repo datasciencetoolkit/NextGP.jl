@@ -435,16 +435,16 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			prob4Region = tempGammaProb./sum(tempGammaProb)
 			myDelta = rand(Categorical(prob4Region))
 			
-            		M[mSet][:gammaHat][locus] = M[mSet].gammaComb[myDelta]
-            		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta]
+            		M[mSet][:gammaHat][locus] = M[mSet].gammaComb[myDelta] #vector of diagonals
+            		M[mSet][:deltaHat][locus] = M[mSet].deltaComb[myDelta] #matrix form
             		storeCount[myDelta] += 1.0
 
 			RHS = vec(sum(((M[mSet][:deltaHat][locus]*getindex(M[mSet].Mp,locus)*ycorr).*iVarE),dims=2))
 			invLHS::Array{Float64,2} = inv(M[mSet][:deltaHat][locus]*(getindex(M[mSet].mpm,locus)*M[mSet][:deltaHat][locus].*iVarE) .+ iVarBeta)
 			meanBETA = vec(invLHS*RHS)			
 			setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),:,locus)
-			println("delta for this locus: $(M[mSet][:deltaHat][locus])")
-			println("gamma for this locus: $(M[mSet][:gammaHat][locus])")
+			#println("delta for this locus: $(M[mSet][:deltaHat][locus])")
+			#println("gamma for this locus: $(M[mSet][:gammaHat][locus])")
 			setindex!(delta[M[mSet].pos],M[mSet][:gammaHat][locus],:,locus)
 
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
