@@ -344,10 +344,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
 	end
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
-		println("size delta = $(size(delta))")
-		println("$(delta[:,20])")
-		println("$([any(c.!=0) for c in eachcol(delta)])")
-		inMarkers = findall([any(c.!=0) for c in eachcol(delta)])
+		inMarkers = findall([any(c.!=0) for c in eachcol(delta[M[mSet].pos])])
 		println("inmarkers = $inMarkers")
 		scaleEst = rand(InverseWishart(5, mean(inv.(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))
 		#NEW
