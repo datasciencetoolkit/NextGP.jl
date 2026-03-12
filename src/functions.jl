@@ -361,7 +361,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			tempdf += dfScaleInvChi+1
 		end
 		#println("mean DF: $((tempdf/length(mSet)))")
-		#setindex!(M[mSet].df,tempdf/length(mSet),1)
+		setindex!(M[mSet].df,tempdf/length(mSet),1)
 
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 		nothing
