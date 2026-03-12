@@ -346,6 +346,8 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
 		inMarkers = findall([any(c.!=0) for c in eachcol(delta[M[mSet].pos])])
 		println("N inmarkers = $(length(inMarkers))")
+		println("inv $(inv.(getindex(varBeta[mSet],inMarkers)))")
+		println("mean $(mean(inv.(getindex(varBeta[mSet],inMarkers))))")
 		scaleEst = rand(InverseWishart(5, mean(inv.(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))
 		#NEW
 		setindex!(M[mSet].scale, scaleEst,1)
