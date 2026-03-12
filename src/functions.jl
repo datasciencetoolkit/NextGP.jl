@@ -349,10 +349,9 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		#println("N inmarkers = $(length(inMarkers))")
 		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
 		println("N inmarkers = $(length(inMarkers))")
-		scaleEst = rand(InverseWishart(5, mean(inv.(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))
+		scaleEst = rand(InverseWishart(5, mean(getindex(varBeta[mSet],inMarkers)) + M[mSet].priorScale))
 		#NEW
 		println("new scale: $(scaleEst)")
-		println("new scale INV: $(inv(scaleEst))")
 		#setindex!(M[mSet].scale, scaleEst,1)
 
 		#tempdf = 0
