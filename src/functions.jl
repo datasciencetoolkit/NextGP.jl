@@ -346,20 +346,18 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
 		inMarkers = findall([any(c.!=0) for c in eachcol(delta[M[mSet].pos])])
 		println("N inmarkers = $(length(inMarkers))")
-		println("inv $(size(inv.(getindex(varBeta[mSet],inMarkers))))")
-		println("mean $(mean(inv.(getindex(varBeta[mSet],inMarkers))))")
 		scaleEst = rand(InverseWishart(5, mean(inv.(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))
 		#NEW
-		println("inv Scale Est = $(inv(scaleEst))")
-		setindex!(M[mSet].scale, inv(scaleEst),1)
+		println("new scale: $(scaleEst)")
+		setindex!(M[mSet].scale, scaleEst,1)
 
-		tempdf = 0
-		for m in 1:length(mSet)
-			inMarkers = findall(>(0),getindex(beta[M[mSet].pos],m,:))
-			dfIG,scaleIG = sampleScaleDFofVar(getindex.(getindex(varBeta[mSet],inMarkers),m,m))
-			dfScaleInvChi = 2*dfIG
-			tempdf += dfScaleInvChi+1
-		end
+		#tempdf = 0
+		#for m in 1:length(mSet)
+		#	inMarkers = findall(>(0),getindex(beta[M[mSet].pos],m,:))
+		#	dfIG,scaleIG = sampleScaleDFofVar(getindex.(getindex(varBeta[mSet],inMarkers),m,m))
+		#	dfScaleInvChi = 2*dfIG
+		#	tempdf += dfScaleInvChi+1
+		#end
 		#setindex!(M[mSet].df, 4,1)
 
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
