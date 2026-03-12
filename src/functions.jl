@@ -351,8 +351,8 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		tempdf = 0
 		for m in 1:length(mSet)
 			inMarkers = findall(>(0),getindex(beta[M[mSet].pos],m,:))
-			println("in markers: $inMarkers")
-			inMarkers = getindex.(inMarkers,2)
+			#println("in markers: $inMarkers")
+			#inMarkers = getindex.(inMarkers,2)
 			dfIG,scaleIG = sampleScaleDFofVar(getindex.(getindex(varBeta[mSet],inMarkers),m,m))
 			dfScaleInvChi = 2*dfIG
 			tempdf += dfScaleInvChi+1
