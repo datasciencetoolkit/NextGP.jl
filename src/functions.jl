@@ -362,7 +362,9 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		#setindex!(M[mSet].df, 4,1)
 
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
-	else nothing
+	else 
+		inMarkers = findall([any(c.!=0) for c in eachcol(M[mSet][:gammaHat])])
+		println("N inmarkers = $(length(inMarkers))")
 	end
 end
 
