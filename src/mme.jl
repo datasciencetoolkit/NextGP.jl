@@ -412,8 +412,8 @@ function MMEM!(M,beta,varBeta,delta,posMcounter,eSet::Tuple,E,priorVCV,modelInfo
 				delete!(modelInformation[eSet],d)
                		end
 			beta = push!(beta,zeros(Float64,length(mSet),length(M[mSet][:data])))
-			#delta = push!(delta,ones(Int32,length(mSet),length(M[mSet][:data]))), each method has its own deltaHat (matrix) and gammaHat (vector) 
-			println("size of BETA: $(size.(beta))")
+			delta = push!(delta,ones(Int32,length(mSet),length(M[mSet][:data]))), each method has its own deltaHat (matrix) and gammaHat (vector) 
+			#println("size of BETA: $(size.(beta))")
 			#println("size of DELTA: $(size.(delta))")
 			###WEIGHTED SHOULD BE ADAAPTED HERE#################
 			M[mSet][:mpm]  = MatByMat.(tempM)
