@@ -344,7 +344,9 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
 	end
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
-		inMarkers = findall([any(c.!=0) for c in eachcol(delta[M[mSet].pos])])
+		#inMarkers = findall([any(c.!=0) for c in eachcol(delta[M[mSet].pos])])
+		#println("N inmarkers = $(length(inMarkers))")
+		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
 		println("N inmarkers = $(length(inMarkers))")
 		scaleEst = rand(InverseWishart(5, mean(inv.(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))
 		#NEW
@@ -362,9 +364,9 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		#setindex!(M[mSet].df, 4,1)
 
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
+		nothing
 	else 
-		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
-		println("N inmarkers = $(length(inMarkers))")
+		nothing
 	end
 end
 
