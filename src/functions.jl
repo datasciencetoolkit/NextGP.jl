@@ -349,7 +349,8 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		scaleEst = rand(InverseWishart(5, mean(inv.(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))
 		#NEW
 		println("new scale: $(scaleEst)")
-		setindex!(M[mSet].scale, scaleEst,1)
+		println("new scale INV: $(inv(scaleEst))")
+		#setindex!(M[mSet].scale, scaleEst,1)
 
 		#tempdf = 0
 		#for m in 1:length(mSet)
