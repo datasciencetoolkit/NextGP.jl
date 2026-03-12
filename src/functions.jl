@@ -347,10 +347,10 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		#println("$(M[mSet].scale[]),$(M[mSet].df[])")
 		#inMarkers = findall([any(c.!=0) for c in eachcol(delta[M[mSet].pos])])
 		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
-		println("N inmarkers = $(length(inMarkers))")
+		#println("N inmarkers = $(length(inMarkers))")
 		scaleEst = rand(InverseWishart(5, mean(getindex(varBeta[mSet],inMarkers)) + M[mSet].priorScale))
 		#NEW
-		println("new scale: $(scaleEst)")
+		#println("new scale: $(scaleEst)")
 		setindex!(M[mSet].scale, scaleEst,1)
 
 		tempdf = 0
@@ -360,8 +360,8 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			dfScaleInvChi = 2*dfIG
 			tempdf += dfScaleInvChi+1
 		end
-		println("mean DF: $((tempdf/length(mSet)))")
-		#setindex!(M[mSet].df, 4,1)
+		#println("mean DF: $((tempdf/length(mSet)))")
+		#setindex!(M[mSet].df,tempdf/length(mSet),1)
 
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 		nothing
