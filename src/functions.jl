@@ -481,18 +481,8 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		#println("N inmarkers = $(length(inMarkers))")
 		scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(varBeta[mSet][1]) + inv(M[mSet].priorScale)))))
 		#NEW
-		println("new scale: $(scaleEst)")
 		setindex!(M[mSet].scale, scaleEst,1)
-
-		tempdf = 2 #one for each for the 4+1 
-		for m in 1:length(mSet)
-			inMarkers = findall(>(0),getindex(beta[M[mSet].pos],m,:))
-			dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet][1][m,m])
-			dfScaleInvChi = 2*dfIG
-			tempdf += dfScaleInvChi
-		end
-		println("new DF: $(tempdf/length(mSet))")
-		setindex!(M[mSet].df,tempdf/length(mSet),1)
+		setindex!(M[mSet].df,rand(4:5),1)
 
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 		nothing
