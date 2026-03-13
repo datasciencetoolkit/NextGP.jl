@@ -723,8 +723,9 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 			nameM_VCV = vcat([["reg_$(i)_$j" for j in 1:length(mSet)^2] for i in 1:M[mSet][:nVarCov]]...)
 			inOut.outMCMC(outPut,"var_"*join(mSet, "_"),[nameM_VCV]) #[] to have it as one row
 			nameM_VCV = ["scale$i" for i in 1:M[mSet][:nVarCov]] #size(vec(varBeta[mSet]))
-			nameM_Scale = vcat([["scale_$(i)_$j" for j in 1:length(mSet)^2] for i in 1:M[mSet][:nVarCov]]...)
-			inOut.outMCMC(outPut,"scale_"*join(mSet, "_"),[nameM_Scale]) #[] currently on scale is estimated
+			#nameM_Scale = vcat([["scale_$(i)_$j" for j in 1:length(mSet)^2] for i in 1:M[mSet][:nVarCov]]...)
+			nameM_Scale = vcat([["scale_$(i)_$j" for j in 1:length(mSet)^2] for i in 1:1]...) #currently one scale is estimated
+			inOut.outMCMC(outPut,"scale_"*join(mSet, "_"),[nameM_Scale]) #[] currently one scale is estimated
 			inOut.outMCMC(outPut,"df_"*join(mSet, "_"),["df"]) #[] to have it as one row
 		end
 		#isa(mSet, Symbol) ? nameM_VCV = ["reg_$r" for r in 1:M[mSet][:nVarCov]] : nameM_VCV = vcat([["reg_$(i)_$j" for j in 1:size(M[mSet][:scale],2)^2] for i in 1:M[mSet][:nVarCov]]...)
