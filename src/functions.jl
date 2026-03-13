@@ -344,13 +344,13 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
 	end
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
-		println("$(M[mSet].scale[]),$(M[mSet].df[])")
+		#println("$(M[mSet].scale[]),$(M[mSet].df[])")
 		#inMarkers = findall([any(c.!=0) for c in eachcol(delta[M[mSet].pos])])
 		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
 		#println("N inmarkers = $(length(inMarkers))")
 		scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(mean(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))))
 		#NEW
-		println("new scale: $(scaleEst)")
+		#println("new scale: $(scaleEst)")
 		setindex!(M[mSet].scale, scaleEst,1)
 
 		tempdf = 2 #one for each for the 4+1 
@@ -360,7 +360,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			dfScaleInvChi = 2*dfIG
 			tempdf += dfScaleInvChi
 		end
-		println("new DF: $(tempdf/length(mSet))")
+		#println("new DF: $(tempdf/length(mSet))")
 		setindex!(M[mSet].df,tempdf/length(mSet),1)
 
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
@@ -458,9 +458,7 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 			invLHS::Array{Float64,2} = inv(M[mSet][:deltaHat][locus]*(getindex(M[mSet].mpm,locus)*M[mSet][:deltaHat][locus].*iVarE) .+ iVarBeta)
 			meanBETA = vec(invLHS*RHS)			
 			setindex!(beta[M[mSet].pos],rand(MvNormal(meanBETA,convert(Array,Symmetric(invLHS)))),:,locus)
-			#println("delta for this locus: $(M[mSet][:deltaHat][locus])")
-			#println("gamma for this locus: $(M[mSet][:gammaHat][locus])")
-			#setindex!(delta[M[mSet].pos],M[mSet][:gammaHat][locus],:,locus)
+			setindex!(delta[M[mSet].pos],M[mSet][:gammaHat][locus],:,locus) ###DOUBLE WORK
 
 			if isa(mSet,Tuple{Vararg{Symbol}}) #could also be Tuple{Vararg{Tuple{Vararg{Symbol}}}} which i will adapt later
 				#for i in 1:length(ySet)
@@ -477,21 +475,30 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
 	end
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
+		#println("$(M[mSet].scale[]),$(M[mSet].df[])")
+		#inMarkers = findall([any(c.!=0) for c in eachcol(delta[M[mSet].pos])])
+		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
+		#println("N inmarkers = $(length(inMarkers))")
+		scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(getindex(varBeta[mSet],inMarkers)) + inv(M[mSet].priorScale)))))
 		#NEW
-		setindex!(M[mSet].scale, scaleEst,1) 
+		println("new scale: $(scaleEst)")
+		setindex!(M[mSet].scale, scaleEst,1)
 
-		tempdf = 0
+		tempdf = 2 #one for each for the 4+1 
 		for m in 1:length(mSet)
-			inMarkers = findall(>(0),getindex.(M[mSet][:gammaHat],m))
-			#inMarkers = getindex.(inMarkers,2)
+			inMarkers = findall(>(0),getindex(beta[M[mSet].pos],m,:))
 			dfIG,scaleIG = sampleScaleDFofVar(getindex.(getindex(varBeta[mSet],inMarkers),m,m))
 			dfScaleInvChi = 2*dfIG
-			tempdf += dfScaleInvChi+1
+			tempdf += dfScaleInvChi
 		end
-		setindex!(M[mSet].df, rand(3.0:5.0),1)
-		
+		println("new DF: $(tempdf/length(mSet))")
+		setindex!(M[mSet].df,tempdf/length(mSet),1)
+
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
-	else nothing
+		nothing
+	else 
+		println("$(M[mSet].scale),$(M[mSet].df)")
+		nothing
 	end
 end
 
