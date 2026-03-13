@@ -105,6 +105,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 					elseif isa(mSet,Tuple)
 						inOut.outMCMC(outPut,"var_"*join(mSet, "_"),hcat(reduce(hcat,varBeta[mSet])...))
 						inOut.outMCMC(outPut,"scale_"*join(mSet, "_"),hcat(reduce(hcat,M[mSet].scale)...))
+						inOut.outMCMC(outPut,"df$(mSet)",hcat(reduce(hcat,M[mSet].df)...))
 
 					end
 				end
