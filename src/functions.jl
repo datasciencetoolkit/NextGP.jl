@@ -366,7 +366,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 		nothing
 	else 
-		println("$(M[mSet].scale),$(M[mSet].df)")
+		#println("$(M[mSet].scale),$(M[mSet].df)")
 		nothing
 	end
 end
@@ -497,7 +497,7 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 		nothing
 	else 
-		println("$(M[mSet].scale),$(M[mSet].df)")
+		#println("$(M[mSet].scale),$(M[mSet].df)")
 		nothing
 	end
 end
