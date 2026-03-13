@@ -482,7 +482,7 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(varBeta[mSet][1]) + inv(M[mSet].priorScale)))))
 		#NEW
 		setindex!(M[mSet].scale, scaleEst,1)
-		setindex!(M[mSet].df,rand(4:5),1)
+		setindex!(M[mSet].df,rand(Uniform(4,5)),1)
 
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 		nothing
