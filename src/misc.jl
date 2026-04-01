@@ -124,7 +124,7 @@ function makeG(inputFile::String;method=1)
 		thisM ./= sqrt2pq
 		G = (thisM*thisM')./length(p)
 	elseif method==0
-		G = (thisM*thisM') ./ length(p)
+		G = (thisM*thisM')./length(p)
 	else error("enter a valid method")
 	end
 	G .+= Matrix(0.001*I,size(thisM,1),size(thisM,1))  
@@ -140,15 +140,18 @@ function makeG(thisM::Array{Float64,2};method=1)
         q = 1.0 .- p
         thisM .-= mean(thisM,dims=1)
         if method==1
-                G = (thisM*thisM') ./ sum(2.0 .* p.*q)
+            G = (thisM*thisM') ./ sum(2.0 .* p.*q)
         elseif method==2
-                sqrt2pq = sqrt(2.0 .* p.*q)
-                replace!(sqrt2pq,Inf=>0)
-                thisM ./= sqrt2pq
-                G = (thisM*thisM')./length(p)
+            sqrt2pq = sqrt(2.0 .* p.*q)
+            replace!(sqrt2pq,Inf=>0)
+            thisM ./= sqrt2pq
+            G = (thisM*thisM')./length(p)
+		elseif method==0
+			G = (thisM*thisM')./length(p)
         else error("enter a valid method")
         end
-	G .+= Matrix(0.001*I,size(thisM,1),size(thisM,1))
+		G .+= Matrix(0.001*I,size(thisM,1),size(thisM,1))
+		println("G")
         return G
 end
 
