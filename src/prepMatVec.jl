@@ -143,13 +143,10 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			thisM = Matrix{Float64}(thisM)
 			isempty(v.map) ? nowMap=[] : nowMap=v.map
 			
-			#str field can only be in GBLUP for marker related analysis
-			#if haskey(priorVCV,k) && in(:str,fieldnames(typeof(priorVCV[k])))
-			#	iGRel = Symmetric(inv(makeG(thisM;method=priorVCV[k].type)))
-			#	push!(summarize,[k,"GBLUP",typeof(iGRel),size(iGRel,2)])
-			#	Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>iGRel,:dims=>size(iGRel),:levels=>["Ind$i" for i in 1:size(thisM,2)]) 	
 			if isa(priorVCV[k],GBLUPType)
 				Ginv = Symmetric(inv(makeG(thisM;method=priorVCV[k].methodG)))
+				println("typeof Ginv: $(typeof(Ginv))")
+				println("G: $G")
 				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>Ginv,:dims=>size(Ginv),:levels=>:levels=>["Ind$i" for i in 1:size(thisM,2)]) 	
 				push!(summarize,[k,"GBLUP",typeof(Ginv),size(Ginv,2)])
 			else
