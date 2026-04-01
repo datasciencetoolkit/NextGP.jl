@@ -151,6 +151,7 @@ function makeG(thisM::Array{Float64,2};method=1)
         else error("enter a valid method")
         end
 		G .+= Matrix(0.001*I,size(thisM,1),size(thisM,1))
+		println("typeof G: $(typeof(G))")
 		println("G")
         return G
 end
