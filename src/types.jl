@@ -92,7 +92,7 @@ struct CorrelatedMarkerTerm <: RandomMarkerEffect
 end
 
 """
-        function SNP(name,path;map="")
+        function SNP(name,path;map="") or SNP(variance;weights)
 * Defines SNP information for further analysis.
 * `path` is the path for the marker file, or the matrix for the marker genotypes.
 * Marker files are currently expected to be ordered as the phenotype data.
@@ -104,18 +104,18 @@ SNP(name::Symbol,path::Union{Matrix{Float64},String};map::String="") = GenomicTe
 SNP(name::Symbol,path::Union{Matrix{Float64},String},map::String="") = GenomicTerm(name,path,map)
 SNP(name::Symbol,path::Symbol,map::String="") = GenomicTerm(name,path,map)
 
-
-
+"""
+        function GBLUP(variance;weights,methodG)
+* `variance` is an estimate of the variance
+* `weights` is the vector of weights
+* `methodG` is the vanRaden methods (1 and 2) for calculating G matrix, or simply G=MM'/k if "0"
+"""
 struct GBLUPType <: RandomEffect
-    v::Union{Matrix{Float64},Vector{Float64},Float64}
-	w::Vector{Float64}
+    variance::Union{Matrix{Float64},Vector{Float64},Float64}
+	weights::Vector{Float64}
+	methodG::Int #specific method 0, 1 or 2?
 end
-
-"""
-        function GBLUP(v)
-* `v` is an estimate of the variance
-* `w` is the vector of weights
-"""
+GBLUP(variance::Float64;weights::Vector{Float64},methodG::Int) = GBLUPType(variance,weights,methodG)
 
 struct BayesPRType <: RandomMarkerEffect
     r::Int
