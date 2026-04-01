@@ -77,7 +77,7 @@ end
 function setVarCovStrU!(eSet::Symbol,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},Z::OrderedDict,priorVCV,varU::Dict)
 	println("SETTING VARCOV FOR $zSet")
 	println("priorVCV: $priorVCV")
-	if  haskey(priorVCV,zSet) && isa(RandomEffectType,priorVCV[zSet])
+	if  haskey(priorVCV,zSet) && isa(priorVCV[zSet],RandomEffectType)
 		println("priorVCV haskey $zSet and is a RandomEffectType")
 		if isempty(priorVCV[zSet].str) || priorVCV[zSet].str=="I" 
 			printstyled("prior var-cov structure for $zSet is either empty or \"I\" was given. An identity matrix will be used\n"; color = :green)
@@ -88,7 +88,7 @@ function setVarCovStrU!(eSet::Symbol,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},Z
 		else 	
 			error("provide a valid prior var-cov structure (\"I\", \"D\" or leave it empty \"[]\") for \"e\" ")
 		end
-	elseif haskey(priorVCV,zSet) && isa(GBLUPType,priorVCV[zSet])
+	elseif haskey(priorVCV,zSet) && isa(priorVCV[zSet],GBLUPType)
 		println("priorVCV haskey $zSet and is a GBLUPType")
 		printstyled("prior var-cov structure for $zSet is G. Computed G matrix will be used\n"; color = :green)
 		#isa(zSet,Tuple) ? Z[zSet][:iVarStr] = Z[zSet[1]][:iVarStr] : Z[zSet][:iVarStr] = Z[zSet][:iVarStr]
