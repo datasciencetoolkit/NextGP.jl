@@ -23,7 +23,8 @@ using ProgressMeter
 
 include("types.jl")
 #exporting run-time equivalent of functions
-export Random,PED,SNP,BayesPRType,SummaryStatistics
+#export Random,PED,SNP,BayesPRType,SummaryStatistics
+export Random,PED,SNP,GBLUP,SummaryStatistics
 
 include("misc.jl")
 include("outFiles.jl")
