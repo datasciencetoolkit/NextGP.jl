@@ -115,7 +115,7 @@ struct GBLUPType <: RandomEffect
 	weights::Vector{Float64}
 	methodG::Int #specific method 0, 1 or 2?
 end
-GBLUP(variance::Float64;weights::Vector{Float64},methodG::Int) = GBLUPType(variance,weights,methodG)
+GBLUP(variance::Float64;weights::Vector{Float64}=[],methodG::Int=1) = GBLUPType(variance,weights,methodG)
 
 struct BayesPRType <: RandomMarkerEffect
     r::Int
