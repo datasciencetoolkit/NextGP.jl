@@ -148,7 +148,8 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			#	iGRel = Symmetric(inv(makeG(thisM;method=priorVCV[k].type)))
 			#	push!(summarize,[k,"GBLUP",typeof(iGRel),size(iGRel,2)])
 			#	Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>iGRel,:dims=>size(iGRel),:levels=>["Ind$i" for i in 1:size(thisM,2)]) 	
-			if in(:str,fieldnames(typeof(priorVCV[k])))
+			if isa(priorVCV[k],GBLUPType)
+				println("I have GBLUP type")
 			else
 				thisM .-= mean(thisM,dims=1)
 				M[k] = Dict(:data=>thisM,:map=>nowMap,:method=>"SNP",:str=>"I",:iVarStr=>[],:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 			
