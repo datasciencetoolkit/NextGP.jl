@@ -146,7 +146,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			if isa(priorVCV[k],GBLUPType)
 				Ginv = Symmetric(inv(makeG(thisM;method=priorVCV[k].methodG)))
 				println("typeof Ginv: $(typeof(Ginv))")
-				println("G: $G")
+				println("Ginv: $Ginv")
 				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>Ginv,:dims=>size(Ginv),:levels=>:levels=>["Ind$i" for i in 1:size(thisM,2)]) 	
 				push!(summarize,[k,"GBLUP",typeof(Ginv),size(Ginv,2)])
 			else
