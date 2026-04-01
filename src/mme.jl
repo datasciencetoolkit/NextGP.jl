@@ -200,6 +200,7 @@ function MMEZ!(Z,u,varU,posZcounter,eSet::Symbol,E,priorVCV,modelInformation,sum
 	end
 
 	for zSet in keys(Z)
+		println("zSet in keys(Z) $(Z[zSet])")
 		setVarCovStrU!(eSet,zSet,Z,priorVCV,varU)
 	end
 	
