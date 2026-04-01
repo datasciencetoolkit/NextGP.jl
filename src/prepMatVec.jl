@@ -144,11 +144,11 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			isempty(v.map) ? nowMap=[] : nowMap=v.map
 			
 			#str field can only be in GBLUP for marker related analysis
-			if haskey(priorVCV,k) && in(:str,fieldnames(typeof(priorVCV[k])))
-				iGRel = Symmetric(inv(makeG(thisM;method=priorVCV[k].type)))
-				push!(summarize,[k,"GBLUP",typeof(iGRel),size(iGRel,2)])
-				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>iGRel,:dims=>size(iGRel),:levels=>["Ind$i" for i in 1:size(thisM,2)]) 	
-		
+			#if haskey(priorVCV,k) && in(:str,fieldnames(typeof(priorVCV[k])))
+			#	iGRel = Symmetric(inv(makeG(thisM;method=priorVCV[k].type)))
+			#	push!(summarize,[k,"GBLUP",typeof(iGRel),size(iGRel,2)])
+			#	Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>iGRel,:dims=>size(iGRel),:levels=>["Ind$i" for i in 1:size(thisM,2)]) 	
+			if in(:str,fieldnames(typeof(priorVCV[k])))
 			else
 				thisM .-= mean(thisM,dims=1)
 				M[k] = Dict(:data=>thisM,:map=>nowMap,:method=>"SNP",:str=>"I",:iVarStr=>[],:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 			
@@ -168,10 +168,10 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			Z[k] = Dict(:data=>thisZ,:method=>"BLUP",:str=>"A",:iVarStr=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
 			push!(summarize,[k,"PED",typeof(thisZ),size(thisZ,2)])
 			thisZ = 0                
-                else    
+        else    
 			X[k] = designMat(k,v,inputData)
 			push!(summarize,[k,typeof(k),typeof(X[k][:data]),X[k][:nCol]])
-                end
+            end
         end
 
 	
