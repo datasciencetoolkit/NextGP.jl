@@ -68,7 +68,6 @@ end
 struct RandomEffectType <: RandomEffect
     str::Any
     v::Union{Matrix{Float64},Vector{Float64},Float64}
-    type::Int
 end
 
 """
@@ -76,7 +75,7 @@ end
 * `str` is either `I` for identity matrix, or `D` for weighted residuals
 * `v` is an estimate of the variance
 """
-Random(str::Any,v::Union{Matrix{Float64},Float64};type=1) = RandomEffectType(str,v,type)
+Random(str::Any,v::Union{Matrix{Float64},Float64}) = RandomEffectType(str,v)
 
 
 struct SummaryStatistics
@@ -104,6 +103,19 @@ end
 SNP(name::Symbol,path::Union{Matrix{Float64},String};map::String="") = GenomicTerm(name,path,map)
 SNP(name::Symbol,path::Union{Matrix{Float64},String},map::String="") = GenomicTerm(name,path,map)
 SNP(name::Symbol,path::Symbol,map::String="") = GenomicTerm(name,path,map)
+
+
+
+struct GBLUPType <: RandomEffect
+    v::Union{Matrix{Float64},Vector{Float64},Float64}
+	w::Vector{Float64}
+end
+
+"""
+        function GBLUP(v)
+* `v` is an estimate of the variance
+* `w` is the vector of weights
+"""
 
 struct BayesPRType <: RandomMarkerEffect
     r::Int
