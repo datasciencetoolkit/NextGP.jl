@@ -111,11 +111,11 @@ SNP(name::Symbol,path::Symbol,map::String="") = GenomicTerm(name,path,map)
 * `methodG` is the vanRaden methods (1 and 2) for calculating G matrix, or simply G=MM'/k if "0"
 """
 struct GBLUPType <: RandomEffect
-    variance::Union{Matrix{Float64},Vector{Float64},Float64}
+    variance::Float64
 	weights::Vector{Float64}
 	methodG::Int #specific method 0, 1 or 2?
 end
-GBLUP(variance::Float64;weights::Vector{Float64}=[],methodG::Int=1) = GBLUPType(variance,weights,methodG)
+GBLUP(variance::Float64;weights::Vector{Float64}=Float64[],methodG::Int=1) = GBLUPType(variance,weights,methodG)
 
 struct BayesPRType <: RandomMarkerEffect
     r::Int
