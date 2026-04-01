@@ -131,6 +131,11 @@ function makeG(inputFile::String;method=1)
 	return G	
 end
 
+
+function isInforNaN(c)
+    all(.!isfinite.(c)) || all(isnan.(c))
+end
+
 """
         makeG(inputData::Array{Float64,2};method=1)
 Makes genomic relationship matrix based on vanRaden method 1 (defult) or method 2
@@ -143,8 +148,10 @@ function makeG(thisM::Array{Float64,2};method=1)
             G = (thisM*thisM') ./ sum(2.0 .* p.*q)
         elseif method==2
             sqrt2pq = sqrt(2.0 .* p.*q)
-            replace!(sqrt2pq,Inf=>0)
+            #replace!(sqrt2pq,Inf=>0)
             thisM ./= sqrt2pq
+			exclude = findall([isInforNaN(c) for c in eachcol(thisM)])
+			thisM = thisM[:,Not(exclude)]
             G = (thisM*thisM')./length(p)
 		elseif method==0
 			G = (thisM*thisM')./length(p)
