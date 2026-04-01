@@ -123,6 +123,8 @@ function makeG(inputFile::String;method=1)
 		replace!(sqrt2pq,Inf=>0)
 		thisM ./= sqrt2pq
 		G = (thisM*thisM')./length(p)
+	elseif method==0
+		G = (thisM*thisM') ./ length(p)
 	else error("enter a valid method")
 	end
 	G .+= Matrix(0.001*I,size(thisM,1),size(thisM,1))  
