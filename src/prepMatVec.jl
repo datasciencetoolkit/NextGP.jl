@@ -144,14 +144,15 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			thisM = Matrix{Float64}(thisM)
 			isempty(v.map) ? nowMap=[] : nowMap=v.map
 
-			if isa(v,GBLUPType)
+			if haskey(priorVCV,k) && isa(priorVCV[k],GBLUPType)
 				Ginv = inv(makeG(thisM;method=priorVCV[k].methodG))
 				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>Ginv,:dims=>size(Ginv),:levels=>["Ind$i" for i in 1:size(Ginv,2)]) 	
 				push!(summarize,[k,"GBLUP",typeof(Ginv),size(Ginv,2)])
-			else
+			elseif haskey(priorVCV,k) && !isa(priorVCV[k],GBLUPType)
 				thisM .-= mean(thisM,dims=1)
 				M[k] = Dict(:data=>thisM,:map=>nowMap,:method=>"SNP",:str=>"I",:iVarStr=>[],:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 			
 				push!(summarize,[k,"Marker Effect",typeof(thisM),size(thisM,2)])
+			else 
 			end
 			thisM = 0
 		elseif isa(v,PedigreeTerm)
