@@ -133,7 +133,6 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 	Ainv = []
 
         for (k,v) in modelRHSTerms
-		println("$k , $v")
 		if isa(v,GenomicTerm)			
 			isempty(v.map) ? nowMap=[] : nowMap=v.map
 			if haskey(priorVCV,k) && isa(priorVCV[k],GBLUPType) && isempty(priorVCV[k].G)
