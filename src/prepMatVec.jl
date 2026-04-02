@@ -135,24 +135,33 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
         for (k,v) in modelRHSTerms
 		println("$k , $v")
 		if isa(v,GenomicTerm)			
-			thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
-			#drops cols if any value is missing. Later should check map files etc..
-			thisM = thisM[:,.!(any.(ismissing, eachcol(thisM)))]
-			#
-			println("typeof(thisM) $(typeof(thisM))")
-			println(thisM[1:5,1:5])
-			thisM = Matrix{Float64}(thisM)
 			isempty(v.map) ? nowMap=[] : nowMap=v.map
-
-			if haskey(priorVCV,k) && isa(priorVCV[k],GBLUPType)
-				Ginv = inv(makeG(thisM;method=priorVCV[k].methodG))
-				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>Ginv,:dims=>size(Ginv),:levels=>["Ind$i" for i in 1:size(Ginv,2)]) 	
+			if haskey(priorVCV,k) && isa(priorVCV[k],GBLUPType) && isempty(priorVCV[k].G)
+				println("GBLUP WITH COMPUTED G")
+				thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
+				#drops cols if any value is missing. Later should check map files etc..
+				thisM = thisM[:,.!(any.(ismissing, eachcol(thisM)))]
+				#
+				thisM = Matrix{Float64}(thisM)
+				
+				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(makeG(thisM;method=priorVCV[k].methodG)),:dims=>size(Ginv),:levels=>["Ind$i" for i in 1:size(Ginv,2)]) 	
 				push!(summarize,[k,"GBLUP",typeof(Ginv),size(Ginv,2)])
-			elseif haskey(priorVCV,k) && !isa(priorVCV[k],GBLUPType)
+			elseif haskey(priorVCV,k) && isa(priorVCV[k],GBLUPType) && !isempty(priorVCV[k].G)
+				println("GBLUP WITH GIVEN G")
+				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(priorVCV[k].G),:dims=>size(Ginv),:levels=>["Ind$i" for i in 1:size(Ginv,2)]) 	
+				push!(summarize,[k,"GBLUP",typeof(Ginv),size(Ginv,2)])
+			elseif haskey(priorVCV,k) && isa(priorVCV[k],MarkerEffectType)
+				println("MARKER EFFECT TYPE")
+				thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
+				#drops cols if any value is missing. Later should check map files etc..
+				thisM = thisM[:,.!(any.(ismissing, eachcol(thisM)))]
+				#
+				thisM = Matrix{Float64}(thisM)
+				
 				thisM .-= mean(thisM,dims=1)
 				M[k] = Dict(:data=>thisM,:map=>nowMap,:method=>"SNP",:str=>"I",:iVarStr=>[],:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 			
 				push!(summarize,[k,"Marker Effect",typeof(thisM),size(thisM,2)])
-			else 
+			else throw(ArgumentError("Could not understand the analysis method for $k"))
 			end
 			thisM = 0
 		elseif isa(v,PedigreeTerm)
