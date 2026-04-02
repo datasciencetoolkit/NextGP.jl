@@ -144,6 +144,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			isempty(v.map) ? nowMap=[] : nowMap=v.map
 			
 			if isa(v,GBLUPType)
+				println("$v is a GBLUPType")
 				Ginv = inv(makeG(thisM;method=priorVCV[k].methodG))
 				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>Ginv,:dims=>size(Ginv),:levels=>["Ind$i" for i in 1:size(Ginv,2)]) 	
 				push!(summarize,[k,"GBLUP",typeof(Ginv),size(Ginv,2)])
