@@ -117,7 +117,7 @@ struct GBLUPType <: RandomEffect
 	G::Union{Matrix{Float64},String}
 end
 GBLUP(v::Float64;w::Vector{Float64}=Float64[],methodG::Int=1,G::String="") = GBLUPType(v,w,methodG,G)
-#GBLUP(v::Float64;w::Vector{Float64}=Float64[],methodG::Int=1,G::Matrix{Float64}=Matrix{Float64}(undef,0,0)) = GBLUPType(v,w,methodG,G)
+GBLUP(v::Float64;w::Vector{Float64}=Float64[],methodG::Int=1,G::Matrix{Float64}=Matrix{Float64}(undef,0,0)) = GBLUPType(v,w,methodG,G)
 
 
 struct BayesPRType <: RandomMarkerEffect
