@@ -145,12 +145,12 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 				thisM = Matrix{Float64}(thisM)
 				
 				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(makeG(thisM;method=priorVCV[k].methodG)),:dims=>size(Ginv),:levels=>["Ind$i" for i in 1:size(Ginv,2)]) 	
-				push!(summarize,[k,"GBLUP",typeof(Ginv),size(Ginv,2)])
+				push!(summarize,[k,"GBLUP",typeof(Z[k][:iVarStr]),size(Z[k][:iVarStr],1)])
 			elseif haskey(priorVCV,k) && isa(priorVCV[k],GBLUPType) && !isempty(priorVCV[k].G)
 				println("GBLUP WITH GIVEN G")
 				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(priorVCV[k].G),:dims=>size(Ginv),:levels=>["Ind$i" for i in 1:size(Ginv,2)]) 	
-				push!(summarize,[k,"GBLUP",typeof(Ginv),size(Ginv,2)])
-			elseif haskey(priorVCV,k) && isa(priorVCV[k],RandomMarkerEffectType)
+				push!(summarize,[k,"GBLUP",typeof(G),size(G,1)])
+			elseif haskey(priorVCV,k) && isa(priorVCV[k],RandomMarkerEffect)
 				println("MARKER EFFECT TYPE")
 				thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
 				#drops cols if any value is missing. Later should check map files etc..
