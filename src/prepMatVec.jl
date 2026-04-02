@@ -141,17 +141,22 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 				#drops cols if any value is missing. Later should check map files etc..
 				thisM = thisM[:,.!(any.(ismissing, eachcol(thisM)))]
 				#
-				thisM = Matrix{Float64}(thisM)
+				thisM = Union{Int64,Matrix{Float64}}(thisM)
+				thisM = map(Int, thisM[:,1]) #I convert first column to Int to make sure it is correctly matches with IDs in the input data
 				
-				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(makeG(thisM;method=priorVCV[k].methodG)),:dims=>size(thisM,1),:levels=>["Ind$i" for i in 1:size(thisM,1)]) 	
+				ids,thisZ = make_ran_matrix(inputData[!,:ID],thisM[:,1])
+				G = makeG(thisM[:,2:end];method=priorVCV[k].methodG) #ignore my fake numerical IDs
+				Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(G),:dims=>size(thisM,1),:levels=>ids) 	
 				push!(summarize,[k,"GBLUP",typeof(Z[k][:iVarStr]),size(Z[k][:iVarStr],1)])
 			elseif haskey(priorVCV,k) && isa(priorVCV[k],GBLUPType) && !isempty(priorVCV[k].G)
 				println("GBLUP WITH GIVEN G")
 				if isa(priorVCV[k].G,Matrix{Float64})
-					Z[k] = Dict(:data=>Matrix(1.0*I,size(priorVCV[k].G,1),size(priorVCV[k].G,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(priorVCV[k].G),:dims=>size(priorVCV[k].G),:levels=>["Ind$i" for i in 1:size(priorVCV[k].G,2)])
-				elseif isa(priorVCV[k].G,String)
+					ids,thisZ = make_ran_matrix(inputData[!,:ID],priorVCV[k].G[:,1]) #first column must be integer ID!! Currently not very flexible
+					Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(priorVCV[k].G),:dims=>size(priorVCV[k].G),:levels=>ids)
+				elseif isa(priorVCV[k].G,String) #not working because of type.jl part. GBLUP with string not exported for some reason. Fix later
 					G = CSV.read(priorVCV[k].G,CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used
-					Z[k] = Dict(:data=>Matrix(1.0*I,size(G,1),size(G,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(G),:dims=>size(G),:levels=>["Ind$i" for i in 1:size(G,2)])
+					ids,thisZ = make_ran_matrix(inputData[!,:ID],G[:,1]) #first column must be integer ID!! Currently not very flexible
+					Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(G),:dims=>size(G),:levels=>ids)
 					G = 0
 				end
 				push!(summarize,[k,"GBLUP",typeof(Z[k][:iVarStr]),size(Z[k][:iVarStr],1)])
@@ -169,6 +174,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			else throw(ArgumentError("Could not understand the analysis method for $k"))
 			end
 			thisM = 0
+			thisZ = 0
 		elseif isa(v,PedigreeTerm)
 			if isempty(pedigree)
 				println("pedigree is being computed for $k")
