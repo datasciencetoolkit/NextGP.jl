@@ -152,11 +152,11 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 				println("GBLUP WITH GIVEN G")
 				if isa(priorVCV[k].G,Matrix{Union{Float64,Int64}})
 					ids,thisZ = make_ran_matrix(inputData[!,:ID],priorVCV[k].G[:,1]) #first column must be integer ID!! Currently not very flexible
-					Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(priorVCV[k].G),:dims=>size(priorVCV[k].G),:levels=>ids)
+					Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(priorVCV[k].G[:,2:end]),:dims=>size(priorVCV[k].G),:levels=>ids) #first col is ID
 				elseif isa(priorVCV[k].G,String) #not working because of type.jl part. GBLUP with string not exported for some reason. Fix later
 					G = CSV.read(priorVCV[k].G,CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used
 					ids,thisZ = make_ran_matrix(inputData[!,:ID],G[:,1]) #first column must be integer ID!! Currently not very flexible
-					Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(G),:dims=>size(G),:levels=>ids)
+					Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(G[:,2:end]),:dims=>size(G),:levels=>ids)
 					G = 0
 				end
 				push!(summarize,[k,"GBLUP",typeof(Z[k][:iVarStr]),size(Z[k][:iVarStr],1)])
