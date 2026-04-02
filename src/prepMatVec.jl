@@ -150,7 +150,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 				println("GBLUP WITH GIVEN G")
 				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(priorVCV[k].G),:dims=>size(Ginv),:levels=>["Ind$i" for i in 1:size(Ginv,2)]) 	
 				push!(summarize,[k,"GBLUP",typeof(Ginv),size(Ginv,2)])
-			elseif haskey(priorVCV,k) && isa(priorVCV[k],MarkerEffectType)
+			elseif haskey(priorVCV,k) && isa(priorVCV[k],RandomMarkerEffectType)
 				println("MARKER EFFECT TYPE")
 				thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
 				#drops cols if any value is missing. Later should check map files etc..
