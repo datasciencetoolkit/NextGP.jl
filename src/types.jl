@@ -104,20 +104,21 @@ SNP(name::Symbol,path::Union{Matrix{Float64},String};map::String="") = GenomicTe
 SNP(name::Symbol,path::Union{Matrix{Float64},String},map::String="") = GenomicTerm(name,path,map)
 SNP(name::Symbol,path::Symbol,map::String="") = GenomicTerm(name,path,map)
 
-"""
-        function GBLUP(v;w,methodG)
-* `v` is an estimate of the variance
-* `w` is the vector of weights
-* `methodG` is the vanRaden methods (1 and 2) for calculating G matrix, or simply G=MM'/k if "0"
-"""
 struct GBLUPType <: RandomEffect
     v::Float64
 	w::Vector{Float64}
 	methodG::Int #specific method 0, 1 or 2?
 	G::Union{Matrix{Float64},String}
 end
-GBLUP(v::Float64;w::Vector{Float64}=Float64[],methodG::Int=1,G::String="") = GBLUPType(v,w,methodG,G)
-GBLUP(v::Float64;w::Vector{Float64}=Float64[],methodG::Int=1,G::Matrix{Float64}=Matrix{Float64}(undef,0,0)) = GBLUPType(v,w,methodG,G)
+
+"""
+        function GBLUP(v;w,methodG,G)
+* `v` is an estimate of the variance
+* `w` is the vector of weights
+* `methodG` is the vanRaden methods (1 and 2) for calculating G matrix, or simply G=MM'/k if "0"
+"""
+GBLUP(v::Float64,w::Vector{Float64}=Float64[],methodG::Int=1,G::String="") = GBLUPType(v,w,methodG,G)
+GBLUP(v::Float64,w::Vector{Float64}=Float64[],methodG::Int=1,G::Matrix{Float64}=Matrix{Float64}(undef,0,0)) = GBLUPType(v,w,methodG,G)
 
 
 struct BayesPRType <: RandomMarkerEffect
