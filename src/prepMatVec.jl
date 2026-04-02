@@ -144,7 +144,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 				#
 				thisM = Matrix{Float64}(thisM)
 				
-				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(makeG(thisM;method=priorVCV[k].methodG)),:dims=>size(G),:levels=>["Ind$i" for i in 1:size(G,2)]) 	
+				Z[k] = Dict(:data=>Matrix(1.0*I,size(thisM,1),size(thisM,1)),:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(makeG(thisM;method=priorVCV[k].methodG)),:dims=>size(thisM,1),:levels=>["Ind$i" for i in 1:size(thisM,1)]) 	
 				push!(summarize,[k,"GBLUP",typeof(Z[k][:iVarStr]),size(Z[k][:iVarStr],1)])
 			elseif haskey(priorVCV,k) && isa(priorVCV[k],GBLUPType) && !isempty(priorVCV[k].G)
 				println("GBLUP WITH GIVEN G")
