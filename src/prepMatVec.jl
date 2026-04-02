@@ -133,6 +133,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 	Ainv = []
 
         for (k,v) in modelRHSTerms
+		println("k, v")
 		if isa(v,GenomicTerm)			
 			thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
 			#drops cols if any value is missing. Later should check map files etc..
@@ -142,8 +143,6 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			println(thisM[1:5,1:5])
 			thisM = Matrix{Float64}(thisM)
 			isempty(v.map) ? nowMap=[] : nowMap=v.map
-							
-			println("TYPOF v $(typeof(v))")
 
 			if isa(v,GBLUPType)
 				Ginv = inv(makeG(thisM;method=priorVCV[k].methodG))
