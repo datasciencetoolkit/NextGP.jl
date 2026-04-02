@@ -141,7 +141,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 				#drops cols if any value is missing. Later should check map files etc..
 				thisM = thisM[:,.!(any.(ismissing, eachcol(thisM)))]
 				#
-				thisM = Union{Int64,Matrix{Float64}}(thisM)
+				thisM = Matrix{Union{Float64,Int64}}(thisM)
 				thisM = map(Int, thisM[:,1]) #I convert first column to Int to make sure it is correctly matches with IDs in the input data
 				
 				ids,thisZ = make_ran_matrix(inputData[!,:ID],thisM[:,1])
