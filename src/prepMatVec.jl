@@ -145,8 +145,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 				thisM = map(Int, thisM[:,1]) #I convert first column to Int to make sure it is correctly matches with IDs in the input data
 				
 				ids,thisZ = make_ran_matrix(inputData[!,:ID],thisM[:,1])
-				G = makeG(thisM[:,2:end];method=priorVCV[k].methodG) #ignore my fake numerical IDs
-				Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(G),:dims=>size(thisM,1),:levels=>ids) 	
+				Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(makeG(thisM[:,2:end];method=priorVCV[k].methodG)),:dims=>size(thisM,1),:levels=>ids) 	
 				push!(summarize,[k,"GBLUP",typeof(Z[k][:iVarStr]),size(Z[k][:iVarStr],1)])
 			elseif haskey(priorVCV,k) && isa(priorVCV[k],GBLUPType) && !isempty(priorVCV[k].G)
 				println("GBLUP WITH GIVEN G")
