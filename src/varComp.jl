@@ -76,7 +76,6 @@ end
 #single-trait
 function setVarCovStrU!(eSet::Symbol,zSet::Union{Symbol,Tuple{Vararg{Symbol}}},Z::OrderedDict,priorVCV,varU::Dict)
 	println("SETTING VARCOV FOR $zSet")
-	println("priorVCV: $priorVCV")
 	if  haskey(priorVCV,zSet) && isa(priorVCV[zSet],RandomEffectType)
 		println("priorVCV haskey $zSet and is a RandomEffectType")
 		if isempty(priorVCV[zSet].str) || priorVCV[zSet].str=="I" 
