@@ -92,6 +92,8 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			inputData = getproperty(Main,f[1].data)
 		else throw(ArgumentError("Could not understand your data. Provide a file path or DataFrame"))
 		end
+		println("size of data set read: $(size(inputData))")
+		println("variables in the data set: $(names(inputData))")
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
 		if length(modelLHSTerms) == 1
 			inputData = prepData!(inputData,f[1])
