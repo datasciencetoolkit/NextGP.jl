@@ -17,12 +17,12 @@ include("mtBWGR.jl")
 
 
 function blockX!(X,eSet,blocks,modelInformation) #LHS is a Tuple
-	#println("modelInformation $modelInformation")
-	#println("dealing trait $eSet")
+	println("modelInformation $modelInformation")
+	println("dealing trait $eSet")
 	if haskey(blocks, eSet)
-		#println("blocking variables $blocks for trait $eSet")
+		println("blocking variables $blocks for trait $eSet")
 		for blk in blocks[eSet]
-			#println("blocking variable $blk for trait $eSet")
+			println("blocking variable $blk for trait $eSet")
 			X[blk] = Dict{Symbol, Any}()
 			X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
 			X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
