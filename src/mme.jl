@@ -632,7 +632,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	summarize = DataFrame(Effect=Any[],Type=Any[],Levels=Any[])
 	
 	for xSet in keys(X)
-		push!(summarize,[xSet,"Fixed",X[xSet][:nCol]]))
+		push!(summarize,[xSet,"Fixed",X[xSet][:nCol]])
 	end
 
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,alignment=:l)
