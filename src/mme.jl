@@ -22,13 +22,14 @@ function blockX!(X,eSet,blocks,modelInformation) #LHS is a Tuple
 	if haskey(blocks, eSet)
 		println("blocking variables $blocks for trait $eSet")
 		for blk in blocks[eSet]
-			println("blocking variable $blk for trait $eSet")
+			println("blocking variables $blk for trait $eSet")
 			X[blk] = Dict{Symbol, Any}()
 			X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
 			X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
 			X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
 			X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
 			modelInformation[eSet][blk] = BlockTerm(blk)  #push!(collect(values(modelInformation[eSet])),blk)
+			println("size $(size(X[blk][:data]))")
 			for d in blk
 				println("deleting $d")
 				delete!(X,d)
@@ -623,7 +624,22 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 
 	
 
-	#summarize analysis
+	#### summarize analysis ####
+	println("\n ---------------- Summary of analysis ---------------- \n")
+	
+	#fixed
+
+	summarize = DataFrame(Effect=Any[],Type=Any[],Levels=Any[])
+	
+	for xSet in keys(X)
+		push!(summarize,[xSet,"Fixed",X[xSet][:nCol]]))
+	end
+
+	pretty_table(summarize, tf = tf_markdown, show_row_number = false,alignment=:l)
+
+	
+	#random
+	
 	summarize = DataFrame(Effect=Any[],Type=Any[],Str=Any[],df=Any[],scale=Any[])
 	
 	for zSet in keys(Z)
@@ -638,7 +654,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	for eSet in keys(E)
 		push!(summarize,[eSet,"Random",E[eSet][:str],E[eSet][:df],E[eSet][:scale]])						
 	end
-	println("\n ---------------- Summary of analysis ---------------- \n")
+	
 	pretty_table(summarize, tf = tf_markdown, show_row_number = false,alignment=:l)
 
 
