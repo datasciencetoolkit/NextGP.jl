@@ -84,15 +84,21 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 	if length(f) == 1 #both traits have the same model terms
 		modelRHSTerms = getRHSTerms(f[1])
 		modelLHSTerms = getLHSTerms(f[1])
+		if isa(f[1].data,String)
+			println("reading data from: $(f[1].data)")
+			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
+		elseif isa(f[1].data,Symbol)
+			println("using $(f[1].data)")
+			inputData = getproperty(Main,f[1].data)
+		else throw(ArgumentError("Could not understand your data. Provide a file path or DataFrame"))
+		end
 		#yVec is a vector if one response variable, matrix otherwise. functions.jl may need to be changed to work with matrix yCorr also.
 		if length(modelLHSTerms) == 1
-			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			inputData = prepData!(inputData,f[1])
 			Y = makeX(inputData,f[1].lhs)[:data]
 			E[f[1].lhs] = Dict{Any,Any}()
 			modelInformation[collect(keys(modelLHSTerms))[]] = modelRHSTerms#keys(modelRHSTerms)
 		elseif length(modelLHSTerms) > 1
-			inputData = CSV.read(f[1].data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
 			Y = hcat([makeX(inputData,k)[:data] for (k,v) in modelLHSTerms]...)
 			E[Tuple(collect(keys(modelLHSTerms)))] = Dict{Any,Any}()
 			modelInformation[Tuple(collect(keys(modelLHSTerms)))] = modelRHSTerms #keys(modelRHSTerms)
