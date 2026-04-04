@@ -21,7 +21,8 @@ end
 #a general model structure with data added to the model
 struct LMM
 	model::Expr
-	data::String
+	data::Union{DataFrame,String}
+	#data::String
 end
 
 
