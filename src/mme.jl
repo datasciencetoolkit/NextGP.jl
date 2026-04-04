@@ -25,7 +25,7 @@ function blockX!(X,eSet,blocks,modelInformation) #LHS is a Tuple
 			println("blocking variable $blk for trait $eSet")
 			println("X: $(X[:HOL])")
 			X[blk] = Dict{Symbol, Any}()
-			X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
+			#X[blk][:data] = hcat(getindex.(getindex.(Ref(X), blk),:data)...)
 			X[blk][:levels] = vcat(getindex.(getindex.(Ref(X), blk),:levels)...)
 			X[blk][:nCol] = sum(getindex.(getindex.(Ref(X), blk),:nCol))
 			X[blk][:method] = first(getindex.(getindex.(Ref(X), blk),:method))
