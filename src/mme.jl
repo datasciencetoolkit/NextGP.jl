@@ -48,8 +48,8 @@ end
 
 #single-trait
 function MMEX!(X,b,posXcounter,eSet::Symbol,E,blocks,modelInformation,summaryStat)
-	println("eSet is a Symbol")
-	println("X: $X")
+	#println("eSet is a Symbol")
+	#println("X: $X")
 	blockX!(X,eSet,blocks,modelInformation)
         for xSet in keys(X)
 		posXcounter += 1 #position of this XSet's vector of effects in the big b vector
