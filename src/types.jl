@@ -11,7 +11,7 @@ ExprOrSymbolOrTuple = Union{Expr,Symbol,Tuple}
 
 #the core lmm structure
 struct lmm
-	data::String
+	data::Union{DataFrame,String} #String
 	model::Expr
 	sym::Any
 	lhs::Union{Symbol,Expr}
@@ -21,7 +21,7 @@ end
 #a general model structure with data added to the model
 struct LMM
 	model::Expr
-	data::Union{DataFrame,String}
+	data::Union{DataFrame,String} #::String
 	#data::String
 end
 
