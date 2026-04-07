@@ -144,7 +144,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 		if isa(v,GenomicTerm)			
 			isempty(v.map) ? nowMap=[] : nowMap=v.map
 			if haskey(priorVCV,k) && isa(priorVCV[k],GBLUPType) && isempty(priorVCV[k].G)
-				println("GBLUP WITH COMPUTED G")
+				println("GBLUP WITH COMPUTED G for $k")
 				thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
 				#drops cols if any value is missing. Later should check map files etc..
 				thisM = thisM[:,.!(any.(ismissing, eachcol(thisM)))]
@@ -156,10 +156,10 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 				Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(makeG(thisM[:,2:end];method=priorVCV[k].methodG)),:dims=>size(thisM,1),:levels=>ids) 	
 				push!(summarize,[k,"GBLUP",typeof(Z[k][:iVarStr]),size(Z[k][:iVarStr],1)])
 			elseif haskey(priorVCV,k) && isa(priorVCV[k],GBLUPType) && !isempty(priorVCV[k].G) 
-				println("GBLUP WITH GIVEN G")
+				println("GBLUP WITH GIVEN G for $k")
 				if isa(priorVCV[k].G,Matrix{Union{Float64,Int64}})
 					ids,thisZ = make_ran_matrix(inputData[!,:ID],priorVCV[k].G[:,1]) #first column must be integer ID!! Currently not very flexible
-					Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(priorVCV[k].G[:,2:end]),:dims=>size(priorVCV[k].G),:levels=>ids) #first col is ID
+					Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(Matrix{Float64}(priorVCV[k].G[:,2:end])),:dims=>size(priorVCV[k].G[:,2:end]),:levels=>ids) #first col is ID
 				elseif isa(priorVCV[k].G,String) #not working because of type.jl part. GBLUP with string not exported for some reason. Fix later
 					G = CSV.read(priorVCV[k].G,CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used
 					ids,thisZ = make_ran_matrix(inputData[!,:ID],G[:,1]) #first column must be integer ID!! Currently not very flexible. Add something similar to pedigree case. check original IDs
@@ -168,7 +168,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 				end
 				push!(summarize,[k,"GBLUP",typeof(Z[k][:iVarStr]),size(Z[k][:iVarStr],1)])
 			elseif haskey(priorVCV,k) && isa(priorVCV[k],RandomMarkerEffect)
-				println("MARKER EFFECT TYPE")
+				println("MARKER EFFECT TYPE for $k")
 				thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
 				#drops cols if any value is missing. Later should check map files etc..
 				thisM = thisM[:,.!(any.(ismissing, eachcol(thisM)))]
