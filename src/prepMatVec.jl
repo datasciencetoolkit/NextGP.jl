@@ -154,7 +154,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 				
 				ids,thisZ = make_ran_matrix(inputData[!,:ID],thisM[:,1])
 				Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(makeG(thisM[:,2:end];method=priorVCV[k].methodG)),:dims=>size(thisM,1),:levels=>ids) 	
-				push!(summarize,[k,"GBLUP",typeof(Z[k][:iVarStr]),size(Z[k][:iVarStr],1)])
+				push!(summarize,[k,typeof(modelInformation[k]),typeof(Z[k][:iVarStr]),size(Z[k][:iVarStr],1)])
 			elseif haskey(priorVCV,k) && isa(priorVCV[k],GBLUPType) && !isempty(priorVCV[k].G) 
 				println("GBLUP WITH GIVEN G for $k")
 				if isa(priorVCV[k].G,Matrix{Union{Float64,Int64}})
@@ -166,7 +166,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 					Z[k] = Dict(:data=>thisZ,:map=>nowMap,:method=>"GBLUP",:str=>"G",:iVarStr=>inv(G[:,2:end]),:dims=>size(G),:levels=>ids)
 					G = 0
 				end
-				push!(summarize,[k,"GBLUP",typeof(Z[k][:iVarStr]),size(Z[k][:iVarStr],1)])
+				push!(summarize,[k,typeof(modelInformation[k]),typeof(Z[k][:iVarStr]),size(Z[k][:iVarStr],1)])
 			elseif haskey(priorVCV,k) && isa(priorVCV[k],RandomMarkerEffect)
 				println("MARKER EFFECT TYPE for $k")
 				thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
@@ -177,7 +177,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 				
 				thisM .-= mean(thisM,dims=1)
 				M[k] = Dict(:data=>thisM,:map=>nowMap,:method=>"SNP",:str=>"I",:iVarStr=>[],:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 			
-				push!(summarize,[k,"Marker Effect",typeof(thisM),size(thisM,2)])
+				push!(summarize,[k,typeof(modelInformation[k]),typeof(thisM),size(thisM,2)])
 			else throw(ArgumentError("Could not understand the analysis method for $k"))
 			end
 			thisM = 0
@@ -193,11 +193,11 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 			IDs,thisZ = ranMat(k, :ID, inputData, pedigree)
 			ids = [pedigree[findall(i.==pedigree.ID),:origID][] for i in IDs]
 			Z[k] = Dict(:data=>thisZ,:method=>"BLUP",:str=>"A",:iVarStr=>Ainv,:dims=>size(Ainv),:levels=>ids) 	
-			push!(summarize,[k,"PED",typeof(thisZ),size(thisZ,2)])
+			push!(summarize,[k,typeof(modelInformation[k]),typeof(thisZ),size(thisZ,2)])
 			thisZ = 0                
         else    
 			X[k] = designMat(k,v,inputData)
-			push!(summarize,[k,typeof(k),typeof(X[k][:data]),X[k][:nCol]])
+			push!(summarize,[k,typeof(modelInformation[k]),typeof(X[k][:data]),X[k][:nCol]])
             end
         end
 
