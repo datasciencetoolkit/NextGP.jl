@@ -89,19 +89,12 @@ function sampleU(zSet::Union{Expr,Symbol},Z::OrderedDict,iVarE::Float64,varU::Di
 	iVarU = 1/varU[zSet]
 	Yi = Z[zSet].Zp*ycorr*iVarE #computation of Z'*D^-1*ycorr*iVarE for ALL  rhsU
 	nCol = length(uVec)
-
-	println("iVarU: $iVarU")
-	println("iVarE: $iVarE")
-	
 	for i in 1:nCol
         uVec[i] = 0.0 #also excludes individual from iMat! Nice trick.
 		rhsU = Yi[i] - iVarU*dot(view(Z[zSet].iVarStr,:,i),uVec)
         lhsU = getindex(Z[zSet].zpz,i)*iVarE + (view(Z[zSet].iVarStr,i,i)*iVarU)[1]
 		invLhsU = 1.0/lhsU
         meanU = invLhsU*rhsU
-		println("column $i")
-		println("lhs: $lhsU")
-		println("invLhsU: $invLhsU")
         uVec[i] = rand(Normal(meanU,sqrt(invLhsU)))
         end
 	return uVec
