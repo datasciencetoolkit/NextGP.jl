@@ -767,7 +767,7 @@ end
 #sample random effects' variances (new U)
 function sampleVarU(iMat,scale_ranVar,df_ranVar,effVec)
 	n = size(iMat,2)
-	return (effVec*iMat*effVec')[])/rand(Chisq(df_ranVar + n)) #(scale_ranVar*df_ranVar + (effVec*iMat*effVec')[])/rand(Chisq(df_ranVar + n))
+	return ((effVec*iMat*effVec')[])/rand(Chisq(df_ranVar + n)) #(scale_ranVar*df_ranVar + (effVec*iMat*effVec')[])/rand(Chisq(df_ranVar + n))
 end
 
 function sampleCoVarU(iMat,scale_ranVar,df_ranVar,effVec)
