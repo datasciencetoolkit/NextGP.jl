@@ -131,7 +131,7 @@ end
 function varCovZ!(Z,priorVCV)
 	for zSet ∈ keys(Z)
 		#df
-		Z[zSet][:df] = 3.0+size(priorVCV[zSet].v,1) - 4.0 ###########################remove this!!!!
+		Z[zSet][:df] = 3.0+size(priorVCV[zSet].v,1)
 		#scale
                 nZComp = size(priorVCV[zSet].v,1)
 		#priorVCV[zSet].v is a temporary solution
