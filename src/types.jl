@@ -61,7 +61,7 @@ PED(var::Union{Symbol,Expr},path::Union{Matrix{Float64},String}) = PedigreeTerm(
 
 struct GenomicTerm <: RandomMarkerEffect
     name::Symbol
-    path::Union{Matrix{Float64},String} #String
+    path::Union{Matrix{Float64},String,Symbol} #Maybe no need Matrix at all as it is read as symbol
     map::String
 end
 
