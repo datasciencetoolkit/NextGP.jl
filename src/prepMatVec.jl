@@ -172,7 +172,7 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 				if isa(v.path,String)
 					println("reading file $(v.path)")
 					thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used
-				elseif
+				elseif isa(v.path,Symbol)
 					println("using $(v.path)")
 					thisM = getproperty(Main,v.path)
 					println("using $(v.path) $(thisM[1:5,1:5])")
