@@ -101,8 +101,8 @@ end
 * One most avoid overlapping marker sets by using different `name`s.
 """
 #SNP(name::Symbol,path::Union{Matrix{Float64},String};map::String="") = GenomicTerm(name,path,map)
-#SNP(name::Symbol,path::Union{Matrix{Float64},String},map::String="") = GenomicTerm(name,path,map)
-SNP(name::Symbol,path::Symbol;map::String="") = GenomicTerm(name,path,map)
+SNP(name::Symbol,path::Union{Matrix{Float64},String,Symbol};map::String="") = GenomicTerm(name,path,map)
+#SNP(name::Symbol,path::Symbol;map::String="") = GenomicTerm(name,path,map)
 
 struct GBLUPType <: RandomEffect
     v::Float64
