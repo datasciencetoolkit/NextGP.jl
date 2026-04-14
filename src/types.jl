@@ -100,10 +100,9 @@ end
 * Map file is optional. If not provided, a Bayesian Regression model with common variance for all SNPs will be applied. If provided, shoul match the order in the genotype file.
 * One most avoid overlapping marker sets by using different `name`s.
 """
-#SNP(name::Symbol,path::Union{Matrix{Float64},String};map::String="") = GenomicTerm(name,path,map) #which one is actually working?
+#SNP(name::Symbol,path::Union{Matrix{Float64},String};map::String="") = GenomicTerm(name,path,map)
 #SNP(name::Symbol,path::Union{Matrix{Float64},String},map::String="") = GenomicTerm(name,path,map)
-#SNP(name::Symbol,path::Symbol,map::String="") = GenomicTerm(name,path,map)
-SNP(name::Symbol,path::Union{Matrix{Float64},String,Symbol};map::String="") = GenomicTerm(name,path,map)
+SNP(name::Symbol,path::Symbol;map::String="") = GenomicTerm(name,path,map)
 
 struct GBLUPType <: RandomEffect
     v::Float64
