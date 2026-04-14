@@ -61,7 +61,7 @@ PED(var::Union{Symbol,Expr},path::Union{Matrix{Float64},String}) = PedigreeTerm(
 
 struct GenomicTerm <: RandomMarkerEffect
     name::Symbol
-    path::String
+    path::Union{Matrix{Float64},String} #String
     map::String
 end
 
@@ -102,7 +102,8 @@ end
 """
 SNP(name::Symbol,path::Union{Matrix{Float64},String};map::String="") = GenomicTerm(name,path,map) #which one is actually working?
 SNP(name::Symbol,path::Union{Matrix{Float64},String},map::String="") = GenomicTerm(name,path,map)
-SNP(name::Symbol,path::Symbol,map::String="") = GenomicTerm(name,path,map)
+SNP(name::Symbol,path::Union{Matrix{Float64},String,Symbol},map::String="") = GenomicTerm(name,path,map)
+#SNP(name::Symbol,path::Symbol,map::String="") = GenomicTerm(name,path,map)
 
 struct GBLUPType <: RandomEffect
     v::Float64
