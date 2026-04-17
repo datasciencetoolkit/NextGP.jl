@@ -19,7 +19,7 @@ function prepData!(inputData,formula)
 	for n in Symbol.(names(inputData))
 		if n !== formula.lhs
         		if typeof(inputData[!,n]).==Array{Float64, 1} || typeof(inputData[!,n]).==Array{Float32, 1}
-                		inputData[!,n] .-= mean(inputData[!,n],dims=1)
+                		#inputData[!,n] .-= mean(inputData[!,n],dims=1) ###############NO CENTERING!
                		 end
 		end
         end
