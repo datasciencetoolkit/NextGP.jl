@@ -187,12 +187,19 @@ function prep(f;path2ped=[],priorVCV=[]) ### THE REST OF THE CODE FOR XZM SHOUld
 				push!(summarize,hcat([[k,typeof(values[k]),typeof(thisM),size(thisM,2)] for (keys,values) in modelInformation]...))
 			elseif !haskey(priorVCV,k) && isa(priorVCV[collect(keys(priorVCV))[in.(k,keys(priorVCV))][]],RandomMarkerEffect)  
 				println("MARKER EFFECT TYPE (MULTI-TRAIT) for $k")
-				thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used 
+				if isa(v.path,String)
+					println("reading file $(v.path)")
+					thisM = CSV.read(String(v.path),CSV.Tables.matrix,header=false,delim=' ') #now white single white space is used
+				elseif isa(v.path,Symbol)
+					println("using $(v.path)")
+					thisM = getproperty(Main,v.path)
+					println("using $(v.path) $(thisM[1:5,1:5])")
+				else nothing
+				end				
 				#drops cols if any value is missing. Later should check map files etc..
 				thisM = thisM[:,.!(any.(ismissing, eachcol(thisM)))]
 				#
 				thisM = Matrix{Float64}(thisM)
-				
 				thisM .-= mean(thisM,dims=1)
 				M[k] = Dict(:data=>thisM,:map=>nowMap,:method=>"SNP",:str=>"I",:iVarStr=>[],:dims=>size(thisM),:levels=>["M$i" for i in 1:size(thisM,2)]) 			
 				push!(summarize,hcat([[k,typeof(values[k]),typeof(thisM),size(thisM,2)] for (keys,values) in modelInformation]...))
