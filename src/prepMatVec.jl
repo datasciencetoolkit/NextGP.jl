@@ -2,7 +2,7 @@
 
 using CategoricalArrays, CSV, StatsBase, DataStructures, DataFrames, PrettyTables, LinearAlgebra
 
-include("misc.jl")
+#include("misc.jl") #already incluided in NextGP.jl before prepmatvec
 include("designMat.jl")
 
 #all int are made categorical
