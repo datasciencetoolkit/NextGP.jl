@@ -103,19 +103,19 @@ function stBWGR!(M,mSet,priorVCV,beta)
 			M[mSet][:regionArray] = theseRegions
 			M[mSet][:nVarCov]     = length(theseRegions)
 					#logVar can be created in a smarter way, maybe together with var??...
-			M[mSet][:logVar]     = [log(priorVCV[mSet].v) for i in 1:M[mSet][:nVarCov]]
-				#	designMat = modelmatrix(priorVCV[mSet].f, priorVCV[mSet].covariates)
-				#	M[mSet][:covariates] = designMat
-				#	M[mSet][:covariatesT] = transpose(designMat)
-				#	M[mSet][:c] = rand(size(designMat,2))
-				#	M[mSet][:SNPVARRESID] = rand(size(designMat,1))
-					#iCpC inverse taken later
-				#	M[mSet][:iCpC] = M[mSet][:covariatesT]*M[mSet][:covariates]
-				#	if isa(M[mSet][:iCpC],Matrix{Float64}) 
-				#		M[mSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[mSet][:iCpC])./10000)),size(M[mSet][:iCpC]))
-						#Matrix(I*0.001,size(M[mSet][:iCpC]))
-				#	end
- 		              	#	M[mSet][:iCpC]  = inv(M[mSet][:iCpC])
+			M[mSet][:logVar]      = [log(priorVCV[mSet].v) for i in 1:M[mSet][:nVarCov]]
+			
+			designMat            = designMat(k,v,inputData)
+			M[mSet][:covariates] = designMat
+			M[mSet][:covariatesT]= transpose(designMat)
+			M[mSet][:c]          = rand(size(designMat,2))
+			M[mSet][:SNPVARRESID] = rand(size(designMat,1))
+			M[mSet][:iCpC] = M[mSet][:covariatesT]*M[mSet][:covariates] #taking inverse after 
+			if isa(M[mSet][:iCpC],Matrix{Float64}) 
+				M[mSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[mSet][:iCpC])./10000)),size(M[mSet][:iCpC]))
+				Matrix(I*0.001,size(M[mSet][:iCpC]))
+			end
+ 		    M[mSet][:iCpC]  = inv(M[mSet][:iCpC])
 			M[mSet][:varZeta]  = [priorVCV[mSet].varZeta]
 			M[mSet][:estVarZeta] = priorVCV[mSet].estimateVarZeta
 			designMat = 0
