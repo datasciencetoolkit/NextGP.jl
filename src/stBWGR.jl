@@ -1,3 +1,5 @@
+include("designMat.jl") #for BayesLV
+
 function stBWGR!(M,mSet,priorVCV,beta)
 	if !haskey(priorVCV,mSet)
 		M[mSet][:method] = "BayesPR"
