@@ -102,8 +102,21 @@ function stBWGR!(M,mSet,priorVCV,beta)
 			M[mSet][:nVarCov]     = length(theseRegions)
 					#logVar can be created in a smarter way, maybe together with var??...
 			M[mSet][:logVar]      = [log(priorVCV[mSet].v) for i in 1:M[mSet][:nVarCov]]
+
+			varRHSTerms = getRHSTerms(priorVCV[mSet].f)
+			varLHSTerms = getLHSTerms(priorVCV[mSet].f)
+			if isa(priorVCV[mSet].f.data,String)
+				println("reading data from: $(priorVCV[mSet].f.data)")
+				varData = CSV.read(priorVCV[mSet].f.data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
+			elseif isa(priorVCV[mSet].f.data,Symbol)
+				println("using $(priorVCV[mSet].f.data)")
+				varData = getproperty(Main,priorVCV[mSet].f.data)
+			else throw(ArgumentError("Could not understand your data. Provide a file path or DataFrame"))
+			end
+			println("size of marker variance data set read: $(size(varData))")
+			println("variables in the marker variance data set: $(names(varData))")
 			
-			dMatrix               = designMat(k,v,inputData)
+			dMatrix               = designMat(k,v,varData)
 			M[mSet][:covariates] = dMatrix
 			M[mSet][:covariatesT]= transpose(dMatrix)
 			M[mSet][:c]          = rand(size(dMatrix,2))
