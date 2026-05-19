@@ -150,7 +150,7 @@ function varCovM!(M,priorVCV)
 	#scale
 	#when hyper-parameters are estimated, all models will have only one estimate. Not per SNP, for now!
 	#But in general, all models get same prior anyways.
-		if haskey(priorVCV,mSet)
+		if haskey(priorVCV,mSet) && !isequal(priorVCV[mSet].name, "BayesLV")
         		nMComp = size(priorVCV[mSet].v,1)
 			if priorVCV[mSet].params==false
 				println("hyperparameters are fixed")
