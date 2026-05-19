@@ -14,7 +14,7 @@ struct lmm
 	data::Union{Symbol,String} #String
 	model::Expr
 	sym::Any
-	lhs::Union{Symbol,Expr}
+	lhs::Union{Symbol,Expr,Int64}
 	rhs::Union{Int64,Symbol,Expr}
 end
 
