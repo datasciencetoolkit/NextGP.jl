@@ -105,11 +105,11 @@ function stBWGR!(M,mSet,priorVCV,beta)
 					#logVar can be created in a smarter way, maybe together with var??...
 			M[mSet][:logVar]      = [log(priorVCV[mSet].v) for i in 1:M[mSet][:nVarCov]]
 			
-			designMat            = designMat(k,v,inputData)
-			M[mSet][:covariates] = designMat
-			M[mSet][:covariatesT]= transpose(designMat)
-			M[mSet][:c]          = rand(size(designMat,2))
-			M[mSet][:SNPVARRESID] = rand(size(designMat,1))
+			dMatrix               = designMat(k,v,inputData)
+			M[mSet][:covariates] = dMatrix
+			M[mSet][:covariatesT]= transpose(dMatrix)
+			M[mSet][:c]          = rand(size(dMatrix,2))
+			M[mSet][:SNPVARRESID] = rand(size(dMatrix,1))
 			M[mSet][:iCpC] = M[mSet][:covariatesT]*M[mSet][:covariates] #taking inverse after 
 			if isa(M[mSet][:iCpC],Matrix{Float64}) 
 				M[mSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[mSet][:iCpC])./10000)),size(M[mSet][:iCpC]))
@@ -118,7 +118,7 @@ function stBWGR!(M,mSet,priorVCV,beta)
  		    M[mSet][:iCpC]  = inv(M[mSet][:iCpC])
 			M[mSet][:varZeta]  = [priorVCV[mSet].varZeta]
 			M[mSet][:estVarZeta] = priorVCV[mSet].estimateVarZeta
-			designMat = 0
+			dMatrix = 0
 		end
 	end
 end
