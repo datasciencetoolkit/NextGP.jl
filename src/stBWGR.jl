@@ -105,6 +105,10 @@ function stBWGR!(M,mSet,priorVCV,beta)
 
 			varRHSTerms = getRHSTerms(priorVCV[mSet].f)
 			varLHSTerms = getLHSTerms(priorVCV[mSet].f)
+			
+			println("varRHSTerms: $varRHSTerms")
+			println("varLHSTerms: $varLHSTerms")
+			
 			if isa(priorVCV[mSet].f.data,String)
 				println("reading data from: $(priorVCV[mSet].f.data)")
 				varData = CSV.read(priorVCV[mSet].f.data,DataFrames.DataFrame,header=true,delim=' ',pool=false,stringtype=String)
@@ -115,8 +119,11 @@ function stBWGR!(M,mSet,priorVCV,beta)
 			end
 			println("size of marker variance data set read: $(size(varData))")
 			println("variables in the marker variance data set: $(names(varData))")
-			
-			dMatrix               = designMat(k,v,varData)
+
+			test = hcat([varData[k] for (k,v) in varRHSTerms]...)
+			pritln("TEST: $test")
+				
+			#dMatrix               = designMat(k,v,varData)
 			M[mSet][:covariates] = dMatrix
 			M[mSet][:covariatesT]= transpose(dMatrix)
 			M[mSet][:c]          = rand(size(dMatrix,2))
