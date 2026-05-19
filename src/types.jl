@@ -26,7 +26,7 @@ end
 
 
 struct ResponseTerm
-    col::Symbol
+    col::Union{Int64,Symbol}
 end
 
 #make n a type with where{T} in ...
