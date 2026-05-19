@@ -36,10 +36,12 @@ isacall(exp::Expr) = (exp.head == :call)
 isacall(exp::Int) = false
 isacall(exp::Symbol) = false
 
-#multi-trait
+#single????? and multi-trait
 function getLHSTerms(f;pre=preserved)
 	modelLHSTerms = OrderedDict()
 	if isa(f.lhs,Symbol) 
+		modelLHSTerms[f.lhs] = ResponseTerm(f.lhs)
+	elseif isa(f.lhs,Int64) #for zero term in the BayesLV model
 		modelLHSTerms[f.lhs] = ResponseTerm(f.lhs)
 	elseif isa(f.lhs,Expr)
 		for term in f.lhs.args
