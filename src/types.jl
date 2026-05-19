@@ -215,7 +215,6 @@ BayesRCplus(pi::PiTypes,class::Vector{Float64},v::VarCovarTypes,annot::Matrix{In
 struct BayesLogVarType <: RandomMarkerEffect
     v::Union{Matrix{Float64},Float64}
     f::LMM
-    covariates::DataFrame
     varZeta::Float64
     name::String
     estimateVarZeta::Union{Float64,Bool}
