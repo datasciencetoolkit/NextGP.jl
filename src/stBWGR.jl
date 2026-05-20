@@ -121,7 +121,7 @@ function stBWGR!(M,mSet,priorVCV,beta)
 			println("variables in the marker variance data set: $(names(varData))")
 
 			#dMatrix = hcat([varData[!,k] for (k,v) in varRHSTerms]...)
-			dMatrix = [println(designMat(k,v,varData)) for (k,v) in varRHSTerms]
+			dMatrix = hcat([designMat(k,v,varData)[:data] for (k,v) in varRHSTerms]...)
 			println("dMatrix: $dMatrix")
 			
 			#dMatrix               = designMat(k,v,varData)
