@@ -132,7 +132,6 @@ function stBWGR!(M,mSet,priorVCV,beta)
 			M[mSet][:iCpC] = M[mSet][:covariatesT]*M[mSet][:covariates] #taking inverse after 
 			if isa(M[mSet][:iCpC],Matrix{Float64}) 
 				M[mSet][:iCpC] += Matrix(I*minimum(abs.(diag(M[mSet][:iCpC])./10000)),size(M[mSet][:iCpC]))
-				Matrix(I*0.001,size(M[mSet][:iCpC]))
 			end
  		    M[mSet][:iCpC]  = inv(M[mSet][:iCpC])
 			M[mSet][:varZeta]  = [priorVCV[mSet].varZeta]
