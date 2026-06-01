@@ -1,0 +1,29 @@
+name: Sync NextGP (main) to Organization
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    if: github.repository == 'datasciencetoolkit/NextGP.jl'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout personal repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secret.sync2CSG }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "emrkaraman@gmail.com"
+          git config --global user.name "dataScienceTools"
+
+      - name: Add organization repository as remote
+        run: |
+          git remote add org https://x-access-token:${{ secrets.sync2CSG }}@github.com/QGG-Computational-Genomics/NextGP.jl.git
+
+      - name: Mirror everything to organization
+        run: |
+          git push --mirror org
