@@ -726,7 +726,10 @@ function sampleBayesLV!(mSet::Symbol,M::OrderedDict,beta::Vector,delta::Vector,y
 			temp = sqrt(-2*var_var*log(c3))
 			lbound = exp(var_mui-temp)
 			rbound = exp(var_mui+temp)
-			exp((-2/3)*log(c1)) < rbound ? rbound=exp((-2/3)*log(c1)) : nothing
+			
+			exp(log(c1)/1.5) < rbound ? rbound=exp((-2/3)*log(c1)) : nothing
+#			exp((-2/3)*log(c1)) < rbound ? rbound=exp((-2/3)*log(c1)) : nothing
+			
 			-0.5*bi*bi/log(c2) > lbound ? lbound=-0.5*bi*bi/log(c2) : nothing
 			if lbound >= rbound
 				trapped +=1
