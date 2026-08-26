@@ -710,7 +710,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 
 	#c for BayesLV
 	[[inOut.outMCMC(outPut,"c$mSet$eSet",hcat(["varCoef$l" for l in 1:length(M[mSet][:c])]...)) for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])) && (M[mSet][:method] == "BayesLV"))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait
-	[[inOut.outMCMC(outPut,"varZeta$mSet$eSet","Zeta") for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])) && (M[mSet][:method] == "BayesLV"))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait
+	[[inOut.outMCMC(outPut,"varZeta$mSet$eSet",["varZeta"]) for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])) && (M[mSet][:method] == "BayesLV"))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait
 
 
 	#arbitrary marker names
