@@ -709,7 +709,7 @@ function getMME!(Y,X,Z,M,E,blocks,priorVCV,summaryStat,modelInformation,outPut) 
 	[[[inOut.outMCMC(outPut,"delta$m$(eSet[p])",[M[mSet][:levels]]) for (p,m) in enumerate(mSet)] for mSet in keys(M) if (isa(mSet,Tuple{Vararg{Symbol}}))] for eSet in keys(E) if isa(eSet,Tuple)] #multi-trait only one correlated comp (:M1,M1) or (:M1,:M2...) but not ((:M1,:M2) and (:M3,:M4))	
 
 	#c for BayesLV
-	[[inOut.outMCMC(outPut,"c$mSet$eSet",hcat(["varCoef$l" for l in 1:length(M[mSet][:c])]...)) for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait
+	[[inOut.outMCMC(outPut,"c$mSet$eSet",hcat(["varCoef$l" for l in 1:length(M[mSet][:c])]...)) for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])))] for eSet in keys(E) if (isa(eSet,Symbol)&&(M[mSet][:method] == "BayesLV"))] #single trait
 
 
 	#arbitrary marker names
