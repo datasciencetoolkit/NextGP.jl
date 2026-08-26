@@ -74,6 +74,7 @@ function runSampler!(modelInformation,ycorr,nData,E,varE,X,b,Z,u,varU,M,beta,var
 
 				#currently only one component with annotations
 				[[inOut.outMCMC(outPut,"c$mSet$eSet",hcat(M[mSet][:c]...)) for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])) && (M[mSet][:method] == "BayesLV"))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
+				[[inOut.outMCMC(outPut,"varZeta$mSet$eSet",M[mSet][:varZeta]) for mSet in keys(M) if (isa(mSet,Symbol) && in(mSet,keys(modelInformation[eSet])) && (M[mSet][:method] == "BayesLV"))] for eSet in keys(E) if isa(eSet,Symbol)] #single trait	
 
 				#for mSet in keys(M)
 				#	if isa(mSet,Symbol)
