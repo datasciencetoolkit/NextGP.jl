@@ -219,7 +219,8 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 				ycorr .-= M[mSet].data[locus].*beta[M[mSet].pos][:,locus]'
 			end
 		end
-		@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize) 
+		#@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize) 
+		@inbounds varBeta[mSet][r] = M[mSet].params == true ? sampleHierarchicalSIW!(M[mSet], delta, mSet, getindex(beta[M[mSet].pos], :, theseLoci), regionSize) : sampleVarCovBetaPR(M[mSet].scale, M[mSet].df, getindex(beta[M[mSet].pos], :, theseLoci), regionSize)
 	end
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
 		#dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
@@ -854,5 +855,153 @@ function sampleScaleDFofVar(varVec;abcde=[4.0,0.01,0.01,0.01,0.01],crit=10e-6)
 	betaHat = dHat/eHat
 	return alphaHat,betaHat
 end
+
+
+
+using LinearAlgebra
+using Distributions
+using SpecialFunctions: loggamma
+
+"""
+    sampleHierarchicalSIW!(modelRegion, delta_chain, mSet, B_region, regionSize)
+
+A single-line replacement wrapper that runs the fully hierarchical Scaled Inverse Wishart 
+updates for a specific genomic region and returns the reconstructed covariance matrix.
+"""
+function sampleHierarchicalSIW!(modelRegion, delta_chain::Vector, mSet::Tuple, B_region::Matrix{Float64}, regionSize::Int64)
+    t = size(B_region, 1)
+    
+    # 1. Safely extract mutable fields (handles both raw values or Ref containers)
+    S_g  = modelRegion.scale isa Ref ? modelRegion.scale[] : modelRegion.scale
+    nu_g = modelRegion.df isa Ref    ? modelRegion.df[]    : modelRegion.df
+    
+    # 2. Extract or define hyper-priors/tuning values dynamically
+    nu0_W     = hasproperty(modelRegion, :nu0_W)     ? modelRegion.nu0_W     : t + 2.0
+    S0_W_inv  = hasproperty(modelRegion, :S0_W_inv)  ? modelRegion.S0_W_inv  : inv(Matrix(I(t)) * (t + 2.0))
+    lambda_nu = hasproperty(modelRegion, :lambda_nu) ? modelRegion.lambda_nu : 0.2
+    prop_sd   = hasproperty(modelRegion, :prop_sd)   ? modelRegion.prop_sd   : 0.2
+    mu_0      = 0.0
+    sigma0_2  = 100.0
+    alpha_0   = 4.0
+    beta_0    = 4.0
+
+    # 3. Handle trait log-normal scales and structural vectors
+    delta_g = delta_chain[modelRegion.pos] 
+    m_g     = hasproperty(modelRegion, :m_g)  ? modelRegion.m_g  : zeros(t)
+    s2_g    = hasproperty(modelRegion, :s2_g) ? modelRegion.s2_g : ones(t) * 2.0
+    
+    # 4. Step A: Update trait scale standard deviations (delta_g) via MH step
+    Qg_old = hasproperty(modelRegion, :Qg) ? modelRegion.Qg : inv(S_g * (nu_g - t - 1))
+    _siw_update_scales!(delta_g, B_region, Qg_old, m_g, s2_g, prop_sd)
+    
+    # 5. Step B: Strip out scales to generate the unscaled scatter matrix and sample Qg
+    inv_delta = 1.0 ./ delta_g
+    B_unscaled = B_region .* inv_delta
+    scatter_unscaled = B_unscaled * B_unscaled'
+    
+    Scale_InvWish = Symmetric(S_g + scatter_unscaled)
+    L_Q = cholesky(inv(Scale_InvWish)).L
+    nu_Q = nu_g + regionSize
+    A_Q = zeros(t, t)
+    for i in 1:t
+        A_Q[i, i] = sqrt(rand(Chi(nu_Q - i + 1)))
+        for j in 1:(i-1); A_Q[i, j] = randn(); end
+    end
+    Qg_new = inv(Symmetric((L_Q * A_Q) * (L_Q * A_Q)'))
+    if hasproperty(modelRegion, :Qg); modelRegion.Qg .= Qg_new; end
+    
+    # 6. Step C: Update Wishart scale matrix (S_g) and Shifted Exponential df (nu_g)
+    nu_g_new, _ = _siw_update_structure!(Qg_new, nu_g, S_g, nu0_W, S0_W_inv, lambda_nu, prop_sd)
+    
+    # 7. Step D: Update log-normal hyperparameters (m_g and s2_g) online
+    for k in 1:t
+        log_d = log(delta_g[k])
+        V_m = 1.0 / (1.0 / sigma0_2 + 1.0 / s2_g[k])
+        m_g[k] = V_m * (mu_0 / sigma0_2 + log_d / s2_g[k]) + sqrt(V_m) * randn()
+        s2_g[k] = rand(InverseGamma(alpha_0 + 0.5, beta_0 + 0.5 * (log_d - m_g[k])^2))
+    end
+    
+    # 8. Write modified scalars back to your reference container variables
+    if modelRegion.df isa Ref; modelRegion.df[] = nu_g_new; else modelRegion.df = nu_g_new; end
+    # S_g was mutated explicitly in place inside _siw_update_structure!
+
+    # 9. Return the newly generated covariance matrix directly to varBeta[mSet][r]
+    return Diagonal(delta_g) * Qg_new * Diagonal(delta_g)
+end
+
+# Internal Subroutine: Updates scale standard deviation vector (delta_g)
+function _siw_update_scales!(delta_g::Vector{Float64}, B::Matrix{Float64}, Qg::Matrix{Float64}, m_g::Vector{Float64}, s2_g::Vector{Float64}, prop_sd::Float64)
+    t, p = size(B)
+    BtB = B * B'
+    
+    function log_target_delta(dg_vec::Vector{Float64})
+        D = Diagonal(dg_vec)
+        G = D * Qg * D
+        G_fact = try cholesky(Symmetric(G)) catch; return -Inf end
+        
+        log_lik = -0.5 * p * logdet(G_fact) - 0.5 * tr(inv(G_fact) * BtB)
+        log_prior = 0.0
+        for k in 1:t
+            log_prior += -0.5 * (log(dg_vec[k]) - m_g[k])^2 / s2_g[k] - log(dg_vec[k])
+        end
+        return log_lik + log_prior
+    end
+
+    for k in 1:t
+        log_delta_curr = log(delta_g[k])
+        log_delta_prop = log_delta_curr + prop_sd * randn()
+        delta_prop_val = exp(log_delta_prop)
+        
+        delta_vec_prop = copy(delta_g)
+        delta_vec_prop[k] = delta_prop_val
+        
+        log_alpha = log_target_delta(delta_vec_prop) - log_target_delta(delta_g)
+        if log(rand()) < log_alpha
+            delta_g[k] = delta_prop_val
+        end
+    end
+end
+
+# Internal Subroutine: Updates scale matrix (S_g) and degrees of freedom (nu_g)
+function _siw_update_structure!(Qg::Matrix{Float64}, nu_g::Float64, S_g::Matrix{Float64}, nu0_W::Float64, S0_W_inv::Matrix{Float64}, lambda_nu::Float64, prop_sd::Float64)
+    t = size(Qg, 1)
+    c_threshold = t - 1.0
+    
+    # Conjugate Wishart update for S_g matrix elements
+    Qg_inv = inv(Symmetric(Qg))
+    S_n_inv = S0_W_inv + Qg_inv
+    nu_n = nu0_W + nu_g
+    L_S = cholesky(inv(Symmetric(S_n_inv))).L
+    
+    A = zeros(t, t)
+    for i in 1:t
+        A[i, i] = sqrt(rand(Chi(nu_n - i + 1)))
+        for j in 1:(i-1); A[i, j] = randn(); end
+    end
+    X = L_S * A
+    S_g .= X * X' # Mutates elements in place seamlessly
+
+    # Random-Walk Metropolis-Hastings step with Shifted Exponential prior for nu_g
+    function log_target_nu(nu::Float64)
+        log_prior = log(lambda_nu) - lambda_nu * (nu - c_threshold)
+        log_mv_gamma = (t * (t - 1) / 4) * log(pi) + sum(loggamma((nu + 1.0 - i) / 2.0) for i in 1:t)
+        log_det_block = (nu / 2.0) * logdet(Symmetric(S_g)) - (nu * t / 2.0) * log(2.0) - log_mv_gamma - (nu / 2.0) * logdet(Symmetric(Qg))
+        return log_det_block + log_prior
+    end
+
+    nu_prop = nu_g + prop_sd * randn()
+    accepted = false
+    if nu_prop > c_threshold
+        log_alpha = log_target_nu(nu_prop) - log_target_nu(nu_g)
+        if log(rand()) < log_alpha
+            nu_g = nu_prop
+            accepted = true
+        end
+    end
+    return nu_g, accepted
+end
+
+
+
 							
 end
