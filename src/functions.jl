@@ -857,12 +857,6 @@ function sampleScaleDFofVar(varVec;abcde=[4.0,0.01,0.01,0.01,0.01],crit=10e-6)
 end
 
 
-
-using LinearAlgebra
-using Distributions
-using SpecialFunctions
-using OrderedCollections
-
 """
     sampleHierarchicalSIW!(M, delta, mSet, B_region, regionSize)
 
