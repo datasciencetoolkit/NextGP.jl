@@ -220,7 +220,9 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 			end
 		end
 		#@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize) 
-		@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleHierarchicalSIW!(M, Ref(1.5), mSet, getindex(beta[M[mSet].pos], :, theseLoci), regionSize) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize) 
+		@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleHierarchicalSIW!(M, Ref(1.5), Ref(0.0), Ref(0.25), mSet, getindex(beta[M[mSet].pos], :, theseLoci), regionSize) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize) 
+		sampleHierarchicalSIW!(M, delta_ref, m_g_ref, s2_g_ref, mSet, B_region, regionSize)
+
 	end
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
 		#dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
@@ -858,11 +860,11 @@ end
 
 
 """
-    sampleHierarchicalSIW!(M, delta, mSet, B_region, regionSize)
+    sampleHierarchicalSIW!(M, delta, m_g, s2_g, mSet, B_region, regionSize)
 
-Single-scale version where `delta` is passed as a standalone mutable container (e.g. Ref{Float64}).
+Single-scale version where `delta`, `m_g`, and `s2_g` are passed as independent mutable containers.
 """
-function sampleHierarchicalSIW!(M::OrderedDict, delta::Ref{Float64}, mSet::Tuple, B_region::AbstractMatrix{Float64}, regionSize::Int64)
+function sampleHierarchicalSIW!(M::OrderedDict, delta::Ref{Float64}, m_g::Ref{Float64}, s2_g::Ref{Float64}, mSet::Tuple, B_region::AbstractMatrix{Float64}, regionSize::Int64)
     t = size(B_region, 1) 
     c_threshold = t - 1.0
     
@@ -885,13 +887,15 @@ function sampleHierarchicalSIW!(M::OrderedDict, delta::Ref{Float64}, mSet::Tuple
     current_df = M[mSet].df[]
     current_scale = M[mSet].scale[]  
     
-    # Read current delta value using `[]` from the standalone container
+    # Read current values using `[]` from the standalone containers
     d_val_curr = delta[]
+    m_g_curr   = m_g[]
+    s2_g_curr  = s2_g[]
     
     Qg_old = hasproperty(M[mSet], :Qg) ? M[mSet].Qg : inv(current_scale * (current_df - t - 1.0))
     
-    # Step A: Update the standalone trait scale parameter in-place via `delta[] = ...`
-    _siw_update_single_scale_inplace!(delta, B_region, Qg_old, M[mSet].m_g[], M[mSet].s2_g[], prop_sd)
+    # Step A: Update delta in-place (Passing scalar values extracted from refs)
+    _siw_update_single_scale_inplace!(delta, B_region, Qg_old, m_g_curr, s2_g_curr, prop_sd)
     
     # Extract the freshly accepted/retained scalar scale value
     d_val = delta[]
@@ -912,19 +916,20 @@ function sampleHierarchicalSIW!(M::OrderedDict, delta::Ref{Float64}, mSet::Tuple
     Qg_new = inv(Symmetric((L_Q * A_Q) * (L_Q * A_Q)'))
     if hasproperty(M[mSet], :Qg); M[mSet].Qg .= Qg_new; end
     
-    # Step C: Log-Scale MH Update (Mutates containers inside M in-place via `[] =`)
+    # Step C: Log-Scale MH Update
     _siw_update_shifted_lognormal_fixed_mh!(Qg_new, M, mSet, nu0_W, S0_W_inv, shift_nu, mu_log, sd_log, prop_sd)
     
-    # Step D: Update log-normal scale hyperparameters online for the single scale
+    # Step D: Update log-normal scale hyperparameters online via standalone references
     log_d = log(d_val)
-    V_m = 1.0 / (1.0 / sigma0_2 + 1.0 / M[mSet].s2_g[])
+    V_m = 1.0 / (1.0 / sigma0_2 + 1.0 / s2_g[])
     
-    # Write values back into their containers inside M using `[] =`
-    M[mSet].m_g[] = V_m * (mu_0 / sigma0_2 + log_d / M[mSet].s2_g[]) + sqrt(V_m) * randn()
-    M[mSet].s2_g[] = rand(InverseGamma(alpha_0 + 0.5, beta_0 + 0.5 * (log_d - M[mSet].m_g[])^2))
+    # Mutate standalone containers using `[] =` instead of assigning to M
+    m_g[] = V_m * (mu_0 / sigma0_2 + log_d / s2_g[]) + sqrt(V_m) * randn()
+    s2_g[] = rand(InverseGamma(alpha_0 + 0.5, beta_0 + 0.5 * (log_d - m_g[])^2))
     
     return d_val * Qg_new * d_val
 end
+
 
 function _siw_update_single_scale_inplace!(delta::Ref{Float64}, B::AbstractMatrix{Float64}, Qg::AbstractMatrix{Float64}, m_g_val::Float64, s2_g_val::Float64, prop_sd::Float64)
     t, p = size(B)
