@@ -220,7 +220,7 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 			end
 		end
 		#@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize) 
-		@inbounds varBeta[mSet][r] = M[mSet].params == true ? sampleHierarchicalSIW!(M, delta, mSet, getindex(beta[M[mSet].pos], :, theseLoci), regionSize) : sampleVarCovBetaPR(M[mSet].scale, M[mSet].df, getindex(beta[M[mSet].pos], :, theseLoci), regionSize)
+		@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleHierarchicalSIW!(M, Ref(1.5), mSet, getindex(beta[M[mSet].pos], :, theseLoci), regionSize) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize) 
 	end
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
 		#dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
@@ -860,25 +860,24 @@ end
 
 using LinearAlgebra
 using Distributions
-using SpecialFunctions: loggamma
+using SpecialFunctions
+using OrderedCollections
 
 """
     sampleHierarchicalSIW!(M, delta, mSet, B_region, regionSize)
 
-A single-line replacement wrapper configured for your exact variables. Modifies 
-M[mSet].df and M[mSet].scale strictly in-place without using proxy region variables.
+Single-scale version where `delta` is passed as a standalone mutable container (e.g. Ref{Float64}).
 """
-function sampleHierarchicalSIW!(M::OrderedDict, delta::Vector, mSet::Tuple, B_region::Matrix{Float64}, regionSize::Int64)
-    t = size(B_region, 1)
+function sampleHierarchicalSIW!(M::OrderedDict, delta::Ref{Float64}, mSet::Tuple, B_region::AbstractMatrix{Float64}, regionSize::Int64)
+    t = size(B_region, 1) 
     c_threshold = t - 1.0
     
-    # --- SHIFTED LOG-NORMAL PRIOR ENGINE ---
+    # --- FIXED PRIOR ENGINES ---
     shift_nu = 4.0   
-    mu_log   = 0.0   # Centers log-excess at 0 (df mode = 4 + 1 = 5.0)
+    mu_log   = 0.0   
     sd_log   = 0.25  
-    prop_sd  = 0.02  # Optimized fixed step size
+    prop_sd  = 0.02  
 
-    # Base Wishart hyper-priors
     nu0_W = t + 2.0
     R_0 = Matrix(I(t) * 1.0)
     S0_W_inv = inv(R_0 * (nu0_W - t - 1.0))
@@ -888,24 +887,30 @@ function sampleHierarchicalSIW!(M::OrderedDict, delta::Vector, mSet::Tuple, B_re
     alpha_0   = 5.0   
     beta_0    = 5.0
 
-    # Extract scale trackers from your global delta vector structure
-    delta_g = delta[M[mSet].pos] 
-    m_g     = hasproperty(M[mSet], :m_g)  ? M[mSet].m_g  : zeros(t)
-    s2_g    = hasproperty(M[mSet], :s2_g) ? M[mSet].s2_g : ones(t) * 1.0
+    # Unpack current scalar values from M[mSet] using `[]`
+    current_df = M[mSet].df[]
+    current_scale = M[mSet].scale[]  
     
-    # Step A: Update trait scale standard deviations (delta_g)
-    Qg_old = hasproperty(M[mSet], :Qg) ? M[mSet].Qg : inv(M[mSet].scale * (M[mSet].df - t - 1.0))
-    _siw_update_scales!(delta_g, B_region, Qg_old, m_g, s2_g, prop_sd)
+    # Read current delta value using `[]` from the standalone container
+    d_val_curr = delta[]
     
-    # Step B: Strip out scales to generate the unscaled scatter matrix and sample Qg
-    inv_delta = 1.0 ./ delta_g
-    B_unscaled = B_region .* inv_delta
+    Qg_old = hasproperty(M[mSet], :Qg) ? M[mSet].Qg : inv(current_scale * (current_df - t - 1.0))
+    
+    # Step A: Update the standalone trait scale parameter in-place via `delta[] = ...`
+    _siw_update_single_scale_inplace!(delta, B_region, Qg_old, M[mSet].m_g[], M[mSet].s2_g[], prop_sd)
+    
+    # Extract the freshly accepted/retained scalar scale value
+    d_val = delta[]
+    
+    # Step B: Strip the single scale to yield unscaled scatter and sample Qg
+    B_unscaled = B_region ./ d_val
     scatter_unscaled = B_unscaled * B_unscaled'
     
-    Scale_InvWish = Symmetric(M[mSet].scale + scatter_unscaled)
+    Scale_InvWish = Symmetric(current_scale + scatter_unscaled)
     L_Q = cholesky(inv(Scale_InvWish)).L
-    nu_Q = M[mSet].df + regionSize
-    A_Q = zeros(t, t)
+    nu_Q = current_df + regionSize
+    
+    A_Q = zeros(t, t) 
     for i in 1:t
         A_Q[i, i] = sqrt(rand(Chi(nu_Q - i + 1)))
         for j in 1:(i-1); A_Q[i, j] = randn(); end
@@ -913,50 +918,48 @@ function sampleHierarchicalSIW!(M::OrderedDict, delta::Vector, mSet::Tuple, B_re
     Qg_new = inv(Symmetric((L_Q * A_Q) * (L_Q * A_Q)'))
     if hasproperty(M[mSet], :Qg); M[mSet].Qg .= Qg_new; end
     
-    # Step C: Log-Scale MH Update for M[mSet].df - Modifies M[mSet].scale in-place
+    # Step C: Log-Scale MH Update (Mutates containers inside M in-place via `[] =`)
     _siw_update_shifted_lognormal_fixed_mh!(Qg_new, M, mSet, nu0_W, S0_W_inv, shift_nu, mu_log, sd_log, prop_sd)
     
-    # Step D: Update log-normal scale hyperparameters online
-    for k in 1:t
-        log_d = log(delta_g[k])
-        V_m = 1.0 / (1.0 / sigma0_2 + 1.0 / s2_g[k])
-        m_g[k] = V_m * (mu_0 / sigma0_2 + log_d / s2_g[k]) + sqrt(V_m) * randn()
-        s2_g[k] = rand(InverseGamma(alpha_0 + 0.5, beta_0 + 0.5 * (log_d - m_g[k])^2))
-    end
+    # Step D: Update log-normal scale hyperparameters online for the single scale
+    log_d = log(d_val)
+    V_m = 1.0 / (1.0 / sigma0_2 + 1.0 / M[mSet].s2_g[])
     
-    return Diagonal(delta_g) * Qg_new * Diagonal(delta_g)
+    # Write values back into their containers inside M using `[] =`
+    M[mSet].m_g[] = V_m * (mu_0 / sigma0_2 + log_d / M[mSet].s2_g[]) + sqrt(V_m) * randn()
+    M[mSet].s2_g[] = rand(InverseGamma(alpha_0 + 0.5, beta_0 + 0.5 * (log_d - M[mSet].m_g[])^2))
+    
+    return d_val * Qg_new * d_val
 end
 
-function _siw_update_scales!(delta_g::Vector{Float64}, B::Matrix{Float64}, Qg::AbstractMatrix{Float64}, m_g::Vector{Float64}, s2_g::Vector{Float64}, prop_sd::Float64)
+function _siw_update_single_scale_inplace!(delta::Ref{Float64}, B::AbstractMatrix{Float64}, Qg::AbstractMatrix{Float64}, m_g_val::Float64, s2_g_val::Float64, prop_sd::Float64)
     t, p = size(B)
     BtB = B * B'
     
-    function log_target_delta(dg_vec::Vector{Float64})
-        D = Diagonal(dg_vec)
-        G = D * Qg * D
-        G_fact = try cholesky(Symmetric(G)) catch; return -Inf end
+    Qg_inv = inv(Symmetric(Qg))
+    logdet_Qg = logdet(cholesky(Symmetric(Qg)))
+    tr_Qg_inv_BtB = tr(Qg_inv * BtB)
+
+    function log_target_delta_scalar(d::Float64)
+        logdet_G = 2.0 * t * log(d) + logdet_Qg
+        tr_val = (1.0 / (d^2)) * tr_Qg_inv_BtB
         
-        log_lik = -0.5 * p * logdet(G_fact) - 0.5 * tr(inv(G_fact) * BtB)
-        log_prior = 0.0
-        for k in 1:t
-            log_prior += -0.5 * (log(dg_vec[k]) - m_g[k])^2 / s2_g[k] - log(dg_vec[k])
-        end
+        log_lik = -0.5 * p * logdet_G - 0.5 * tr_val
+        log_prior = -0.5 * (log(d) - m_g_val)^2 / s2_g_val - log(d)
+        
         return log_lik + log_prior
     end
 
-    for k in 1:t
-        log_delta_curr = log(delta_g[k])
-        log_delta_prop = log_delta_curr + prop_sd * randn()
-        delta_prop_val = exp(log_delta_prop)
+    log_delta_curr = log(delta[])
+    log_delta_prop = log_delta_curr + prop_sd * randn()
+    delta_prop_val = exp(log_delta_prop)
+    
+    if 1e-5 <= delta_prop_val <= 100.0
+        log_curr_prob = log_target_delta_scalar(delta[])
+        log_prop_prob = log_target_delta_scalar(delta_prop_val)
         
-        (delta_prop_val > 100.0 || delta_prop_val < 1e-5) && continue
-        
-        delta_vec_prop = copy(delta_g)
-        delta_vec_prop[k] = delta_prop_val
-        
-        log_alpha = log_target_delta(delta_vec_prop) - log_target_delta(delta_g)
-        if log(rand()) < log_alpha
-            delta_g[k] = delta_prop_val
+        if log(rand()) < (log_prop_prob - log_curr_prob)
+            delta[] = delta_prop_val # Direct mutation of the standalone container reference
         end
     end
 end
@@ -965,10 +968,12 @@ function _siw_update_shifted_lognormal_fixed_mh!(Qg::AbstractMatrix{Float64}, M:
     t = size(Qg, 1)
     c_threshold = t - 1.0
     
-    # 1. Conjugate Wishart update for M[mSet].scale elements strictly in-place
+    current_df = M[mSet].df[]
+    current_scale = M[mSet].scale[]
+    
     Qg_inv = inv(Symmetric(Qg))
     S_n_inv = S0_W_inv + Qg_inv
-    nu_n = nu0_W + M[mSet].df
+    nu_n = nu0_W + current_df
     L_S = cholesky(inv(Symmetric(S_n_inv))).L
     
     A = zeros(t, t)
@@ -977,28 +982,30 @@ function _siw_update_shifted_lognormal_fixed_mh!(Qg::AbstractMatrix{Float64}, M:
         for j in 1:(i-1); A[i, j] = randn(); end
     end
     X = L_S * A
-    M[mSet].scale .= X * X' # Direct in-place broadcasting mutation into your scale matrix
+    
+    M[mSet].scale[] .= X * X' 
 
-    # 2. Kernel Evaluation Function incorporating the Shifted Log-Normal prior layout
     function log_target_nu(nu::Float64)
         excess = nu - shift_nu
         log_prior = -0.5 * ((log(excess) - mu_log) / sd_log)^2 - log(excess)
         log_mv_gamma = (t * (t - 1) / 4) * log(pi) + sum(loggamma((nu + 1.0 - i) / 2.0) for i in 1:t)
-        log_det_block = (nu / 2.0) * logdet(Symmetric(M[mSet].scale)) - (nu * t / 2.0) * log(2.0) - log_mv_gamma - (nu / 2.0) * logdet(Symmetric(Qg))
+        log_det_block = (nu / 2.0) * logdet(Symmetric(current_scale)) - (nu * t / 2.0) * log(2.0) - log_mv_gamma - (nu / 2.0) * logdet(Symmetric(Qg))
         return log_det_block + log_prior
     end
 
-    log_excess_curr = log(M[mSet].df - shift_nu)
+    log_excess_curr = log(current_df - shift_nu)
     log_excess_prop = log_excess_curr + prop_sd * randn()
     nu_prop = exp(log_excess_prop) + shift_nu
 
     if nu_prop > c_threshold && (nu_prop - shift_nu) > 0.0
-        log_alpha = log_target_nu(nu_prop) - log_target_nu(M[mSet].df) + log(nu_prop - shift_nu) - log(M[mSet].df - shift_nu)
+        log_alpha = log_target_nu(nu_prop) - log_target_nu(current_df) + log(nu_prop - shift_nu) - log(current_df - shift_nu)
         if log(rand()) < log_alpha
-            M[mSet].df = nu_prop # Direct in-place field value update
+            M[mSet].df[] = nu_prop 
         end
     end
 end
+
+
 
 
 
