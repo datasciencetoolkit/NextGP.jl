@@ -347,7 +347,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
 		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
 		         #scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(mean(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))))
-		scaleEst, dfEst, accepted = update_hyperparameters_mt(
+		scaleEst, dfEst, accepted = update_hyperparameters_mt_AB(
         getindex(varBeta[mSet],inMarkers),   # The vector of marker matrices
         M[mSet].scale[],       # Current scale matrix
         M[mSet].df[],      # Current degrees of freedom
@@ -357,21 +357,12 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
         2,            # Number of traits
         length(inMarkers)             # Number of markers
         )
-		println("new df and scale: $(dfEst) $(scaleEst)")
+		        #println("new df and scale: $(dfEst) $(scaleEst)")
 				#NEW
 				#println("new scale: $(scaleEst)")
+		
 		setindex!(M[mSet].scale, scaleEst,1)
 		setindex!(M[mSet].df, dfEst,1)
-
-         		#tempdf = 2 #one for each for the 4+1 
-				#for m in 1:length(mSet)
-				#inMarkers = findall(>(0),getindex(beta[M[mSet].pos],m,:))
-				#dfIG,scaleIG = sampleScaleDFofVar(getindex.(getindex(varBeta[mSet],inMarkers),m,m))
-				#dfScaleInvChi = 2*dfIG
-				#tempdf += dfScaleInvChi
-				#end
-				#setindex!(M[mSet].df,tempdf/length(mSet),1)
-
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 		nothing
 	else 
@@ -484,12 +475,20 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
 	end
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
-		#println("$(M[mSet].scale[]),$(M[mSet].df[])")
-		#inMarkers = findall([any(c.!=0) for c in eachcol(delta[M[mSet].pos])])
 		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
-		#println("N inmarkers = $(length(inMarkers))")
-		scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(varBeta[mSet][1]) + inv(M[mSet].priorScale)))))
-		#NEW
+				#println("N inmarkers = $(length(inMarkers))")
+				#scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(varBeta[mSet][1]) + inv(M[mSet].priorScale)))))
+		scaleEst, dfEst, accepted = update_hyperparameters_mt_C(
+        getindex(varBeta[mSet],inMarkers),   # The vector of marker matrices
+        M[mSet].scale[],       # Current scale matrix
+        M[mSet].df[],      # Current degrees of freedom
+        Matrix{Float64}(I, 2, 2),       # Inverse prior scale 2x2 trait hardcoded
+        5,          # 2 trait hardcoded Prior degrees of freedom
+        0.2,  # Random walk step size
+        2,            # Number of traits
+        length(inMarkers)             # Number of markers
+        )
+		println("new df and scale: $(dfEst) $(scaleEst)")
 		setindex!(M[mSet].scale, scaleEst,1)
 		setindex!(M[mSet].df,rand(Uniform(4,5)),1)
 
@@ -865,7 +864,7 @@ function sampleScaleDFofVar(varVec;abcde=[4.0,0.01,0.01,0.01,0.01],crit=10e-6)
 end
 
 
-function update_hyperparameters_mt(
+function update_hyperparameters_mt_AB(
     G::Vector{Matrix{Float64}}, 
     S_beta_old::Matrix{Float64}, 
     nu_beta_old::Float64, 
@@ -933,6 +932,93 @@ function update_hyperparameters_mt(
         return S_beta_new, nu_beta_old, false
     end
 end
+
+
+
+"""
+    update_hyperparameters_mt_C(G, S_beta_old, nu_beta_old, S0_inv, nu0, proposal_sd, t, m_active)
+
+Updates S_beta and nu_beta for a Multi-Trait BayesC framework using the single global 
+covariance matrix `G` and the current number of active markers `m_active`.
+"""
+function update_hyperparameters_mt_C(
+    G::Matrix{Float64},        # Single global t x t covariance matrix
+    S_beta_old::Matrix{Float64}, 
+    nu_beta_old::Float64, 
+    S0_inv::Matrix{Float64},   # Inverse of prior scale matrix S0
+    nu0::Real, 
+    proposal_sd::Float64, 
+    t::Int, 
+    m_active::Int              # Count of active markers (delta_j == 1)
+)
+    # If no markers are active, skip updates to prevent structural collapse
+    if m_active == 0
+        return S_beta_old, nu_beta_old, false
+    end
+
+    # Pre-compute scaled matrix values for the single global G
+    G_fact = cholesky(Hermitian(G))
+    G_inv = inv(G_fact)
+    logdet_G = logdet(G_fact)
+
+    # =========================================================================
+    # STEP 1: GIBBS SAMPLING FOR S_beta
+    # =========================================================================
+    S_beta_post_precision = S0_inv + m_active * G_inv
+    S_beta_post_scale = inv(cholesky(Hermitian(S_beta_post_precision)))
+    nu_S_post = nu0 + m_active * nu_beta_old
+    
+    # Bartlett decomposition matrix drawing
+    A = zeros(t, t)
+    for i in 1:t
+        A[i, i] = sqrt(chi2(nu_S_post - i + 1)) # Uses your existing chi2 helper
+        for k in (i+1):t
+            A[i, k] = randn()
+        end
+    end
+    L_scale = cholesky(Hermitian(S_beta_post_scale)).L
+    S_beta_new = Matrix(Hermitian((L_scale * A) * (L_scale * A)'))
+
+    # =========================================================================
+    # STEP 2: METROPOLIS-HASTINGS FOR nu_beta
+    # =========================================================================
+    function log_post_nu(nu::Float64, S_mat::Matrix{Float64})
+        logdet_S = logdet(cholesky(Hermitian(S_mat)))
+        traits_float = Float64(t)
+        
+        # Local log-multivariate gamma loop
+        log_mv_gamma = (t * (t - 1) / 4.0) * log(pi)
+        for k in 1:t
+            log_mv_gamma += lgamma((nu / 2.0) + (1.0 - k) / 2.0)
+        end
+        
+        # Likelihood terms scaled directly by m_active
+        term1 = m_active * ( (nu / 2.0) * logdet_S - (nu * traits_float / 2.0) * log(2.0) - log_mv_gamma )
+        term2 = -0.5 * (nu + t + 1) * (m_active * logdet_G)
+        
+        # Dynamic Exponential Prior Penalty
+        lambda_c = 0.01 * m_active 
+        log_prior = -lambda_c * nu
+        
+        return term1 + term2 + log_prior
+    end
+    
+    nu_beta_prop = nu_beta_old + proposal_sd * randn()
+    
+    if nu_beta_prop <= (t - 1)
+        return S_beta_new, nu_beta_old, false
+    end
+    
+    log_alpha = log_post_nu(nu_beta_prop, S_beta_new) - log_post_nu(nu_beta_old, S_beta_new)
+    
+    if log(rand()) < log_alpha
+        return S_beta_new, nu_beta_prop, true
+    else
+        return S_beta_new, nu_beta_old, false
+    end
+end
+
+
 
 
 
