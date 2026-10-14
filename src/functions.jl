@@ -984,7 +984,7 @@ function _siw_update_shifted_lognormal_fixed_mh!(Qg::AbstractMatrix{Float64}, M:
     
     # FIX: If M[mSet].scale is a Ref{Matrix}, mutate using `.=` on the container 
     # instead of trying to broadcast `.=` directly onto a scalar extraction `[]`
-    M[mSet].scale .= X * X' 
+    M[mSet].scale[] .= X * X' 
 
     function log_target_nu(nu::Float64)
         excess = nu - shift_nu
