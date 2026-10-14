@@ -926,7 +926,7 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}}, ν_current::Real, �
     
     # --- Use values from the previous iteration ---
     ν = ν_current
-    Ψ = copy(Ψ_current) # Copy to avoid unintended mutation tracking side-effects
+    Ψ = copy(Ψ_current) 
     
     # MH proposal tuning parameters
     proposal_std_ν = 0.2
@@ -947,14 +947,18 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}}, ν_current::Real, �
     end
     
     # -----------------------------------------------------------------
-    # STEP 2: FIXED MULTIPLICATIVE UPDATE FOR MATRIX Ψ
+    # STEP 2: FIXED SYMMETRIC MULTIPLICATIVE UPDATE FOR MATRIX Ψ
     # -----------------------------------------------------------------
-    # Generate symmetric matrix random walk shock in log-space
+    # Generate a perfectly symmetric random walk shock matrix
     Z = randn(p, p)
-    E = (Z + Z') * proposal_std_Ψ 
+    E = Symmetric((Z + Z') * proposal_std_Ψ)
     
-    # Propose via matrix exponential to guarantee positive-definiteness
-    Ψ_proposal = Ψ * exp(Matrix(E))
+    # Compute the matrix exponential factor
+    expm = exp(Matrix(E))
+    
+    # FIX: Sandwiched multiplication ensures Ψ_proposal remains 100% symmetric 
+    # and positive-definite, unlocking the stuck acceptance rate
+    Ψ_proposal = Symmetric(expm * Ψ * expm) |> Matrix
     
     log_prob_curr = log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
     log_prob_prop = log_joint_posterior(ν, Ψ_proposal, S_list, p, λ, ν0, inv_Ψ0)
@@ -974,6 +978,7 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}}, ν_current::Real, �
             
     return ν, Ψ
 end
+
 
 
 
