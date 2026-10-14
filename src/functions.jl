@@ -347,7 +347,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
 		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
 		         #scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(mean(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))))
-		dfEst, scaleEst, accepted = update_hyperparameters_mt_bayesa(
+		dfEst, scaleEst, accepted = update_hyperparameters_mt(
         getindex(varBeta[mSet],inMarkers),   # The vector of marker matrices
         M[mSet].scale[],       # Current scale matrix
         M[mSet].df[],      # Current degrees of freedom
@@ -865,11 +865,7 @@ function sampleScaleDFofVar(varVec;abcde=[4.0,0.01,0.01,0.01,0.01],crit=10e-6)
 end
 
 
-
-using LinearAlgebra
-using Distributions # 👈 Load the standard ecosystem package
-
-function update_hyperparameters_distributions_pkg(
+function update_hyperparameters_mt(
     G::Vector{Matrix{Float64}}, 
     S_beta_old::Matrix{Float64}, 
     nu_beta_old::Float64, 
