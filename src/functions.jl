@@ -911,7 +911,7 @@ function update_hyperparameters_mt(
         term1 = m * ( (nu / 2.0) * logdet_S - (nu * traits_float / 2.0) * log(2.0) - log_mv_gamma )
         term2 = -0.5 * (nu + t + 1) * sum_logdet_G
         
-        #Exponential Prior Penalty (lambda = 0.2)
+        #Exponential Prior Penalty (lambda = 0.2, without the * m !!)
         lambda = 0.01 * m
         log_prior = -lambda * nu
         
