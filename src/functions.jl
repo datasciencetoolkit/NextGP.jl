@@ -347,7 +347,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
 		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
 		         #scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(mean(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))))
-		dfEst, scaleEst, accepted = update_hyperparameters_mt(
+		scaleEst, dfEst, accepted = update_hyperparameters_mt(
         getindex(varBeta[mSet],inMarkers),   # The vector of marker matrices
         M[mSet].scale[],       # Current scale matrix
         M[mSet].df[],      # Current degrees of freedom
