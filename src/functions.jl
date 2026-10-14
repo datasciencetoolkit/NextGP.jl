@@ -932,7 +932,7 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}})
     
     # MH proposal tuning parameters
     proposal_std_ν = 0.2
-    proposal_std_Ψ = mean(std(S_list))*0.01 / (sqrt(length(S_list) / 100))
+    proposal_std_Ψ = mean(std(S_list)) / (sqrt(n / 100))
     
 
         # -----------------------------------------------------------------
