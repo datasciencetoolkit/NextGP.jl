@@ -896,21 +896,28 @@ function update_hyperparameters_mt(
     S_beta_new = rand(Wishart(nu_S_post, S_beta_post_scale))
 
         # =========================================================================
-    # STEP 2: METROPOLIS-HASTINGS FOR nu_beta
+    # STEP 2: METROPOLIS-HASTINGS FOR nu_beta WITH EXPONENTIAL PRIOR
     # =========================================================================
     function log_post_nu(nu::Float64, S_mat::Matrix{Float64})
         logdet_S = logdet(cholesky(Hermitian(S_mat)))
         traits_float = Float64(t)
         
-        # 🌟 Clean local replacement using SpecialFunctions.lgamma:
+        # Local calculation of log-multivariate gamma
         log_mv_gamma = (t * (t - 1) / 4.0) * log(pi)
         for k in 1:t
             log_mv_gamma += lgamma((nu / 2.0) + (1.0 - k) / 2.0)
         end
         
+        # Standard Multi-Trait BayesA likelihood components
         term1 = m * ( (nu / 2.0) * logdet_S - (nu * traits_float / 2.0) * log(2.0) - log_mv_gamma )
         term2 = -0.5 * (nu + t + 1) * sum_logdet_G
-        return term1 + term2
+        
+        # 🌟 NEW: Exponential Prior Penalty (lambda = 0.2)
+        lambda = 0.2
+        log_prior = -lambda * nu
+        
+        # Return the combined log-posterior density
+        return term1 + term2 + log_prior
     end
     
     nu_beta_prop = nu_beta_old + proposal_sd * randn()
