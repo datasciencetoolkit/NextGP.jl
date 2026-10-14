@@ -347,7 +347,16 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
 		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
 		         #scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(mean(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))))
-		dfEst, scaleEst = run_direct_iw_mcmc(getindex(varBeta[mSet],inMarkers), M[mSet].df[], M[mSet].scale[])
+		dfEst, scaleEst, accepted = update_hyperparameters_mt_bayesa(
+        getindex(varBeta[mSet],inMarkers),   # The vector of marker matrices
+        M[mSet].scale[],       # Current scale matrix
+        M[mSet].df[],      # Current degrees of freedom
+        Matrix{Float64}(I, 2, 2),       # Inverse prior scale 2x2 trait hardcoded
+        5,          # 2 trait hardcoded Prior degrees of freedom
+        0.2,  # Random walk step size
+        2,            # Number of traits
+        inMarkers             # Number of markers
+        )
 		println("new df and scale: $(dfEst) $(scaleEst)")
 				#NEW
 				#println("new scale: $(scaleEst)")
@@ -855,128 +864,154 @@ function sampleScaleDFofVar(varVec;abcde=[4.0,0.01,0.01,0.01,0.01],crit=10e-6)
 	return alphaHat,betaHat
 end
 
-# =========================================================================
-# 1. LOG POSTERIOR DENSITY FUNCTION
-# =========================================================================
+
 
 """
-    log_mvgamma(p, a)
-Computes the log of the multivariate gamma function Γ_p(a).
+    update_hyperparameters_mt_bayesa(G, S_beta_old, nu_beta_old, S0_inv, nu0, proposal_sd, t, m)
+
+Performs one MCMC iteration step to update the scale matrix `S_beta` (via Gibbs) 
+and the degrees of freedom `nu_beta` (via Metropolis-Hastings).
+
+Arguments:
+- `G`: Vector{Matrix{Float64}} of length `m`, containing the current t x t G_j matrices for all markers.
+- `S_beta_old`: Current t x t scale matrix.
+- `nu_beta_old`: Current scalar degrees of freedom.
+- `S0_inv`: Inverse of the prior scale matrix S0 (t x t).
+- `nu0`: Prior degrees of freedom for S_beta (scalar).
+- `proposal_sd`: Standard deviation for the random-walk MH proposal of nu_beta.
+- `t`: Number of traits (integer).
+- `m`: Number of markers (integer).
+
+Returns:
+- `S_beta_new`: Updated t x t scale matrix.
+- `nu_beta_new`: Updated scalar degrees of freedom.
+- `accepted`: Boolean indicating if the nu_beta MH proposal was accepted.
 """
-function log_mvgamma(p::Int, a::Real)
-    ans = p * (p - 1) * 0.25 * log(π)
-    for j in 1:p
-        ans += loggamma(a + (1.0 - j) * 0.5)
+function update_hyperparameters_mt_bayesa(
+    G::Vector{Matrix{Float64}}, 
+    S_beta_old::Matrix{Float64}, 
+    nu_beta_old::Float64, 
+    S0_inv::Matrix{Float64}, 
+    nu0::Real, 
+    proposal_sd::Float64, 
+    t::Int, 
+    m::Int
+)
+    # --- PRE-COMPUTE SHARED VALUES FOR EFFICIENCY ---
+    # Sum of G_j^{-1} across all markers
+    sum_G_inv = zeros(t, t)
+    # Sum of log-determinants of G_j needed for the nu_beta posterior density
+    sum_logdet_G = 0.0
+    
+    for j in 1:m
+        # Using cholesky or inversion depending on conditioning; logdet is efficient
+        G_fact = cholesky(G[j]) 
+        sum_G_inv .+= inv(G_fact)
+        sum_logdet_G += logdet(G_fact)
     end
-    return ans
-end
 
-"""
-    log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
-
-Computes the exact log posterior density up to a constant additive factor.
-"""
-function log_joint_posterior(ν::Real, Ψ::Matrix{Float64}, S_list::Vector{Matrix{Float64}}, p::Int, λ::Real, ν0::Real, inv_Ψ0::Matrix{Float64})
-    # Parameter space constraints
-    if ν <= p - 1 || !isposdef(Ψ)
-        return -Inf
+    # =========================================================================
+    # STEP 1: GIBBS SAMPLING FOR S_beta
+    # =========================================================================
+    # Posterior scale matrix for Wishart: \((S0^{-1} + \sum G_j^{-1})^{-1}\)
+    # Instead of inverting directly, we compute the precision matrix first
+    S_beta_post_precision = S0_inv + sum_G_inv
+    S_beta_post_scale = inv(cholesky(S_beta_post_precision))
+    
+    # Degrees of freedom for the posterior Wishart
+    nu_S_post = nu0 + m * nu_beta_old
+    
+    # Draw new S_beta from Wishart(nu_S_post, S_beta_post_scale)
+    # Manual drawing to avoid heavy distributions package overhead:
+    # Generate an upper triangular matrix of Chi and Normal random variables (Bartlett decomposition)
+    A = zeros(t, t)
+    for i in 1:t
+        A[i, i] = sqrt(rand(chi2(nu_S_post - i + 1))) # Note: helper function chi2 needed
+        for k in (i+1):t
+            A[i, k] = randn()
+        end
     end
-    n = length(S_list)
-    
-    # --- PRIORS ---
-    # 1. Exponential Prior on ν (Shifted to valid space starting at p-1)
-    log_prior_ν = -λ * (ν - (p - 1))
-    
-    # 2. Wishart Prior on Ψ: W(ν0, Ψ0)
-    log_c_wish = (ν0 * p / 2) * log(2) + (ν0 / 2) * logdet(inv(inv_Ψ0)) + log_mvgamma(p, ν0 / 2)
-    log_prior_Ψ = (ν0 - p - 1) / 2 * logdet(Ψ) - 0.5 * tr(inv_Ψ0 * Ψ) - log_c_wish
+    # Transform using Cholesky factor of the scale matrix
+    L_scale = cholesky(Hermitian(S_beta_post_scale)).L
+    S_beta_new = Matrix(Hermitian((L_scale * A) * (L_scale * A)'))
 
-    # --- LIKELIHOOD ---
-    # Product of Inverse-Wishart(S_i | ν, Ψ)
-    # FIX: Corrected Inverse-Wishart PDF scale normalization constant component
-    log_c0_iw = (ν * p / 2) * log(2) - (ν / 2) * logdet(Ψ) + log_mvgamma(p, ν / 2)
-    
-    sum_logdet_S = sum(logdet(S) for S in S_list)
-    sum_tr_invS_Ψ = sum(tr(inv(S) * Ψ) for S in S_list)
-    
-    log_likelihood = -n * log_c0_iw - 0.5 * (ν + p + 1) * sum_logdet_S - 0.5 * sum_tr_invS_Ψ
-    
-    return log_prior_ν + log_prior_Ψ + log_likelihood
-end
-
-# =========================================================================
-# 2. BAYESIAN METROPOLIS ESTIMATOR ENGINE (SINGLE STEP RUNNER)
-# =========================================================================
-
-"""
-    run_direct_iw_mcmc(S_list, ν_current, Ψ_current)
-
-Takes the values from the previous iteration (ν_current, Ψ_current) 
-and executes a single MCMC transition step.
-"""
-function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}}, ν_current::Real, Ψ_current::Matrix{Float64})
-    p = 2
-    n = length(S_list)
-    
-    # --- Hyperprior Constants ---
-    λ = 0.1                      # Rate parameter for Exponential(ν)
-    ν0 = 5.0                     # Degrees of freedom for Wishart(Ψ)
-    Ψ0 = Matrix(1.0I, p, p)      # Scale matrix for Wishart(Ψ)
-    inv_Ψ0 = inv(Ψ0)
-    
-    # --- Use values from the previous iteration ---
-    ν = ν_current
-    Ψ = copy(Ψ_current) 
-    
-    # MH proposal tuning parameters
-    proposal_std_ν = 0.2
-    
-    # Controls the degrees of freedom for the Wishart Random Walk Proposal
-    df_prop = 150.0 
-    
-
-    # -----------------------------------------------------------------
-    # STEP 1: Metropolis Update for ν
-    # -----------------------------------------------------------------
-    ν_proposal = ν + randn() * proposal_std_ν
-    
-    log_prob_curr = log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
-    log_prob_prop = log_joint_posterior(ν_proposal, Ψ, S_list, p, λ, ν0, inv_Ψ0)
-    
-    if log(rand()) < (log_prob_prop - log_prob_curr)
-        ν = ν_proposal
-        println("proposal accepted for ν")
+    # =========================================================================
+    # STEP 2: METROPOLIS-HASTINGS FOR nu_beta
+    # =========================================================================
+    # Helper to calculate log-multivariate gamma: ln(Gamma_t(x))
+    function log_mv_gamma(x::Float64, traits::Int)
+        val = (traits * (traits - 1) / 4.0) * log(pi)
+        for k in 1:traits
+            val += lgamma(x + (1.0 - k) / 2.0)
+        end
+        return val
     end
-    
-    # -----------------------------------------------------------------
-    # STEP 2: STABLE WISHART METROPOLIS UPDATE FOR MATRIX Ψ
-    # -----------------------------------------------------------------
-    # Proposing from a Wishart distribution centered at Ψ guarantees the 
-    # proposal matrix is symmetric and positive-definite, resolving the drift bug.
-    S_prop_scale = Symmetric(Ψ / df_prop)
-    C_prop = try cholesky(S_prop_scale) catch; cholesky(S_prop_scale + 1e-9I) end
-    Ψ_proposal = rand(Wishart(df_prop, C_prop))
-    
-    log_prob_curr = log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
-    log_prob_prop = log_joint_posterior(ν, Ψ_proposal, S_list, p, λ, ν0, inv_Ψ0)
-    
-    if isposdef(Ψ_proposal)
-        # Compute asymmetric proposal densities q(Ψ*|Ψ) and q(Ψ|Ψ*) for Hastings correction
-        C_prop_back = try cholesky(Symmetric(Ψ_proposal / df_prop)) catch; cholesky(Symmetric(Ψ_proposal / df_prop) + 1e-9I) end
-        log_q_curr_given_prop = logpdf(Wishart(df_prop, C_prop_back), Ψ)
-        log_q_prop_given_curr = logpdf(Wishart(df_prop, C_prop), Ψ_proposal)
+
+    # Helper function to evaluate the log-posterior density of nu_beta
+    function log_post_nu(nu::Float64, S_mat::Matrix{Float64})
+        logdet_S = logdet(cholesky(Hermitian(S_mat)))
         
-        log_alpha = (log_prob_prop - log_prob_curr) + (log_q_curr_given_prop - log_q_prop_given_curr)
-    else
-        log_alpha = -Inf
+        term1 = m * ( (nu / 2.0) * logdet_S - (nu * traits_float / 2.0) * log(2.0) - log_mv_gamma(nu / 2.0, t) )
+        term2 = -0.5 * (nu + t + 1) * sum_logdet_G
+        return term1 + term2
     end
     
-    if log(rand()) < log_alpha
-        Ψ = Ψ_proposal
-        println("proposal accepted for Ψ")
+    traits_float = Float64(t) # for type stability inside function
+    
+    # Propose a candidate value via a random walk
+    nu_beta_prop = nu_beta_old + proposal_sd * randn()
+    
+    # Truncation boundary check: nu_beta must be > t - 1
+    if nu_beta_prop <= (t - 1)
+        return S_beta_new, nu_beta_old, false
     end
-            
-    return ν, Ψ
+    
+    # Compute acceptance ratio components using the NEW S_beta
+    log_target_old = log_post_nu(nu_beta_old, S_beta_new)
+    log_target_prop = log_post_nu(nu_beta_prop, S_beta_new)
+    
+    log_alpha = log_target_prop - log_target_old
+    
+    # Accept or Reject decision
+    if log(rand()) < log_alpha
+        return S_beta_new, nu_beta_prop, true
+    else
+        return S_beta_new, nu_beta_old, false
+    end
+end
+
+# --- Helper function for drawing Chi-Squared values ---
+# If you aren't using Distributions.jl, a quick Gamma-based Chi² sampler:
+function chi2(df::Real)
+    # A Chi-squared(df) distribution is equivalent to a Gamma(shape=df/2, scale=2)
+    # Using a simple transformation or basic approximation if Distributions.jl isn't preferred:
+    # For standalone clarity, it is easiest to fall back on standard Gamma sampling:
+    return 2.0 * rand_gamma(df / 2.0)
+end
+
+# Quick Marsaglia and Tsang method for Gamma(alpha, 1) to keep the function self-contained
+function rand_gamma(alpha::Float64)
+    if alpha < 1.0
+        return rand_gamma(alpha + 1.0) * (rand()^(1.0 / alpha))
+    end
+    d = alpha - 1.0 / 3.0
+    c = 1.0 / sqrt(9.0 * d)
+    while true
+        z = randn()
+        v = 1.0 + c * z
+        while v <= 0.0
+            z = randn()
+            v = 1.0 + c * z
+        end
+        v = v^3
+        u = rand()
+        if u < 1.0 - 0.0331 * z^4
+            return d * v
+        end
+        if log(u) < 0.5 * z^2 + d * (1.0 - v + log(v))
+            return d * v
+        end
+    end
 end
 
 
