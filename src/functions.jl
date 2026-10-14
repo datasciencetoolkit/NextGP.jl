@@ -856,15 +856,8 @@ function sampleScaleDFofVar(varVec;abcde=[4.0,0.01,0.01,0.01,0.01],crit=10e-6)
 	return alphaHat,betaHat
 end
 
-
-"""
-    sampleHierarchicalSIW!(M, delta, m_g, s2_g, mSet, B_region, regionSize)
-
-Single-scale version where `delta`, `m_g`, and `s2_g` are passed as independent mutable containers.
-"""
 function sampleHierarchicalSIW!(M::OrderedDict, delta::Ref{Float64}, m_g::Ref{Float64}, s2_g::Ref{Float64}, mSet::Tuple, B_region::AbstractMatrix{Float64}, regionSize::Int64)
     t = size(B_region, 1) 
-    c_threshold = t - 1.0
     
     # --- FIXED PRIOR ENGINES ---
     shift_nu = 4.0   
@@ -881,65 +874,64 @@ function sampleHierarchicalSIW!(M::OrderedDict, delta::Ref{Float64}, m_g::Ref{Fl
     alpha_0   = 5.0   
     beta_0    = 5.0
 
-    # Unpack current scalar values from M[mSet] using `[]`
     current_df = M[mSet].df[]
     current_scale = M[mSet].scale[]  
     
-    # Read current values using `[]` from the standalone containers
     d_val_curr = delta[]
     m_g_curr   = m_g[]
     s2_g_curr  = s2_g[]
     
-    Qg_old = hasproperty(M[mSet], :Qg) ? M[mSet].Qg : inv(current_scale * (current_df - t - 1.0))
+    # SAFE COVARIANCE TRACKING
+    Qg_old = hasproperty(M[mSet], :Qg) ? M[mSet].Qg : inv(Symmetric(current_scale * (current_df - t - 1.0)))
     
-    # Step A: Update delta in-place (Passing scalar values extracted from refs)
     _siw_update_single_scale_inplace!(delta, B_region, Qg_old, m_g_curr, s2_g_curr, prop_sd)
-    
-    # Extract the freshly accepted/retained scalar scale value
     d_val = delta[]
     
-    # Step B: Strip the single scale to yield unscaled scatter and sample Qg
+    # Prevent division by zero or underflow causing Infs
+    if d_val < 1e-8; d_val = 1e-8; end 
+    
     B_unscaled = B_region ./ d_val
     scatter_unscaled = B_unscaled * B_unscaled'
     
     Scale_InvWish = Symmetric(current_scale + scatter_unscaled)
-    L_Q = cholesky(inv(Scale_InvWish)).L
-    nu_Q = current_df + regionSize
     
+    # STABLE: LAPACK prefers factoring the base matrix instead of factoring its inverse
+    C_scale = cholesky(Scale_InvWish)
+    
+    nu_Q = current_df + regionSize
     A_Q = zeros(t, t) 
     for i in 1:t
         A_Q[i, i] = sqrt(rand(Chi(nu_Q - i + 1)))
         for j in 1:(i-1); A_Q[i, j] = randn(); end
     end
-    Qg_new = inv(Symmetric((L_Q * A_Q) * (L_Q * A_Q)'))
+    
+    # Avoid explicit matrix inverse inside Symmetric expression
+    Qg_new = Symmetric(C_scale \ (A_Q * A_Q') \ I) 
+    
     if hasproperty(M[mSet], :Qg); M[mSet].Qg .= Qg_new; end
     
-    # Step C: Log-Scale MH Update
     _siw_update_shifted_lognormal_fixed_mh!(Qg_new, M, mSet, nu0_W, S0_W_inv, shift_nu, mu_log, sd_log, prop_sd)
     
-    # Step D: Update log-normal scale hyperparameters online via standalone references
     log_d = log(d_val)
     V_m = 1.0 / (1.0 / sigma0_2 + 1.0 / s2_g[])
     
-    # Mutate standalone containers using `[] =` instead of assigning to M
     m_g[] = V_m * (mu_0 / sigma0_2 + log_d / s2_g[]) + sqrt(V_m) * randn()
     s2_g[] = rand(InverseGamma(alpha_0 + 0.5, beta_0 + 0.5 * (log_d - m_g[])^2))
     
     return d_val * Qg_new * d_val
 end
 
-
 function _siw_update_single_scale_inplace!(delta::Ref{Float64}, B::AbstractMatrix{Float64}, Qg::AbstractMatrix{Float64}, m_g_val::Float64, s2_g_val::Float64, prop_sd::Float64)
     t, p = size(B)
     BtB = B * B'
     
-    Qg_inv = inv(Symmetric(Qg))
-    logdet_Qg = logdet(cholesky(Symmetric(Qg)))
-    tr_Qg_inv_BtB = tr(Qg_inv * BtB)
+    C_Qg = cholesky(Symmetric(Qg))
+    logdet_Qg = logdet(C_Qg)
 
     function log_target_delta_scalar(d::Float64)
         logdet_G = 2.0 * t * log(d) + logdet_Qg
-        tr_val = (1.0 / (d^2)) * tr_Qg_inv_BtB
+        # STABLE SOLVER: Backsubstitution instead of explicit inv()
+        tr_val = (1.0 / (d^2)) * tr(C_Qg \ BtB)
         
         log_lik = -0.5 * p * logdet_G - 0.5 * tr_val
         log_prior = -0.5 * (log(d) - m_g_val)^2 / s2_g_val - log(d)
@@ -955,52 +947,15 @@ function _siw_update_single_scale_inplace!(delta::Ref{Float64}, B::AbstractMatri
         log_curr_prob = log_target_delta_scalar(delta[])
         log_prop_prob = log_target_delta_scalar(delta_prop_val)
         
-        if log(rand()) < (log_prop_prob - log_curr_prob)
-            delta[] = delta_prop_val # Direct mutation of the standalone container reference
+        # LAPACK Check: Short circuit if evaluation results in undefined NaN values
+        if !isnan(log_prop_prob) && !isnan(log_curr_prob)
+            if log(rand()) < (log_prop_prob - log_curr_prob)
+                delta[] = delta_prop_val 
+            end
         end
     end
 end
 
-function _siw_update_shifted_lognormal_fixed_mh!(Qg::AbstractMatrix{Float64}, M::OrderedDict, mSet::Tuple, nu0_W::Float64, S0_W_inv::AbstractMatrix{Float64}, shift_nu::Float64, mu_log::Float64, sd_log::Float64, prop_sd::Float64)
-    t = size(Qg, 1)
-    c_threshold = t - 1.0
-    
-    current_df = M[mSet].df[]
-    current_scale = M[mSet].scale[]
-    
-    Qg_inv = inv(Symmetric(Qg))
-    S_n_inv = S0_W_inv + Qg_inv
-    nu_n = nu0_W + current_df
-    L_S = cholesky(inv(Symmetric(S_n_inv))).L
-    
-    A = zeros(t, t)
-    for i in 1:t
-        A[i, i] = sqrt(rand(Chi(nu_n - i + 1)))
-        for j in 1:(i-1); A[i, j] = randn(); end
-    end
-    X = L_S * A
-    
-    M[mSet].scale[] .= X * X' 
-
-    function log_target_nu(nu::Float64)
-        excess = nu - shift_nu
-        log_prior = -0.5 * ((log(excess) - mu_log) / sd_log)^2 - log(excess)
-        log_mv_gamma = (t * (t - 1) / 4) * log(pi) + sum(loggamma((nu + 1.0 - i) / 2.0) for i in 1:t)
-        log_det_block = (nu / 2.0) * logdet(Symmetric(current_scale)) - (nu * t / 2.0) * log(2.0) - log_mv_gamma - (nu / 2.0) * logdet(Symmetric(Qg))
-        return log_det_block + log_prior
-    end
-
-    log_excess_curr = log(current_df - shift_nu)
-    log_excess_prop = log_excess_curr + prop_sd * randn()
-    nu_prop = exp(log_excess_prop) + shift_nu
-
-    if nu_prop > c_threshold && (nu_prop - shift_nu) > 0.0
-        log_alpha = log_target_nu(nu_prop) - log_target_nu(current_df) + log(nu_prop - shift_nu) - log(current_df - shift_nu)
-        if log(rand()) < log_alpha
-            M[mSet].df[] = nu_prop 
-        end
-    end
-end
 
 
 
