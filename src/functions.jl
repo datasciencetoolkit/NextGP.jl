@@ -347,7 +347,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
 		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
 		         #scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(mean(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))))
-		dfEst, scaleEst = run_direct_iw_mcmc(getindex(varBeta[mSet],inMarkers))
+		dfEst, scaleEst = run_direct_iw_mcmc(getindex(varBeta[mSet],inMarkers), M[mSet].df[], M[mSet].scale[])
 		println("new df and scale: $(dfEst) $(scaleEst)")
 				#NEW
 				#println("new scale: $(scaleEst)")
@@ -855,7 +855,6 @@ function sampleScaleDFofVar(varVec;abcde=[4.0,0.01,0.01,0.01,0.01],crit=10e-6)
 	return alphaHat,betaHat
 end
 
-
 # =========================================================================
 # 1. LOG POSTERIOR DENSITY FUNCTION
 # =========================================================================
@@ -906,78 +905,76 @@ function log_joint_posterior(ν::Real, Ψ::Matrix{Float64}, S_list::Vector{Matri
 end
 
 # =========================================================================
-# 2. BAYESIAN METROPOLIS ESTIMATOR ENGINE
+# 2. BAYESIAN METROPOLIS ESTIMATOR ENGINE (SINGLE STEP RUNNER)
 # =========================================================================
 
 """
-    run_direct_iw_mcmc(S_list)
+    run_direct_iw_mcmc(S_list, ν_current, Ψ_current)
 
-Estimates ν and Ψ from observed covariance matrices without using latent variables.
+Takes the values from the previous iteration (ν_current, Ψ_current) 
+and executes a single MCMC transition step.
 """
-function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}})
+function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}}, ν_current::Real, Ψ_current::Matrix{Float64})
     p = 2
     n = length(S_list)
     
     # --- Hyperprior Constants ---
     λ = 0.1                      # Rate parameter for Exponential(ν)
-    ν0 = 5.0                 # Degrees of freedom for Wishart(Ψ)
+    ν0 = 5.0                     # Degrees of freedom for Wishart(Ψ)
     Ψ0 = Matrix(1.0I, p, p)      # Scale matrix for Wishart(Ψ)
     inv_Ψ0 = inv(Ψ0)
     
-    # --- Initialize Chains ---
-    ν = 5.0
-    Ψ = mean(S_list)
-    
-    # Trackers
+    # --- Use values from the previous iteration ---
+    ν = ν_current
+    Ψ = copy(Ψ_current) # Copy to avoid unintended mutation tracking side-effects
     
     # MH proposal tuning parameters
     proposal_std_ν = 0.2
-    
-    # FIXED BUG: Replaced broken mean(std(S_list)) with element-wise std calculation
-    proposal_std_Ψ = 0.05
+    proposal_std_Ψ = mean([std([S[i,j] for S in S_list]) for i in 1:p, j in 1:p]) / (sqrt(n / 100))
     
 
-        # -----------------------------------------------------------------
-        # STEP 1: Metropolis Update for ν
-        # -----------------------------------------------------------------
-        ν_proposal = ν + randn() * proposal_std_ν
-        
-        log_prob_curr = log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
-        log_prob_prop = log_joint_posterior(ν_proposal, Ψ, S_list, p, λ, ν0, inv_Ψ0)
-        
-        if log(rand()) < (log_prob_prop - log_prob_curr)
-            ν = ν_proposal
-	    println("proposal accepted for ν")
-        end
-        
-        # -----------------------------------------------------------------
-        # STEP 2: FIXED MULTIPLICATIVE UPDATE FOR MATRIX Ψ
-        # -----------------------------------------------------------------
-        # Generate symmetric matrix random walk shock in log-space
-        Z = randn(p, p)
-        E = (Z + Z') * proposal_std_Ψ 
-        
-        # Propose via matrix exponential to guarantee positive-definiteness
-        Ψ_proposal = Ψ * exp(Matrix(E))
-        
-        log_prob_curr = log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
-        log_prob_prop = log_joint_posterior(ν, Ψ_proposal, S_list, p, λ, ν0, inv_Ψ0)
-        
-        # Asymmetric transition correction factor (Jacobian) to stop upward drift
-        if isposdef(Ψ_proposal)
-            log_hastings_correction = (p + 1) * (logdet(Ψ_proposal) - logdet(Ψ))
-            log_alpha = (log_prob_prop - log_prob_curr) + log_hastings_correction
-        else
-            log_alpha = -Inf
-        end
-        
-        if log(rand()) < log_alpha
-            Ψ = Ψ_proposal
-	    println("proposal accepted for Ψ")
-        end
+    # -----------------------------------------------------------------
+    # STEP 1: Metropolis Update for ν
+    # -----------------------------------------------------------------
+    ν_proposal = ν + randn() * proposal_std_ν
+    
+    log_prob_curr = log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
+    log_prob_prop = log_joint_posterior(ν_proposal, Ψ, S_list, p, λ, ν0, inv_Ψ0)
+    
+    if log(rand()) < (log_prob_prop - log_prob_curr)
+        ν = ν_proposal
+        println("proposal accepted for ν")
+    end
+    
+    # -----------------------------------------------------------------
+    # STEP 2: FIXED MULTIPLICATIVE UPDATE FOR MATRIX Ψ
+    # -----------------------------------------------------------------
+    # Generate symmetric matrix random walk shock in log-space
+    Z = randn(p, p)
+    E = (Z + Z') * proposal_std_Ψ 
+    
+    # Propose via matrix exponential to guarantee positive-definiteness
+    Ψ_proposal = Ψ * exp(Matrix(E))
+    
+    log_prob_curr = log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
+    log_prob_prop = log_joint_posterior(ν, Ψ_proposal, S_list, p, λ, ν0, inv_Ψ0)
+    
+    # Asymmetric transition correction factor (Jacobian) to stop upward drift
+    if isposdef(Ψ_proposal)
+        log_hastings_correction = (p + 1) * (logdet(Ψ_proposal) - logdet(Ψ))
+        log_alpha = (log_prob_prop - log_prob_curr) + log_hastings_correction
+    else
+        log_alpha = -Inf
+    end
+    
+    if log(rand()) < log_alpha
+        Ψ = Ψ_proposal
+        println("proposal accepted for Ψ")
+    end
             
     return ν, Ψ
 end
+
 
 
 
