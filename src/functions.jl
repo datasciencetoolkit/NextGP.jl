@@ -246,7 +246,7 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
         5,          # 2 trait hardcoded Prior degrees of freedom
         0.2,  # Random walk step size
         2,            # Number of traits
-        M[mSet].nCol             # Number of markers
+        M[mSet].dims[2]             # Number of markers
         )
 		println("new df and scale: $(dfEst) $(scaleEst)")
 		setindex!(M[mSet].scale,scaleEst,1)
