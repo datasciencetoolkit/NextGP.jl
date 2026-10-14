@@ -856,6 +856,116 @@ function sampleScaleDFofVar(varVec;abcde=[4.0,0.01,0.01,0.01,0.01],crit=10e-6)
 	return alphaHat,betaHat
 end
 
+
+
+function _siw_update_single_scale_inplace!(delta::Ref{Float64}, B::AbstractMatrix{Float64}, Qg::AbstractMatrix{Float64}, m_g_val::Float64, s2_g_val::Float64, prop_sd::Float64)
+    t, p = size(B)
+    BtB = B * B'
+    
+    # Enforce symmetric factorization to compute safe determinants and traces
+    C_Qg = cholesky(Symmetric(Qg + (1e-10 * I)))
+    logdet_Qg = logdet(C_Qg)
+
+    function log_target_delta_scalar(d::Float64)
+        logdet_G = 2.0 * t * log(d) + logdet_Qg
+        
+        # STABLE SOLVER: Backsubstitution solver instead of explicit inv() multiplication
+        tr_val = (1.0 / (d^2)) * tr(C_Qg \ BtB)
+        
+        log_lik = -0.5 * p * logdet_G - 0.5 * tr_val
+        log_prior = -0.5 * (log(d) - m_g_val)^2 / s2_g_val - log(d)
+        
+        return log_lik + log_prior
+    end
+
+    log_delta_curr = log(delta[])
+    log_delta_prop = log_delta_curr + prop_sd * randn()
+    delta_prop_val = exp(log_delta_prop)
+    
+    if 1e-5 <= delta_prop_val <= 100.0
+        log_curr_prob = log_target_delta_scalar(delta[])
+        log_prop_prob = log_target_delta_scalar(delta_prop_val)
+        
+        # LAPACK Check: Short-circuit evaluations to bypass unexpected underflow values
+        if !isnan(log_prop_prob) && !isnan(log_curr_prob)
+            if log(rand()) < (log_prop_prob - log_curr_prob)
+                delta[] = delta_prop_val 
+            end
+        end
+    end
+end
+
+
+function sampleHierarchicalSIW!(M::OrderedDict, delta::Ref{Float64}, m_g::Ref{Float64}, s2_g::Ref{Float64}, mSet::Tuple, B_region::AbstractMatrix{Float64}, regionSize::Int64)
+    t = size(B_region, 1) 
+    
+    # --- FIXED PRIOR ENGINES ---
+    shift_nu = 4.0   
+    mu_log   = 0.0   
+    sd_log   = 0.25  
+    prop_sd  = 0.02  
+
+    nu0_W = t + 2.0
+    R_0 = Matrix(I(t) * 1.0)
+    S0_W_inv = inv(R_0 * (nu0_W - t - 1.0))
+    
+    mu_0      = 0.0
+    sigma0_2  = 10.0  
+    alpha_0   = 5.0   
+    beta_0    = 5.0
+
+    current_df = M[mSet].df[]
+    current_scale = M[mSet].scale[]  
+    
+    d_val_curr = delta[]
+    m_g_curr   = m_g[]
+    s2_g_curr  = s2_g[]
+    
+    # Safe fallback initialization for Qg_old using stabilized inversion
+    Qg_old = hasproperty(M[mSet], :Qg) ? M[mSet].Qg : Symmetric(cholesky(Symmetric(current_scale * (current_df - t - 1.0) + (1e-10 * I))) \ I)
+    
+    # Step A: Update delta in-place
+    _siw_update_single_scale_inplace!(delta, B_region, Qg_old, m_g_curr, s2_g_curr, prop_sd)
+    
+    # Extract the freshly accepted/retained scalar scale value
+    d_val = delta[]
+    if d_val < 1e-8; d_val = 1e-8; end # Lower bound safeguard against division-by-zero
+    
+    # Step B: Strip the single scale to yield unscaled scatter and sample Qg
+    B_unscaled = B_region ./ d_val
+    scatter_unscaled = B_unscaled * B_unscaled'
+    
+    # Force symmetry and inject a nugget to guarantee stable Cholesky decomposition
+    Scale_InvWish = Symmetric(current_scale + scatter_unscaled + (1e-10 * I))
+    C_scale = cholesky(Scale_InvWish)
+    
+    nu_Q = current_df + regionSize
+    A_Q = zeros(t, t) 
+    for i in 1:t
+        chi_val = rand(Chi(nu_Q - i + 1))
+        A_Q[i, i] = sqrt(max(chi_val, 1e-10)) # Safeguard from zero-diagonal underflow
+        for j in 1:(i-1); A_Q[i, j] = randn(); end
+    end
+    
+    # Avoid explicit matrix inverse steps; solve via backsubstitution & enforce symmetry
+    Qg_new = Symmetric(C_scale \ (A_Q * A_Q') \ I + (1e-10 * I))
+    if hasproperty(M[mSet], :Qg); M[mSet].Qg .= Qg_new; end
+    
+    # Step C: Log-Scale MH Update
+    _siw_update_shifted_lognormal_fixed_mh!(Qg_new, M, mSet, nu0_W, S0_W_inv, shift_nu, mu_log, sd_log, prop_sd)
+    
+    # Step D: Update log-normal scale hyperparameters online via standalone references
+    log_d = log(d_val)
+    V_m = 1.0 / (1.0 / sigma0_2 + 1.0 / s2_g[])
+    
+    m_g[] = V_m * (mu_0 / sigma0_2 + log_d / s2_g[]) + sqrt(V_m) * randn()
+    s2_g[] = rand(InverseGamma(alpha_0 + 0.5, beta_0 + 0.5 * (log_d - m_g[])^2))
+    
+    return Symmetric(d_val * Qg_new * d_val)
+end
+
+
+
 function _siw_update_shifted_lognormal_fixed_mh!(Qg::AbstractMatrix{Float64}, M::OrderedDict, mSet::Tuple, nu0_W::Float64, S0_W_inv::AbstractMatrix{Float64}, shift_nu::Float64, mu_log::Float64, sd_log::Float64, prop_sd::Float64)
     t = size(Qg, 1)
     c_threshold = t - 1.0
