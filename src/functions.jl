@@ -934,7 +934,7 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}})
     proposal_std_ν = 0.2
     
     # FIXED BUG: Replaced broken mean(std(S_list)) with element-wise std calculation
-    proposal_std_Ψ = mean(std(S_list)) / n
+    proposal_std_Ψ = 0.05
     
 
         # -----------------------------------------------------------------
