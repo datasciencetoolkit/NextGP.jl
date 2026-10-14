@@ -888,13 +888,13 @@ function log_joint_posterior(ν::Real, Ψ::Matrix{Float64}, S_list::Vector{Matri
     log_prior_ν = -λ * (ν - (p - 1))
     
     # 2. Wishart Prior on Ψ: W(ν0, Ψ0)
-    # log-density constant component for the Wishart prior
     log_c_wish = (ν0 * p / 2) * log(2) + (ν0 / 2) * logdet(inv(inv_Ψ0)) + log_mvgamma(p, ν0 / 2)
     log_prior_Ψ = (ν0 - p - 1) / 2 * logdet(Ψ) - 0.5 * tr(inv_Ψ0 * Ψ) - log_c_wish
 
     # --- LIKELIHOOD ---
     # Product of Inverse-Wishart(S_i | ν, Ψ)
-    log_c0_iw = (ν * p / 2) * log(2) + (ν / 2) * logdet(Ψ) + log_mvgamma(p, ν / 2)
+    # FIX: Corrected Inverse-Wishart PDF scale normalization constant component
+    log_c0_iw = (ν * p / 2) * log(2) - (ν / 2) * logdet(Ψ) + log_mvgamma(p, ν / 2)
     
     sum_logdet_S = sum(logdet(S) for S in S_list)
     sum_tr_invS_Ψ = sum(tr(inv(S) * Ψ) for S in S_list)
@@ -930,7 +930,9 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}}, ν_current::Real, �
     
     # MH proposal tuning parameters
     proposal_std_ν = 0.2
-    proposal_std_Ψ = mean([std([S[i,j] for S in S_list]) for i in 1:p, j in 1:p]) / (sqrt(n / 100))
+    
+    # Controls the degrees of freedom for the Wishart Random Walk Proposal
+    df_prop = 150.0 
     
 
     # -----------------------------------------------------------------
@@ -947,23 +949,24 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}}, ν_current::Real, �
     end
     
     # -----------------------------------------------------------------
-    # STEP 2: FIXED SYMMETRIC MULTIPLICATIVE UPDATE FOR MATRIX Ψ
+    # STEP 2: STABLE WISHART METROPOLIS UPDATE FOR MATRIX Ψ
     # -----------------------------------------------------------------
-    # Generate a perfectly symmetric random walk shock matrix
-    Z = randn(p, p)
-    E = Symmetric((Z + Z') * proposal_std_Ψ)
-    expm = exp(Matrix(E))
-    
-    # Sandwiched multiplication ensures Ψ_proposal remains symmetric and positive-definite
-    Ψ_proposal = Symmetric(expm * Ψ * expm) |> Matrix
+    # Proposing from a Wishart distribution centered at Ψ guarantees the 
+    # proposal matrix is symmetric and positive-definite, resolving the drift bug.
+    S_prop_scale = Symmetric(Ψ / df_prop)
+    C_prop = try cholesky(S_prop_scale) catch; cholesky(S_prop_scale + 1e-9I) end
+    Ψ_proposal = rand(Wishart(df_prop, C_prop))
     
     log_prob_curr = log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
     log_prob_prop = log_joint_posterior(ν, Ψ_proposal, S_list, p, λ, ν0, inv_Ψ0)
     
-    # FIX: Reversed the sign of the Jacobian correction to balance multiplicative scale tracking
     if isposdef(Ψ_proposal)
-        log_hastings_correction = -(p + 1) * (logdet(Ψ_proposal) - logdet(Ψ))
-        log_alpha = (log_prob_prop - log_prob_curr) + log_hastings_correction
+        # Compute asymmetric proposal densities q(Ψ*|Ψ) and q(Ψ|Ψ*) for Hastings correction
+        C_prop_back = try cholesky(Symmetric(Ψ_proposal / df_prop)) catch; cholesky(Symmetric(Ψ_proposal / df_prop) + 1e-9I) end
+        log_q_curr_given_prop = logpdf(Wishart(df_prop, C_prop_back), Ψ)
+        log_q_prop_given_curr = logpdf(Wishart(df_prop, C_prop), Ψ_proposal)
+        
+        log_alpha = (log_prob_prop - log_prob_curr) + (log_q_curr_given_prop - log_q_prop_given_curr)
     else
         log_alpha = -Inf
     end
@@ -975,6 +978,7 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}}, ν_current::Real, �
             
     return ν, Ψ
 end
+
 
 
 
