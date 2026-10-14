@@ -895,22 +895,20 @@ function update_hyperparameters_mt(
     # We pass the scale matrix explicitly into the Wishart type definition
     S_beta_new = rand(Wishart(nu_S_post, S_beta_post_scale))
 
-    # =========================================================================
+        # =========================================================================
     # STEP 2: METROPOLIS-HASTINGS FOR nu_beta
     # =========================================================================
-    # Native density calculations instead of a manual log_mv_gamma function
     function log_post_nu(nu::Float64, S_mat::Matrix{Float64})
-        # 🌟 CLEAN PACKAGED CALL:
-        # We can construct a target template distribution to evaluate its logpdf
-        # (Evaluated at an Identity matrix to scale the normalising constant cleanly)
-        template_dist = InverseWishart(nu, S_mat)
-        
-        # Extract components or use logpdf natively over the collection matrix
         logdet_S = logdet(cholesky(Hermitian(S_mat)))
         traits_float = Float64(t)
         
-        # Re-evaluating the normalising constant using Distributions.jl structures
-        term1 = m * ( (nu / 2.0) * logdet_S - (nu * traits_float / 2.0) * log(2.0) - logmvgamma(t, nu / 2.0) )
+        # 🌟 Clean local replacement using SpecialFunctions.lgamma:
+        log_mv_gamma = (t * (t - 1) / 4.0) * log(pi)
+        for k in 1:t
+            log_mv_gamma += lgamma((nu / 2.0) + (1.0 - k) / 2.0)
+        end
+        
+        term1 = m * ( (nu / 2.0) * logdet_S - (nu * traits_float / 2.0) * log(2.0) - log_mv_gamma )
         term2 = -0.5 * (nu + t + 1) * sum_logdet_G
         return term1 + term2
     end
