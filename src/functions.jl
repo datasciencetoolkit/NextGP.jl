@@ -957,6 +957,65 @@ function _siw_update_single_scale_inplace!(delta::Ref{Float64}, B::AbstractMatri
 end
 
 
+function _siw_update_shifted_lognormal_fixed_mh!(Qg::AbstractMatrix{Float64}, M::OrderedDict, mSet::Tuple, nu0_W::Float64, S0_W_inv::AbstractMatrix{Float64}, shift_nu::Float64, mu_log::Float64, sd_log::Float64, prop_sd::Float64)
+    t = size(Qg, 1)
+    c_threshold = t - 1.0
+    
+    current_df = M[mSet].df[]
+    current_scale = M[mSet].scale[]
+    
+    # STABLE: Factorize Qg directly instead of explicitly calling inv()
+    C_Qg = cholesky(Symmetric(Qg))
+    
+    # S_n_inv = S0_W_inv + inv(Qg) -> S_n_inv = S0_W_inv + (C_Qg \ I)
+    S_n_inv = S0_W_inv + (C_Qg \ I)
+    nu_n = nu0_W + current_df
+    
+    # STABLE: Backsubstitution solver to generate scale matrix variants
+    C_Sn = cholesky(Symmetric(S_n_inv))
+    L_S = cholesky(inv(Symmetric(S_n_inv))).L # Alternatively: L_S = inv(C_Sn.U)'
+    
+    A = zeros(t, t)
+    for i in 1:t
+        A[i, i] = sqrt(rand(Chi(nu_n - i + 1)))
+        for j in 1:(i-1); A[i, j] = randn(); end
+    end
+    X = L_S * A
+    
+    # FIX: If M[mSet].scale is a Ref{Matrix}, mutate using `.=` on the container 
+    # instead of trying to broadcast `.=` directly onto a scalar extraction `[]`
+    M[mSet].scale .= X * X' 
+
+    function log_target_nu(nu::Float64)
+        excess = nu - shift_nu
+        log_prior = -0.5 * ((log(excess) - mu_log) / sd_log)^2 - log(excess)
+        log_mv_gamma = (t * (t - 1) / 4) * log(pi) + sum(loggamma((nu + 1.0 - i) / 2.0) for i in 1:t)
+        
+        # STABLE: Use precomputed Cholesky determinants to avoid NaN explosions
+        log_det_scale = logdet(cholesky(Symmetric(current_scale)))
+        log_det_Qg = logdet(C_Qg)
+        
+        log_det_block = (nu / 2.0) * log_det_scale - (nu * t / 2.0) * log(2.0) - log_mv_gamma - (nu / 2.0) * log_det_Qg
+        return log_det_block + log_prior
+    end
+
+    log_excess_curr = log(current_df - shift_nu)
+    log_excess_prop = log_excess_curr + prop_sd * randn()
+    nu_prop = exp(log_excess_prop) + shift_nu
+
+    if nu_prop > c_threshold && (nu_prop - shift_nu) > 0.0
+        log_curr_prob = log_target_nu(current_df)
+        log_prop_prob = log_target_nu(nu_prop)
+        
+        # LAPACK Safety Check: Reject proposal if computations encounter under/overflows
+        if !isnan(log_prop_prob) && !isnan(log_curr_prob)
+            log_alpha = log_prop_prob - log_curr_prob + log(nu_prop - shift_nu) - log(current_df - shift_nu)
+            if log(rand()) < log_alpha
+                M[mSet].df[] = nu_prop 
+            end
+        end
+    end
+end
 
 
 
