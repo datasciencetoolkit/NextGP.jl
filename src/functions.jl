@@ -912,7 +912,7 @@ function update_hyperparameters_mt(
         term2 = -0.5 * (nu + t + 1) * sum_logdet_G
         
         #Exponential Prior Penalty (lambda = 0.2)
-        lambda = 0.02 * m
+        lambda = 0.01 * m
         log_prior = -lambda * nu
         
         # Return the combined log-posterior density
