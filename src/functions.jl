@@ -345,24 +345,23 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 		M[mSet].piHat .= rand(Dirichlet(storeCount.+1))
 	end
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
-		#println("$(M[mSet].scale[]),$(M[mSet].df[])")
-		#inMarkers = findall([any(c.!=0) for c in eachcol(delta[M[mSet].pos])])
 		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
-		#println("N inmarkers = $(length(inMarkers))")
-		scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(mean(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))))
-		#NEW
-		#println("new scale: $(scaleEst)")
+		         #scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(mean(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))))
+		dfEst, scaleEst = run_direct_iw_mcmc(getindex(varBeta[mSet],inMarkers))
+		println("new df and scale: $(dfEst) $(scaleEst)")
+				#NEW
+				#println("new scale: $(scaleEst)")
 		setindex!(M[mSet].scale, scaleEst,1)
+		setindex!(M[mSet].df, dfEst,1)
 
-		tempdf = 2 #one for each for the 4+1 
-		for m in 1:length(mSet)
-			inMarkers = findall(>(0),getindex(beta[M[mSet].pos],m,:))
-			dfIG,scaleIG = sampleScaleDFofVar(getindex.(getindex(varBeta[mSet],inMarkers),m,m))
-			dfScaleInvChi = 2*dfIG
-			tempdf += dfScaleInvChi
-		end
-		#println("new DF: $(tempdf/length(mSet))")
-		setindex!(M[mSet].df,tempdf/length(mSet),1)
+         		#tempdf = 2 #one for each for the 4+1 
+				#for m in 1:length(mSet)
+				#inMarkers = findall(>(0),getindex(beta[M[mSet].pos],m,:))
+				#dfIG,scaleIG = sampleScaleDFofVar(getindex.(getindex(varBeta[mSet],inMarkers),m,m))
+				#dfScaleInvChi = 2*dfIG
+				#tempdf += dfScaleInvChi
+				#end
+				#setindex!(M[mSet].df,tempdf/length(mSet),1)
 
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 		nothing
@@ -857,178 +856,117 @@ function sampleScaleDFofVar(varVec;abcde=[4.0,0.01,0.01,0.01,0.01],crit=10e-6)
 end
 
 
+# =========================================================================
+# 1. LOG POSTERIOR DENSITY FUNCTION
+# =========================================================================
 
-function _siw_update_single_scale_inplace!(delta::Ref{Float64}, B::AbstractMatrix{Float64}, Qg::AbstractMatrix{Float64}, m_g_val::Float64, s2_g_val::Float64, prop_sd::Float64)
-    t, p = size(B)
-    BtB = B * B'
-    
-    # Enforce symmetric factorization to compute safe determinants and traces
-    C_Qg = cholesky(Symmetric(Qg + (1e-10 * I)))
-    logdet_Qg = logdet(C_Qg)
-
-    function log_target_delta_scalar(d::Float64)
-        logdet_G = 2.0 * t * log(d) + logdet_Qg
-        
-        # STABLE SOLVER: Backsubstitution solver instead of explicit inv() multiplication
-        tr_val = (1.0 / (d^2)) * tr(C_Qg \ BtB)
-        
-        log_lik = -0.5 * p * logdet_G - 0.5 * tr_val
-        log_prior = -0.5 * (log(d) - m_g_val)^2 / s2_g_val - log(d)
-        
-        return log_lik + log_prior
+"""
+    log_mvgamma(p, a)
+Computes the log of the multivariate gamma function Γ_p(a).
+"""
+function log_mvgamma(p::Int, a::Real)
+    ans = p * (p - 1) * 0.25 * log(π)
+    for j in 1:p
+        ans += loggamma(a + (1.0 - j) * 0.5)
     end
+    return ans
+end
 
-    log_delta_curr = log(delta[])
-    log_delta_prop = log_delta_curr + prop_sd * randn()
-    delta_prop_val = exp(log_delta_prop)
+"""
+    log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
+
+Computes the exact log posterior density up to a constant additive factor.
+"""
+function log_joint_posterior(ν::Real, Ψ::Matrix{Float64}, S_list::Vector{Matrix{Float64}}, p::Int, λ::Real, ν0::Real, inv_Ψ0::Matrix{Float64})
+    # Parameter space constraints
+    if ν <= p - 1 || !isposdef(Ψ)
+        return -Inf
+    end
+    n = length(S_list)
     
-    if 1e-5 <= delta_prop_val <= 100.0
-        log_curr_prob = log_target_delta_scalar(delta[])
-        log_prop_prob = log_target_delta_scalar(delta_prop_val)
+    # --- PRIORS ---
+    # 1. Exponential Prior on ν (Shifted to valid space starting at p-1)
+    log_prior_ν = -λ * (ν - (p - 1))
+    
+    # 2. Wishart Prior on Ψ: W(ν0, Ψ0)
+    # log-density constant component for the Wishart prior
+    log_c_wish = (ν0 * p / 2) * log(2) + (ν0 / 2) * logdet(inv(inv_Ψ0)) + log_mvgamma(p, ν0 / 2)
+    log_prior_Ψ = (ν0 - p - 1) / 2 * logdet(Ψ) - 0.5 * tr(inv_Ψ0 * Ψ) - log_c_wish
+
+    # --- LIKELIHOOD ---
+    # Product of Inverse-Wishart(S_i | ν, Ψ)
+    log_c0_iw = (ν * p / 2) * log(2) - (ν / 2) * logdet(Ψ) + log_mvgamma(p, ν / 2)
+    
+    sum_logdet_S = sum(logdet(S) for S in S_list)
+    sum_tr_invS_Ψ = sum(tr(inv(S) * Ψ) for S in S_list)
+    
+    log_likelihood = -n * log_c0_iw - 0.5 * (ν + p + 1) * sum_logdet_S - 0.5 * sum_tr_invS_Ψ
+    
+    return log_prior_ν + log_prior_Ψ + log_likelihood
+end
+
+# =========================================================================
+# 2. BAYESIAN METROPOLIS ESTIMATOR ENGINE
+# =========================================================================
+
+"""
+    run_direct_iw_mcmc(S_list)
+
+Estimates ν and Ψ from observed covariance matrices without using latent variables.
+"""
+function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}})
+    p = 2
+    n = length(S_list)
+    
+    # --- Hyperprior Constants ---
+    λ = 0.1                      # Rate parameter for Exponential(ν)
+    ν0 = 5.0                 # Degrees of freedom for Wishart(Ψ)
+    Ψ0 = Matrix(1.0I, p, p)      # Scale matrix for Wishart(Ψ)
+    inv_Ψ0 = inv(Ψ0)
+    
+    # --- Initialize Chains ---
+    ν = 5.0
+    Ψ = mean(S_list)
+    
+    # Trackers
+    
+    # MH proposal tuning parameters
+    proposal_std_ν = 0.2
+    proposal_std_Ψ = 0.05
+    
+
+        # -----------------------------------------------------------------
+        # STEP 1: Metropolis Update for ν
+        # -----------------------------------------------------------------
+        ν_proposal = ν + randn() * proposal_std_ν
         
-        # LAPACK Check: Short-circuit evaluations to bypass unexpected underflow values
-        if !isnan(log_prop_prob) && !isnan(log_curr_prob)
-            if log(rand()) < (log_prop_prob - log_curr_prob)
-                delta[] = delta_prop_val 
-            end
+        log_prob_curr = log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
+        log_prob_prop = log_joint_posterior(ν_proposal, Ψ, S_list, p, λ, ν0, inv_Ψ0)
+        
+        if log(rand()) < (log_prob_prop - log_prob_curr)
+            ν = ν_proposal
+	    println("proposal accepted for ν")
         end
-    end
-end
-
-
-function sampleHierarchicalSIW!(M::OrderedDict, delta::Ref{Float64}, m_g::Ref{Float64}, s2_g::Ref{Float64}, mSet::Tuple, B_region::AbstractMatrix{Float64}, regionSize::Int64)
-    t = size(B_region, 1) 
-    
-    # --- FIXED PRIOR ENGINES ---
-    shift_nu = 4.0   
-    mu_log   = 0.0   
-    sd_log   = 0.25  
-    prop_sd  = 0.02  
-
-    nu0_W = t + 2.0
-    R_0 = Matrix(I(t) * 1.0)
-    S0_W_inv = inv(R_0 * (nu0_W - t - 1.0))
-    
-    mu_0      = 0.0
-    sigma0_2  = 10.0  
-    alpha_0   = 5.0   
-    beta_0    = 5.0
-
-    current_df = M[mSet].df[]
-    current_scale = M[mSet].scale[]  
-    
-    d_val_curr = delta[]
-    m_g_curr   = m_g[]
-    s2_g_curr  = s2_g[]
-    
-    # Safe fallback initialization for Qg_old using stabilized inversion
-    Qg_old = hasproperty(M[mSet], :Qg) ? M[mSet].Qg : Symmetric(cholesky(Symmetric(current_scale * (current_df - t - 1.0) + (1e-10 * I))) \ I)
-    
-    # Step A: Update delta in-place
-    _siw_update_single_scale_inplace!(delta, B_region, Qg_old, m_g_curr, s2_g_curr, prop_sd)
-    
-    # Extract the freshly accepted/retained scalar scale value
-    d_val = delta[]
-    if d_val < 1e-8; d_val = 1e-8; end # Lower bound safeguard against division-by-zero
-    
-    # Step B: Strip the single scale to yield unscaled scatter and sample Qg
-    B_unscaled = B_region ./ d_val
-    scatter_unscaled = B_unscaled * B_unscaled'
-    
-    # Force symmetry and inject a nugget to guarantee stable Cholesky decomposition
-    Scale_InvWish = Symmetric(current_scale + scatter_unscaled + (1e-10 * I))
-    C_scale = cholesky(Scale_InvWish)
-    
-    nu_Q = current_df + regionSize
-    A_Q = zeros(t, t) 
-    for i in 1:t
-        chi_val = rand(Chi(nu_Q - i + 1))
-        A_Q[i, i] = sqrt(max(chi_val, 1e-10)) # Safeguard from zero-diagonal underflow
-        for j in 1:(i-1); A_Q[i, j] = randn(); end
-    end
-    
-    # Avoid explicit matrix inverse steps; solve via backsubstitution & enforce symmetry
-    Qg_new = Symmetric(C_scale \ (A_Q * A_Q') \ I + (1e-10 * I))
-    if hasproperty(M[mSet], :Qg); M[mSet].Qg .= Qg_new; end
-    
-    # Step C: Log-Scale MH Update
-    _siw_update_shifted_lognormal_fixed_mh!(Qg_new, M, mSet, nu0_W, S0_W_inv, shift_nu, mu_log, sd_log, prop_sd)
-    
-    # Step D: Update log-normal scale hyperparameters online via standalone references
-    log_d = log(d_val)
-    V_m = 1.0 / (1.0 / sigma0_2 + 1.0 / s2_g[])
-    
-    m_g[] = V_m * (mu_0 / sigma0_2 + log_d / s2_g[]) + sqrt(V_m) * randn()
-    s2_g[] = rand(InverseGamma(alpha_0 + 0.5, beta_0 + 0.5 * (log_d - m_g[])^2))
-    
-    return Symmetric(d_val * Qg_new * d_val)
-end
-
-
-
-function _siw_update_shifted_lognormal_fixed_mh!(Qg::AbstractMatrix{Float64}, M::OrderedDict, mSet::Tuple, nu0_W::Float64, S0_W_inv::AbstractMatrix{Float64}, shift_nu::Float64, mu_log::Float64, sd_log::Float64, prop_sd::Float64)
-    t = size(Qg, 1)
-    c_threshold = t - 1.0
-    
-    current_df = M[mSet].df[]
-    current_scale = M[mSet].scale[]
-    
-    # 1. STABLE: Add tiny regularisation to guarantee Qg factorisation succeeds
-    C_Qg = cholesky(Symmetric(Qg + (1e-10 * I)))
-    
-    # 2. ENFORCE SYMMETRY: Wrap backslash inverse operation explicitly in Symmetric
-    Qg_inv_stable = Symmetric(C_Qg \ I)
-    S_n_inv = Symmetric(S0_W_inv + Qg_inv_stable)
-    
-    nu_n = nu0_W + current_df
-    
-    # 3. STABLE: Regularise S_n_inv calculation before decomposing
-    C_Sn = cholesky(Symmetric(S_n_inv + (1e-10 * I)))
-    L_S = C_Sn.L
-    
-    A = zeros(t, t)
-    for i in 1:t
-        # Safeguard chi-squared values from underflowing to exactly 0.0
-        chi_val = rand(Chi(nu_n - i + 1))
-        A[i, i] = sqrt(max(chi_val, 1e-10))
-        for j in 1:(i-1); A[i, j] = randn(); end
-    end
-    X = L_S * A
-    
-    # 4. ENFORCE POSITIVE-DEFINITENESS ON THE UPDATE: Add a tiny identity nugget
-    # Adjust this line based on your object structure: M[mSet].scale[] .= ... OR M[mSet].scale .= ...
-    M[mSet].scale[] .= Symmetric(X * X' + (1e-9 * I)) 
-
-    function log_target_nu(nu::Float64)
-        excess = nu - shift_nu
-        log_prior = -0.5 * ((log(excess) - mu_log) / sd_log)^2 - log(excess)
-        log_mv_gamma = (t * (t - 1) / 4) * log(pi) + sum(loggamma((nu + 1.0 - i) / 2.0) for i in 1:t)
         
-        # 5. SAFE FACTORISATION IN TARGET: Protect logdet evaluation from crashing
-        C_scale = cholesky(Symmetric(current_scale + (1e-10 * I)))
-        log_det_scale = logdet(C_scale)
-        log_det_Qg = logdet(C_Qg)
+        # -----------------------------------------------------------------
+        # STEP 2: Metropolis Update for Matrix Ψ
+        # -----------------------------------------------------------------
+        # Generate symmetric matrix random walk proposal
+        Z = randn(p, p)
+        Ψ_proposal = Ψ + (Z + Z') * proposal_std_Ψ 
         
-        log_det_block = (nu / 2.0) * log_det_scale - (nu * t / 2.0) * log(2.0) - log_mv_gamma - (nu / 2.0) * log_det_Qg
-        return log_det_block + log_prior
-    end
-
-    log_excess_curr = log(current_df - shift_nu)
-    log_excess_prop = log_excess_curr + prop_sd * randn()
-    nu_prop = exp(log_excess_prop) + shift_nu
-
-    if nu_prop > c_threshold && (nu_prop - shift_nu) > 0.0
-        log_curr_prob = log_target_nu(current_df)
-        log_prop_prob = log_target_nu(nu_prop)
+        log_prob_curr = log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
+        log_prob_prop = log_joint_posterior(ν, Ψ_proposal, S_list, p, λ, ν0, inv_Ψ0)
         
-        if !isnan(log_prop_prob) && !isnan(log_curr_prob)
-            log_alpha = log_prop_prob - log_curr_prob + log(nu_prop - shift_nu) - log(current_df - shift_nu)
-            if log(rand()) < log_alpha
-                M[mSet].df[] = nu_prop 
-            end
+        if log(rand()) < (log_prob_prop - log_prob_curr)
+            Ψ = Ψ_proposal
+	    println("proposal accepted for Ψ")
         end
-    end
+            
+    return ν, Ψ
 end
+
+
 
 
 
