@@ -355,7 +355,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
         5,          # 2 trait hardcoded Prior degrees of freedom
         0.2,  # Random walk step size
         2,            # Number of traits
-        inMarkers             # Number of markers
+        length(inMarkers)             # Number of markers
         )
 		println("new df and scale: $(dfEst) $(scaleEst)")
 				#NEW
