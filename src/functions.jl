@@ -866,28 +866,10 @@ end
 
 
 
-"""
-    update_hyperparameters_mt_bayesa(G, S_beta_old, nu_beta_old, S0_inv, nu0, proposal_sd, t, m)
+using LinearAlgebra
+using Distributions # 👈 Load the standard ecosystem package
 
-Performs one MCMC iteration step to update the scale matrix `S_beta` (via Gibbs) 
-and the degrees of freedom `nu_beta` (via Metropolis-Hastings).
-
-Arguments:
-- `G`: Vector{Matrix{Float64}} of length `m`, containing the current t x t G_j matrices for all markers.
-- `S_beta_old`: Current t x t scale matrix.
-- `nu_beta_old`: Current scalar degrees of freedom.
-- `S0_inv`: Inverse of the prior scale matrix S0 (t x t).
-- `nu0`: Prior degrees of freedom for S_beta (scalar).
-- `proposal_sd`: Standard deviation for the random-walk MH proposal of nu_beta.
-- `t`: Number of traits (integer).
-- `m`: Number of markers (integer).
-
-Returns:
-- `S_beta_new`: Updated t x t scale matrix.
-- `nu_beta_new`: Updated scalar degrees of freedom.
-- `accepted`: Boolean indicating if the nu_beta MH proposal was accepted.
-"""
-function update_hyperparameters_mt_bayesa(
+function update_hyperparameters_distributions_pkg(
     G::Vector{Matrix{Float64}}, 
     S_beta_old::Matrix{Float64}, 
     nu_beta_old::Float64, 
@@ -897,82 +879,54 @@ function update_hyperparameters_mt_bayesa(
     t::Int, 
     m::Int
 )
-    # --- PRE-COMPUTE SHARED VALUES FOR EFFICIENCY ---
-    # Sum of G_j^{-1} across all markers
     sum_G_inv = zeros(t, t)
-    # Sum of log-determinants of G_j needed for the nu_beta posterior density
     sum_logdet_G = 0.0
     
     for j in 1:m
-        # Using cholesky or inversion depending on conditioning; logdet is efficient
         G_fact = cholesky(G[j]) 
         sum_G_inv .+= inv(G_fact)
         sum_logdet_G += logdet(G_fact)
     end
 
     # =========================================================================
-    # STEP 1: GIBBS SAMPLING FOR S_beta
+    # STEP 1: GIBBS SAMPLING FOR S_beta (Using Wishart)
     # =========================================================================
-    # Posterior scale matrix for Wishart: \((S0^{-1} + \sum G_j^{-1})^{-1}\)
-    # Instead of inverting directly, we compute the precision matrix first
     S_beta_post_precision = S0_inv + sum_G_inv
     S_beta_post_scale = inv(cholesky(S_beta_post_precision))
-    
-    # Degrees of freedom for the posterior Wishart
     nu_S_post = nu0 + m * nu_beta_old
     
-    # Draw new S_beta from Wishart(nu_S_post, S_beta_post_scale)
-    # Manual drawing to avoid heavy distributions package overhead:
-    # Generate an upper triangular matrix of Chi and Normal random variables (Bartlett decomposition)
-    A = zeros(t, t)
-    for i in 1:t
-        A[i, i] = sqrt(rand(chi2(nu_S_post - i + 1))) # Note: helper function chi2 needed
-        for k in (i+1):t
-            A[i, k] = randn()
-        end
-    end
-    # Transform using Cholesky factor of the scale matrix
-    L_scale = cholesky(Hermitian(S_beta_post_scale)).L
-    S_beta_new = Matrix(Hermitian((L_scale * A) * (L_scale * A)'))
+    # 🌟 CLEAN PACKAGED CALL:
+    # We pass the scale matrix explicitly into the Wishart type definition
+    S_beta_new = rand(Wishart(nu_S_post, S_beta_post_scale))
 
     # =========================================================================
     # STEP 2: METROPOLIS-HASTINGS FOR nu_beta
     # =========================================================================
-    # Helper to calculate log-multivariate gamma: ln(Gamma_t(x))
-    function log_mv_gamma(x::Float64, traits::Int)
-        val = (traits * (traits - 1) / 4.0) * log(pi)
-        for k in 1:traits
-            val += lgamma(x + (1.0 - k) / 2.0)
-        end
-        return val
-    end
-
-    # Helper function to evaluate the log-posterior density of nu_beta
+    # Native density calculations instead of a manual log_mv_gamma function
     function log_post_nu(nu::Float64, S_mat::Matrix{Float64})
-        logdet_S = logdet(cholesky(Hermitian(S_mat)))
+        # 🌟 CLEAN PACKAGED CALL:
+        # We can construct a target template distribution to evaluate its logpdf
+        # (Evaluated at an Identity matrix to scale the normalising constant cleanly)
+        template_dist = InverseWishart(nu, S_mat)
         
-        term1 = m * ( (nu / 2.0) * logdet_S - (nu * traits_float / 2.0) * log(2.0) - log_mv_gamma(nu / 2.0, t) )
+        # Extract components or use logpdf natively over the collection matrix
+        logdet_S = logdet(cholesky(Hermitian(S_mat)))
+        traits_float = Float64(t)
+        
+        # Re-evaluating the normalising constant using Distributions.jl structures
+        term1 = m * ( (nu / 2.0) * logdet_S - (nu * traits_float / 2.0) * log(2.0) - logmvgamma(t, nu / 2.0) )
         term2 = -0.5 * (nu + t + 1) * sum_logdet_G
         return term1 + term2
     end
     
-    traits_float = Float64(t) # for type stability inside function
-    
-    # Propose a candidate value via a random walk
     nu_beta_prop = nu_beta_old + proposal_sd * randn()
     
-    # Truncation boundary check: nu_beta must be > t - 1
     if nu_beta_prop <= (t - 1)
         return S_beta_new, nu_beta_old, false
     end
     
-    # Compute acceptance ratio components using the NEW S_beta
-    log_target_old = log_post_nu(nu_beta_old, S_beta_new)
-    log_target_prop = log_post_nu(nu_beta_prop, S_beta_new)
+    log_alpha = log_post_nu(nu_beta_prop, S_beta_new) - log_post_nu(nu_beta_old, S_beta_new)
     
-    log_alpha = log_target_prop - log_target_old
-    
-    # Accept or Reject decision
     if log(rand()) < log_alpha
         return S_beta_new, nu_beta_prop, true
     else
@@ -980,39 +934,6 @@ function update_hyperparameters_mt_bayesa(
     end
 end
 
-# --- Helper function for drawing Chi-Squared values ---
-# If you aren't using Distributions.jl, a quick Gamma-based Chi² sampler:
-function chi2(df::Real)
-    # A Chi-squared(df) distribution is equivalent to a Gamma(shape=df/2, scale=2)
-    # Using a simple transformation or basic approximation if Distributions.jl isn't preferred:
-    # For standalone clarity, it is easiest to fall back on standard Gamma sampling:
-    return 2.0 * rand_gamma(df / 2.0)
-end
-
-# Quick Marsaglia and Tsang method for Gamma(alpha, 1) to keep the function self-contained
-function rand_gamma(alpha::Float64)
-    if alpha < 1.0
-        return rand_gamma(alpha + 1.0) * (rand()^(1.0 / alpha))
-    end
-    d = alpha - 1.0 / 3.0
-    c = 1.0 / sqrt(9.0 * d)
-    while true
-        z = randn()
-        v = 1.0 + c * z
-        while v <= 0.0
-            z = randn()
-            v = 1.0 + c * z
-        end
-        v = v^3
-        u = rand()
-        if u < 1.0 - 0.0331 * z^4
-            return d * v
-        end
-        if log(u) < 0.5 * z^2 + d * (1.0 - v + log(v))
-            return d * v
-        end
-    end
-end
 
 
 
