@@ -219,17 +219,38 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
 				ycorr .-= M[mSet].data[locus].*beta[M[mSet].pos][:,locus]'
 			end
 		end
-		#@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize) 
-		@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleHierarchicalSIW!(M, Ref(1.5), Ref(0.0), Ref(0.25), mSet, getindex(beta[M[mSet].pos], :, theseLoci), regionSize) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize) 
+		@inbounds varBeta[mSet][r] = M[mSet].params==true ? sampleVarCovBetaPR(M[mSet].scale[],M[mSet].df[],getindex(beta[M[mSet].pos],:,theseLoci),regionSize) : sampleVarCovBetaPR(M[mSet].scale,M[mSet].df,getindex(beta[M[mSet].pos],:,theseLoci),regionSize) 
 	end
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
-		#dfIG,scaleIG = sampleScaleDFofVar(varBeta[mSet])
-		#dfScaleInvChi = 2*dfIG
-		#scaleScaleInvChi = scaleIG/dfIG
+		scaleEst, dfEst, accepted = update_hyperparameters_mt_AB(
+        getindex(varBeta[mSet],inMarkers),   # The vector of marker matrices
+        M[mSet].scale[],       # Current scale matrix
+        M[mSet].df[],      # Current degrees of freedom
+        Matrix{Float64}(I, 2, 2),       # Inverse prior scale 2x2 trait hardcoded
+        5,          # 2 trait hardcoded Prior degrees of freedom
+        0.2,  # Random walk step size
+        2,            # Number of traits
+        length(inMarkers)             # Number of markers
+        )
+		setindex!(M[mSet].scale, scaleEst,1)
+		setindex!(M[mSet].df, dfEst,1)
+		
+		#scaleEst = rand(InverseWishart(5, inv(varBeta[mSet]) + inv(M[mSet].priorScale)))
 		#setindex!(M[mSet].scale, scaleScaleInvChi, 1)
-		#setindex!(M[mSet].df, dfScaleInvChi, 1)
-		#scaleEst = rand(InverseWishart(5, mean(inv.(varBeta[mSet])) + inv(M[mSet].priorScale)))
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
+		scaleEst, dfEst, accepted = update_hyperparameters_mt_C(
+       	varBeta[mSet][1],   # The vector of marker matrices
+       	M[mSet].scale[],       # Current scale matrix
+        M[mSet].df[],      # Current degrees of freedom
+        Matrix{Float64}(I, 2, 2),       # Inverse prior scale 2x2 trait hardcoded
+        5,          # 2 trait hardcoded Prior degrees of freedom
+        0.2,  # Random walk step size
+        2,            # Number of traits
+        length(inMarkers)             # Number of markers
+        )
+		println("new df and scale: $(dfEst) $(scaleEst)")
+		setindex!(M[mSet].scale,scaleEst,1)
+		setindex!(M[mSet].df,dfEst, 1)
 	else nothing #println("What is WRONG???")
 	end
 end
@@ -346,7 +367,6 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 	end
 	if (M[mSet].params==true) #&& (length(varBeta[mSet]) > 1) #estimate in all cases
 		inMarkers = findall([any(c.!=0) for c in M[mSet][:gammaHat]])
-		         #scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(mean(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))))
 		scaleEst, dfEst, accepted = update_hyperparameters_mt_AB(
         getindex(varBeta[mSet],inMarkers),   # The vector of marker matrices
         M[mSet].scale[],       # Current scale matrix
@@ -357,10 +377,7 @@ function sampleBayesB!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
         2,            # Number of traits
         length(inMarkers)             # Number of markers
         )
-		        #println("new df and scale: $(dfEst) $(scaleEst)")
-				#NEW
-				#println("new scale: $(scaleEst)")
-		
+		#scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(mean(getindex(varBeta[mSet],inMarkers))) + inv(M[mSet].priorScale)))))
 		setindex!(M[mSet].scale, scaleEst,1)
 		setindex!(M[mSet].df, dfEst,1)
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
@@ -488,9 +505,9 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
         2,            # Number of traits
         length(inMarkers)             # Number of markers
         )
-		println("new df and scale: $(dfEst) $(scaleEst)")
-		setindex!(M[mSet].scale, scaleEst,1)
-		setindex!(M[mSet].df,rand(Uniform(4,5)),1)
+		#println("new df and scale: $(dfEst) $(scaleEst)")
+		setindex!(M[mSet].scale,scaleEst,1)
+		setindex!(M[mSet].df,dfEst,1)
 
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 		nothing
