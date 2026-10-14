@@ -894,7 +894,6 @@ function log_joint_posterior(ν::Real, Ψ::Matrix{Float64}, S_list::Vector{Matri
 
     # --- LIKELIHOOD ---
     # Product of Inverse-Wishart(S_i | ν, Ψ)
-    # FIX: The scale matrix log-determinant normalization sign must be + (plus) for Inverse-Wishart
     log_c0_iw = (ν * p / 2) * log(2) + (ν / 2) * logdet(Ψ) + log_mvgamma(p, ν / 2)
     
     sum_logdet_S = sum(logdet(S) for S in S_list)
@@ -961,9 +960,9 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}}, ν_current::Real, �
     log_prob_curr = log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
     log_prob_prop = log_joint_posterior(ν, Ψ_proposal, S_list, p, λ, ν0, inv_Ψ0)
     
-    # Asymmetric transition correction factor (Jacobian) to stop upward drift
+    # FIX: Reversed the sign of the Jacobian correction to balance multiplicative scale tracking
     if isposdef(Ψ_proposal)
-        log_hastings_correction = (p + 1) * (logdet(Ψ_proposal) - logdet(Ψ))
+        log_hastings_correction = -(p + 1) * (logdet(Ψ_proposal) - logdet(Ψ))
         log_alpha = (log_prob_prop - log_prob_curr) + log_hastings_correction
     else
         log_alpha = -Inf
@@ -976,6 +975,7 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}}, ν_current::Real, �
             
     return ν, Ψ
 end
+
 
 
 
