@@ -232,9 +232,9 @@ function sampleBayesPR!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yc
         2,            # Number of traits
         length(inMarkers)             # Number of markers
         )
+		println("new df and scale: $(dfEst) $(scaleEst)")
 		setindex!(M[mSet].scale, scaleEst,1)
 		setindex!(M[mSet].df, dfEst,1)
-		
 		#scaleEst = rand(InverseWishart(5, inv(varBeta[mSet]) + inv(M[mSet].priorScale)))
 		#setindex!(M[mSet].scale, scaleScaleInvChi, 1)
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
@@ -505,10 +505,9 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
         2,            # Number of traits
         length(inMarkers)             # Number of markers
         )
-		#println("new df and scale: $(dfEst) $(scaleEst)")
+		println("new df and scale: $(dfEst) $(scaleEst)")
 		setindex!(M[mSet].scale,scaleEst,1)
 		setindex!(M[mSet].df,dfEst,1)
-
 	elseif (M[mSet].params==true) && (length(varBeta[mSet]) < 2)
 		nothing
 	else 
