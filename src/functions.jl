@@ -479,7 +479,7 @@ function sampleBayesC!(mSet::Tuple,M::OrderedDict,beta::Vector,delta::Vector,yco
 				#println("N inmarkers = $(length(inMarkers))")
 				#scaleEst = rand(InverseWishart(5, convert(Array,Symmetric(inv(varBeta[mSet][1]) + inv(M[mSet].priorScale)))))
 		scaleEst, dfEst, accepted = update_hyperparameters_mt_C(
-        getindex(varBeta[mSet],inMarkers),   # The vector of marker matrices
+        varBeta[mSet][1],   # The vector of marker matrices
         M[mSet].scale[],       # Current scale matrix
         M[mSet].df[],      # Current degrees of freedom
         Matrix{Float64}(I, 2, 2),       # Inverse prior scale 2x2 trait hardcoded
