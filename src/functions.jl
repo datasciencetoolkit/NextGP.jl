@@ -894,7 +894,8 @@ function log_joint_posterior(ν::Real, Ψ::Matrix{Float64}, S_list::Vector{Matri
 
     # --- LIKELIHOOD ---
     # Product of Inverse-Wishart(S_i | ν, Ψ)
-    log_c0_iw = (ν * p / 2) * log(2) - (ν / 2) * logdet(Ψ) + log_mvgamma(p, ν / 2)
+    # FIX: The scale matrix log-determinant normalization sign must be + (plus) for Inverse-Wishart
+    log_c0_iw = (ν * p / 2) * log(2) + (ν / 2) * logdet(Ψ) + log_mvgamma(p, ν / 2)
     
     sum_logdet_S = sum(logdet(S) for S in S_list)
     sum_tr_invS_Ψ = sum(tr(inv(S) * Ψ) for S in S_list)
@@ -930,7 +931,7 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}}, ν_current::Real, �
     
     # MH proposal tuning parameters
     proposal_std_ν = 0.2
-    proposal_std_Ψ = 0.5
+    proposal_std_Ψ = mean([std([S[i,j] for S in S_list]) for i in 1:p, j in 1:p]) / (sqrt(n / 100))
     
 
     # -----------------------------------------------------------------
@@ -952,12 +953,9 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}}, ν_current::Real, �
     # Generate a perfectly symmetric random walk shock matrix
     Z = randn(p, p)
     E = Symmetric((Z + Z') * proposal_std_Ψ)
-    
-    # Compute the matrix exponential factor
     expm = exp(Matrix(E))
     
-    # FIX: Sandwiched multiplication ensures Ψ_proposal remains 100% symmetric 
-    # and positive-definite, unlocking the stuck acceptance rate
+    # Sandwiched multiplication ensures Ψ_proposal remains symmetric and positive-definite
     Ψ_proposal = Symmetric(expm * Ψ * expm) |> Matrix
     
     log_prob_curr = log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
@@ -978,6 +976,7 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}}, ν_current::Real, �
             
     return ν, Ψ
 end
+
 
 
 
