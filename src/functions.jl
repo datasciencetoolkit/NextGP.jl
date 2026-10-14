@@ -935,71 +935,59 @@ end
 
 
 
-"""
-    update_hyperparameters_mt_C(G, S_beta_old, nu_beta_old, S0_inv, nu0, proposal_sd, t, m_active)
-
-Updates S_beta and nu_beta for a Multi-Trait BayesC framework using the single global 
-covariance matrix `G` and the current number of active markers `m_active`.
-"""
 function update_hyperparameters_mt_C(
-    G::Matrix{Float64},        # Single global t x t covariance matrix
+    G::Matrix{Float64},        
     S_beta_old::Matrix{Float64}, 
     nu_beta_old::Float64, 
-    S0_inv::Matrix{Float64},   # Inverse of prior scale matrix S0
+    S0_inv::Matrix{Float64}, 
     nu0::Real, 
     proposal_sd::Float64, 
     t::Int, 
-    m_active::Int              # Count of active markers (delta_j == 1)
+    m_active::Int        
 )
-    # If no markers are active, skip updates to prevent structural collapse
+    # If no markers are active, bypass updates to prevent structural collapse
     if m_active == 0
         return S_beta_old, nu_beta_old, false
     end
 
-    # Pre-compute scaled matrix values for the single global G
+    # Pre-compute matrix components for the single global G
     G_fact = cholesky(Hermitian(G))
     G_inv = inv(G_fact)
     logdet_G = logdet(G_fact)
 
     # =========================================================================
-    # STEP 1: GIBBS SAMPLING FOR S_beta
+    # STEP 1: GIBBS SAMPLING FOR S_beta (Using Wishart)
     # =========================================================================
+    # sum_G_inv becomes a direct product: m_active * G_inv
     S_beta_post_precision = S0_inv + m_active * G_inv
-    S_beta_post_scale = inv(cholesky(Hermitian(S_beta_post_precision)))
+    S_beta_post_scale = inv(cholesky(S_beta_post_precision))
     nu_S_post = nu0 + m_active * nu_beta_old
     
-    # Bartlett decomposition matrix drawing
-    A = zeros(t, t)
-    for i in 1:t
-        A[i, i] = sqrt(chi2(nu_S_post - i + 1)) # Uses your existing chi2 helper
-        for k in (i+1):t
-            A[i, k] = randn()
-        end
-    end
-    L_scale = cholesky(Hermitian(S_beta_post_scale)).L
-    S_beta_new = Matrix(Hermitian((L_scale * A) * (L_scale * A)'))
+    # We pass the scale matrix explicitly into the Wishart type definition
+    S_beta_new = rand(Wishart(nu_S_post, S_beta_post_scale))
 
     # =========================================================================
-    # STEP 2: METROPOLIS-HASTINGS FOR nu_beta
+    # STEP 2: METROPOLIS-HASTINGS FOR nu_beta WITH EXPONENTIAL PRIOR
     # =========================================================================
     function log_post_nu(nu::Float64, S_mat::Matrix{Float64})
         logdet_S = logdet(cholesky(Hermitian(S_mat)))
         traits_float = Float64(t)
         
-        # Local log-multivariate gamma loop
+        # Local calculation of log-multivariate gamma
         log_mv_gamma = (t * (t - 1) / 4.0) * log(pi)
         for k in 1:t
             log_mv_gamma += lgamma((nu / 2.0) + (1.0 - k) / 2.0)
         end
         
-        # Likelihood terms scaled directly by m_active
+        # Standard Multi-Trait BayesC likelihood components scaled by m_active
         term1 = m_active * ( (nu / 2.0) * logdet_S - (nu * traits_float / 2.0) * log(2.0) - log_mv_gamma )
         term2 = -0.5 * (nu + t + 1) * (m_active * logdet_G)
         
-        # Dynamic Exponential Prior Penalty
-        lambda_c = 0.01 * m_active 
-        log_prior = -lambda_c * nu
+        # Exponential Prior Penalty scaled to match current active data weight
+        lambda = 0.01 * m_active
+        log_prior = -lambda * nu
         
+        # Return the combined log-posterior density
         return term1 + term2 + log_prior
     end
     
@@ -1017,6 +1005,7 @@ function update_hyperparameters_mt_C(
         return S_beta_new, nu_beta_old, false
     end
 end
+
 
 
 
