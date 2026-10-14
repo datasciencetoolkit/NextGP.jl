@@ -891,11 +891,10 @@ function update_hyperparameters_mt(
     S_beta_post_scale = inv(cholesky(S_beta_post_precision))
     nu_S_post = nu0 + m * nu_beta_old
     
-    # 🌟 CLEAN PACKAGED CALL:
     # We pass the scale matrix explicitly into the Wishart type definition
     S_beta_new = rand(Wishart(nu_S_post, S_beta_post_scale))
 
-        # =========================================================================
+    # =========================================================================
     # STEP 2: METROPOLIS-HASTINGS FOR nu_beta WITH EXPONENTIAL PRIOR
     # =========================================================================
     function log_post_nu(nu::Float64, S_mat::Matrix{Float64})
@@ -912,8 +911,8 @@ function update_hyperparameters_mt(
         term1 = m * ( (nu / 2.0) * logdet_S - (nu * traits_float / 2.0) * log(2.0) - log_mv_gamma )
         term2 = -0.5 * (nu + t + 1) * sum_logdet_G
         
-        # 🌟 NEW: Exponential Prior Penalty (lambda = 0.2)
-        lambda = 0.2
+        #Exponential Prior Penalty (lambda = 0.2)
+        lambda = 0.2 * m
         log_prior = -lambda * nu
         
         # Return the combined log-posterior density
