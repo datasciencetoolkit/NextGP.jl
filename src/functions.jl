@@ -932,7 +932,9 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}})
     
     # MH proposal tuning parameters
     proposal_std_ν = 0.2
-    proposal_std_Ψ = mean(std(S_list)) / (sqrt(n / 100))
+    
+    # FIXED BUG: Replaced broken mean(std(S_list)) with element-wise std calculation
+    proposal_std_Ψ = mean(std([S[i,j] for S in S_list] for i in 1:p, j in 1:p)) / (sqrt(n / 100))
     
 
         # -----------------------------------------------------------------
@@ -949,22 +951,34 @@ function run_direct_iw_mcmc(S_list::Vector{Matrix{Float64}})
         end
         
         # -----------------------------------------------------------------
-        # STEP 2: Metropolis Update for Matrix Ψ
+        # STEP 2: FIXED MULTIPLICATIVE UPDATE FOR MATRIX Ψ
         # -----------------------------------------------------------------
-        # Generate symmetric matrix random walk proposal
+        # Generate symmetric matrix random walk shock in log-space
         Z = randn(p, p)
-        Ψ_proposal = Ψ + (Z + Z') * proposal_std_Ψ 
+        E = (Z + Z') * proposal_std_Ψ 
+        
+        # Propose via matrix exponential to guarantee positive-definiteness
+        Ψ_proposal = Ψ * exp(Matrix(E))
         
         log_prob_curr = log_joint_posterior(ν, Ψ, S_list, p, λ, ν0, inv_Ψ0)
         log_prob_prop = log_joint_posterior(ν, Ψ_proposal, S_list, p, λ, ν0, inv_Ψ0)
         
-        if log(rand()) < (log_prob_prop - log_prob_curr)
+        # Asymmetric transition correction factor (Jacobian) to stop upward drift
+        if isposdef(Ψ_proposal)
+            log_hastings_correction = (p + 1) * (logdet(Ψ_proposal) - logdet(Ψ))
+            log_alpha = (log_prob_prop - log_prob_curr) + log_hastings_correction
+        else
+            log_alpha = -Inf
+        end
+        
+        if log(rand()) < log_alpha
             Ψ = Ψ_proposal
 	    println("proposal accepted for Ψ")
         end
             
     return ν, Ψ
 end
+
 
 
 
